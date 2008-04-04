@@ -2,7 +2,7 @@
 # Scrape nationaljournal.com pages.
 import sys
 sys.path.append('/usr/share/pycentral/python-syck/site-packages')
-import re, BeautifulSoup, sys, ydump
+import re, BeautifulSoup, sys
 
 def scrape_photo_alt(fname, rv, alt):
     "Interpret the alt text of the portrait photos from most pages."
@@ -150,7 +150,8 @@ def scrape1(fname):
     return rv
 
 def main(files):
+    import pprint
     if not files: raise "usage: %s foo.html [bar.html ...]" % sys.argv[0]
-    for fname in files: print ydump.dump(scrape1(fname))
+    for fname in files: print pprint.pprint(scrape1(fname))
 
 if __name__ == '__main__': main(sys.argv[1:])
