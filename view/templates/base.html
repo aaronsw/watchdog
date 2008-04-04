@@ -1,0 +1,23 @@
+$def with (page)
+<html>
+<head>
+  <title>$page.title (watchdog.net)</title>
+  <link href="/static/style.css" type="text/css" rel="stylesheet" />
+</head><body>
+<div class="header">
+  <h1>watchdog.net</h1>
+</div>
+<div class="body">
+
+<h1>$page.title</h1>
+
+$:page
+</div>
+
+<div class="footer">
+  <strong>the watchdog project:</strong>
+  <a href="/about/">about us</a> | 
+  <a href="/data/">data</a> | 
+  <a href="/code/">code</a>
+</div>
+</body></html>

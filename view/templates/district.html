@@ -1,0 +1,12 @@
+$def with (d)
+
+$var title: $d.name
+
+$var head:
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBSegq5R6PzMwDs-zkkX85humBXq5hS9YYxLy9IHkdELejDmCS8ZjzjU2Q" type="text/javascript"></script>
+    <script src="http://govtrack.us/scripts/gmap-wms.js"></script>
+	  <script src="/static/distmap.js"></script>
+
+<p><strong>Cook index:</strong> $d.cook_index<br />
+  <strong>Area:</strong> $d.area_sqmi sq. mi.
+</p>

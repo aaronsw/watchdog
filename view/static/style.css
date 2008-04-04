@@ -1,0 +1,6 @@
+body { margin: 0; font-family: "Lucida Grande";}
+.header { background-color: #4973AD; margin: 0 0 1em 0 ; color: white; padding: .4em;}
+.header h1 { margin: 0; }
+.body { padding: 0 1em 1em 1em;}
+.footer { text-align: right; border-top: 1px solid #ccc; padding: .5em;}
+h1 { font-weight: normal;}
