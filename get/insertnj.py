@@ -2,6 +2,7 @@ import glob
 import web
 import scrapenj
 
+db = web.database(dbn='postgres', db='watchdog_dev', user='postgres', pw='')
 ALMANAC_DIR = 'almanac/nationaljournal.com/pubs/almanac/2008/people/'
 
 for fn in glob.glob(ALMANAC_DIR + '*/rep*'):
