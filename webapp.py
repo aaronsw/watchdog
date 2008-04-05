@@ -3,7 +3,7 @@ from utils import zip2rep
 
 web.config.debug = True
 render = web.template.render('templates/', base='base')
-db = web.database(dbn='postgres', db='watchdog_dev', user='postgres', pw='')
+db = web.database(dbn='postgres', db='watchdog_dev')
 
 urls = (
   '/', 'index',
