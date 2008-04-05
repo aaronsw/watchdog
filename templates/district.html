@@ -4,11 +4,30 @@ $var title: $d.name
 
 $var head:
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBSegq5R6PzMwDs-zkkX85humBXq5hS9YYxLy9IHkdELejDmCS8ZjzjU2Q" type="text/javascript"></script>
-    <script src="http://govtrack.us/scripts/gmap-wms.js"></script>
+    <script src="http://www.govtrack.us/scripts/gmap-wms.js"></script>
 	  <script src="/static/distmap.js"></script>
+	  <script type="text/javascript">distmap("googlemap", "$d.name.replace('-', '')")</script>
 
-<p><strong>Cook Partisan Voting Index (PVI):</strong> $d.cook_index<br />
-  <strong>Area:</strong> $d.area_sqmi sq. mi.
-</p>
+<div id="googlemap" style="width: 100%; height: 150px; margin-bottom: 2em"></div>
 
-<p><strong>Sources:</strong> District information from <cite>The Almanac of American Politics 2008</cite> (from <a href="http://nationaljournal.com/pubs/almanac/2008/">NationalJournal.com</a>).</p>
+<table>
+  <tr>
+    <th>Cook <acronym title="Partisan Voting Index">PVI</acronym>:</th>
+    <td>$d.cook_index</td>
+    <td></td>
+  </tr><tr>
+    <th>Area:</th>
+    <td>$d.area_sqmi sq. mi.</td>
+    <td><img src="/images/sparkdist/area_sqmi?point=$d.area_sqmi" /></td>
+  </tr><tr>
+    <th>Poverty rate:</th>
+    <td>$d.poverty_pct%</td>
+    <td><img src="/images/sparkdist/poverty_pct?point=$d.poverty_pct" /></td>
+  </tr><tr>
+    <th>Median income:</th>
+    <td>\$$d.median_income</td>
+    <td><a href="median_income#d$d.name"><img src="/images/sparkdist/median_income?point=$d.median_income" style="border: 0" /></a></td>
+  </tr>
+</table>
+
+<div class="sources">District information from <cite><a href="http://nationaljournal.com/pubs/almanac/2008/">The Almanac of American Politics 2008</a></cite>. Maps from <a href="http://www.govtrack.us/">GovTrack</a>.</div>

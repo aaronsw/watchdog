@@ -2,5 +2,15 @@ body { margin: 0; font-family: "Lucida Grande";}
 .header { background-color: #4973AD; margin: 0 0 1em 0 ; color: white; padding: .4em;}
 .header h1 { margin: 0; }
 .body { padding: 0 1em 1em 1em;}
+
+.sources { background-color: #eee; color: #555; padding: 1em; font-size: smaller; margin-top: 2em;}
+
 .footer { text-align: right; border-top: 1px solid #ccc; padding: .5em;}
 h1 { font-weight: normal;}
+th { text-align: right; }
+
+.chartlist { width: 20%;}
+.chartlist td.nut { display: block; position: relative;}
+.chartlist td.nut a { position: relative; z-index: 2; padding: 0.25em 4.5em 0.25em 9px; min-width: 4.5em; }
+.chartlist .count { color: #888;}
+.chartlist .index { display: block; position: absolute; left: 0; top: 0; bottom: 0; background: #cff; text-indent: 9999px; overflow: hidden; min-width: 1px; }

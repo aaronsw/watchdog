@@ -3,6 +3,7 @@ $def with (page)
 <head>
   <title>$page.title (watchdog.net)</title>
   <link href="/static/style.css" type="text/css" rel="stylesheet" />
+  $:page.get('head')
 </head><body>
 <div class="header">
   <h1>watchdog.net</h1>

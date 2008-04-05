@@ -1,0 +1,8 @@
+$def with (dists)
+
+$var title: Median Income
+
+<table class="chartlist">
+$for dist in dists:
+    <tr id="d$dist.name"><td class="nut"><a href="$dist.name">$dist.name</a><span class="index" style="width: $dist.pct%">$dist.pct%</span></td><td><span class="count">\$$dist.median_income</span></td></tr>
+</table>
