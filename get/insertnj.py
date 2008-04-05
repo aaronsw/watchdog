@@ -15,4 +15,4 @@ for fn in glob.glob(ALMANAC_DIR + '*/rep*'):
     area_sqmi = d['demographics']['Area size']
     area_sqmi = web.rstrips(area_sqmi, ' sq. mi.').replace(',', '').replace(' ', '')
     
-    web.insert('district', seqname=False, name=dist, state=dist[:2], district=dist[-2:], cook_index=cook_index, area_sqmi=area_sqmi)
+    db.insert('district', seqname=False, name=dist, state=dist[:2], district=dist[-2:], cook_index=cook_index, area_sqmi=area_sqmi)
