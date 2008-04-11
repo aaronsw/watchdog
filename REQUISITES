@@ -15,7 +15,10 @@ webapp.py also requires some other Python modules; in Debian, I have:
 - python-imaging 1.1.5-11
 - python-psycopg2 2.0.5.1-6
 
-I don't know if that works yet though.
+The sparklines don't look quite as nice with this version of PIL
+(python-imaging), perhaps because of `DeprecationWarning: integer
+argument expected, got float: self.draw.draw_lines(xy, ink, width)`.
+watchdog.notabug.com is running PIL 1.1.6-1.
 
 To run with MySQL (mysqlapp.py), I'm using:
 
