@@ -16,4 +16,3 @@ $(PARSE)/districts/index.json: parse/manual/districts.json
 
 $(PARSE)/districts/almanac.json: load/insertnj.py parse/scrapenj.py
 	PYTHONPATH=. python load/insertnj.py > $(PARSE)/districts/almanac.json
-

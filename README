@@ -1,1 +1,52 @@
 Main repository for the watchdog project.
+
+data/
+  # The raw data that powers the site. This is not checked 
+  # into git, but can be downloaded via:
+  # 
+  # rsync -avz watchdog.net:~watchdog/web/data .
+  # 
+  crawl/     # incoming data dumps
+		almanac/
+		census/
+		govtrack/
+		votesmart/
+	parse/     # JSON files from parsing the data
+	load/      # SQL from loading into the DB (eventually)
+import/      # various import code
+	crawl/
+	parse/
+		manual/  # Data files that have been created by hand.
+	load/
+README       # this file
+REQUISITES   # things you need to install for this to work
+schema.sql   # our database schema
+static/      # static files for the webserver
+templates/   # templates for the website
+utils/       # utility functions
+webapp.py    # the main code of the web app
+
+To get started:
+
+  # checkout the source code
+	git clone watchdog.net:~watchdog/git/watchdog.git watchdog
+	cd watchdog
+	
+	# download a copy of the data sources
+	rsync -avz watchdog.net:~watchdog/web/data .
+	cd import
+	
+	# create the database
+	createdb watchdog_dev
+	make
+	
+	# this will:
+	# a) set up your database tables
+	# b) parse the raw data (from data/crawl) into json (stored in data/parse)
+	# c) import the json into your database tables
+	
+	cd ..
+	
+	# start the webserver
+	python webapp.py
+
