@@ -14,6 +14,7 @@ __license__ = "Public domain"
 """
 Revision history:
 
+2008-04-11: 0.3  - fix bug causing us to lose Indiana (sorry, Indiana!)
 2008-04-04: 0.21 - zip2rep now returns [] on invalid zipcodes
 2008-03-25: 0.2  - fix bad bug with last district getting cut off (tx Jordan)
 2008-03-23: 0.1  - initial version
@@ -37,7 +38,7 @@ def count(lst):
         else:
             d[item] = 1
     out = [(v, k) for k, v in d.iteritems()]
-    out.sort()
+    out.sort(reverse=True)
     return out
 
 def cleanzips(ziplisting):
@@ -140,6 +141,7 @@ def parsezipdict(zipdump):
     return d
 
 try:
+    # file('zipdict.txt', 'w').write(dumpzipdict(zipdict()))
     myzipdict = parsezipdict(file('zipdict.txt', 'r').read())
 except IOError:
     try:
