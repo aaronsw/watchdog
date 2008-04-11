@@ -56,10 +56,10 @@ class sparkdist:
     def GET(self, what):
         inp = web.input(point=None)
         #@@assert what == 'median_income', 'for security'
-        HEIGHT = 25
-        WIDTH = 90
+        HEIGHT = 15
+        WIDTH = 40
         
-        BUBBLE = 2.5
+        BUBBLE = 2
         MARGIN = 5
         SCALEFACTOR = 4
         
