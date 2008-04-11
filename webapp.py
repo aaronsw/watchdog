@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import Image, ImageDraw, StringIO
 import web
 from utils import zip2rep
