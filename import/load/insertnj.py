@@ -2,7 +2,7 @@
 import glob, web, scrapenj, os, cgitb
 cgitb.enable(format="text")
 
-db = web.database(dbn='postgres', db='watchdog_dev', user='postgres', pw='')
+db = web.database(dbn=os.environ.GET('DATABASE_ENGINE', 'postgres'), db='watchdog_dev')
 ALMANAC_DIR = 'almanac/nationaljournal.com/pubs/almanac/2008/people/'
 
 def cleanint(n):

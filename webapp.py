@@ -1,11 +1,11 @@
 #!/usr/bin/python
-import Image, ImageDraw, StringIO
+import Image, ImageDraw, StringIO, os
 import web
 from utils import zip2rep
 
 web.config.debug = True
 render = web.template.render('templates/', base='base')
-db = web.database(dbn='postgres', db='watchdog_dev')
+db = web.database(dbn=os.environ.GET('DATABASE_ENGINE', 'postgres'), db='watchdog_dev')
 
 urls = (
   '/', 'index',
