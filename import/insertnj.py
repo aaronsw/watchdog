@@ -1,5 +1,6 @@
 #!/usr/bin/python
-import glob, web, scrapenj, os
+import glob, web, scrapenj, os, cgitb
+cgitb.enable(format="text")
 
 db = web.database(dbn='postgres', db='watchdog_dev', user='postgres', pw='')
 ALMANAC_DIR = 'almanac/nationaljournal.com/pubs/almanac/2008/people/'
@@ -26,6 +27,7 @@ def main():
             district.area_sqmi = cleanint(web.rstrips(demo['Area size'], ' sq. mi.'))
             district.poverty_pct = cleanint(demo['Poverty status'])
             district.median_income = cleanint(demo['Median income'])
+        district.filename = 'file://%s/%s' % (os.getenv('PWD'), d['filename'])
 
         db.insert('district', seqname=False, **district)
 

@@ -1,3 +1,5 @@
+SQL=psql
+INSERT=./insertnj.py
 all:
-	cat ../schema.sql | psql watchdog_dev
-	python insertnj.py
+	cat ../schema.sql | $(SQL) watchdog_dev
+	$(INSERT)

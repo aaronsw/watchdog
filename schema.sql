@@ -7,5 +7,6 @@ CREATE TABLE district (
   cook_index varchar(10),
   area_sqmi int,
   poverty_pct real,
-  median_income int
+  median_income int,
+  filename varchar(256)
 );
