@@ -1,13 +1,23 @@
-body { margin: 0; font-family: "Lucida Grande";}
-.header { background-color: #4973AD; margin: 0 0 1em 0 ; color: white; padding: .4em;}
+body, table { margin: 0; font: 14px "Georgia"; line-height: 1.4}
+.header { background-color: #182053; margin: 0 0 1em 0 ; color: white; padding: .4em;}
 .header h1 { margin: 0; }
+.header .nav { float: right; padding-right: 2em; padding-top: .2em; color: white;}
+.header .nav a { color: #FEFBC3; }
+
+.intro { width: 80%; margin: auto; text-align: center;}
 .body { padding: 0 1em 1em 1em;}
 
 .sources { background-color: #eee; color: #555; padding: 1em; font-size: smaller; margin-top: 2em; clear: both;}
 
-.footer { text-align: right; border-top: 1px solid #ccc; padding: .5em;}
-h1 { font-weight: normal;}
+.answer { margin-left: 1.5em;}
+
+.footer { text-align: left; border-top: 1px solid #ccc; padding: .5em;}
+h1 { font-weight: normal; }
+h1 a, h1 img { color: white; text-decoration: none; border: 0; }
 th { text-align: right; }
+
+.explain { color: #999; margin-top: -.5em; font-size: smaller;}
+.explain a { color: #777; text-decoration: underline; }
 
 .chartlist { width: 20%;}
 .chartlist td.nut { display: block; position: relative;}
