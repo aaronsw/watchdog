@@ -1,5 +1,6 @@
 """
 zip2rep: convert locations into congressional districts
+http://www.aaronsw.com/2002/zip2rep/
 
 The function you probably want is `zip2dist` (the last one).
 If you use this software, please send me an email letting me know.
@@ -8,7 +9,7 @@ http://fairvote.org/?page=564
 """
 
 __author__ = "Aaron Swartz <me@aaronsw.com>"
-__version__ = "0.21"
+__version__ = "0.3"
 __license__ = "Public domain"
 
 """
