@@ -17,8 +17,9 @@ def load():
     for name, district in districts.iteritems():
         db.insert('district', seqname=False, name=name, **unidecode(district))
     
-    districts = simplejson.load(file(DATA_DIR + '/districts/almanac.json'))
-    for name, district in districts.iteritems():
-        db.update('district', where='name = $name', vars=locals(), **unidecode(district))
+    for fn in ['almanac', 'shapes']:
+        districts = simplejson.load(file(DATA_DIR + '/districts/%s.json' % fn))
+        for name, district in districts.iteritems():
+            db.update('district', where='name = $name', vars=locals(), **unidecode(district))
 
 if __name__ == "__main__": load()

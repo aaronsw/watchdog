@@ -3,7 +3,7 @@ body { margin: 0; font-family: "Lucida Grande";}
 .header h1 { margin: 0; }
 .body { padding: 0 1em 1em 1em;}
 
-.sources { background-color: #eee; color: #555; padding: 1em; font-size: smaller; margin-top: 2em;}
+.sources { background-color: #eee; color: #555; padding: 1em; font-size: smaller; margin-top: 2em; clear: both;}
 
 .footer { text-align: right; border-top: 1px solid #ccc; padding: .5em;}
 h1 { font-weight: normal;}
