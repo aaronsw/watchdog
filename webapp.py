@@ -5,7 +5,7 @@ from utils import zip2rep
 
 web.config.debug = True
 render = web.template.render('templates/', base='base')
-db = web.database(dbn=os.environ.GET('DATABASE_ENGINE', 'postgres'), db='watchdog_dev')
+db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), db='watchdog_dev')
 
 urls = (
   '/', 'index',

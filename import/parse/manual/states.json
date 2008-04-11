@@ -1,0 +1,362 @@
+{
+  "AK": {
+    "fipscode": "02", 
+    "name": "Alaska", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Alaska"
+  }, 
+  "AL": {
+    "fipscode": "01", 
+    "name": "Alabama", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Alabama"
+  }, 
+  "AR": {
+    "fipscode": "05", 
+    "name": "Arkansas", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arkansas"
+  }, 
+  "AS": {
+    "fipscode": "60", 
+    "name": "American Samoa", 
+    "status": "territory", 
+    "wikipedia": "http://en.wikipedia.org/wiki/American_Samoa"
+  }, 
+  "AZ": {
+    "fipscode": "04", 
+    "name": "Arizona", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arizona"
+  }, 
+  "CA": {
+    "fipscode": "06", 
+    "name": "California", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/California"
+  }, 
+  "CO": {
+    "fipscode": "08", 
+    "name": "Colorado", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Colorado"
+  }, 
+  "CT": {
+    "fipscode": "09", 
+    "name": "Connecticut", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Connecticut"
+  }, 
+  "DC": {
+    "fipscode": "11", 
+    "name": "District of Columbia", 
+    "status": "district", 
+    "wikipedia": "http://en.wikipedia.org/wiki/District_of_Columbia"
+  }, 
+  "DE": {
+    "fipscode": "10", 
+    "name": "Delaware", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Delaware"
+  }, 
+  "FL": {
+    "fipscode": "12", 
+    "name": "Florida", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida"
+  }, 
+  "FM": {
+    "fipscode": "64", 
+    "name": "Federated States of Micronesia", 
+    "status": "nation", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Federated_States_of_Micronesia"
+  }, 
+  "GA": {
+    "fipscode": "13", 
+    "name": "Georgia", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia_(U.S._state)"
+  }, 
+  "GU": {
+    "fipscode": "66", 
+    "name": "Guam", 
+    "status": "territory", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Guam"
+  }, 
+  "HI": {
+    "fipscode": "15", 
+    "name": "Hawaii", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Hawaii"
+  }, 
+  "IA": {
+    "fipscode": "19", 
+    "name": "Iowa", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Iowa"
+  }, 
+  "ID": {
+    "fipscode": "16", 
+    "name": "Idaho", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Idaho"
+  }, 
+  "IL": {
+    "fipscode": "17", 
+    "name": "Illinois", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois"
+  }, 
+  "IN": {
+    "fipscode": "18", 
+    "name": "Indiana", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Indiana"
+  }, 
+  "KS": {
+    "fipscode": "20", 
+    "name": "Kansas", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kansas"
+  }, 
+  "KY": {
+    "fipscode": "21", 
+    "name": "Kentucky", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kentucky"
+  }, 
+  "LA": {
+    "fipscode": "22", 
+    "name": "Louisiana", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Louisiana"
+  }, 
+  "MA": {
+    "fipscode": "25", 
+    "name": "Massachusetts", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Massachusetts"
+  }, 
+  "MD": {
+    "fipscode": "24", 
+    "name": "Maryland", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Maryland"
+  }, 
+  "ME": {
+    "fipscode": "23", 
+    "name": "Maine", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Maine"
+  }, 
+  "MH": {
+    "fipscode": "68", 
+    "name": "Marshall Islands", 
+    "status": "nation", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Marshall_Islands"
+  }, 
+  "MI": {
+    "fipscode": "26", 
+    "name": "Michigan", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan"
+  }, 
+  "MN": {
+    "fipscode": "27", 
+    "name": "Minnesota", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Minnesota"
+  }, 
+  "MO": {
+    "fipscode": "29", 
+    "name": "Missouri", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Missouri"
+  }, 
+  "MP": {
+    "fipscode": "69", 
+    "name": "Northern Mariana Islands", 
+    "status": "territory", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Northern_Mariana_Islands"
+  }, 
+  "MS": {
+    "fipscode": "28", 
+    "name": "Mississippi", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Mississippi"
+  }, 
+  "MT": {
+    "fipscode": "30", 
+    "name": "Montana", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Montana"
+  }, 
+  "NC": {
+    "fipscode": "37", 
+    "name": "North Carolina", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina"
+  }, 
+  "ND": {
+    "fipscode": "38", 
+    "name": "North Dakota", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Dakota"
+  }, 
+  "NE": {
+    "fipscode": "31", 
+    "name": "Nebraska", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Nebraska"
+  }, 
+  "NH": {
+    "fipscode": "33", 
+    "name": "New Hampshire", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Hampshire"
+  }, 
+  "NJ": {
+    "fipscode": "34", 
+    "name": "New Jersey", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey"
+  }, 
+  "NM": {
+    "fipscode": "35", 
+    "name": "New Mexico", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Mexico"
+  }, 
+  "NV": {
+    "fipscode": "32", 
+    "name": "Nevada", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Nevada"
+  }, 
+  "NY": {
+    "fipscode": "36", 
+    "name": "New York", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York"
+  }, 
+  "OH": {
+    "fipscode": "39", 
+    "name": "Ohio", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio"
+  }, 
+  "OK": {
+    "fipscode": "40", 
+    "name": "Oklahoma", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Oklahoma"
+  }, 
+  "OR": {
+    "fipscode": "41", 
+    "name": "Oregon", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Oregon"
+  }, 
+  "PA": {
+    "fipscode": "42", 
+    "name": "Pennsylvania", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania"
+  }, 
+  "PR": {
+    "fipscode": "72", 
+    "name": "Puerto Rico", 
+    "status": "territory", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Puerto_Rico"
+  }, 
+  "PW": {
+    "fipscode": "70", 
+    "name": "nation", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Palau"
+  }, 
+  "RI": {
+    "fipscode": "44", 
+    "name": "Rhode Island", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Rhode_Island"
+  }, 
+  "SC": {
+    "fipscode": "45", 
+    "name": "South Carolina", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/South_Carolina"
+  }, 
+  "SD": {
+    "fipscode": "46", 
+    "name": "South Dakota", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/South_Dakota"
+  }, 
+  "TN": {
+    "fipscode": "47", 
+    "name": "Tennessee", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tennessee"
+  }, 
+  "TX": {
+    "fipscode": "48", 
+    "name": "Texas", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas"
+  }, 
+  "UM": {
+    "fipscode": "74", 
+    "name": "U.S. Minor Outlying Islands", 
+    "status": "territory", 
+    "wikipedia": "http://en.wikipedia.org/wiki/United_States_Minor_Outlying_Islands"
+  }, 
+  "UT": {
+    "fipscode": "49", 
+    "name": "Utah", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Utah"
+  }, 
+  "VA": {
+    "fipscode": "51", 
+    "name": "Virginia", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Virginia"
+  }, 
+  "VI": {
+    "fipscode": "78", 
+    "name": "Virgin Islands of the U.S.", 
+    "status": "territory", 
+    "wikipedia": "http://en.wikipedia.org/wiki/United_States_Virgin_Islands"
+  }, 
+  "VT": {
+    "fipscode": "50", 
+    "name": "Vermont", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Vermont"
+  }, 
+  "WA": {
+    "fipscode": "53", 
+    "name": "Washington", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Washington"
+  }, 
+  "WI": {
+    "fipscode": "55", 
+    "name": "Wisconsin", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Wisconsin"
+  }, 
+  "WV": {
+    "fipscode": "54", 
+    "name": "West Virginia", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/West_Virginia"
+  }, 
+  "WY": {
+    "fipscode": "56", 
+    "name": "Wyoming", 
+    "status": "state", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Wyoming"
+  }
+}

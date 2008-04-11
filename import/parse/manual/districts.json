@@ -1,0 +1,2642 @@
+{
+  "AK-00": {
+    "district": 0, 
+    "state": "AK", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Alaska's_At-large_congressional_district"
+  }, 
+  "AL-01": {
+    "district": 1, 
+    "state": "AL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Alabama's_1st_congressional_district"
+  }, 
+  "AL-02": {
+    "district": 2, 
+    "state": "AL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Alabama's_2nd_congressional_district"
+  }, 
+  "AL-03": {
+    "district": 3, 
+    "state": "AL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Alabama's_3th_congressional_district"
+  }, 
+  "AL-04": {
+    "district": 4, 
+    "state": "AL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Alabama's_4th_congressional_district"
+  }, 
+  "AL-05": {
+    "district": 5, 
+    "state": "AL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Alabama's_5th_congressional_district"
+  }, 
+  "AL-06": {
+    "district": 6, 
+    "state": "AL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Alabama's_6th_congressional_district"
+  }, 
+  "AL-07": {
+    "district": 7, 
+    "state": "AL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Alabama's_7th_congressional_district"
+  }, 
+  "AR-01": {
+    "district": 1, 
+    "state": "AR", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arkansas's_1st_congressional_district"
+  }, 
+  "AR-02": {
+    "district": 2, 
+    "state": "AR", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arkansas's_2nd_congressional_district"
+  }, 
+  "AR-03": {
+    "district": 3, 
+    "state": "AR", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arkansas's_3th_congressional_district"
+  }, 
+  "AR-04": {
+    "district": 4, 
+    "state": "AR", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arkansas's_4th_congressional_district"
+  }, 
+  "AS-00": {
+    "district": 0, 
+    "state": "AS", 
+    "voting": false, 
+    "wikipedia": "http://en.wikipedia.org/wiki/American_Samoa's_At-large_congressional_district"
+  }, 
+  "AZ-01": {
+    "district": 1, 
+    "state": "AZ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arizona's_1st_congressional_district"
+  }, 
+  "AZ-02": {
+    "district": 2, 
+    "state": "AZ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arizona's_2nd_congressional_district"
+  }, 
+  "AZ-03": {
+    "district": 3, 
+    "state": "AZ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arizona's_3th_congressional_district"
+  }, 
+  "AZ-04": {
+    "district": 4, 
+    "state": "AZ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arizona's_4th_congressional_district"
+  }, 
+  "AZ-05": {
+    "district": 5, 
+    "state": "AZ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arizona's_5th_congressional_district"
+  }, 
+  "AZ-06": {
+    "district": 6, 
+    "state": "AZ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arizona's_6th_congressional_district"
+  }, 
+  "AZ-07": {
+    "district": 7, 
+    "state": "AZ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arizona's_7th_congressional_district"
+  }, 
+  "AZ-08": {
+    "district": 8, 
+    "state": "AZ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Arizona's_8th_congressional_district"
+  }, 
+  "CA-01": {
+    "district": 1, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_1st_congressional_district"
+  }, 
+  "CA-02": {
+    "district": 2, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_2nd_congressional_district"
+  }, 
+  "CA-03": {
+    "district": 3, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_3th_congressional_district"
+  }, 
+  "CA-04": {
+    "district": 4, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_4th_congressional_district"
+  }, 
+  "CA-05": {
+    "district": 5, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_5th_congressional_district"
+  }, 
+  "CA-06": {
+    "district": 6, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_6th_congressional_district"
+  }, 
+  "CA-07": {
+    "district": 7, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_7th_congressional_district"
+  }, 
+  "CA-08": {
+    "district": 8, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_8th_congressional_district"
+  }, 
+  "CA-09": {
+    "district": 9, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_9th_congressional_district"
+  }, 
+  "CA-10": {
+    "district": 10, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_10th_congressional_district"
+  }, 
+  "CA-11": {
+    "district": 11, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_11th_congressional_district"
+  }, 
+  "CA-12": {
+    "district": 12, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_12th_congressional_district"
+  }, 
+  "CA-13": {
+    "district": 13, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_13th_congressional_district"
+  }, 
+  "CA-14": {
+    "district": 14, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_14th_congressional_district"
+  }, 
+  "CA-15": {
+    "district": 15, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_15th_congressional_district"
+  }, 
+  "CA-16": {
+    "district": 16, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_16th_congressional_district"
+  }, 
+  "CA-17": {
+    "district": 17, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_17th_congressional_district"
+  }, 
+  "CA-18": {
+    "district": 18, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_18th_congressional_district"
+  }, 
+  "CA-19": {
+    "district": 19, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_19th_congressional_district"
+  }, 
+  "CA-20": {
+    "district": 20, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_20th_congressional_district"
+  }, 
+  "CA-21": {
+    "district": 21, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_21th_congressional_district"
+  }, 
+  "CA-22": {
+    "district": 22, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_22th_congressional_district"
+  }, 
+  "CA-23": {
+    "district": 23, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_23th_congressional_district"
+  }, 
+  "CA-24": {
+    "district": 24, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_24th_congressional_district"
+  }, 
+  "CA-25": {
+    "district": 25, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_25th_congressional_district"
+  }, 
+  "CA-26": {
+    "district": 26, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_26th_congressional_district"
+  }, 
+  "CA-27": {
+    "district": 27, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_27th_congressional_district"
+  }, 
+  "CA-28": {
+    "district": 28, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_28th_congressional_district"
+  }, 
+  "CA-29": {
+    "district": 29, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_29th_congressional_district"
+  }, 
+  "CA-30": {
+    "district": 30, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_30th_congressional_district"
+  }, 
+  "CA-31": {
+    "district": 31, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_31th_congressional_district"
+  }, 
+  "CA-32": {
+    "district": 32, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_32th_congressional_district"
+  }, 
+  "CA-33": {
+    "district": 33, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_33th_congressional_district"
+  }, 
+  "CA-34": {
+    "district": 34, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_34th_congressional_district"
+  }, 
+  "CA-35": {
+    "district": 35, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_35th_congressional_district"
+  }, 
+  "CA-36": {
+    "district": 36, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_36th_congressional_district"
+  }, 
+  "CA-37": {
+    "district": 37, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_37th_congressional_district"
+  }, 
+  "CA-38": {
+    "district": 38, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_38th_congressional_district"
+  }, 
+  "CA-39": {
+    "district": 39, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_39th_congressional_district"
+  }, 
+  "CA-40": {
+    "district": 40, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_40th_congressional_district"
+  }, 
+  "CA-41": {
+    "district": 41, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_41th_congressional_district"
+  }, 
+  "CA-42": {
+    "district": 42, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_42th_congressional_district"
+  }, 
+  "CA-43": {
+    "district": 43, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_43th_congressional_district"
+  }, 
+  "CA-44": {
+    "district": 44, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_44th_congressional_district"
+  }, 
+  "CA-45": {
+    "district": 45, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_45th_congressional_district"
+  }, 
+  "CA-46": {
+    "district": 46, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_46th_congressional_district"
+  }, 
+  "CA-47": {
+    "district": 47, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_47th_congressional_district"
+  }, 
+  "CA-48": {
+    "district": 48, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_48th_congressional_district"
+  }, 
+  "CA-49": {
+    "district": 49, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_49th_congressional_district"
+  }, 
+  "CA-50": {
+    "district": 50, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_50th_congressional_district"
+  }, 
+  "CA-51": {
+    "district": 51, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_51th_congressional_district"
+  }, 
+  "CA-52": {
+    "district": 52, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_52th_congressional_district"
+  }, 
+  "CA-53": {
+    "district": 53, 
+    "state": "CA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/California's_53th_congressional_district"
+  }, 
+  "CO-01": {
+    "district": 1, 
+    "state": "CO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Colorado's_1st_congressional_district"
+  }, 
+  "CO-02": {
+    "district": 2, 
+    "state": "CO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Colorado's_2nd_congressional_district"
+  }, 
+  "CO-03": {
+    "district": 3, 
+    "state": "CO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Colorado's_3th_congressional_district"
+  }, 
+  "CO-04": {
+    "district": 4, 
+    "state": "CO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Colorado's_4th_congressional_district"
+  }, 
+  "CO-05": {
+    "district": 5, 
+    "state": "CO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Colorado's_5th_congressional_district"
+  }, 
+  "CO-06": {
+    "district": 6, 
+    "state": "CO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Colorado's_6th_congressional_district"
+  }, 
+  "CO-07": {
+    "district": 7, 
+    "state": "CO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Colorado's_7th_congressional_district"
+  }, 
+  "CT-01": {
+    "district": 1, 
+    "state": "CT", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Connecticut's_1st_congressional_district"
+  }, 
+  "CT-02": {
+    "district": 2, 
+    "state": "CT", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Connecticut's_2nd_congressional_district"
+  }, 
+  "CT-03": {
+    "district": 3, 
+    "state": "CT", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Connecticut's_3th_congressional_district"
+  }, 
+  "CT-04": {
+    "district": 4, 
+    "state": "CT", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Connecticut's_4th_congressional_district"
+  }, 
+  "CT-05": {
+    "district": 5, 
+    "state": "CT", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Connecticut's_5th_congressional_district"
+  }, 
+  "DC-00": {
+    "district": 0, 
+    "state": "DC", 
+    "voting": false, 
+    "wikipedia": "http://en.wikipedia.org/wiki/District_of_Columbia's_At-large_congressional_district"
+  }, 
+  "DE-00": {
+    "district": 0, 
+    "state": "DE", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Delaware's_At-large_congressional_district"
+  }, 
+  "FL-01": {
+    "district": 1, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_1st_congressional_district"
+  }, 
+  "FL-02": {
+    "district": 2, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_2nd_congressional_district"
+  }, 
+  "FL-03": {
+    "district": 3, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_3th_congressional_district"
+  }, 
+  "FL-04": {
+    "district": 4, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_4th_congressional_district"
+  }, 
+  "FL-05": {
+    "district": 5, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_5th_congressional_district"
+  }, 
+  "FL-06": {
+    "district": 6, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_6th_congressional_district"
+  }, 
+  "FL-07": {
+    "district": 7, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_7th_congressional_district"
+  }, 
+  "FL-08": {
+    "district": 8, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_8th_congressional_district"
+  }, 
+  "FL-09": {
+    "district": 9, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_9th_congressional_district"
+  }, 
+  "FL-10": {
+    "district": 10, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_10th_congressional_district"
+  }, 
+  "FL-11": {
+    "district": 11, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_11th_congressional_district"
+  }, 
+  "FL-12": {
+    "district": 12, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_12th_congressional_district"
+  }, 
+  "FL-13": {
+    "district": 13, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_13th_congressional_district"
+  }, 
+  "FL-14": {
+    "district": 14, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_14th_congressional_district"
+  }, 
+  "FL-15": {
+    "district": 15, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_15th_congressional_district"
+  }, 
+  "FL-16": {
+    "district": 16, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_16th_congressional_district"
+  }, 
+  "FL-17": {
+    "district": 17, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_17th_congressional_district"
+  }, 
+  "FL-18": {
+    "district": 18, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_18th_congressional_district"
+  }, 
+  "FL-19": {
+    "district": 19, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_19th_congressional_district"
+  }, 
+  "FL-20": {
+    "district": 20, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_20th_congressional_district"
+  }, 
+  "FL-21": {
+    "district": 21, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_21th_congressional_district"
+  }, 
+  "FL-22": {
+    "district": 22, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_22th_congressional_district"
+  }, 
+  "FL-23": {
+    "district": 23, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_23th_congressional_district"
+  }, 
+  "FL-24": {
+    "district": 24, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_24th_congressional_district"
+  }, 
+  "FL-25": {
+    "district": 25, 
+    "state": "FL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida's_25th_congressional_district"
+  }, 
+  "GA-01": {
+    "district": 1, 
+    "state": "GA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia's_1st_congressional_district"
+  }, 
+  "GA-02": {
+    "district": 2, 
+    "state": "GA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia's_2nd_congressional_district"
+  }, 
+  "GA-03": {
+    "district": 3, 
+    "state": "GA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia's_3th_congressional_district"
+  }, 
+  "GA-04": {
+    "district": 4, 
+    "state": "GA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia's_4th_congressional_district"
+  }, 
+  "GA-05": {
+    "district": 5, 
+    "state": "GA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia's_5th_congressional_district"
+  }, 
+  "GA-06": {
+    "district": 6, 
+    "state": "GA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia's_6th_congressional_district"
+  }, 
+  "GA-07": {
+    "district": 7, 
+    "state": "GA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia's_7th_congressional_district"
+  }, 
+  "GA-08": {
+    "district": 8, 
+    "state": "GA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia's_8th_congressional_district"
+  }, 
+  "GA-09": {
+    "district": 9, 
+    "state": "GA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia's_9th_congressional_district"
+  }, 
+  "GA-10": {
+    "district": 10, 
+    "state": "GA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia's_10th_congressional_district"
+  }, 
+  "GA-11": {
+    "district": 11, 
+    "state": "GA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia's_11th_congressional_district"
+  }, 
+  "GA-12": {
+    "district": 12, 
+    "state": "GA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia's_12th_congressional_district"
+  }, 
+  "GA-13": {
+    "district": 13, 
+    "state": "GA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia's_13th_congressional_district"
+  }, 
+  "GU-00": {
+    "district": 0, 
+    "state": "GU", 
+    "voting": false, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Guam's_At-large_congressional_district"
+  }, 
+  "HI-01": {
+    "district": 1, 
+    "state": "HI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Hawaii's_1st_congressional_district"
+  }, 
+  "HI-02": {
+    "district": 2, 
+    "state": "HI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Hawaii's_2nd_congressional_district"
+  }, 
+  "IA-01": {
+    "district": 1, 
+    "state": "IA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Iowa's_1st_congressional_district"
+  }, 
+  "IA-02": {
+    "district": 2, 
+    "state": "IA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Iowa's_2nd_congressional_district"
+  }, 
+  "IA-03": {
+    "district": 3, 
+    "state": "IA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Iowa's_3th_congressional_district"
+  }, 
+  "IA-04": {
+    "district": 4, 
+    "state": "IA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Iowa's_4th_congressional_district"
+  }, 
+  "IA-05": {
+    "district": 5, 
+    "state": "IA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Iowa's_5th_congressional_district"
+  }, 
+  "ID-01": {
+    "district": 1, 
+    "state": "ID", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Idaho's_1st_congressional_district"
+  }, 
+  "ID-02": {
+    "district": 2, 
+    "state": "ID", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Idaho's_2nd_congressional_district"
+  }, 
+  "IL-01": {
+    "district": 1, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_1st_congressional_district"
+  }, 
+  "IL-02": {
+    "district": 2, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_2nd_congressional_district"
+  }, 
+  "IL-03": {
+    "district": 3, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_3th_congressional_district"
+  }, 
+  "IL-04": {
+    "district": 4, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_4th_congressional_district"
+  }, 
+  "IL-05": {
+    "district": 5, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_5th_congressional_district"
+  }, 
+  "IL-06": {
+    "district": 6, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_6th_congressional_district"
+  }, 
+  "IL-07": {
+    "district": 7, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_7th_congressional_district"
+  }, 
+  "IL-08": {
+    "district": 8, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_8th_congressional_district"
+  }, 
+  "IL-09": {
+    "district": 9, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_9th_congressional_district"
+  }, 
+  "IL-10": {
+    "district": 10, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_10th_congressional_district"
+  }, 
+  "IL-11": {
+    "district": 11, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_11th_congressional_district"
+  }, 
+  "IL-12": {
+    "district": 12, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_12th_congressional_district"
+  }, 
+  "IL-13": {
+    "district": 13, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_13th_congressional_district"
+  }, 
+  "IL-14": {
+    "district": 14, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_14th_congressional_district"
+  }, 
+  "IL-15": {
+    "district": 15, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_15th_congressional_district"
+  }, 
+  "IL-16": {
+    "district": 16, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_16th_congressional_district"
+  }, 
+  "IL-17": {
+    "district": 17, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_17th_congressional_district"
+  }, 
+  "IL-18": {
+    "district": 18, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_18th_congressional_district"
+  }, 
+  "IL-19": {
+    "district": 19, 
+    "state": "IL", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois's_19th_congressional_district"
+  }, 
+  "IN-01": {
+    "district": 1, 
+    "state": "IN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Indiana's_1st_congressional_district"
+  }, 
+  "IN-02": {
+    "district": 2, 
+    "state": "IN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Indiana's_2nd_congressional_district"
+  }, 
+  "IN-03": {
+    "district": 3, 
+    "state": "IN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Indiana's_3th_congressional_district"
+  }, 
+  "IN-04": {
+    "district": 4, 
+    "state": "IN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Indiana's_4th_congressional_district"
+  }, 
+  "IN-05": {
+    "district": 5, 
+    "state": "IN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Indiana's_5th_congressional_district"
+  }, 
+  "IN-06": {
+    "district": 6, 
+    "state": "IN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Indiana's_6th_congressional_district"
+  }, 
+  "IN-07": {
+    "district": 7, 
+    "state": "IN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Indiana's_7th_congressional_district"
+  }, 
+  "IN-08": {
+    "district": 8, 
+    "state": "IN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Indiana's_8th_congressional_district"
+  }, 
+  "IN-09": {
+    "district": 9, 
+    "state": "IN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Indiana's_9th_congressional_district"
+  },    
+  "KS-01": {
+    "district": 1, 
+    "state": "KS", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kansas's_1st_congressional_district"
+  }, 
+  "KS-02": {
+    "district": 2, 
+    "state": "KS", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kansas's_2nd_congressional_district"
+  }, 
+  "KS-03": {
+    "district": 3, 
+    "state": "KS", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kansas's_3th_congressional_district"
+  }, 
+  "KS-04": {
+    "district": 4, 
+    "state": "KS", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kansas's_4th_congressional_district"
+  }, 
+  "KY-01": {
+    "district": 1, 
+    "state": "KY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kentucky's_1st_congressional_district"
+  }, 
+  "KY-02": {
+    "district": 2, 
+    "state": "KY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kentucky's_2nd_congressional_district"
+  }, 
+  "KY-03": {
+    "district": 3, 
+    "state": "KY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kentucky's_3th_congressional_district"
+  }, 
+  "KY-04": {
+    "district": 4, 
+    "state": "KY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kentucky's_4th_congressional_district"
+  }, 
+  "KY-05": {
+    "district": 5, 
+    "state": "KY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kentucky's_5th_congressional_district"
+  }, 
+  "KY-06": {
+    "district": 6, 
+    "state": "KY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kentucky's_6th_congressional_district"
+  }, 
+  "LA-01": {
+    "district": 1, 
+    "state": "LA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Louisiana's_1st_congressional_district"
+  }, 
+  "LA-02": {
+    "district": 2, 
+    "state": "LA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Louisiana's_2nd_congressional_district"
+  }, 
+  "LA-03": {
+    "district": 3, 
+    "state": "LA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Louisiana's_3th_congressional_district"
+  }, 
+  "LA-04": {
+    "district": 4, 
+    "state": "LA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Louisiana's_4th_congressional_district"
+  }, 
+  "LA-05": {
+    "district": 5, 
+    "state": "LA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Louisiana's_5th_congressional_district"
+  }, 
+  "LA-06": {
+    "district": 6, 
+    "state": "LA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Louisiana's_6th_congressional_district"
+  }, 
+  "LA-07": {
+    "district": 7, 
+    "state": "LA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Louisiana's_7th_congressional_district"
+  }, 
+  "MA-01": {
+    "district": 1, 
+    "state": "MA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Massachusetts's_1st_congressional_district"
+  }, 
+  "MA-02": {
+    "district": 2, 
+    "state": "MA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Massachusetts's_2nd_congressional_district"
+  }, 
+  "MA-03": {
+    "district": 3, 
+    "state": "MA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Massachusetts's_3th_congressional_district"
+  }, 
+  "MA-04": {
+    "district": 4, 
+    "state": "MA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Massachusetts's_4th_congressional_district"
+  }, 
+  "MA-05": {
+    "district": 5, 
+    "state": "MA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Massachusetts's_5th_congressional_district"
+  }, 
+  "MA-06": {
+    "district": 6, 
+    "state": "MA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Massachusetts's_6th_congressional_district"
+  }, 
+  "MA-07": {
+    "district": 7, 
+    "state": "MA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Massachusetts's_7th_congressional_district"
+  }, 
+  "MA-08": {
+    "district": 8, 
+    "state": "MA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Massachusetts's_8th_congressional_district"
+  }, 
+  "MA-09": {
+    "district": 9, 
+    "state": "MA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Massachusetts's_9th_congressional_district"
+  }, 
+  "MA-10": {
+    "district": 10, 
+    "state": "MA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Massachusetts's_10th_congressional_district"
+  }, 
+  "MD-01": {
+    "district": 1, 
+    "state": "MD", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Maryland's_1st_congressional_district"
+  }, 
+  "MD-02": {
+    "district": 2, 
+    "state": "MD", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Maryland's_2nd_congressional_district"
+  }, 
+  "MD-03": {
+    "district": 3, 
+    "state": "MD", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Maryland's_3th_congressional_district"
+  }, 
+  "MD-04": {
+    "district": 4, 
+    "state": "MD", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Maryland's_4th_congressional_district"
+  }, 
+  "MD-05": {
+    "district": 5, 
+    "state": "MD", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Maryland's_5th_congressional_district"
+  }, 
+  "MD-06": {
+    "district": 6, 
+    "state": "MD", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Maryland's_6th_congressional_district"
+  }, 
+  "MD-07": {
+    "district": 7, 
+    "state": "MD", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Maryland's_7th_congressional_district"
+  }, 
+  "MD-08": {
+    "district": 8, 
+    "state": "MD", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Maryland's_8th_congressional_district"
+  }, 
+  "ME-01": {
+    "district": 1, 
+    "state": "ME", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Maine's_1st_congressional_district"
+  }, 
+  "ME-02": {
+    "district": 2, 
+    "state": "ME", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Maine's_2nd_congressional_district"
+  }, 
+  "MI-01": {
+    "district": 1, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_1st_congressional_district"
+  }, 
+  "MI-02": {
+    "district": 2, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_2nd_congressional_district"
+  }, 
+  "MI-03": {
+    "district": 3, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_3th_congressional_district"
+  }, 
+  "MI-04": {
+    "district": 4, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_4th_congressional_district"
+  }, 
+  "MI-05": {
+    "district": 5, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_5th_congressional_district"
+  }, 
+  "MI-06": {
+    "district": 6, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_6th_congressional_district"
+  }, 
+  "MI-07": {
+    "district": 7, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_7th_congressional_district"
+  }, 
+  "MI-08": {
+    "district": 8, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_8th_congressional_district"
+  }, 
+  "MI-09": {
+    "district": 9, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_9th_congressional_district"
+  }, 
+  "MI-10": {
+    "district": 10, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_10th_congressional_district"
+  }, 
+  "MI-11": {
+    "district": 11, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_11th_congressional_district"
+  }, 
+  "MI-12": {
+    "district": 12, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_12th_congressional_district"
+  }, 
+  "MI-13": {
+    "district": 13, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_13th_congressional_district"
+  }, 
+  "MI-14": {
+    "district": 14, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_14th_congressional_district"
+  }, 
+  "MI-15": {
+    "district": 15, 
+    "state": "MI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan's_15th_congressional_district"
+  }, 
+  "MN-01": {
+    "district": 1, 
+    "state": "MN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Minnesota's_1st_congressional_district"
+  }, 
+  "MN-02": {
+    "district": 2, 
+    "state": "MN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Minnesota's_2nd_congressional_district"
+  }, 
+  "MN-03": {
+    "district": 3, 
+    "state": "MN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Minnesota's_3th_congressional_district"
+  }, 
+  "MN-04": {
+    "district": 4, 
+    "state": "MN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Minnesota's_4th_congressional_district"
+  }, 
+  "MN-05": {
+    "district": 5, 
+    "state": "MN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Minnesota's_5th_congressional_district"
+  }, 
+  "MN-06": {
+    "district": 6, 
+    "state": "MN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Minnesota's_6th_congressional_district"
+  }, 
+  "MN-07": {
+    "district": 7, 
+    "state": "MN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Minnesota's_7th_congressional_district"
+  }, 
+  "MN-08": {
+    "district": 8, 
+    "state": "MN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Minnesota's_8th_congressional_district"
+  }, 
+  "MO-01": {
+    "district": 1, 
+    "state": "MO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Missouri's_1st_congressional_district"
+  }, 
+  "MO-02": {
+    "district": 2, 
+    "state": "MO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Missouri's_2nd_congressional_district"
+  }, 
+  "MO-03": {
+    "district": 3, 
+    "state": "MO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Missouri's_3th_congressional_district"
+  }, 
+  "MO-04": {
+    "district": 4, 
+    "state": "MO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Missouri's_4th_congressional_district"
+  }, 
+  "MO-05": {
+    "district": 5, 
+    "state": "MO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Missouri's_5th_congressional_district"
+  }, 
+  "MO-06": {
+    "district": 6, 
+    "state": "MO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Missouri's_6th_congressional_district"
+  }, 
+  "MO-07": {
+    "district": 7, 
+    "state": "MO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Missouri's_7th_congressional_district"
+  }, 
+  "MO-08": {
+    "district": 8, 
+    "state": "MO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Missouri's_8th_congressional_district"
+  }, 
+  "MO-09": {
+    "district": 9, 
+    "state": "MO", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Missouri's_9th_congressional_district"
+  }, 
+  "MS-01": {
+    "district": 1, 
+    "state": "MS", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Mississippi's_1st_congressional_district"
+  }, 
+  "MS-02": {
+    "district": 2, 
+    "state": "MS", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Mississippi's_2nd_congressional_district"
+  }, 
+  "MS-03": {
+    "district": 3, 
+    "state": "MS", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Mississippi's_3th_congressional_district"
+  }, 
+  "MS-04": {
+    "district": 4, 
+    "state": "MS", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Mississippi's_4th_congressional_district"
+  }, 
+  "MT-00": {
+    "district": 0, 
+    "state": "MT", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Montana's_At-large_congressional_district"
+  }, 
+  "NC-01": {
+    "district": 1, 
+    "state": "NC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina's_1st_congressional_district"
+  }, 
+  "NC-02": {
+    "district": 2, 
+    "state": "NC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina's_2nd_congressional_district"
+  }, 
+  "NC-03": {
+    "district": 3, 
+    "state": "NC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina's_3th_congressional_district"
+  }, 
+  "NC-04": {
+    "district": 4, 
+    "state": "NC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina's_4th_congressional_district"
+  }, 
+  "NC-05": {
+    "district": 5, 
+    "state": "NC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina's_5th_congressional_district"
+  }, 
+  "NC-06": {
+    "district": 6, 
+    "state": "NC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina's_6th_congressional_district"
+  }, 
+  "NC-07": {
+    "district": 7, 
+    "state": "NC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina's_7th_congressional_district"
+  }, 
+  "NC-08": {
+    "district": 8, 
+    "state": "NC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina's_8th_congressional_district"
+  }, 
+  "NC-09": {
+    "district": 9, 
+    "state": "NC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina's_9th_congressional_district"
+  }, 
+  "NC-10": {
+    "district": 10, 
+    "state": "NC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina's_10th_congressional_district"
+  }, 
+  "NC-11": {
+    "district": 11, 
+    "state": "NC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina's_11th_congressional_district"
+  }, 
+  "NC-12": {
+    "district": 12, 
+    "state": "NC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina's_12th_congressional_district"
+  }, 
+  "NC-13": {
+    "district": 13, 
+    "state": "NC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina's_13th_congressional_district"
+  }, 
+  "ND-00": {
+    "district": 0, 
+    "state": "ND", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Dakota's_At-large_congressional_district"
+  }, 
+  "NE-01": {
+    "district": 1, 
+    "state": "NE", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Nebraska's_1st_congressional_district"
+  }, 
+  "NE-02": {
+    "district": 2, 
+    "state": "NE", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Nebraska's_2nd_congressional_district"
+  }, 
+  "NE-03": {
+    "district": 3, 
+    "state": "NE", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Nebraska's_3th_congressional_district"
+  }, 
+  "NH-01": {
+    "district": 1, 
+    "state": "NH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Hampshire's_1st_congressional_district"
+  }, 
+  "NH-02": {
+    "district": 2, 
+    "state": "NH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Hampshire's_2nd_congressional_district"
+  }, 
+  "NJ-01": {
+    "district": 1, 
+    "state": "NJ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey's_1st_congressional_district"
+  }, 
+  "NJ-02": {
+    "district": 2, 
+    "state": "NJ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey's_2nd_congressional_district"
+  }, 
+  "NJ-03": {
+    "district": 3, 
+    "state": "NJ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey's_3th_congressional_district"
+  }, 
+  "NJ-04": {
+    "district": 4, 
+    "state": "NJ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey's_4th_congressional_district"
+  }, 
+  "NJ-05": {
+    "district": 5, 
+    "state": "NJ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey's_5th_congressional_district"
+  }, 
+  "NJ-06": {
+    "district": 6, 
+    "state": "NJ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey's_6th_congressional_district"
+  }, 
+  "NJ-07": {
+    "district": 7, 
+    "state": "NJ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey's_7th_congressional_district"
+  }, 
+  "NJ-08": {
+    "district": 8, 
+    "state": "NJ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey's_8th_congressional_district"
+  }, 
+  "NJ-09": {
+    "district": 9, 
+    "state": "NJ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey's_9th_congressional_district"
+  }, 
+  "NJ-10": {
+    "district": 10, 
+    "state": "NJ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey's_10th_congressional_district"
+  }, 
+  "NJ-11": {
+    "district": 11, 
+    "state": "NJ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey's_11th_congressional_district"
+  }, 
+  "NJ-12": {
+    "district": 12, 
+    "state": "NJ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey's_12th_congressional_district"
+  }, 
+  "NJ-13": {
+    "district": 13, 
+    "state": "NJ", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey's_13th_congressional_district"
+  }, 
+  "NM-01": {
+    "district": 1, 
+    "state": "NM", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Mexico's_1st_congressional_district"
+  }, 
+  "NM-02": {
+    "district": 2, 
+    "state": "NM", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Mexico's_2nd_congressional_district"
+  }, 
+  "NM-03": {
+    "district": 3, 
+    "state": "NM", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Mexico's_3th_congressional_district"
+  }, 
+  "NV-01": {
+    "district": 1, 
+    "state": "NV", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Nevada's_1st_congressional_district"
+  }, 
+  "NV-02": {
+    "district": 2, 
+    "state": "NV", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Nevada's_2nd_congressional_district"
+  }, 
+  "NV-03": {
+    "district": 3, 
+    "state": "NV", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Nevada's_3th_congressional_district"
+  }, 
+  "NY-01": {
+    "district": 1, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_1st_congressional_district"
+  }, 
+  "NY-02": {
+    "district": 2, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_2nd_congressional_district"
+  }, 
+  "NY-03": {
+    "district": 3, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_3th_congressional_district"
+  }, 
+  "NY-04": {
+    "district": 4, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_4th_congressional_district"
+  }, 
+  "NY-05": {
+    "district": 5, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_5th_congressional_district"
+  }, 
+  "NY-06": {
+    "district": 6, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_6th_congressional_district"
+  }, 
+  "NY-07": {
+    "district": 7, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_7th_congressional_district"
+  }, 
+  "NY-08": {
+    "district": 8, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_8th_congressional_district"
+  }, 
+  "NY-09": {
+    "district": 9, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_9th_congressional_district"
+  }, 
+  "NY-10": {
+    "district": 10, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_10th_congressional_district"
+  }, 
+  "NY-11": {
+    "district": 11, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_11th_congressional_district"
+  }, 
+  "NY-12": {
+    "district": 12, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_12th_congressional_district"
+  }, 
+  "NY-13": {
+    "district": 13, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_13th_congressional_district"
+  }, 
+  "NY-14": {
+    "district": 14, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_14th_congressional_district"
+  }, 
+  "NY-15": {
+    "district": 15, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_15th_congressional_district"
+  }, 
+  "NY-16": {
+    "district": 16, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_16th_congressional_district"
+  }, 
+  "NY-17": {
+    "district": 17, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_17th_congressional_district"
+  }, 
+  "NY-18": {
+    "district": 18, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_18th_congressional_district"
+  }, 
+  "NY-19": {
+    "district": 19, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_19th_congressional_district"
+  }, 
+  "NY-20": {
+    "district": 20, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_20th_congressional_district"
+  }, 
+  "NY-21": {
+    "district": 21, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_21th_congressional_district"
+  }, 
+  "NY-22": {
+    "district": 22, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_22th_congressional_district"
+  }, 
+  "NY-23": {
+    "district": 23, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_23th_congressional_district"
+  }, 
+  "NY-24": {
+    "district": 24, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_24th_congressional_district"
+  }, 
+  "NY-25": {
+    "district": 25, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_25th_congressional_district"
+  }, 
+  "NY-26": {
+    "district": 26, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_26th_congressional_district"
+  }, 
+  "NY-27": {
+    "district": 27, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_27th_congressional_district"
+  }, 
+  "NY-28": {
+    "district": 28, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_28th_congressional_district"
+  }, 
+  "NY-29": {
+    "district": 29, 
+    "state": "NY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York's_29th_congressional_district"
+  }, 
+  "OH-01": {
+    "district": 1, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_1st_congressional_district"
+  }, 
+  "OH-02": {
+    "district": 2, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_2nd_congressional_district"
+  }, 
+  "OH-03": {
+    "district": 3, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_3th_congressional_district"
+  }, 
+  "OH-04": {
+    "district": 4, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_4th_congressional_district"
+  }, 
+  "OH-05": {
+    "district": 5, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_5th_congressional_district"
+  }, 
+  "OH-06": {
+    "district": 6, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_6th_congressional_district"
+  }, 
+  "OH-07": {
+    "district": 7, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_7th_congressional_district"
+  }, 
+  "OH-08": {
+    "district": 8, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_8th_congressional_district"
+  }, 
+  "OH-09": {
+    "district": 9, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_9th_congressional_district"
+  }, 
+  "OH-10": {
+    "district": 10, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_10th_congressional_district"
+  }, 
+  "OH-11": {
+    "district": 11, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_11th_congressional_district"
+  }, 
+  "OH-12": {
+    "district": 12, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_12th_congressional_district"
+  }, 
+  "OH-13": {
+    "district": 13, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_13th_congressional_district"
+  }, 
+  "OH-14": {
+    "district": 14, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_14th_congressional_district"
+  }, 
+  "OH-15": {
+    "district": 15, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_15th_congressional_district"
+  }, 
+  "OH-16": {
+    "district": 16, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_16th_congressional_district"
+  }, 
+  "OH-17": {
+    "district": 17, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_17th_congressional_district"
+  }, 
+  "OH-18": {
+    "district": 18, 
+    "state": "OH", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio's_18th_congressional_district"
+  }, 
+  "OK-01": {
+    "district": 1, 
+    "state": "OK", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Oklahoma's_1st_congressional_district"
+  }, 
+  "OK-02": {
+    "district": 2, 
+    "state": "OK", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Oklahoma's_2nd_congressional_district"
+  }, 
+  "OK-03": {
+    "district": 3, 
+    "state": "OK", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Oklahoma's_3th_congressional_district"
+  }, 
+  "OK-04": {
+    "district": 4, 
+    "state": "OK", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Oklahoma's_4th_congressional_district"
+  }, 
+  "OK-05": {
+    "district": 5, 
+    "state": "OK", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Oklahoma's_5th_congressional_district"
+  }, 
+  "OR-01": {
+    "district": 1, 
+    "state": "OR", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Oregon's_1st_congressional_district"
+  }, 
+  "OR-02": {
+    "district": 2, 
+    "state": "OR", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Oregon's_2nd_congressional_district"
+  }, 
+  "OR-03": {
+    "district": 3, 
+    "state": "OR", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Oregon's_3th_congressional_district"
+  }, 
+  "OR-04": {
+    "district": 4, 
+    "state": "OR", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Oregon's_4th_congressional_district"
+  }, 
+  "OR-05": {
+    "district": 5, 
+    "state": "OR", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Oregon's_5th_congressional_district"
+  }, 
+  "PA-01": {
+    "district": 1, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_1st_congressional_district"
+  }, 
+  "PA-02": {
+    "district": 2, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_2nd_congressional_district"
+  }, 
+  "PA-03": {
+    "district": 3, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_3th_congressional_district"
+  }, 
+  "PA-04": {
+    "district": 4, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_4th_congressional_district"
+  }, 
+  "PA-05": {
+    "district": 5, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_5th_congressional_district"
+  }, 
+  "PA-06": {
+    "district": 6, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_6th_congressional_district"
+  }, 
+  "PA-07": {
+    "district": 7, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_7th_congressional_district"
+  }, 
+  "PA-08": {
+    "district": 8, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_8th_congressional_district"
+  }, 
+  "PA-09": {
+    "district": 9, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_9th_congressional_district"
+  }, 
+  "PA-10": {
+    "district": 10, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_10th_congressional_district"
+  }, 
+  "PA-11": {
+    "district": 11, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_11th_congressional_district"
+  }, 
+  "PA-12": {
+    "district": 12, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_12th_congressional_district"
+  }, 
+  "PA-13": {
+    "district": 13, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_13th_congressional_district"
+  }, 
+  "PA-14": {
+    "district": 14, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_14th_congressional_district"
+  }, 
+  "PA-15": {
+    "district": 15, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_15th_congressional_district"
+  }, 
+  "PA-16": {
+    "district": 16, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_16th_congressional_district"
+  }, 
+  "PA-17": {
+    "district": 17, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_17th_congressional_district"
+  }, 
+  "PA-18": {
+    "district": 18, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_18th_congressional_district"
+  }, 
+  "PA-19": {
+    "district": 19, 
+    "state": "PA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania's_19th_congressional_district"
+  }, 
+  "PR-00": {
+    "district": 0, 
+    "state": "PR", 
+    "voting": false, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Puerto_Rico's_At-large_congressional_district"
+  }, 
+  "RI-01": {
+    "district": 1, 
+    "state": "RI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Rhode_Island's_1st_congressional_district"
+  }, 
+  "RI-02": {
+    "district": 2, 
+    "state": "RI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Rhode_Island's_2nd_congressional_district"
+  }, 
+  "SC-01": {
+    "district": 1, 
+    "state": "SC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/South_Carolina's_1st_congressional_district"
+  }, 
+  "SC-02": {
+    "district": 2, 
+    "state": "SC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/South_Carolina's_2nd_congressional_district"
+  }, 
+  "SC-03": {
+    "district": 3, 
+    "state": "SC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/South_Carolina's_3th_congressional_district"
+  }, 
+  "SC-04": {
+    "district": 4, 
+    "state": "SC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/South_Carolina's_4th_congressional_district"
+  }, 
+  "SC-05": {
+    "district": 5, 
+    "state": "SC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/South_Carolina's_5th_congressional_district"
+  }, 
+  "SC-06": {
+    "district": 6, 
+    "state": "SC", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/South_Carolina's_6th_congressional_district"
+  }, 
+  "SD-00": {
+    "district": 0, 
+    "state": "SD", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/South_Dakota's_At-large_congressional_district"
+  }, 
+  "TN-01": {
+    "district": 1, 
+    "state": "TN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tennessee's_1st_congressional_district"
+  }, 
+  "TN-02": {
+    "district": 2, 
+    "state": "TN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tennessee's_2nd_congressional_district"
+  }, 
+  "TN-03": {
+    "district": 3, 
+    "state": "TN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tennessee's_3th_congressional_district"
+  }, 
+  "TN-04": {
+    "district": 4, 
+    "state": "TN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tennessee's_4th_congressional_district"
+  }, 
+  "TN-05": {
+    "district": 5, 
+    "state": "TN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tennessee's_5th_congressional_district"
+  }, 
+  "TN-06": {
+    "district": 6, 
+    "state": "TN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tennessee's_6th_congressional_district"
+  }, 
+  "TN-07": {
+    "district": 7, 
+    "state": "TN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tennessee's_7th_congressional_district"
+  }, 
+  "TN-08": {
+    "district": 8, 
+    "state": "TN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tennessee's_8th_congressional_district"
+  }, 
+  "TN-09": {
+    "district": 9, 
+    "state": "TN", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tennessee's_9th_congressional_district"
+  }, 
+  "TX-01": {
+    "district": 1, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_1st_congressional_district"
+  }, 
+  "TX-02": {
+    "district": 2, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_2nd_congressional_district"
+  }, 
+  "TX-03": {
+    "district": 3, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_3th_congressional_district"
+  }, 
+  "TX-04": {
+    "district": 4, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_4th_congressional_district"
+  }, 
+  "TX-05": {
+    "district": 5, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_5th_congressional_district"
+  }, 
+  "TX-06": {
+    "district": 6, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_6th_congressional_district"
+  }, 
+  "TX-07": {
+    "district": 7, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_7th_congressional_district"
+  }, 
+  "TX-08": {
+    "district": 8, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_8th_congressional_district"
+  }, 
+  "TX-09": {
+    "district": 9, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_9th_congressional_district"
+  }, 
+  "TX-10": {
+    "district": 10, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_10th_congressional_district"
+  }, 
+  "TX-11": {
+    "district": 11, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_11th_congressional_district"
+  }, 
+  "TX-12": {
+    "district": 12, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_12th_congressional_district"
+  }, 
+  "TX-13": {
+    "district": 13, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_13th_congressional_district"
+  }, 
+  "TX-14": {
+    "district": 14, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_14th_congressional_district"
+  }, 
+  "TX-15": {
+    "district": 15, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_15th_congressional_district"
+  }, 
+  "TX-16": {
+    "district": 16, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_16th_congressional_district"
+  }, 
+  "TX-17": {
+    "district": 17, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_17th_congressional_district"
+  }, 
+  "TX-18": {
+    "district": 18, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_18th_congressional_district"
+  }, 
+  "TX-19": {
+    "district": 19, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_19th_congressional_district"
+  }, 
+  "TX-20": {
+    "district": 20, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_20th_congressional_district"
+  }, 
+  "TX-21": {
+    "district": 21, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_21th_congressional_district"
+  }, 
+  "TX-22": {
+    "district": 22, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_22th_congressional_district"
+  }, 
+  "TX-23": {
+    "district": 23, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_23th_congressional_district"
+  }, 
+  "TX-24": {
+    "district": 24, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_24th_congressional_district"
+  }, 
+  "TX-25": {
+    "district": 25, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_25th_congressional_district"
+  }, 
+  "TX-26": {
+    "district": 26, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_26th_congressional_district"
+  }, 
+  "TX-27": {
+    "district": 27, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_27th_congressional_district"
+  }, 
+  "TX-28": {
+    "district": 28, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_28th_congressional_district"
+  }, 
+  "TX-29": {
+    "district": 29, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_29th_congressional_district"
+  }, 
+  "TX-30": {
+    "district": 30, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_30th_congressional_district"
+  }, 
+  "TX-31": {
+    "district": 31, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_31th_congressional_district"
+  }, 
+  "TX-32": {
+    "district": 32, 
+    "state": "TX", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas's_32th_congressional_district"
+  }, 
+  "UT-01": {
+    "district": 1, 
+    "state": "UT", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Utah's_1st_congressional_district"
+  }, 
+  "UT-02": {
+    "district": 2, 
+    "state": "UT", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Utah's_2nd_congressional_district"
+  }, 
+  "UT-03": {
+    "district": 3, 
+    "state": "UT", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Utah's_3th_congressional_district"
+  }, 
+  "VA-01": {
+    "district": 1, 
+    "state": "VA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Virginia's_1st_congressional_district"
+  }, 
+  "VA-02": {
+    "district": 2, 
+    "state": "VA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Virginia's_2nd_congressional_district"
+  }, 
+  "VA-03": {
+    "district": 3, 
+    "state": "VA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Virginia's_3th_congressional_district"
+  }, 
+  "VA-04": {
+    "district": 4, 
+    "state": "VA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Virginia's_4th_congressional_district"
+  }, 
+  "VA-05": {
+    "district": 5, 
+    "state": "VA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Virginia's_5th_congressional_district"
+  }, 
+  "VA-06": {
+    "district": 6, 
+    "state": "VA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Virginia's_6th_congressional_district"
+  }, 
+  "VA-07": {
+    "district": 7, 
+    "state": "VA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Virginia's_7th_congressional_district"
+  }, 
+  "VA-08": {
+    "district": 8, 
+    "state": "VA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Virginia's_8th_congressional_district"
+  }, 
+  "VA-09": {
+    "district": 9, 
+    "state": "VA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Virginia's_9th_congressional_district"
+  }, 
+  "VA-10": {
+    "district": 10, 
+    "state": "VA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Virginia's_10th_congressional_district"
+  }, 
+  "VA-11": {
+    "district": 11, 
+    "state": "VA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Virginia's_11th_congressional_district"
+  }, 
+  "VI-00": {
+    "district": 0, 
+    "state": "VI", 
+    "voting": false, 
+    "wikipedia": "http://en.wikipedia.org/wiki/United_States_Virgin_Islands's_At-large_congressional_district"
+  }, 
+  "VT-00": {
+    "district": 0, 
+    "state": "VT", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Vermont's_At-large_congressional_district"
+  }, 
+  "WA-01": {
+    "district": 1, 
+    "state": "WA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Washington's_1st_congressional_district"
+  }, 
+  "WA-02": {
+    "district": 2, 
+    "state": "WA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Washington's_2nd_congressional_district"
+  }, 
+  "WA-03": {
+    "district": 3, 
+    "state": "WA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Washington's_3th_congressional_district"
+  }, 
+  "WA-04": {
+    "district": 4, 
+    "state": "WA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Washington's_4th_congressional_district"
+  }, 
+  "WA-05": {
+    "district": 5, 
+    "state": "WA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Washington's_5th_congressional_district"
+  }, 
+  "WA-06": {
+    "district": 6, 
+    "state": "WA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Washington's_6th_congressional_district"
+  }, 
+  "WA-07": {
+    "district": 7, 
+    "state": "WA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Washington's_7th_congressional_district"
+  }, 
+  "WA-08": {
+    "district": 8, 
+    "state": "WA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Washington's_8th_congressional_district"
+  }, 
+  "WA-09": {
+    "district": 9, 
+    "state": "WA", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Washington's_9th_congressional_district"
+  }, 
+  "WI-01": {
+    "district": 1, 
+    "state": "WI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Wisconsin's_1st_congressional_district"
+  }, 
+  "WI-02": {
+    "district": 2, 
+    "state": "WI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Wisconsin's_2nd_congressional_district"
+  }, 
+  "WI-03": {
+    "district": 3, 
+    "state": "WI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Wisconsin's_3th_congressional_district"
+  }, 
+  "WI-04": {
+    "district": 4, 
+    "state": "WI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Wisconsin's_4th_congressional_district"
+  }, 
+  "WI-05": {
+    "district": 5, 
+    "state": "WI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Wisconsin's_5th_congressional_district"
+  }, 
+  "WI-06": {
+    "district": 6, 
+    "state": "WI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Wisconsin's_6th_congressional_district"
+  }, 
+  "WI-07": {
+    "district": 7, 
+    "state": "WI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Wisconsin's_7th_congressional_district"
+  }, 
+  "WI-08": {
+    "district": 8, 
+    "state": "WI", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Wisconsin's_8th_congressional_district"
+  }, 
+  "WV-01": {
+    "district": 1, 
+    "state": "WV", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/West_Virginia's_1st_congressional_district"
+  }, 
+  "WV-02": {
+    "district": 2, 
+    "state": "WV", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/West_Virginia's_2nd_congressional_district"
+  }, 
+  "WV-03": {
+    "district": 3, 
+    "state": "WV", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/West_Virginia's_3th_congressional_district"
+  }, 
+  "WY-00": {
+    "district": 0, 
+    "state": "WY", 
+    "voting": true, 
+    "wikipedia": "http://en.wikipedia.org/wiki/Wyoming's_At-large_congressional_district"
+  }
+}

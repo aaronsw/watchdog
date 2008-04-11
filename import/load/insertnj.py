@@ -1,9 +1,10 @@
 #!/usr/bin/python
-import glob, web, scrapenj, os, cgitb
-cgitb.enable(format="text")
+import glob, web, os, cgitb
+import simplejson
+from parse import scrapenj
 
-db = web.database(dbn=os.environ.GET('DATABASE_ENGINE', 'postgres'), db='watchdog_dev')
-ALMANAC_DIR = 'almanac/nationaljournal.com/pubs/almanac/2008/people/'
+DATA_DIR = '../data'
+ALMANAC_DIR = DATA_DIR + '/crawl/almanac/nationaljournal.com/pubs/almanac/2008/people/'
 
 def cleanint(n):
     for c in ', %$':
@@ -11,14 +12,14 @@ def cleanint(n):
     return n
 
 def main():
+    districts = simplejson.load(file(DATA_DIR + '/parse/districts/index.json'))
+    
     assert os.path.exists(ALMANAC_DIR), ALMANAC_DIR
+    out = {}
     for fn in glob.glob(ALMANAC_DIR + '*/rep*'):
         district = web.storage()
 
         dist = web.lstrips(web.rstrips(fn.split('/')[-1], '.htm'), 'rep_')
-        district.state = dist[0:2].upper()
-        district.district = dist[-2:]
-        district.name = district.state + '-' + district.district
 
         d = scrapenj.scrape1(fn)
         if 'demographics' in d:
@@ -27,8 +28,14 @@ def main():
             district.area_sqmi = cleanint(web.rstrips(demo['Area size'], ' sq. mi.'))
             district.poverty_pct = cleanint(demo['Poverty status'])
             district.median_income = cleanint(demo['Median income'])
-        district.filename = 'file://%s/%s' % (os.getenv('PWD'), d['filename'])
+        district.njfilename = 'file://%s/%s' % (os.getcwd(), d['filename'])
+        
+        diststate = dist[0:2].upper()
+        distnum = dist[-2:]
+        if distnum == '01' and diststate + '-00' in districts:
+            distnum = '00'
+        out[diststate + '-' + distnum]  = district
+    return out
 
-        db.insert('district', seqname=False, **district)
-
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+    print simplejson.dumps(main(), indent=2, sort_keys=True)
