@@ -1,3 +1,7 @@
 *pyc
 *~
 *.tmproj
+tmp
+data
+import/.database
+.DS_Store
