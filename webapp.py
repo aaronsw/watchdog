@@ -14,7 +14,7 @@ urls = (
   '/us/([a-z][a-z]-\d+)', 'district',
   '/us/by/(.*)/distribution.png', 'sparkdist',
   '/us/by/(.*)', 'dproperty',
-  '/about/', 'about',
+  '/about(/?)', 'about',
   '/about/feedback', 'feedback',
 )
 
@@ -23,8 +23,21 @@ class index:
         return render.index()
 
 class about:
-    def GET(self):
+    def GET(self, endslash=None):
+        if not endslash: raise web.seeother('/about/')
         return render.about()
+
+class feedback:
+    def GET(self):
+        raise web.seeother('/about')
+    
+    def POST(self):
+        i = web.input(email='info@watchdog.net')
+        web.sendmail('Feedback <%s>' % i.email, 'Watchdog <info@watchdog.net>',
+          'watchdog.net feedback', 
+          i.content +'\n\n' + web.ctx.ip)
+        
+        return render.feedback_thanks()
 
 class find:
     def GET(self):
