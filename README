@@ -36,7 +36,7 @@ CONTENTS:
 INSTALL:
 
   # checkout the source code
-	git clone watchdog.net:~watchdog/git/watchdog.git watchdog
+	git clone watchdog.net:~watchdog/git/dev.git watchdog
 	cd watchdog
 	
 	# download a copy of the data sources
