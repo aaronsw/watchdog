@@ -1,0 +1,16 @@
+$def with (posts)
+
+$var title: Blog
+
+$var head:
+	  <link rel="alternate" type="application/rss+xml" title="RSS" href="feed" />
+
+<p>Here's where we'll post about site changes, relevant news, and other interesting bits of gossip. (Subscribe to our <a href="feed">feed</a>.)</p>
+
+$for post in posts:
+    <h2>$post.title</h2>
+    
+    $:post.body
+    
+    <p class="strapline">posted by $post.author on $post.date</em> <a href="$post.slug">#</a></p>
+

@@ -2,6 +2,7 @@
 import os, re
 import web
 from utils import zip2rep, simplegraphs
+import blog
 
 web.config.debug = True
 render = web.template.render('templates/', base='base')
@@ -16,6 +17,8 @@ urls = (
   '/us/by/(.*)', 'dproperty',
   '/about(/?)', 'about',
   '/about/feedback', 'feedback',
+  '/blog', 'reblog',
+  '/blog(/.*)', blog.app,
 )
 
 class index:
@@ -38,6 +41,10 @@ class feedback:
           i.content +'\n\n' + web.ctx.ip)
         
         return render.feedback_thanks()
+
+class reblog:
+    def GET(self):
+        raise web.seeother('/blog/')
 
 class find:
     def GET(self):
