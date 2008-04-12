@@ -15,7 +15,8 @@ $(PARSE)/districts/index.json: parse/manual/districts.json
 	cp parse/manual/districts.json $(PARSE)/districts/index.json
 
 $(PARSE)/districts/almanac.json: load/loadalmanac.py parse/scrapenj.py
-	PYTHONPATH=. python load/loadalamanac.py > $(PARSE)/districts/almanac.json
+	PYTHONPATH=. python load/loadalmanac.py > $(PARSE)/districts/almanac.json.tmp
+	mv $(PARSE)/districts/almanac.json.tmp $(PARSE)/districts/almanac.json
 
 $(PARSE)/districts/shapes.json: load/loaddistshapes.py
 	PYTHONPATH=. python load/loaddistshapes.py > $(PARSE)/districts/shapes.json

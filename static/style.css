@@ -24,3 +24,5 @@ th { text-align: right; }
 .chartlist td.nut a { position: relative; z-index: 2; padding: 0.25em 4.5em 0.25em 9px; min-width: 4.5em; }
 .chartlist .count { color: #888;}
 .chartlist .index { display: block; position: absolute; left: 0; top: 0; bottom: 0; background: #cff; text-indent: 9999px; overflow: hidden; min-width: 1px; }
+
+table.charted img { border: 0;}

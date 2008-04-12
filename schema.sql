@@ -14,6 +14,7 @@ CREATE TABLE district (
   cook_index varchar(10),
   poverty_pct real,
   median_income int,
+  est_population_2005 int,
   
   -- shapes.json
   outline text -- geojson

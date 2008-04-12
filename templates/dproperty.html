@@ -1,8 +1,8 @@
-$def with (dists)
+$def with (dists, what)
 
-$var title: Median Income
+$var title: Distribution of $what
 
 <table class="chartlist">
 $for dist in dists:
-    <tr id="d$dist.name"><td class="nut"><a href="$dist.name">$dist.name</a><span class="index" style="width: $dist.pct%">$dist.pct%</span></td><td><span class="count">\$$dist.median_income</span></td></tr>
+    <tr id="d$dist.name"><td class="nut"><a href="/us/$dist.name.lower()">$dist.name</a><span class="index" style="width: $dist.pct%">$dist.pct%</span></td><td><span class="count">$dist[what]</span></td></tr>
 </table>

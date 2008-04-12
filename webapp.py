@@ -1,7 +1,7 @@
 #!/usr/bin/python
-import Image, ImageDraw, StringIO, os
+import os, re
 import web
-from utils import zip2rep
+from utils import zip2rep, simplegraphs
 
 web.config.debug = True
 render = web.template.render('templates/', base='base')
@@ -10,15 +10,21 @@ db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), db='watchdo
 urls = (
   '/', 'index',
   '/us/', 'find',
-  '/us/([A-Z][A-Z]-\d+)', 'district',
-  '/us/median_income', 'dproperty',
+  '/us/([A-Z][A-Z]-\d+)', 'redistrict',
+  '/us/([a-z][a-z]-\d+)', 'district',
+  '/us/by/(.*)/distribution.png', 'sparkdist',
+  '/us/by/(.*)', 'dproperty',
   '/about/', 'about',
-  '/images/sparkdist/(.*)', 'sparkdist',
+  '/about/feedback', 'feedback',
 )
 
 class index:
     def GET(self):
         return render.index()
+
+class about:
+    def GET(self):
+        return render.about()
 
 class find:
     def GET(self):
@@ -26,7 +32,7 @@ class find:
         if i.get('zip'):
             dists = zip2rep.zip2dist(i.zip)
             if len(dists) == 1:
-                return web.seeother('/us/%s' % dists[0])
+                raise web.seeother('/us/%s' % dists[0].lower())
             else:
                 #@@ need to implement better
                 return "multiple districts: " + repr(dists)
@@ -34,67 +40,40 @@ class find:
         else:
             return web.seeother('/')
 
+class redistrict:
+    def GET(self, district):
+        return web.seeother('/us/' + district.lower())
+
 class district:
     def GET(self, district):
         try:
+            district = district.upper()
             d = db.select('district', where='name = $district', vars=locals())[0]
         except IndexError:
-            return app.notfound()
+            raise web.notfound
         
         return render.district(d)
 
+r_safeproperty = re.compile('^[a-z0-9_]+$')
+
 class dproperty:
-    def GET(self):
-        maxnum = float(db.select('district', what='max(median_income) as m')[0].m)
-        dists = db.select('district', what="*, 100*(median_income/$maxnum) as pct", order='median_income desc', where='median_income is not null', vars=locals())
-        return render.dproperty(dists)
+    def GET(self, what):
+        if not r_safeproperty.match(what): raise web.notfound
         
-class about:
-    def GET(self):
-        return render.about()
+        maxnum = float(db.select('district', what='max(%s) as m' % what, vars=locals())[0].m)
+        dists = db.select('district', what="*, 100*(%s/$maxnum) as pct" % what, order='%s desc' % what, where='%s is not null' % what, vars=locals())
+        return render.dproperty(dists, what)
 
 class sparkdist:
     def GET(self, what):
+        if not r_safeproperty.match(what): raise web.notfound
+        
         inp = web.input(point=None)
-        #@@assert what == 'median_income', 'for security'
-        HEIGHT = 15
-        WIDTH = 40
-        
-        BUBBLE = 2
-        MARGIN = 5
-        SCALEFACTOR = 4
-        
-        MARGIN *= SCALEFACTOR
-        HEIGHT *= SCALEFACTOR
-        WIDTH *= SCALEFACTOR
-        BUBBLE *= SCALEFACTOR
-        
-        im = Image.new("RGB", (WIDTH, HEIGHT), 'white')
-        HEIGHT -= MARGIN
-        WIDTH -= MARGIN
-        draw = ImageDraw.Draw(im)
-        
-        opoints = db.select('district', what=what, order=what+' desc', where=what+' is not null')
-        opoints = [x[what] for x in opoints.list()]
-        points = [(
-          MARGIN/2. + (WIDTH*(n/float(len(opoints)))),
-          (HEIGHT+MARGIN/2.) - ((HEIGHT*(float(i)/max(opoints))))
-        ) for (n, i) in enumerate(opoints)]
-        draw.line(points, fill='#888888', width=1.5*SCALEFACTOR)
-        
-        if inp.point:
-            x, y = points[opoints.index(float(inp.point))]
-            draw.ellipse((x-BUBBLE, y-BUBBLE, x+BUBBLE, y+BUBBLE), fill='#f55')        
-        
-        HEIGHT += MARGIN
-        WIDTH += MARGIN
-        
-        im.thumbnail((WIDTH/SCALEFACTOR, HEIGHT/SCALEFACTOR), Image.ANTIALIAS)
-        f = StringIO.StringIO()
-        im.save(f, 'PNG')
+        points = db.select('district', what=what, order=what+' desc', where=what+' is not null')
+        points = [x[what] for x in points.list()]
         
         web.header('Content-Type', 'image/png')
-        return f.getvalue()        
+        return simplegraphs.sparkline(points, inp.point)
 
 app = web.application(urls, globals())
 if __name__ == "__main__": app.run()

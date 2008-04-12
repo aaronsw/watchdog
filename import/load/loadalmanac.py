@@ -28,6 +28,8 @@ def main():
             district.area_sqmi = cleanint(web.rstrips(demo['Area size'], ' sq. mi.'))
             district.poverty_pct = cleanint(demo['Poverty status'])
             district.median_income = cleanint(demo['Median income'])
+            if 'Pop. 2005 (est)' in demo and cleanint(demo['Pop. 2005 (est)']):
+                district.est_population_2005 = cleanint(demo['Pop. 2005 (est)'])
         district.njfilename = 'file://%s/%s' % (os.getcwd(), d['filename'])
         
         diststate = dist[0:2].upper()

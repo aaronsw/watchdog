@@ -10,7 +10,7 @@ $var head:
 
 <div id="googlemap" style="width: 50%; height: 300px; margin-bottom: 2em; float: right"></div>
 
-<table>
+<table class="charted">
   <tr>
     <th>Cook <acronym title="Partisan Voting Index">PVI</acronym>:</th>
     <td>$d.cook_index</td>
@@ -18,15 +18,19 @@ $var head:
   </tr><tr>
     <th>Area:</th>
     <td>$d.area_sqmi sq. mi.</td>
-    <td><img src="/images/sparkdist/area_sqmi?point=$d.area_sqmi" /></td>
+    <td><a href="/us/by/area_sqmi#d$d.name"><img src="/us/by/area_sqmi/distribution.png?point=$d.area_sqmi" /></a></td>
+  </tr><tr>
+    <th>Pop. (2005 est.):</th>
+    <td>$d.est_population_2005</td>
+    <td><a href="/us/by/est_population_2005#d$d.name"><img src="/us/by/est_population_2005/distribution.png?point=$d.est_population_2005" /></a></td>
   </tr><tr>
     <th>Poverty rate:</th>
     <td>$d.poverty_pct%</td>
-    <td><img src="/images/sparkdist/poverty_pct?point=$d.poverty_pct" /></td>
+    <td><a href="/us/by/poverty_pct#$d.name"><img src="/us/by/poverty_pct/distribution.png?point=$d.poverty_pct" /></a></td>
   </tr><tr>
     <th>Median income:</th>
     <td>\$$d.median_income</td>
-    <td><a href="median_income#d$d.name"><img src="/images/sparkdist/median_income?point=$d.median_income" style="border: 0" /></a></td>
+    <td><a href="/us/by/median_income#d$d.name"><img src="/us/by/median_income/distribution.png?point=$d.median_income" /></a></td>
   </tr>
 </table>
 

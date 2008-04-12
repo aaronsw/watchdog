@@ -18,6 +18,7 @@ def load():
         db.insert('district', seqname=False, name=name, **unidecode(district))
     
     for fn in ['almanac', 'shapes']:
+        print 'loading', fn
         districts = simplejson.load(file(DATA_DIR + '/districts/%s.json' % fn))
         for name, district in districts.iteritems():
             db.update('district', where='name = $name', vars=locals(), **unidecode(district))
