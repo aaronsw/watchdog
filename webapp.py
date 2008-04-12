@@ -26,6 +26,18 @@ class about:
     def GET(self):
         return render.about()
 
+class feedback:
+    def GET(self):
+        raise web.seeother('/about')
+    
+    def POST(self):
+        i = web.input(email='info@watchdog.net')
+        web.sendmail('Feedback <%s>' % i.email, 'Watchdog <info@watchdog.net>',
+          'watchdog.net feedback', 
+          i.content +'\n\n' + web.ctx.ip)
+        
+        return render.feedback_thanks()
+
 class find:
     def GET(self):
         i = web.input()
