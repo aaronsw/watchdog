@@ -28,3 +28,4 @@ th { text-align: right; }
 table.charted img { border: 0;}
 
 .strapline { text-align: right; font-style: italic;}
+.sparkline { height: 1em; }

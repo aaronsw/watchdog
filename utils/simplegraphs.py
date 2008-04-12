@@ -1,6 +1,6 @@
 import Image, ImageDraw, StringIO
 
-def sparkline(points, point=None, height=15, width=40, bubble=2, margin=5, scalefactor=4):    
+def sparkline(points, point=None, height=15*2, width=40*2, bubble=2*2, linewidth=1.5*2, margin=5*2, scalefactor=5):
     margin *= scalefactor
     height *= scalefactor
     width *= scalefactor
@@ -15,7 +15,7 @@ def sparkline(points, point=None, height=15, width=40, bubble=2, margin=5, scale
       margin/2. + (width*(n/float(len(points)))),
       (height+margin/2.) - ((height*(float(i)/max(points))))
     ) for (n, i) in enumerate(points)]
-    draw.line(mypoints, fill='#888888', width=1.5*scalefactor)
+    draw.line(mypoints, fill='#888888', width=linewidth*scalefactor)
     
     if point:
         x, y = mypoints[points.index(float(point))]
