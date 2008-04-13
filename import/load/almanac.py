@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import glob, web, os, cgitb
 import simplejson
-from parse import scrapenj
+from parse import almanac
 
 DATA_DIR = '../data'
 ALMANAC_DIR = DATA_DIR + '/crawl/almanac/nationaljournal.com/pubs/almanac/2008/people/'
@@ -18,9 +18,9 @@ def main():
     out = {}
     for fn in glob.glob(ALMANAC_DIR + '*/rep*'):
         district = web.storage()
-
+        
         dist = web.lstrips(web.rstrips(fn.split('/')[-1], '.htm'), 'rep_')
-
+        
         d = scrapenj.scrape1(fn)
         if 'demographics' in d:
             demo = d['demographics']

@@ -5,7 +5,7 @@ all: .database
 
 .database: ../schema.sql $(PARSE)/states/index.json $(PARSE)/districts/index.json $(PARSE)/districts/almanac.json $(PARSE)/districts/shapes.json
 	$(DBCLIENT) watchdog_dev < ../schema.sql
-	python load/insertjson.py
+	python load/json.py
 	touch .database
 
 
@@ -15,12 +15,12 @@ $(PARSE)/states/index.json: parse/manual/states.json
 $(PARSE)/districts/index.json: parse/manual/districts.json
 	cp parse/manual/districts.json $(PARSE)/districts/index.json
 
-$(PARSE)/districts/almanac.json: load/loadalmanac.py parse/scrapenj.py
-	PYTHONPATH=. python load/loadalmanac.py > $(PARSE)/districts/almanac.json.tmp
+$(PARSE)/districts/almanac.json: load/almanac.py parse/almanac.py
+	PYTHONPATH=. python load/almanac.py > $(PARSE)/districts/almanac.json.tmp
 	mv $(PARSE)/districts/almanac.json.tmp $(PARSE)/districts/almanac.json
 
-$(PARSE)/districts/shapes.json: load/loaddistshapes.py
-	PYTHONPATH=. python load/loaddistshapes.py > $(PARSE)/districts/shapes.json
+$(PARSE)/districts/shapes.json: load/shapes.py
+	PYTHONPATH=. python load/shapes.py > $(PARSE)/districts/shapes.json
 
 $(PARSE)/politicians/index.json: parse/manual/politicians.json
 	cp parse/manual/politicians.json $(PARSE)/politicians/index.json
