@@ -5,6 +5,7 @@ from utils import zip2rep, simplegraphs
 import blog
 
 web.config.debug = True
+web.template.Template.globals['commify'] = web.commify
 render = web.template.render('templates/', base='base')
 db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), db='watchdog_dev')
 
@@ -72,6 +73,17 @@ class district:
             d = db.select(['district', 'state', 'politician'], what='district.*, state.name as state_name, politician.firstname as pol_firstname, politician.lastname as pol_lastname, politician.id as pol_id', where='district.name = $district AND district.state = state.code AND politician.district = district.name', vars=locals())[0]
         except IndexError:
             raise web.notfound
+        
+        if d.district == 0:
+            d.districtth = 'at-large'
+        elif str(d.district).endswith('1'):
+            d.districtth = '%sst' % d.district
+        elif str(d.district).endswith('2'):
+            d.districtth = '%snd' % d.district
+        elif str(d.district).endswith('3'):
+            d.districtth = '%srd' % d.district
+        else:
+            d.districtth = '%sth' % d.district
         
         return render.district(d)
 

@@ -1,6 +1,6 @@
 $def with (d)
 
-$var title: $d.name: $d.state_name’s ${d.district}th Congressional district
+$var title: $d.name: $d.state_name’s $d.districtth Congressional district
 
 $var head:
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script>
@@ -16,11 +16,11 @@ $var head:
     <td></td>
   </tr><tr>
     <th>Area:</th>
-    <td>$d.area_sqmi sq. mi.</td>
+    <td>$commify(d.area_sqmi) sq. mi.</td>
     <td><a href="/us/by/area_sqmi#d$d.name"><img src="/us/by/area_sqmi/distribution.png?point=$d.area_sqmi" class="sparkline" /></a></td>
   </tr><tr>
     <th>Pop. (2005 est.):</th>
-    <td>$d.est_population_2005</td>
+    <td>$commify(d.est_population_2005)</td>
     <td><a href="/us/by/est_population_2005#d$d.name"><img src="/us/by/est_population_2005/distribution.png?point=$d.est_population_2005" class="sparkline" /></a></td>
   </tr><tr>
     <th>Poverty rate:</th>
@@ -28,7 +28,7 @@ $var head:
     <td><a href="/us/by/poverty_pct#$d.name"><img src="/us/by/poverty_pct/distribution.png?point=$d.poverty_pct" class="sparkline" /></a></td>
   </tr><tr>
     <th>Median income:</th>
-    <td>\$$d.median_income</td>
+    <td>\$$commify(d.median_income)</td>
     <td><a href="/us/by/median_income#d$d.name"><img src="/us/by/median_income/distribution.png?point=$d.median_income" class="sparkline" /></a></td>
   </tr>
 </table>
