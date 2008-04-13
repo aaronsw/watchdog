@@ -1,4 +1,6 @@
-DROP TABLE state, district, politician CASCADE;
+DROP TABLE state CASCADE;
+DROP TABLE district CASCADE;
+DROP TABLE politician CASCADE;
 
 CREATE TABLE state (
   -- index.json
@@ -48,3 +50,5 @@ CREATE TABLE politician (
   party varchar(256),
   religion varchar(256)
 );
+
+GRANT ALL on state, district, politician TO watchdog;
