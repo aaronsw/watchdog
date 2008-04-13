@@ -12,6 +12,11 @@ def unidecode(d):
     return newd
 
 def load():
+    states = simplejson.load(file(DATA_DIR + '/states/index.json'))
+    for code, state in states.iteritems():
+        if 'aka' in state: state.pop('aka')
+        db.insert('state', seqname=False, code=code, **unidecode(state))
+    
     districts = simplejson.load(file(DATA_DIR + '/districts/index.json'))
     
     for name, district in districts.iteritems():

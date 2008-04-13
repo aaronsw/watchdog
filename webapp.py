@@ -68,7 +68,7 @@ class district:
     def GET(self, district):
         try:
             district = district.upper()
-            d = db.select('district', where='name = $district', vars=locals())[0]
+            d = db.select(['district', 'state'], what='district.*, state.name as state_name', where='district.name = $district AND district.state = state.code', vars=locals())[0]
         except IndexError:
             raise web.notfound
         

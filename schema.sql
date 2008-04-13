@@ -1,10 +1,20 @@
 DROP TABLE district;
+DROP TABLE state;
+
+CREATE TABLE state (
+  -- index.json
+  code varchar(2) primary key,
+  name varchar(256),
+  status varchar(256),
+  wikipedia varchar(256),
+  fipscode varchar(2)
+);
 
 CREATE TABLE district (
   -- index.json
   name varchar(10) primary key,
   district int,
-  state varchar(2),
+  state varchar(2) references state,
   voting boolean,
   wikipedia varchar(256),
   
