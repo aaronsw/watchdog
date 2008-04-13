@@ -20,7 +20,7 @@ CREATE TABLE district (
   wikipedia varchar(256),
   
   -- almanac.json
-  njfilename varchar(256), -- temporary, I assume
+  almanac varchar(256),
   area_sqmi int,
   cook_index varchar(10),
   poverty_pct real,

@@ -30,7 +30,7 @@ def main():
             district.median_income = cleanint(demo['Median income'])
             if 'Pop. 2005 (est)' in demo and cleanint(demo['Pop. 2005 (est)']):
                 district.est_population_2005 = cleanint(demo['Pop. 2005 (est)'])
-        district.njfilename = 'file://%s/%s' % (os.getcwd(), d['filename'])
+        district.almanac = 'http://' + d['filename'][d['filename'].find('nationaljournal.com'):]
         
         diststate = dist[0:2].upper()
         distnum = dist[-2:]
