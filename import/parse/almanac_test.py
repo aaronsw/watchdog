@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import scrapenj, re, cgitb
+import almanac, re, cgitb
 cgitb.enable(format='text')
 
 def ok(a, b): assert a == b, (a, b)

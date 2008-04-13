@@ -27,5 +27,16 @@ def load():
         districts = simplejson.load(file(DATA_DIR + '/districts/%s.json' % fn))
         for name, district in districts.iteritems():
             db.update('district', where='name = $name', vars=locals(), **unidecode(district))
+    
+    politicians = simplejson.load(file(DATA_DIR + '/politicians/index.json'))
+    for polid, pol in politicians.iteritems():
+        db.insert('politician', seqname=False, id=polid, **unidecode(pol))
+    
+    for fn in ['govtrack']:
+        print 'loading', fn
+        politicians = simplejson.load(file(DATA_DIR + '/politicians/%s.json' % fn))
+        for polid, pol in politicians.iteritems():
+            db.update('politician', where='id = $polid', vars=locals(), **unidecode(pol))
+    
 
 if __name__ == "__main__": load()

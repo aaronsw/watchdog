@@ -15,6 +15,7 @@ urls = (
   '/us/([a-z][a-z]-\d+)', 'district',
   '/us/by/(.*)/distribution.png', 'sparkdist',
   '/us/by/(.*)', 'dproperty',
+  '/p/(.*)', 'politician',
   '/about(/?)', 'about',
   '/about/feedback', 'feedback',
   '/blog', 'reblog',
@@ -68,11 +69,19 @@ class district:
     def GET(self, district):
         try:
             district = district.upper()
-            d = db.select(['district', 'state'], what='district.*, state.name as state_name', where='district.name = $district AND district.state = state.code', vars=locals())[0]
+            d = db.select(['district', 'state', 'politician'], what='district.*, state.name as state_name, politician.firstname as pol_firstname, politician.lastname as pol_lastname, politician.id as pol_id', where='district.name = $district AND district.state = state.code AND politician.district = district.name', vars=locals())[0]
         except IndexError:
             raise web.notfound
         
         return render.district(d)
+
+class politician:
+    def GET(self, polid):
+        if polid != polid.lower():
+            raise web.seeother('/p/' + polid.lower())
+        
+        p = db.select(['politician', 'district'], what="politician.*, district.outline as district_outline", where='id=$polid AND district.name = politician.district', vars=locals())[0]
+        return render.politician(p)
 
 r_safeproperty = re.compile('^[a-z0-9_]+$')
 

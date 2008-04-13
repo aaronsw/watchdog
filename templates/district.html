@@ -4,7 +4,6 @@ $var title: $d.name: $d.state_name’s ${d.district}th Congressional district
 
 $var head:
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script>
-    <script src="http://www.govtrack.us/scripts/gmap-wms.js"></script>
 	  <script src="/static/distmap.js"></script>
 	  <script type="text/javascript">distmap('googlemap', $:d.outline)</script>
 
@@ -33,5 +32,8 @@ $var head:
     <td><a href="/us/by/median_income#d$d.name"><img src="/us/by/median_income/distribution.png?point=$d.median_income" class="sparkline" /></a></td>
   </tr>
 </table>
+
+$if d.pol_id:
+    <p>Represented by <a href="/p/$d.pol_id">$d.pol_firstname $d.pol_lastname</a>.</p>
 
 <div class="sources">District information from <cite><a href="http://nationaljournal.com/pubs/almanac/2008/">The Almanac of American Politics 2008</a></cite>. Maps from <a href="http://www.govtrack.us/">GovTrack</a>.</div>

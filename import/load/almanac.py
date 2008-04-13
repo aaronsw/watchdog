@@ -21,7 +21,7 @@ def main():
         
         dist = web.lstrips(web.rstrips(fn.split('/')[-1], '.htm'), 'rep_')
         
-        d = scrapenj.scrape1(fn)
+        d = almanac.scrape1(fn)
         if 'demographics' in d:
             demo = d['demographics']
             district.cook_index = cleanint(demo['Cook Partisan Voting Index'])

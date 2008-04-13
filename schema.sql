@@ -1,5 +1,4 @@
-DROP TABLE district;
-DROP TABLE state;
+DROP TABLE state, district, politician CASCADE;
 
 CREATE TABLE state (
   -- index.json
@@ -28,4 +27,24 @@ CREATE TABLE district (
   
   -- shapes.json
   outline text -- geojson
+);
+
+CREATE TABLE politician (
+  -- index.json
+  id varchar(256) primary key,
+  district varchar(10) references district,
+  wikipedia varchar(256),
+  
+  -- govtrack.json
+  bioguideid varchar(256),
+  opensecretsid varchar(256),
+  govtrackid varchar(256),
+  gender varchar(1),
+  birthday date,
+  firstname varchar(256),
+  middlename varchar(256),
+  lastname varchar(256),
+  officeurl varchar(256),
+  party varchar(256),
+  religion varchar(256)
 );
