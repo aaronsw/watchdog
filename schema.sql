@@ -1,4 +1,6 @@
-DROP TABLE state, district, politician CASCADE;
+DROP TABLE state CASCADE;
+DROP TABLE district CASCADE;
+DROP TABLE politician CASCADE;
 
 CREATE TABLE state (
   -- index.json
