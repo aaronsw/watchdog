@@ -326,6 +326,7 @@
   "VI": {
     "fipscode": "78", 
     "name": "Virgin Islands of the U.S.", 
+    "aka": ["United States Virgin Islands"],
     "status": "territory", 
     "wikipedia": "http://en.wikipedia.org/wiki/United_States_Virgin_Islands"
   }, 

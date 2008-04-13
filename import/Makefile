@@ -8,6 +8,7 @@ all: .database
 	python load/insertjson.py
 	touch .database
 
+
 $(PARSE)/states/index.json: parse/manual/states.json
 	cp parse/manual/states.json $(PARSE)/states/index.json
 
@@ -20,3 +21,6 @@ $(PARSE)/districts/almanac.json: load/loadalmanac.py parse/scrapenj.py
 
 $(PARSE)/districts/shapes.json: load/loaddistshapes.py
 	PYTHONPATH=. python load/loaddistshapes.py > $(PARSE)/districts/shapes.json
+
+$(PARSE)/politicians/index.json: parse/manual/politicians.json
+	cp parse/manual/politicians.json $(PARSE)/politicians/index.json
