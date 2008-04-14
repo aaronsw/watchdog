@@ -5,8 +5,13 @@ $var title: $d.name: $d.state_name’s $d.districtth Congressional district
 $var head:
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script>
     <script src="http://www.govtrack.us/scripts/gmap-wms.js"></script>
-	  <script src="/static/distmap.js"></script>
-	  <script type="text/javascript">distcenter('googlemap', '$d.name.replace('-0', '').replace('-', '')', [$d.center_lat, $d.center_lng, $d.zoom_level - 1])</script>
+    <script src="/static/distmap.js"></script>
+
+    <script type="text/javascript">
+    distcenter('googlemap',
+               '$d.name.replace('-0', '').replace('-', '')',
+               [$d.center_lat, $d.center_lng, $d.zoom_level - 1])
+    </script>
 
 <div id="googlemap" style="width: 50%; height: 300px; margin-bottom: 2em; float: right"></div>
 
@@ -18,26 +23,44 @@ $var head:
   </tr><tr>
     <th>Area:</th>
     <td>$commify(d.area_sqmi) sq. mi.</td>
-    <td><a href="/us/by/area_sqmi#d$d.name"><img src="/us/by/area_sqmi/distribution.png?point=$d.area_sqmi" class="sparkline" /></a></td>
+    <td><a href="/us/by/area_sqmi#d$d.name"
+         ><img src="/us/by/area_sqmi/distribution.png?point=$d.area_sqmi"
+               class="sparkline" /></a></td>
   </tr><tr>
     <th>Pop. ($d.est_population_year est.):</th>
     <td>$commify(d.est_population)</td>
-    <td><a href="/us/by/est_population#d$d.name"><img src="/us/by/est_population/distribution.png?point=$d.est_population" class="sparkline" /></a></td>
+    <td><a href="/us/by/est_population#d$d.name"
+         ><img 
+           src="/us/by/est_population/distribution.png?point=$d.est_population"
+           class="sparkline" /></a></td>
   </tr><tr>
     <th>Poverty rate:</th>
     <td>$d.poverty_pct%</td>
-    <td><a href="/us/by/poverty_pct#$d.name"><img src="/us/by/poverty_pct/distribution.png?point=$d.poverty_pct" class="sparkline" /></a></td>
+    <td><a href="/us/by/poverty_pct#$d.name"
+         ><img src="/us/by/poverty_pct/distribution.png?point=$d.poverty_pct"
+               class="sparkline" /></a></td>
   </tr><tr>
     <th>Median income:</th>
     <td>\$$commify(d.median_income)</td>
-    <td><a href="/us/by/median_income#d$d.name"><img src="/us/by/median_income/distribution.png?point=$d.median_income" class="sparkline" /></a></td>
+    <td><a href="/us/by/median_income#d$d.name"
+         ><img src="/us/by/median_income/distribution.png?point=$d.median_income"
+               class="sparkline" /></a></td>
   </tr>
 </table>
 
 $if d.pol_id:
     $if d.pol_photo_path:
-        <a href="/p/$d.pol_id"><img src="$d.pol_photo_path" alt="Headshot" class="smallheadshot" /></a>
+        <a href="/p/$d.pol_id"><img src="$d.pol_photo_path" 
+                                    alt="Headshot"
+                                    class="smallheadshot" /></a>
 
-    <p>Represented by <a href="/p/$d.pol_id">$d.pol_firstname $d.pol_lastname</a>.</p>
+    <p>Represented by <a href="/p/$d.pol_id">$d.pol_firstname
+    $d.pol_lastname</a>.</p>
 
-<div class="sources">District information from <cite><a href="$d.almanac">The Almanac of American Politics 2008</a></cite>. Maps from the <a href="http://www.census.gov/geo/www/cob/cd110.html">US Census Bureau</a> and <a href="http://www.govtrack.us/congress/findyourreps.xpd?state=$d.state&amp;district=$d.district">GovTrack</a>.</div>
+<div class="sources">District information
+from <cite><a href="$d.almanac">The Almanac of American Politics
+2008</a></cite>. Maps from
+the <a href="http://www.census.gov/geo/www/cob/cd110.html">US Census
+Bureau</a> and
+<a href="http://www.govtrack.us/congress/findyourreps.xpd?state=$d.state&amp;district=$d.district"
+>GovTrack</a>.</div>
