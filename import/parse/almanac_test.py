@@ -7,7 +7,7 @@ def ok(a, b): assert a == b, (a, b)
 def ok_re(a, b): assert re.search(b, a), (a, b)
 
 def main(scrape):
-    root = 'almanac/nationaljournal.com/pubs/almanac/'
+    root = '../../data/crawl/almanac/nationaljournal.com/pubs/almanac/'
     trent_franks = scrape(root + '2004/people/az/rep_az02.htm')
     ok(trent_franks['name'], 'Trent Franks')
     ok(trent_franks['title'], 'Rep.')
@@ -82,9 +82,9 @@ def main(scrape):
     # Some inconsistency.  This is the same guy in the same district.
     # "The 5th Congressional District of Wisconsin, numbered the 9th
     # before 2002 redistricting..."
-    sensenbrenner_1 = scrapenj.scrape1(root + '2006/people/wi/rep_wi05.htm')
+    sensenbrenner_1 = scrape(root + '2006/people/wi/rep_wi05.htm')
     ok(sensenbrenner_1['name'], 'Jim Sensenbrenner')
-    sensenbrenner_2 = scrapenj.scrape1(root + '2002/people/wi/rep_wi09.htm')
+    sensenbrenner_2 = scrape(root + '2002/people/wi/rep_wi09.htm')
     ok(sensenbrenner_2['name'], 'F. James Sensenbrenner Jr.')
 
     # Aaron says:
@@ -142,4 +142,4 @@ def main(scrape):
     ok(steve_pearce['demographics']['Area size'], '69,598 sq. mi.')
     ok(steve_pearce['demographics']['Ancestry'], 'German: 7.4%; English: 5.9%; Irish: 5.7%;')
 
-if __name__ == '__main__': main(scrapenj.scrape1)
+if __name__ == '__main__': main(almanac.scrape1)
