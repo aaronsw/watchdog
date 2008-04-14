@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import glob, web, os, cgitb
+import glob, web, os
 import simplejson
 from parse import almanac
 
@@ -34,6 +34,10 @@ def main():
         
         diststate = dist[0:2].upper()
         distnum = dist[-2:]
+
+        # Nationaljournal numbers districts of congressmen-at-large
+        # and territorial delegates '01' in its URLs, but our
+        # districts file numbers them '00'.
         if distnum == '01' and diststate + '-00' in districts:
             distnum = '00'
         out[diststate + '-' + distnum]  = district
