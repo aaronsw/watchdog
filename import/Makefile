@@ -28,30 +28,30 @@ clean:
 	touch $@
 
 $(PARSE)/states/index.json: parse/manual/states.json
-	cp parse/manual/states.json $(PARSE)/states/index.json
+	cp $< $@
 
 $(PARSE)/districts/index.json: parse/manual/districts.json
-	cp parse/manual/districts.json $(PARSE)/districts/index.json
+	cp $< $@
 
 $(PARSE)/districts/almanac.json: load/almanac.py parse/almanac.py
-	$(PYTHON) load/almanac.py > $(PARSE)/districts/almanac.json.tmp
-	mv $(PARSE)/districts/almanac.json.tmp $(PARSE)/districts/almanac.json
+	$(PYTHON) load/almanac.py > $@.tmp
+	mv $@.tmp $@
 
 $(PARSE)/districts/shapes.json: load/shapes.py
-	$(PYTHON) load/shapes.py > $(PARSE)/districts/shapes.json
+	$(PYTHON) load/shapes.py > $@
 
 $(PARSE)/districts/centers.json: load/govtrack_gis.py
-	$(PYTHON) load/govtrack_gis.py > $(PARSE)/districts/centers.json
+	$(PYTHON) load/govtrack_gis.py > $@
 
 $(PARSE)/politicians/index.json: parse/manual/politicians.json
-	cp parse/manual/politicians.json $(PARSE)/politicians/index.json
+	cp parse/manual/politicians.json $@
 
 $(PARSE)/politicians/govtrack.json: load/govtrack.py parse/govtrack.py
-	$(PYTHON) load/govtrack.py > $(PARSE)/politicians/govtrack.json.tmp
-	mv $(PARSE)/politicians/govtrack.json.tmp $(PARSE)/politicians/govtrack.json
+	$(PYTHON) load/govtrack.py > $@.tmp
+	mv $@.tmp $@
 
 $(PARSE)/politicians/photos.json: load/photos.py $(PARSE)/politicians/govtrack.json
-	$(PYTHON) load/photos.py > $(PARSE)/politicians/photos.json.tmp
-	mv $(PARSE)/politicians/photos.json.tmp $(PARSE)/politicians/photos.json
+	$(PYTHON) load/photos.py > $@.tmp
+	mv $@.tmp $@
 
 
