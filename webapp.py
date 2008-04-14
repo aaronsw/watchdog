@@ -12,6 +12,8 @@ db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), db='watchdo
 urls = (
   '/', 'index',
   '/us/', 'find',
+  '/us/([A-Z][A-Z])', 'redistrict',
+  '/us/([a-z][a-z])', 'state',
   '/us/([A-Z][A-Z]-\d+)', 'redistrict',
   '/us/([a-z][a-z]-\d+)', 'district',
   '/us/by/(.*)/distribution.png', 'sparkdist',
@@ -62,6 +64,17 @@ class find:
                 #@@ or no districts...
         else:
             return web.seeother('/')
+
+class state:
+    def GET(self, state):
+        state = state.upper()
+        try:
+            state = db.select('state', where='code=$state', vars=locals())[0]
+        except IndexError:
+            raise web.notfound
+        districts = db.select('district', where='state=$state.code', order='district asc', vars=locals())
+        
+        return render.state(state, districts.list())
 
 class redistrict:
     def GET(self, district):

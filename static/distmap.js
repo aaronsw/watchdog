@@ -1,5 +1,18 @@
 function distmap(element_id, multipolygon) {
-    window.onload = function() { //@@ replace with jquery
+    function addLoadEvent(func) {    
+        var oldonload = window.onload;
+        if (typeof window.onload != 'function') {
+            window.onload = func;
+        } 
+        else {
+            window.onload = function() {
+                oldonload();
+                func();
+            }
+        }
+    }
+    
+    addLoadEvent(function() {
     	var map = new GMap2(document.getElementById(element_id));
     	map.addControl(new GSmallZoomControl())
     	var poly, mypoly, coordinates
@@ -23,5 +36,5 @@ function distmap(element_id, multipolygon) {
         }
         var bounds = new GLatLngBounds(new GLatLng(minlat, minlng), new GLatLng(maxlat, maxlng))
         map.setCenter(bounds.getCenter(), map.getBoundsZoomLevel(bounds))
-    }
+    })
 }

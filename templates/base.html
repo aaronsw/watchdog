@@ -1,7 +1,7 @@
 $def with (page)
 <html>
 <head>
-  <title>$page.title (watchdog.net)</title>
+  <title>$page.title.strip() (watchdog.net)</title>
   <link href="/static/style.css" type="text/css" rel="stylesheet" />
   $:page.get('head')
 </head><body>
@@ -19,7 +19,7 @@ $def with (page)
 
 $:page.get('pretitle')
 
-<h1>$page.title</h1>
+<h1>$page.title.strip()</h1>
 
 $:page
 </div>
