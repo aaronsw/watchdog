@@ -4,8 +4,9 @@ $var title: $d.name: $d.state_name’s $d.districtth Congressional district
 
 $var head:
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script>
+    <script src="http://www.govtrack.us/scripts/gmap-wms.js"></script>
 	  <script src="/static/distmap.js"></script>
-	  <script type="text/javascript">distmap('googlemap', $:d.outline)</script>
+	  <script type="text/javascript">distcenter('googlemap', '$d.name.replace('-0', '').replace('-', '')', [$d.center_lat, $d.center_lng, $d.zoom_level - 1])</script>
 
 <div id="googlemap" style="width: 50%; height: 300px; margin-bottom: 2em; float: right"></div>
 
@@ -39,4 +40,4 @@ $if d.pol_id:
 
     <p>Represented by <a href="/p/$d.pol_id">$d.pol_firstname $d.pol_lastname</a>.</p>
 
-<div class="sources">District information from <cite><a href="$d.almanac">The Almanac of American Politics 2008</a></cite>. Maps from the <a href="http://www.census.gov/geo/www/cob/cd110.html">US Census Bureau</a>.</div>
+<div class="sources">District information from <cite><a href="$d.almanac">The Almanac of American Politics 2008</a></cite>. Maps from the <a href="http://www.census.gov/geo/www/cob/cd110.html">US Census Bureau</a> and <a href="http://www.govtrack.us/congress/findyourreps.xpd?state=$d.state&amp;district=$d.district">GovTrack</a>.</div>

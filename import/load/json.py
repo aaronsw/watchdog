@@ -22,7 +22,7 @@ def load():
     for name, district in districts.iteritems():
         db.insert('district', seqname=False, name=name, **unidecode(district))
     
-    for fn in ['almanac', 'shapes']:
+    for fn in ['almanac', 'shapes', 'centers']:
         print 'loading', fn
         districts = simplejson.load(file(DATA_DIR + '/districts/%s.json' % fn))
         for name, district in districts.iteritems():

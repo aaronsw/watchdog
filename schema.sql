@@ -28,7 +28,12 @@ CREATE TABLE district (
   est_population_2005 int,
   
   -- shapes.json
-  outline text -- geojson
+  outline text, -- geojson
+  
+  -- centers.json
+  center_lat real,
+  center_lng real,
+  zoom_level int
 );
 
 CREATE TABLE politician (

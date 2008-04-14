@@ -4,9 +4,10 @@ $var title: $state.name
 
 $var head:
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script>
+    <script src="http://www.govtrack.us/scripts/gmap-wms.js"></script>
 	  <script src="/static/distmap.js"></script>
 	  $for d in districts:
-	      <script type="text/javascript">distmap('gmap_$d.name', $:d.outline)</script>
+	      <script type="text/javascript">distcenter('gmap_$d.name', '$d.state$d.district', [$d.center_lat, $d.center_lng, $d.zoom_level - 2])</script>
 
 $for d in districts:
     <div class="minimapbox">

@@ -106,7 +106,7 @@ class politician:
         if polid != polid.lower():
             raise web.seeother('/p/' + polid.lower())
         
-        p = db.select(['politician', 'district'], what="politician.*, district.outline as district_outline", where='id=$polid AND district.name = politician.district', vars=locals())[0]
+        p = db.select(['politician', 'district'], what="politician.*, district.center_lat as d0, district.center_lng as d1, district.zoom_level as d2", where='id=$polid AND district.name = politician.district', vars=locals())[0]
         return render.politician(p)
 
 r_safeproperty = re.compile('^[a-z0-9_]+$')
