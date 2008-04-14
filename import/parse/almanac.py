@@ -79,20 +79,25 @@ def election_table(rv, html):
         if actually_got_something: results.append(current_row)
     rv['electionresults'] = results
 
-def demographics(rv, html):
+def _parse_list(html):
     soup = BeautifulSoup.BeautifulSoup(html)
     demographics = {}
     for li in soup('li'):
         name = li.b.string
         if name is None: continue
         name = name.strip()
-        assert name.endswith(':'), name
-        demographics[name[:-1]] = crappy_extract_text(str(li.b.nextSibling))
+        if name.endswith(':'): name = name[:-1]
+        demographics[name] = crappy_extract_text(str(li.b.nextSibling))
     # original version (which didn't cope well with capitalized and
     # unclosed LI tags, etc.)
     #     for mo in re.finditer(r'<li><b>(.*?): ?</b> (.*?)</li>', html):
     #         demographics[mo.group(1)] = mo.group(2)
-    rv['demographics'] = demographics
+    return demographics
+
+def parse_list(name):
+    def func(rv, html):
+        rv[name] = _parse_list(html)
+    return func
 
 # Things we care about if they are in the left column of a 2-column
 # table, or if they are headers.
@@ -106,7 +111,8 @@ we_care = {
     'DC Office': plain('dcoffice'),
     'State Offices': plain('stateoffice'),
     'Committees': plain('committees'),
-    'District Demographics': demographics,
+    'District Demographics': parse_list('demographics'),
+    'The State': parse_list('state'),
     'Election Results': election_table,
 }
         

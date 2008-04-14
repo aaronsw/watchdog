@@ -142,4 +142,8 @@ def main(scrape):
     ok(steve_pearce['demographics']['Area size'], '69,598 sq. mi.')
     ok(steve_pearce['demographics']['Ancestry'], 'German: 7.4%; English: 5.9%; Irish: 5.7%;')
 
+    ## State demographics
+    north_dakota = scrape(root + '2008/states/nd/index.html')
+    ok(north_dakota['state']['Pop. 2006 (est)'], '635,867')
+
 if __name__ == '__main__': main(almanac.scrape1)
