@@ -5,6 +5,7 @@ body, table { margin: 0; font: 14px "Georgia"; line-height: 1.4}
 .header .nav a { color: #FEFBC3; }
 
 .intro { width: 80%; margin: auto; text-align: center;}
+.bigintro { padding: 1em; background-color: #eee;}
 .body { padding: 0 1em 1em 1em;}
 
 .sources { background-color: #eee; color: #555; padding: 1em; font-size: smaller; margin-top: 2em; clear: both;}

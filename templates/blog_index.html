@@ -5,12 +5,12 @@ $var title: Blog
 $var head:
 	  <link rel="alternate" type="application/rss+xml" title="RSS" href="feed" />
 
-<p>Here's where we'll post about site changes, relevant news, and other interesting bits of gossip. (Subscribe to our <a href="feed">feed</a>.)</p>
+<p class="bigintro">Welcome to the blog. This is where we post about site changes, relevant news, and other interesting bits of gossip. (Want to stay up-to-date? Subscribe to our <a href="feed">feed</a> or our <a href="http://groups.google.com/group/watchdog-announce/subscribe">very low-volume announcement list</a>.)</p>
 
 $for post in posts:
     <h2>$post.title</h2>
     
     $:post.body
     
-    <p class="strapline">posted by $post.author on $post.date</em> <a href="$post.slug">#</a></p>
+    <p class="strapline">posted by $post.author on $post.updated</em> <a href="$post.slug">#</a></p>
 
