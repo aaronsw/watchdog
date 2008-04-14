@@ -7,7 +7,11 @@ $var head:
 
 $var title: $pol.firstname $pol.middlename $pol.lastname
 
-<div id="googlemap" style="width: 150px; height: 150px; margin-bottom: 2em; float: right"></div>
+$var pretitle:
+    <div id="googlemap" class="pretitle sidemap"></div>
+    
+    $if pol.photo_path:
+        <a href="$pol.photo_path"><img src="$pol.photo_path" alt="Headshot" class="headshot pretitle" /></a>
 
 <p>
   represents <a href="/us/$pol.district">$pol.district</a><br />
@@ -16,4 +20,11 @@ $var title: $pol.firstname $pol.middlename $pol.lastname
   <a href="$pol.officeurl">Official website</a>
 </p>
 
-<div class="sources">Politician information from <a href="$pol.wikipedia">Wikipedia</a> and <a href="http://www.govtrack.us/congress/person.xpd?id=$pol.govtrackid">GovTrack</a>. Campaign finance information from <a href="http://opensecrets.org/politicians/summary.asp?CID=$pol.opensecretsid">Open Secrets</a>. Voting record from the <a href="http://projects.washingtonpost.com/congress/members/$pol.bioguideid.lower()">Washington Post</a>.</div>
+<div class="sources">
+  Politician information from <a href="$pol.wikipedia">Wikipedia</a> and 
+  <a href="http://www.govtrack.us/congress/person.xpd?id=$pol.govtrackid">GovTrack</a>. 
+  Campaign finance information from <a href="http://opensecrets.org/politicians/summary.asp?CID=$pol.opensecretsid">Open Secrets</a>. 
+  Voting record from the <a href="http://projects.washingtonpost.com/congress/members/$pol.bioguideid.lower()">Washington Post</a>.
+  $if pol.photo_credit_text:
+      Photo from <a href="$pol.photo_credit_url">$pol.photo_credit_text</a>.
+</div>

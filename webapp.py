@@ -21,6 +21,7 @@ urls = (
   '/about/feedback', 'feedback',
   '/blog', 'reblog',
   '/blog(/.*)', blog.app,
+  '/data/(.*)', 'staticdata'
 )
 
 class index:
@@ -70,7 +71,7 @@ class district:
     def GET(self, district):
         try:
             district = district.upper()
-            d = db.select(['district', 'state', 'politician'], what='district.*, state.name as state_name, politician.firstname as pol_firstname, politician.lastname as pol_lastname, politician.id as pol_id', where='district.name = $district AND district.state = state.code AND politician.district = district.name', vars=locals())[0]
+            d = db.select(['district', 'state', 'politician'], what='district.*, state.name as state_name, politician.firstname as pol_firstname, politician.lastname as pol_lastname, politician.id as pol_id, politician.photo_path as pol_photo_path', where='district.name = $district AND district.state = state.code AND politician.district = district.name', vars=locals())[0]
         except IndexError:
             raise web.notfound
         
@@ -115,6 +116,14 @@ class sparkdist:
         
         web.header('Content-Type', 'image/png')
         return simplegraphs.sparkline(points, inp.point)
+
+class staticdata:
+    def GET(self, path):
+        if not web.config.debug:
+            raise web.notfound
+
+        assert '..' not in path, 'security'
+        return file('data/' + path).read()
 
 app = web.application(urls, globals())
 if __name__ == "__main__": app.run()

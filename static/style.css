@@ -29,3 +29,8 @@ table.charted img { border: 0;}
 
 .strapline { text-align: right; font-style: italic;}
 .sparkline { height: 1em; }
+.sidemap  { width: 150px; height: 150px; margin-bottom: 2em; float: right; }
+.headshot, .smallheadshot { float: left; padding-right: 1em; border: 0;}
+.headshot { width: 10em; }
+.smallheadshot { width: 5em; margin-top: 1em;}
+.pretitle { margin-top: 2em;}

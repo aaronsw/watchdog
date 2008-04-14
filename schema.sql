@@ -48,7 +48,12 @@ CREATE TABLE politician (
   lastname varchar(256),
   officeurl varchar(256),
   party varchar(256),
-  religion varchar(256)
+  religion varchar(256),
+  
+  -- photos.json
+  photo_path varchar(256),
+  photo_credit_url varchar(256),
+  photo_credit_text varchar(256)
 );
 
 GRANT ALL on state, district, politician TO watchdog;

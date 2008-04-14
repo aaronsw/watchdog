@@ -3,7 +3,7 @@ DBCLIENT=psql
 
 all: .database
 
-.database: ../schema.sql load/json.py $(PARSE)/states/index.json $(PARSE)/districts/index.json $(PARSE)/districts/almanac.json $(PARSE)/districts/shapes.json $(PARSE)/politicians/index.json $(PARSE)/politicians/govtrack.json
+.database: ../schema.sql load/json.py $(PARSE)/states/index.json $(PARSE)/districts/index.json $(PARSE)/districts/almanac.json $(PARSE)/districts/shapes.json $(PARSE)/politicians/index.json $(PARSE)/politicians/govtrack.json $(PARSE)/politicians/photos.json
 	$(DBCLIENT) watchdog_dev < ../schema.sql
 	python load/json.py
 	touch .database
@@ -28,3 +28,9 @@ $(PARSE)/politicians/index.json: parse/manual/politicians.json
 $(PARSE)/politicians/govtrack.json: load/govtrack.py parse/govtrack.py
 	PYTHONPATH=. python load/govtrack.py > $(PARSE)/politicians/govtrack.json.tmp
 	mv $(PARSE)/politicians/govtrack.json.tmp $(PARSE)/politicians/govtrack.json
+
+$(PARSE)/politicians/photos.json: load/photos.py $(PARSE)/politicians/govtrack.json
+	PYTHONPATH=. python load/photos.py > $(PARSE)/politicians/photos.json.tmp
+	mv $(PARSE)/politicians/photos.json.tmp $(PARSE)/politicians/photos.json
+
+

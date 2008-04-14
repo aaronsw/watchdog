@@ -32,7 +32,7 @@ def load():
     for polid, pol in politicians.iteritems():
         db.insert('politician', seqname=False, id=polid, **unidecode(pol))
     
-    for fn in ['govtrack']:
+    for fn in ['govtrack', 'photos']:
         print 'loading', fn
         politicians = simplejson.load(file(DATA_DIR + '/politicians/%s.json' % fn))
         for polid, pol in politicians.iteritems():
