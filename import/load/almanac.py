@@ -14,6 +14,12 @@ def cleanint(n):
 def get_int(dict, key):
     return cleanint(dict.get(key, '')) or None
 
+def coalesce_pop(data, fields):
+    for year, key in fields:
+        pop = get_int(data, key)
+        if pop is not None: return (year, pop)
+    return (None, None)
+
 def main():
     districts = simplejson.load(file(DATA_DIR + '/parse/districts/index.json'))
     
@@ -38,9 +44,12 @@ def main():
             district.area_sqmi = cleanint(web.rstrips(demog['Area size'], ' sq. mi.'))
             district.poverty_pct = get_int(demog, 'Poverty status')
             district.median_income = get_int(demog, 'Median income')
-            district.est_population_2005 = get_int(demog, 'Pop. 2005 (est)')
-            if district.est_population_2005 is None:
-                district.est_population_2005 = get_int(demog, 'Pop. 2006 (est)')
+            (district.est_population_year,
+             district.est_population) = coalesce_pop(demog, [
+                (2006, 'Pop. 2006 (est)'),
+                (2005, 'Pop. 2005 (est)'),
+                (2000, 'Pop. 2000'),
+            ])
 
         district.almanac = 'http://' + d['filename'][d['filename'].find('nationaljournal.com'):]
 

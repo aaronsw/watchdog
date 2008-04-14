@@ -20,9 +20,9 @@ $var head:
     <td>$commify(d.area_sqmi) sq. mi.</td>
     <td><a href="/us/by/area_sqmi#d$d.name"><img src="/us/by/area_sqmi/distribution.png?point=$d.area_sqmi" class="sparkline" /></a></td>
   </tr><tr>
-    <th>Pop. (2005 est.):</th>
-    <td>$commify(d.est_population_2005)</td>
-    <td><a href="/us/by/est_population_2005#d$d.name"><img src="/us/by/est_population_2005/distribution.png?point=$d.est_population_2005" class="sparkline" /></a></td>
+    <th>Pop. ($d.est_population_year est.):</th>
+    <td>$commify(d.est_population)</td>
+    <td><a href="/us/by/est_population#d$d.name"><img src="/us/by/est_population/distribution.png?point=$d.est_population" class="sparkline" /></a></td>
   </tr><tr>
     <th>Poverty rate:</th>
     <td>$d.poverty_pct%</td>
