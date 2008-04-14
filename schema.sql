@@ -61,4 +61,7 @@ CREATE TABLE politician (
   photo_credit_text varchar(256)
 );
 
-GRANT ALL on state, district, politician TO watchdog;
+GRANT ALL on state TO watchdog;
+GRANT ALL on district TO watchdog;
+GRANT ALL on politician TO watchdog;
+
