@@ -1,0 +1,14 @@
+$def with (zip, address)
+
+$var title: Address not found
+
+<p>Oops. We couldn't find <strong>$address, $zip</strong>. Are you sure you had that right?</p>
+
+<form method="GET" action="/us/">
+  <p>You can try again:</p>
+  <p>
+    <input type="text" name="address" value="$address" /> in 
+    <input type="text" name="zip" value="$zip" size="7" />
+    <input type="submit" value="Go" />
+  </p>
+</form>
