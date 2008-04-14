@@ -81,18 +81,18 @@ def election_table(rv, html):
 
 def _parse_list(html):
     soup = BeautifulSoup.BeautifulSoup(html)
-    demographics = {}
+    hash = {}
     for li in soup('li'):
         name = li.b.string
-        if name is None: continue
+        if name is None: continue # no bold text, prolly not a name-val pair
         name = name.strip()
         if name.endswith(':'): name = name[:-1]
-        demographics[name] = crappy_extract_text(str(li.b.nextSibling))
+        hash[name] = crappy_extract_text(str(li.b.nextSibling))
     # original version (which didn't cope well with capitalized and
     # unclosed LI tags, etc.)
     #     for mo in re.finditer(r'<li><b>(.*?): ?</b> (.*?)</li>', html):
-    #         demographics[mo.group(1)] = mo.group(2)
-    return demographics
+    #         hash[mo.group(1)] = mo.group(2)
+    return hash
 
 def parse_list(name):
     def func(rv, html):
@@ -126,7 +126,8 @@ def scrape_by_headers(rv, html):
     for item in by_headers:
         for key in we_care.keys():
             if item.startswith(key):
-                # </UL> is a special case for District Demographics
+                # </UL> is a special case for "District Demographics"
+                # and "The State"
                 mo = re.search(r'(?is)</font>(.*?)(?:</UL>|</p>)', item)
                 if mo: we_care[key](rv, mo.group(1))
 
