@@ -1,3 +1,13 @@
+sudo apt-get install python-dev python-setuptools
+easy_install simplejson==1.8.1
+sudo apt-get install python-imaging
+sudo apt-get install python-psycopg2
+
+bzr clone http://webpy.org/bzr/webpy.dev/
+sudo ln -s webpy.dev/web /path/to/python2.5/site-packages/web
+
+* * *
+
 For Aaron's PCA script, I installed MDP from the MDP Toolkit from
 <http://downloads.sourceforge.net/mdp-toolkit/MDP-2.2.tar.gz?modtime=1206126105>
 
