@@ -64,10 +64,11 @@ class find:
             elif len(dists) == 0:
                 return render.find_none(i.zip)
             else:
-                dists = db.select(['district', 'politician'], where=web.sqlors('name=', dists) + ' AND politician.district = district.name')
+                dists = db.select(['district' + ' LEFT OUTER JOIN politician ON (politician.district = district.name)'], where=web.sqlors('name=', dists))
                 return render.find_multi(i.zip, dists)
         else:
-            return web.seeother('/')
+            dists = db.select(['district' + ' LEFT OUTER JOIN politician ON (politician.district = district.name)'], order='name asc')
+            return render.districtlist(dists)
 
 class state:
     def GET(self, state):

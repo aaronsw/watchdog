@@ -1,0 +1,10 @@
+$def with (dists)
+
+$var title: The United States
+
+<ul>
+$for d in dists:
+    <li><a href="/us/$d.name.lower()">$d.name</a>
+    $if d.firstname: (Rep. $d.firstname $d.lastname)
+    </li>
+</ul>

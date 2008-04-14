@@ -6,7 +6,7 @@ $var title: Multiple districts
 
 <ul>
 $for d in districts:
-    <li><a href="/us/$d.name">$d.name</a> (Rep. $d.firstname $d.lastname)</li>
+    <li><a href="/us/$d.name.lower()">$d.name</a> (Rep. $d.firstname $d.lastname)</li>
 </ul>
 
 <form method="GET" action="/us/">
