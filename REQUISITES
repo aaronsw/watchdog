@@ -1,11 +1,15 @@
 For Aaron's PCA script, I installed MDP from the MDP Toolkit from
 <http://downloads.sourceforge.net/mdp-toolkit/MDP-2.2.tar.gz?modtime=1206126105>
 
+I had to install simplejson from PyPI; the version in Etch is inadequate:
+$ sudo apt-get install python-setuptools
+$ sudo easy_install simplejson==1.8.1
+
 Otherwise, I've used only Debian Etch packages: 
 
-- python-json 3.4-2
 - python-scipy 0.5.2-0.1
 - python2.4 2.4.4-3
+- python2.4-dev 2.4.4-3
 
 The web.py stuff requires web.py 0.3, which is currently only
 available from bzr.
