@@ -40,7 +40,7 @@ INSTALL:
 	cd watchdog
 	
 	# download a copy of the data sources
-	rsync -avz watchdog.net:~watchdog/web/data .
+	rsync -avzu watchdog.net:~watchdog/web/data .
 	cd import
 	
 	# create the database
