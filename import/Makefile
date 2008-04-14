@@ -1,39 +1,61 @@
 PARSE=../data/parse
-DBCLIENT=psql
+ifeq ($(DATABASE_ENGINE),mysql)
+    DBCLIENT=mysql
+else
+    DBCLIENT=psql
+endif
+PYTHON=PYTHONPATH=.:$(PYTHONPATH) python
+JSONS=$(PARSE)/states/index.json \
+      $(PARSE)/districts/index.json \
+      $(PARSE)/districts/almanac.json \
+      $(PARSE)/districts/shapes.json \
+      $(PARSE)/politicians/index.json \
+      $(PARSE)/politicians/govtrack.json \
+      $(PARSE)/politicians/photos.json \
+      $(PARSE)/districts/centers.json
 
 all: .database
+clean:
+	rm $(JSONS) .schema
 
-.database: ../schema.sql load/json.py $(PARSE)/states/index.json $(PARSE)/districts/index.json $(PARSE)/districts/almanac.json $(PARSE)/districts/shapes.json $(PARSE)/politicians/index.json $(PARSE)/politicians/govtrack.json $(PARSE)/politicians/photos.json $(PARSE)/districts/centers.json
-	$(DBCLIENT) watchdog_dev < ../schema.sql
+.database: .schema load/json.py $(JSONS)
 	python load/json.py
-	touch .database
+	touch $@
 
+# .schema is separated into a separate target so you can "touch
+# .schema" when you get some crap like this:
+# ERROR 1142 (42000) at line 64: GRANT command denied to user ''@'localhost' for table 'state'
+# Depends on $(JSONS) so you don't end up dropping all the
+# database tables when you have an error generating the .json files.
+.schema: ../schema.sql $(JSONS)
+	$(DBCLIENT) watchdog_dev < $<
+	touch $@
 
 $(PARSE)/states/index.json: parse/manual/states.json
-	cp parse/manual/states.json $(PARSE)/states/index.json
+	cp $< $@
 
 $(PARSE)/districts/index.json: parse/manual/districts.json
-	cp parse/manual/districts.json $(PARSE)/districts/index.json
+	cp $< $@
 
 $(PARSE)/districts/almanac.json: load/almanac.py parse/almanac.py
-	PYTHONPATH=. python load/almanac.py > $(PARSE)/districts/almanac.json.tmp
-	mv $(PARSE)/districts/almanac.json.tmp $(PARSE)/districts/almanac.json
+	$(PYTHON) load/almanac.py > $@.tmp
+	mv $@.tmp $@
 
 $(PARSE)/districts/shapes.json: load/shapes.py
-	PYTHONPATH=. python load/shapes.py > $(PARSE)/districts/shapes.json
+	$(PYTHON) load/shapes.py > $@
 
 $(PARSE)/districts/centers.json: load/govtrack_gis.py
-	PYTHONPATH=. python load/govtrack_gis.py > $(PARSE)/districts/centers.json
+	$(PYTHON) load/govtrack_gis.py > $@
 
 $(PARSE)/politicians/index.json: parse/manual/politicians.json
-	cp parse/manual/politicians.json $(PARSE)/politicians/index.json
+	cp parse/manual/politicians.json $@
 
 $(PARSE)/politicians/govtrack.json: load/govtrack.py parse/govtrack.py
-	PYTHONPATH=. python load/govtrack.py > $(PARSE)/politicians/govtrack.json.tmp
-	mv $(PARSE)/politicians/govtrack.json.tmp $(PARSE)/politicians/govtrack.json
+	$(PYTHON) load/govtrack.py > $@.tmp
+	mv $@.tmp $@
 
 $(PARSE)/politicians/photos.json: load/photos.py $(PARSE)/politicians/govtrack.json
-	PYTHONPATH=. python load/photos.py > $(PARSE)/politicians/photos.json.tmp
-	mv $(PARSE)/politicians/photos.json.tmp $(PARSE)/politicians/photos.json
+	$(PYTHON) load/photos.py > $@.tmp
+	mv $@.tmp $@
 
 

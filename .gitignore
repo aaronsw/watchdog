@@ -4,4 +4,5 @@
 tmp
 data
 import/.database
+import/.schema
 .DS_Store

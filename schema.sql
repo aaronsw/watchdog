@@ -25,7 +25,8 @@ CREATE TABLE district (
   cook_index varchar(10),
   poverty_pct real,
   median_income int,
-  est_population_2005 int,
+  est_population int,           -- most recent population estimate
+  est_population_year int,      -- year of the estimate
   
   -- shapes.json
   outline text, -- geojson
@@ -61,4 +62,7 @@ CREATE TABLE politician (
   photo_credit_text varchar(256)
 );
 
-GRANT ALL on state, district, politician TO watchdog;
+GRANT ALL on state TO watchdog;
+GRANT ALL on district TO watchdog;
+GRANT ALL on politician TO watchdog;
+
