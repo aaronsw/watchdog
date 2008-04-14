@@ -1,5 +1,9 @@
 PARSE=../data/parse
-DBCLIENT=psql
+ifeq ($(DATABASE_ENGINE),mysql)
+    DBCLIENT=mysql
+else
+    DBCLIENT=psql
+endif
 PYTHON=PYTHONPATH=.:$(PYTHONPATH) python
 JSONS=$(PARSE)/states/index.json \
       $(PARSE)/districts/index.json \
