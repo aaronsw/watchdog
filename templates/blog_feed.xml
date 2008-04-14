@@ -1,14 +1,15 @@
-$def with (posts)
+$def with (posts, lastupdate)
 <feed xmlns="http://www.w3.org/2005/Atom">
-	<title>watchdog.net</title>
-	<id>http://watchdog.net/blog/feed</id>
-	<link href="http://watchdog.net/blog/feed" rel="self" />
-	$for post in posts:
-			<entry>
-				<id>http://watchdog.net/blog/$post.slug</id>
-				<title>$post.title</title>
-	  		<content type="html">$post.body</content>
-				<author><name>$post.author</name></author>
-				<published>$post.date</published>
-			</entry>
+    <title>watchdog.net</title>
+    <id>http://watchdog.net/blog/feed</id>
+    <link href="http://watchdog.net/blog/feed" rel="self" />
+    <updated>$lastupdate</updated>
+    $for post in posts:
+            <entry>
+                <id>http://watchdog.net/blog/$post.slug</id>
+                <title>$post.title</title>
+                <content type="html">$post.body</content>
+                <author><name>$post.author</name></author>
+                <updated>$post.updated</updated>
+            </entry>
 </feed>

@@ -1,30 +1,34 @@
-For Aaron's PCA script, I installed MDP from the MDP Toolkit from
-<http://downloads.sourceforge.net/mdp-toolkit/MDP-2.2.tar.gz?modtime=1206126105>
+For Debian Etch:
 
-I had to install simplejson from PyPI; the version in Etch is inadequate:
-$ sudo apt-get install python-setuptools
-$ sudo easy_install simplejson==1.8.1
+    sudo apt-get install python-dev python-setuptools  
+    easy_install simplejson==1.8.1
+    sudo apt-get install python-imaging
+    sudo apt-get install python-psycopg2
+
+    bzr clone http://webpy.org/bzr/webpy.dev/
+    sudo ln -s webpy.dev/web /path/to/python2.5/site-packages/web
+
+* * *
+
+The version of simplejson in Etch is inadequate.  For Aaron's PCA
+script, I installed MDP from the MDP Toolkit from
+<http://downloads.sourceforge.net/mdp-toolkit/MDP-2.2.tar.gz?modtime=1206126105>
 
 Otherwise, I've used only Debian Etch packages: 
 
 - python-scipy 0.5.2-0.1
 - python2.4 2.4.4-3
 - python2.4-dev 2.4.4-3
+- python-imaging 1.1.5-11
+- python-psycopg2 2.0.5.1-6
+- python-mysqldb 1.2.1-p2-4 (to run with MySQL)
 
 The web.py stuff requires web.py 0.3, which is currently only
 available from bzr.
 
-webapp.py also requires some other Python modules; in Debian, I have:
-
-- python-imaging 1.1.5-11
-- python-psycopg2 2.0.5.1-6
-
 The sparklines don't look quite as nice with this version of PIL
 (python-imaging), perhaps because of `DeprecationWarning: integer
 argument expected, got float: self.draw.draw_lines(xy, ink, width)`.
-watchdog.notabug.com is running PIL 1.1.6-1.
+watchdog.net is running PIL 1.1.6-1.
 
-To run with MySQL (mysqlapp.py), I'm using:
-
-- python-mysqldb 1.2.1-p2-4
 
