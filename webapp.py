@@ -21,6 +21,7 @@ urls = (
   r'/us/by/(.*)', 'dproperty',
   r'/p/(.*?)%s?' % options, 'politician',
   r'/about(/?)', 'about',
+  r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
   r'/blog', 'reblog',
   r'/blog(/.*)', blog.app,
@@ -35,6 +36,10 @@ class about:
     def GET(self, endslash=None):
         if not endslash: raise web.seeother('/about/')
         return render.about()
+
+class aboutapi:
+    def GET(self):
+        return render.about_api()
 
 class feedback:
     def GET(self):
@@ -159,6 +164,20 @@ class politician:
     def GET(self, polid, format=None):
         if polid != polid.lower():
             raise web.seeother('/p/' + polid.lower())
+        
+        if polid == "" or polid == "index":
+            p = db.select(['politician'], order='district asc').list()
+            
+            out = apipublish.publish([{
+              'uri': 'http://watchdog.net/p/' + x.id,
+              'type': 'Politician',
+              'district': apipublish.URI('http://watchdog.net/us/' + x.district.lower()),
+              'wikipedia': apipublish.URI(x.wikipedia)
+             } for x in p], format)
+            if out is not False:
+                return out
+            
+            return render.pollist(p)
         
         try:
             p = db.select(['politician', 'district'], what="politician.*, district.center_lat as d0, district.center_lng as d1, district.zoom_level as d2", where='id=$polid AND district.name = politician.district', vars=locals())[0]

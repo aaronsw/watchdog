@@ -1,0 +1,181 @@
+$var title: About our APIs
+
+<p>
+Making the data collected here useful to other developers
+is a core part of our mission.
+That's why we've made sure that every part of the site
+is not just human-readable
+but also machine-readable.
+</p>
+
+<h2>Content</h2>
+
+<p>
+You'll notice at the bottom of most pages,
+there's a note for developers
+that links to a version of the page in
+a variety of machine-readable formats:
+</p>
+
+<ul>
+  <li>
+    <p>
+    <strong>N3:</strong>
+    (aka Notation3, Turtle, N-Triples Plus, etc.)
+    <code>application/rdf+n3</code>
+    </p>
+    <p>
+    This elegant text-based RDF format is our recommended method for
+    getting our data.
+    Most modern languages have an RDF toolkit that can parse and query
+    against N3 inputs.
+    For more information, visit <a href="http://rdfabout.com/">rdfabout</a>.
+    </p>
+  </li><li>
+    <p>
+    <strong>JSON:</strong>
+    (aka JavaScript Object Notation)
+    <code>application/json</code>
+    </p>
+    <p>
+    JSON is a simple text-based format for transporting objects.
+    Most modern langauges have a JSON library that converts it
+    into objects in your native language.
+    For more information, visit <a href="http://json.org/">JSON.org</a>.
+    </p>
+  </li><li>
+    <p>
+    <strong>XML:</strong>
+    (aka RDF/XML)
+    <code>application/rdf+xml</code>
+    </p>
+    <p>
+    We use a constrained version of XML called RDF/XML
+    that simplifies parsing and allows us to annotate values
+    with their datatypes.
+    Again, using an RDF library may make this format easier to parse.
+    </p>
+  </li>
+</ul>
+
+<p>
+Are there other formats you'd like? 
+<a href="/about/#feedback">Let us know.</a>
+</p>
+
+<p>
+To get at these formats, 
+you can either add <code>.n3</code> 
+or the appropriate file suffix to the end of the URL
+(for example, 
+<code><a href="http://watchdog.net/us/ak-00.n3"
+>http://watchdog.net/us/ak-00.n3</a></code>)
+or you can request the page with an HTTP <code>Accept:</code> header
+that specifies the media type for the format you want. 
+(The media types we use are listed next to the format name above.)
+</p>
+
+<p>
+Here's an example using the command-line HTTP client <code>curl</code>:
+</p>
+
+<pre>
+  <strong>$ curl -s http://localhost:8080/us/ak-00 | head</strong>
+  &lt;html>
+  &lt;head>
+    &lt;title>AK-00: Alaska’s at-large congressional district (watchdog.net)&lt/title>
+  <em>[...]</em>
+  
+  <strong>$ curl -s http://localhost:8080/us/ak-00.n3 | head</strong>
+  @prefix : &lt;http://watchdog.net/about/api#> .
+
+  &lt;http://watchdog.net/us/AK-00> a :District;
+    :almanac &lt;http://nationaljournal.com/pubs/almanac/2008/people/ak/rep_ak01.htm>;
+    :area_sqmi 663267;
+  <em>[...]</em>
+  
+  <strong>$ curl -s -H "Accept: application/json" http://localhost:8080/us/ak-00 | head</strong>
+  [
+    {
+      "almanac": "http://nationaljournal.com/pubs/almanac/2008/people/ak/rep_ak01.htm", 
+      "area_sqmi": 663267, 
+      "center_lat": 65.831199999999995, 
+  <em>[...]</em>
+</pre>
+
+<h3 id="State">States</h3>
+
+<p>
+You can get at states through URLs of the form 
+<code>http://watchdog.net/us/va</code> -- 
+there you'll find all the information we have on a given state.
+</p>
+
+<h3 id="District">Districts</h3>
+
+<p>
+Districts have URLs of the form
+<code>http://watchdog.net/us/va-01</code>
+where at-large districts have the number suffix <code>-00</code>.
+</p>
+
+<p>
+For a full list of districts
+(although not everything we have on each district)
+visit <code>http://watchdog.net/us/</code>
+</p>
+
+<h3 id="Politician">Politicians</h3>
+<p>
+Politicians have URLs of the form
+<code>http://watchdog.net/p/nancy_pelosi</code>
+</p>
+
+<p>
+A full list of politicians
+(although not everything we have on each of them)
+can be found at
+<code>http://watchdog.net/p/</code>
+</p>
+
+<h2>Queries</h2>
+
+<h3 id="zip2rep">zip2rep / zip2dist</h3>
+
+<p>
+A common problem developers have 
+is figuring out which congressional district
+the user is located in.
+Because congressional districts change frequently
+and are heavily gerrymandered
+this is a rather difficult problem.
+</p>
+
+<p>
+We provide a simple API for solving this:
+Give us a zip code and we'll give you back 
+all the matching Congressional districts.
+Give us a zip code and an address and we'll give you back
+just the one that matches.
+</p>
+
+<p>
+You can do these queries via URLs like
+<code>http://watchdog.net/us/?zip=90210</code><br />
+and
+<code>http://watchdog.net/us/?address=360+N+Rodeo+Dr&amp;zip=90210</code>
+</p>
+
+<p>
+Unfortunately, we don't currently have fully machine-readable output
+for these queries.
+We're still thinking about the right way to do design the API.
+If you need this, <a href="/about/#feedback">let us know</a>.
+</p>
+
+<p>
+For the source code and data,
+see the files <code>zip2rep.py</code> and <code>zipdict.txt</code>
+in <a href="http://watchdog.net/code/?p=dev.git;a=tree;f=utils"
+>our utils directory</a>.
+</p>

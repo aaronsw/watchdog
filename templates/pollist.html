@@ -1,0 +1,10 @@
+$def with (pols)
+
+$var title: Politicians
+
+<ul>
+$for p in pols:
+    <li>$p.district: <a href="/p/$p.id">$p.firstname $p.lastname</a></li>
+</ul>
+
+<p><strong>Developers:</strong> Get this page in <a href="index.n3">N3</a>, <a href="index.xml">XML</a>, or <a href="index.json">JSON</a>.</p>
