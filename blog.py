@@ -35,14 +35,15 @@ and start your own action campaigns.
 
 <p>
 Not finding one, I've decided to help build it. 
-<a href="/about#people">An amazing group of people</a> 
+<a href="http://watchdog.net/about#people">An amazing group of people</a> 
 have signed on with me 
-(<a href="/about#help">although we're still looking for more</a>) 
+(<a href="http://watchdog.net/about#help">although we're still looking for more</a>) 
 and the Sunlight Network given us a grant to fund it.
 </p>
 
 <p>
-You can read more about us and our plans on <a href="/about/">the about page</a> 
+You can read more about us and our plans on 
+<a href="http://watchdog.net/about/">the about page</a> 
 but for now let me just say welcome and pardon the mess. 
 We're trying to develop this site fast and in public, 
 so expect lots of changes. 
@@ -60,7 +61,7 @@ This is just the skeleton of the site we hope to build.
 
 <p>
 Thanks for bearing with us 
-and <a href="/about/#feedback">let us know what you think</a>.
+and <a href="http://watchdog.net/about/#feedback">let us know what you think</a>.
 </p>
 """,
   })
