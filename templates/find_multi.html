@@ -1,0 +1,17 @@
+$def with (zip, districts)
+
+$var title: Multiple districts
+
+<p>It looks like the zip code <strong>$zip</strong> crosses multiple districts. (Ah, gerrymandering!) If you know your district, you can select it:</p>
+
+<ul>
+$for d in districts:
+    <li><a href="/us/$d.name.lower()">$d.name</a> (Rep. $d.firstname $d.lastname)</li>
+</ul>
+
+<form method="GET" action="/us/">
+  <input type="hidden" name="zip" value="$zip" />
+  
+  <p>Otherwise, enter your address and we'll try to locate you:</p>
+  <p><input type="text" name="address" /> <input type="submit" value="Go" /></p>
+</form>

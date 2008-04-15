@@ -50,14 +50,13 @@ $if d.cook_index:
   </tr>
 </table>
 
-$if d.pol_id:
+$if d.pol_id and d.pol_firstname:
     $if d.pol_photo_path:
         <a href="/p/$d.pol_id"><img src="$d.pol_photo_path" 
-                                    alt="Headshot"
-                                    class="smallheadshot" /></a>
-
-    <p>Represented by <a href="/p/$d.pol_id">$d.pol_firstname
-    $d.pol_lastname</a>.</p>
+          alt="Headshot" class="smallheadshot" /></a>
+    
+    <p>Represented by <a href="/p/$d.pol_id">$d.pol_firstname 
+       $d.pol_lastname</a>.</p>
 
 <div class="sources">District information
 from <cite><a href="$d.almanac">The Almanac of American Politics

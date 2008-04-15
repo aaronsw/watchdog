@@ -53,17 +53,22 @@ class reblog:
 
 class find:
     def GET(self):
-        i = web.input()
+        i = web.input(address=None)
         if i.get('zip'):
-            dists = zip2rep.zip2dist(i.zip)
+            try:
+                dists = zip2rep.zip2dist(i.zip, i.address)
+            except zip2rep.BadAddress:
+                return render.find_badaddr(i.zip, i.address)
             if len(dists) == 1:
                 raise web.seeother('/us/%s' % dists[0].lower())
+            elif len(dists) == 0:
+                return render.find_none(i.zip)
             else:
-                #@@ need to implement better
-                return "multiple districts: " + repr(dists)
-                #@@ or no districts...
+                dists = db.select(['district' + ' LEFT OUTER JOIN politician ON (politician.district = district.name)'], where=web.sqlors('name=', dists))
+                return render.find_multi(i.zip, dists)
         else:
-            return web.seeother('/')
+            dists = db.select(['district' + ' LEFT OUTER JOIN politician ON (politician.district = district.name)'], order='name asc')
+            return render.districtlist(dists)
 
 class state:
     def GET(self, state):

@@ -1,0 +1,13 @@
+$def with (zip)
+
+$var title: District not found
+
+<p>Sorry, we couldn't find any districts that matched the zip code <strong>$zip</strong>.</p>
+
+<p>Want to try again?</p>
+
+<form action="/us/" method="GET">
+<h2>Find your district</h2>
+<p><strong>Zip code:</strong> <input type="text" name="zip" /> <input type="submit" value="Go" /></p>
+<p class="explain"><em>Examples:</em> <a href="/us/?zip=90210">90210</a>, <a href="/us/?zip=02138">02138</a> (<a href="/us/">full list</a></p>
+</form>
