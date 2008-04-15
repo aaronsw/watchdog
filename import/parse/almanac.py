@@ -118,7 +118,7 @@ state_fields = {
     'The State': parse_list('state'),
 }
         
-def scrape_by_headers(rv, we_care, html):
+def scrape_by_headers(rv, fields, html):
     "Find sections of text underneath certain headers with special meanings."
     # They changed from #6666CC to #333366 after 2002, although the
     # more recent page elements ("Go Wireless") are #333366 even on old
@@ -126,22 +126,21 @@ def scrape_by_headers(rv, we_care, html):
     by_headers = re.split(r' color="#(?:6666CC|333366)"[^>]*>', html)
 
     for item in by_headers:
-        for key in we_care.keys():
+        for key in fields.keys():
             if item.startswith(key):
                 # </UL> is a special case for "District Demographics"
                 # and "The State"
                 mo = re.search(r'(?is)</font>(.*?)(?:</UL>|</p>)', item)
-                if mo: we_care[key](rv, mo.group(1))
+                if mo: fields[key](rv, mo.group(1))
 
-def scrape_table(rv, we_care, html):
+def scrape_table(rv, fields, html):
     tablerows = re.findall(r'(?is)<tr [^>]*>.*?</tr>', html)
 
     for row in tablerows:
         cells = re.findall(r'(?is)<td [^>]*>(.*?)</td>', row)
         if len(cells) != 2: continue
         name = re.sub(':$', '', crappy_extract_text(cells[0]))
-        if we_care.has_key(name):
-            we_care[name](rv, cells[1])
+        if fields.has_key(name): fields[name](rv, cells[1])
         
 def scrape_person(fname):
     fo = file(fname)
