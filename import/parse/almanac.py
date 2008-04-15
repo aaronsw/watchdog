@@ -101,7 +101,7 @@ def parse_list(name):
 
 # Things we care about if they are in the left column of a 2-column
 # table, or if they are headers.
-we_care = {
+person_fields = {
     'Born': plain('born'),
     'Home': plain('home'),
     'Education': plain('education'),
@@ -112,11 +112,13 @@ we_care = {
     'State Offices': plain('stateoffice'),
     'Committees': plain('committees'),
     'District Demographics': parse_list('demographics'),
-    'The State': parse_list('state'),
     'Election Results': election_table,
 }
+state_fields = {
+    'The State': parse_list('state'),
+}
         
-def scrape_by_headers(rv, html):
+def scrape_by_headers(rv, we_care, html):
     "Find sections of text underneath certain headers with special meanings."
     # They changed from #6666CC to #333366 after 2002, although the
     # more recent page elements ("Go Wireless") are #333366 even on old
@@ -131,7 +133,7 @@ def scrape_by_headers(rv, html):
                 mo = re.search(r'(?is)</font>(.*?)(?:</UL>|</p>)', item)
                 if mo: we_care[key](rv, mo.group(1))
 
-def scrape_table(rv, html):
+def scrape_table(rv, we_care, html):
     tablerows = re.findall(r'(?is)<tr [^>]*>.*?</tr>', html)
 
     for row in tablerows:
@@ -141,24 +143,48 @@ def scrape_table(rv, html):
         if we_care.has_key(name):
             we_care[name](rv, cells[1])
         
-
-def scrape1(fname):
+def scrape_person(fname):
     fo = file(fname)
     rv = {'filename': fname}
     contents = fo.read()
+
     photo_alt = re.search(r'<img [^>]*height="?(?:128|117)["\s][^>]*' +
                           r'alt="(?P<alt>[^"]*)',
                           contents)
     if photo_alt is not None:
         scrape_photo_alt(fname, rv, photo_alt.group('alt'))
     else: rv['no_photo_found'] = True
-    scrape_by_headers(rv, contents)
-    scrape_table(rv, contents)
+
+    scrape_by_headers(rv, person_fields, contents)
+    scrape_table(rv, person_fields, contents)
+
+    return rv
+
+def scrape_state_demographics(rv, html):
+    income_section = re.search(r'<b>Household Income: </b>(.*\&middot.*?)<LI>', html)
+    if not income_section: return
+    items = income_section.group(1)
+    rv.setdefault('state', {})
+    median = re.search(r'Median:&nbsp;(\$[\d,]+) ', items)
+    if median: rv['state']['Median income'] = median.group(1)
+    poverty = re.search(r'Poverty status:&nbsp;([\d.]+%)', items)
+    if poverty: rv['state']['Poverty status'] = poverty.group(1)
+
+def scrape_state(fname):
+    fo = file(fname)
+    rv = {'filename': fname}
+    contents = fo.read()
+    scrape_by_headers(rv, state_fields, contents)
+    scrape_state_demographics(rv, contents)
     return rv
 
 def main(files):
     import pprint
     if not files: raise "usage: %s foo.html [bar.html ...]" % sys.argv[0]
-    for fname in files: print pprint.pprint(scrape1(fname))
+    for fname in files:
+        print "%s as person:" % fname
+        print pprint.pprint(scrape_person(fname))
+        print "%s as state:" % fname
+        print pprint.pprint(scrape_state(fname))
 
 if __name__ == '__main__': main(sys.argv[1:])

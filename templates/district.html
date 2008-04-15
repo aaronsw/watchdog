@@ -16,11 +16,13 @@ $var head:
 <div id="googlemap" style="width: 50%; height: 300px; margin-bottom: 2em; float: right"></div>
 
 <table class="charted">
+$if d.cook_index:
+    <tr>
+      <th>Cook <acronym title="Partisan Voting Index">PVI</acronym>:</th>
+      <td>$d.cook_index</td>
+      <td></td>
+    </tr>
   <tr>
-    <th>Cook <acronym title="Partisan Voting Index">PVI</acronym>:</th>
-    <td>$d.cook_index</td>
-    <td></td>
-  </tr><tr>
     <th>Area:</th>
     <td>$commify(d.area_sqmi) sq. mi.</td>
     <td><a href="/us/by/area_sqmi#d$d.name"

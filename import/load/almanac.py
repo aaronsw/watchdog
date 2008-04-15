@@ -32,12 +32,12 @@ def main():
         diststate = dist[0:2].upper()
         distnum = dist[-2:]
         
-        d = almanac.scrape1(fn)
+        d = almanac.scrape_person(fn)
         if 'demographics' in d:
             demog = d['demographics']
         else:
             statefile = ALMANAC_DIR + 'states/%s/index.html' % diststate.lower()
-            demog = almanac.scrape1(statefile).get('state')
+            demog = almanac.scrape_state(statefile).get('state')
 
         if demog:
             district.cook_index = get_int(demog, 'Cook Partisan Voting Index')

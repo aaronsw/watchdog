@@ -1,10 +1,12 @@
-PARSE=../data/parse
 ifeq ($(DATABASE_ENGINE),mysql)
     DBCLIENT=mysql
 else
     DBCLIENT=psql
 endif
+
 PYTHON=PYTHONPATH=.:$(PYTHONPATH) python
+
+PARSE=../data/parse
 JSONS=$(PARSE)/states/index.json \
       $(PARSE)/districts/index.json \
       $(PARSE)/districts/almanac.json \

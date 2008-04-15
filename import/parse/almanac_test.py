@@ -6,8 +6,9 @@ cgitb.enable(format='text')
 def ok(a, b): assert a == b, (a, b)
 def ok_re(a, b): assert re.search(b, a), (a, b)
 
-def main(scrape):
-    root = '../../data/crawl/almanac/nationaljournal.com/pubs/almanac/'
+root = '../../data/crawl/almanac/nationaljournal.com/pubs/almanac/'
+
+def test_scrape_person(scrape):
     trent_franks = scrape(root + '2004/people/az/rep_az02.htm')
     ok(trent_franks['name'], 'Trent Franks')
     ok(trent_franks['title'], 'Rep.')
@@ -139,11 +140,19 @@ def main(scrape):
     ok(sper[2]['totalvotes'], 'Unopposed')
 
     ## District demographics
-    ok(steve_pearce['demographics']['Area size'], '69,598 sq. mi.')
-    ok(steve_pearce['demographics']['Ancestry'], 'German: 7.4%; English: 5.9%; Irish: 5.7%;')
+    demog = steve_pearce['demographics']
+    ok(demog['Area size'], '69,598 sq. mi.')
+    ok(demog['Ancestry'], 'German: 7.4%; English: 5.9%; Irish: 5.7%;')
+    ok(demog['Poverty status'], '22.4%')
+    ok(demog['Median income'], '$29,269')
 
+def test_scrape_state(scrape):
     ## State demographics
     north_dakota = scrape(root + '2008/states/nd/index.html')
     ok(north_dakota['state']['Pop. 2006 (est)'], '635,867')
+    ok(north_dakota['state']['Poverty status'], '11.9%')
+    ok(north_dakota['state']['Median income'], '$34,604')
 
-if __name__ == '__main__': main(almanac.scrape1)
+if __name__ == '__main__':
+    test_scrape_person(almanac.scrape_person)
+    test_scrape_state(almanac.scrape_state)
