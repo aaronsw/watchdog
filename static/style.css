@@ -20,10 +20,10 @@ th { text-align: right; }
 .explain { color: #999; margin-top: -.5em; font-size: smaller;}
 .explain a { color: #777; text-decoration: underline; }
 
-.chartlist { width: 20%;}
-.chartlist td.nut { display: block; position: relative;}
-.chartlist td.nut a { position: relative; z-index: 2; padding: 0.25em 4.5em 0.25em 9px; min-width: 4.5em; }
-.chartlist .count { color: #888;}
+.chartlist { width: 20%; padding-left: 0; margin-left: 0;}
+.chartlist li { display: block; position: relative; line-height: 1.6; border-bottom: .1em solid white; }
+.chartlist li a { position: relative; padding: 0.25em 4.5em 0.25em 9px; min-width: 4.5em; z-index: 2;}
+.chartlist .count { color: #888; position: absolute; display: block; top: 0; right: 0; text-align: right; padding-right: .5em; z-index: 2;}
 .chartlist .index { display: block; position: absolute; left: 0; top: 0; bottom: 0; background: #cff; text-indent: 9999px; overflow: hidden; min-width: 1px; }
 
 table.charted img { border: 0;}

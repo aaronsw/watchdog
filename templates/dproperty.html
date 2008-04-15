@@ -2,7 +2,11 @@ $def with (dists, what)
 
 $var title: Distribution of $what
 
-<table class="chartlist">
+<ul class="chartlist">
 $for dist in dists:
-    <tr id="d$dist.name"><td class="nut"><a href="/us/$dist.name.lower()">$dist.name</a><span class="index" style="width: $dist.pct%">$dist.pct%</span></td><td><span class="count">$dist[what]</span></td></tr>
+    <li id="d$dist.name">
+      <a href="/us/$dist.name.lower()">$dist.name</a>
+      <span class="count">$dist[what]</span>
+      <span class="index" style="width: $int(dist.pct)%">$int(dist.pct)%</span>
+    </li>
 </table>

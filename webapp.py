@@ -6,6 +6,7 @@ import blog
 
 web.config.debug = True
 web.template.Template.globals['commify'] = web.commify
+web.template.Template.globals['int'] = int
 render = web.template.render('templates/', base='base')
 db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), db='watchdog_dev')
 
