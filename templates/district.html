@@ -13,7 +13,7 @@ $var head:
                [$d.center_lat, $d.center_lng, $d.zoom_level - 1])
     </script>
 
-<div id="googlemap" style="width: 50%; height: 300px; margin-bottom: 2em; float: right"></div>
+<div id="googlemap" class="bigmap"></div>
 
 <table class="charted">
 $if d.cook_index:
@@ -58,10 +58,12 @@ $if d.pol_id and d.pol_firstname:
     <p>Represented by <a href="/p/$d.pol_id">$d.pol_firstname 
        $d.pol_lastname</a>.</p>
 
-<div class="sources">District information
-from <cite><a href="$d.almanac">The Almanac of American Politics
-2008</a></cite>. Maps from
-the <a href="http://www.census.gov/geo/www/cob/cd110.html">US Census
-Bureau</a> and
-<a href="http://www.govtrack.us/congress/findyourreps.xpd?state=$d.state&amp;district=$d.district"
->GovTrack</a>.</div>
+<div class="sources">
+  District information from 
+  <cite><a href="$d.almanac">The Almanac of American Politics 2008</a></cite>. 
+  Maps from the 
+  <a href="http://www.census.gov/geo/www/cob/cd110.html">US Census Bureau</a>
+  and
+  <a href="http://www.govtrack.us/congress/findyourreps.xpd?state=$d.state&amp;district=$d.district"
+  >GovTrack</a>.
+</div>

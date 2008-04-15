@@ -13,18 +13,18 @@ CONTENTS:
       # rsync -avz watchdog.net:~watchdog/web/data .
       # 
       crawl/     # incoming data dumps
-            almanac/
-            census/
-            govtrack/
-            votesmart/
-        parse/     # JSON files from parsing the data
-        load/      # SQL from loading into the DB (eventually)
+        almanac/
+        census/
+        govtrack/
+        votesmart/
+      parse/     # JSON files from parsing the data
+      load/      # SQL from loading into the DB (eventually)
     
     import/      # various import code
-        crawl/
-        parse/
-            manual/  # Data files that have been created by hand.
-        load/
+      crawl/
+      parse/
+        manual/  # Data files that have been created by hand.
+      load/
     
     utils/       # utility functions
         
