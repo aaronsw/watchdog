@@ -101,8 +101,8 @@ def time_thunk(thunk):
     rv = thunk()
     return time.time() - start, rv
 
-def test_webapp():
-    "Test the actual watchdog.net webapp.app app."
+def test_find():
+    "Test /us/."
     headers = {'Accept': 'text/html'}
     ok(request(webapp.app, '/', headers=headers).status[:3], '200')
 
@@ -127,7 +127,8 @@ def test_webapp():
 
     # Test for /us/ listing of all the districts and reps.
     # Takes 9-12 seconds on my machine, I think because it's
-    # retrieving the district outline data from MySQL.
+    # retrieving the district outline data from MySQL.  Takes nearly
+    # 1s on watchdog.net.
     reqtime, resp = time_thunk(lambda: request(webapp.app, '/us/',
                                                headers=headers))
     print "took %.3f sec to get /us/" % reqtime
@@ -136,6 +137,29 @@ def test_webapp():
     ok_re(resp.data, 'Stephen Buyer')
     ok_re(resp.data, '/us/la-01')       # LEFT OUTER JOIN test
     assert '(Rep.  )' not in resp.data
+
+def test_state():
+    "Test state pages such as /us/nm.html."
+    resp = request(webapp.app, '/us/nm.html')
+    ok(resp.status[:3], '200')
+    ok_re(resp.data, 'href="/us/NM-01"')
+    ok_re(resp.data, 'href="/us/NM-02"')
+    ok_re(resp.data, 'href="/us/NM-03"')
+    assert '/us/NM-04' not in resp.data
+
+def test_district():
+    "Test district pages such as /us/nm-02."
+    headers = {'Accept': 'text/html'}
+    resp = request(webapp.app, '/us/nm-02', headers=headers)
+    ok(resp.status[:3], '200')
+    print resp.data
+    ok_re(resp.data, r'69,598 sq\. mi\.')  # the area
+
+def test_webapp():
+    "Test the actual watchdog.net webapp.app app."
+    test_find()
+    test_state()
+    test_district()
 
 def main():
     test_request()
