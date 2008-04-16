@@ -142,17 +142,17 @@ def test_state():
     "Test state pages such as /us/nm.html."
     resp = request(webapp.app, '/us/nm.html')
     ok(resp.status[:3], '200')
-    ok_re(resp.data, 'href="/us/NM-01"')
-    ok_re(resp.data, 'href="/us/NM-02"')
-    ok_re(resp.data, 'href="/us/NM-03"')
-    assert '/us/NM-04' not in resp.data
+    ok_re(resp.data, 'href="/us/nm-01"')
+    assert '/us/NM-01' not in resp.data # the uppercase URLs aren't canonical
+    ok_re(resp.data, 'href="/us/nm-02"')
+    ok_re(resp.data, 'href="/us/nm-03"')
+    assert '/us/nm-04' not in resp.data
 
 def test_district():
     "Test district pages such as /us/nm-02."
     headers = {'Accept': 'text/html'}
     resp = request(webapp.app, '/us/nm-02', headers=headers)
     ok(resp.status[:3], '200')
-    print resp.data
     ok_re(resp.data, r'69,598 sq\. mi\.')  # the area
 
 def test_webapp():

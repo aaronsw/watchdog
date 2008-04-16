@@ -12,7 +12,7 @@ $var head:
 $for d in districts:
     <div class="minimapbox">
       <div id="gmap_$d.name" class="minimap"></div><br />
-      <a href="/us/$d.name">$d.name</a>
+      <a href="/us/$d.name.lower()">$d.name</a>
     </div>
 
 <br style="clear: both" />
