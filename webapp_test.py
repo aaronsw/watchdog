@@ -163,7 +163,29 @@ def test_district():
     payload = simplejson.loads(resp.data)
     ok(len(payload), 1)
     district = payload[0]
-    ok(district['area_sqmi'], 69598)
+    # I hope these are right.  I just copied them from the current
+    # output --- this is a problem with doing unit tests after the fact.
+    # I omitted floating-point numbers and the outline.
+    expected = dict(
+        almanac = 'http://nationaljournal.com/pubs/almanac/2008/people/nm/rep_nm02.htm',
+        area_sqmi = 69598,
+        cook_index = 'R+6',
+        est_population = 625204,
+        est_population_year = 2005,
+        median_income = 29269,
+        name = 'NM-02',
+        state = 'http://watchdog.net/us/nm',
+        type = 'District',
+        uri = 'http://watchdog.net/us/NM-02', # wrong
+        wikipedia = "http://en.wikipedia.org/wiki/New_Mexico's_2nd_congressional_district",
+        zoom_level = 6,
+        #@@ this should probably be 'true', not '1', since JSON
+        # supports booleans
+        voting = 1,       # 1 for voting, 0 for nonvoting (e.g. Samoa)
+    )
+
+    for k, v in expected.items():
+        ok(district[k], v)
     #pprint.pprint(payload)
 
 def test_webapp():
