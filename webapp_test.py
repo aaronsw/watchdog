@@ -148,6 +148,18 @@ def test_state():
     ok_re(resp.data, 'href="/us/nm-03"')
     assert '/us/nm-04' not in resp.data
 
+    # JSON
+    resp = request(webapp.app, '/us/nm.json')
+    ok(resp.status[:3], '200')
+    ok(simplejson.loads(resp.data),
+       [{     'code': 'NM',
+          'fipscode': '35',
+              'name': 'New Mexico',
+            'status': 'state',
+              'type': 'State',
+               'uri': 'http://watchdog.net/us/nm',
+         'wikipedia': 'http://en.wikipedia.org/wiki/New_Mexico'}])
+
 def test_district():
     "Test district pages such as /us/nm-02."
     headers = {'Accept': 'text/html'}
