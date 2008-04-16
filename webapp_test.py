@@ -154,7 +154,7 @@ def test_district():
     resp = request(webapp.app, '/us/nm-02', headers=headers)
     ok(resp.status[:3], '200')
     ok_re(resp.data, r'69,598 sq\. mi\.')  # the district's area
-    ok_re(resp.data, 'href=.*/us/nm.html')
+    ok_re(resp.data, 'href=".*/us/nm"')
 
     # JSON
     resp = request(webapp.app, '/us/nm-02.json', headers=headers)
