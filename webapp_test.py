@@ -162,6 +162,13 @@ def test_state():
                'uri': 'http://watchdog.net/us/nm',
          'wikipedia': 'http://en.wikipedia.org/wiki/New_Mexico'}])
 
+    # JSON obtained with Accept header.
+    rsp2 = request(webapp.app, '/us/nm', headers={'Accept': 'application/json'})
+    ok(rsp2.data, resp.data)
+
+    #@@ I'd write an N3 test but I'm too sleepy to Google up an N3
+    # parser right now.
+
 def test_district():
     "Test district pages such as /us/nm-02."
     headers = {'Accept': 'text/html'}
