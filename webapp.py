@@ -129,6 +129,18 @@ def nth_string(n):
     if n in [11, 12, 13]: return '%sth' % n
     return {1: '%sst', 2: '%snd', 3: '%srd'}.get(n % 10, '%sth') % n
 
+def publishify(fields, data):
+    def publishify_item(fields, datum):
+        rv = {}
+        for k, v in fields.items():
+            for k in k.split():
+                if callable(v): rv[k] = v(datum[k])
+                else: rv[k] = v
+        return rv
+    return [publishify_item(fields, datum) for datum in data]
+
+identity = lambda x: x
+
 class district:
     def GET(self, district, format=None):
         try:
@@ -147,25 +159,15 @@ class district:
         except IndexError:
             raise web.notfound
         
-        out = apipublish.publish([{
+        out = apipublish.publish(publishify({
           'uri': 'http://watchdog.net/us/' + district.lower(),
           'type': 'District',
-          'name': d.name,
           'state': apipublish.URI('http://watchdog.net/us/' + d.state.lower()),
-          'voting': d.voting,
-          'wikipedia': apipublish.URI(d.wikipedia),
-          'almanac': apipublish.URI(d.almanac),
-          'area_sqmi': d.area_sqmi,
-          'cook_index': d.cook_index,
-          'poverty_pct': d.poverty_pct,
-          'median_income': d.median_income,
-          'est_population': d.est_population,
-          'est_population_year': d.est_population_year,
-          'outline': d.outline,
-          'center_lat': d.center_lat,
-          'center_lng': d.center_lng,
-          'zoom_level': d.zoom_level
-         }], format)
+          'wikipedia almanac': apipublish.URI,
+          'name voting area_sqmi cook_index poverty_pct median_income '
+          'est_population est_population_year outline center_lat '
+          'center_lng zoom_level': identity,
+        }, [d]), format)
         if out is not False:
             return out
         
