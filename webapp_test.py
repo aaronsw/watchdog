@@ -201,9 +201,7 @@ def test_district():
         uri = 'http://watchdog.net/us/nm-02',
         wikipedia = "http://en.wikipedia.org/wiki/New_Mexico's_2nd_congressional_district",
         zoom_level = 6,
-        #@@ this should probably be 'true', not '1', since JSON
-        # supports booleans
-        voting = 1,       # 1 for voting, 0 for nonvoting (e.g. Samoa)
+        voting = True,
     )
 
     for k, v in expected.items():
