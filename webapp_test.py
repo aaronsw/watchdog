@@ -164,8 +164,9 @@ def test_district():
     ok(len(payload), 1)
     district = payload[0]
     # I hope these are right.  I just copied them from the current
-    # output --- this is a problem with doing unit tests after the fact.
-    # I omitted floating-point numbers and the outline.
+    # output --- this is a problem with doing unit tests after the
+    # fact.  I omitted floating-point numbers (poverty_pct,
+    # center_lat, center_lng) and the outline.
     expected = dict(
         almanac = 'http://nationaljournal.com/pubs/almanac/2008/people/nm/rep_nm02.htm',
         area_sqmi = 69598,
@@ -176,7 +177,7 @@ def test_district():
         name = 'NM-02',
         state = 'http://watchdog.net/us/nm',
         type = 'District',
-        uri = 'http://watchdog.net/us/NM-02', # wrong
+        uri = 'http://watchdog.net/us/nm-02',
         wikipedia = "http://en.wikipedia.org/wiki/New_Mexico's_2nd_congressional_district",
         zoom_level = 6,
         #@@ this should probably be 'true', not '1', since JSON

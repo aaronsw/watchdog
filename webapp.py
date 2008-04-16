@@ -148,7 +148,7 @@ class district:
             raise web.notfound
         
         out = apipublish.publish([{
-          'uri': 'http://watchdog.net/us/' + district,
+          'uri': 'http://watchdog.net/us/' + district.lower(),
           'type': 'District',
           'name': d.name,
           'state': apipublish.URI('http://watchdog.net/us/' + d.state.lower()),
