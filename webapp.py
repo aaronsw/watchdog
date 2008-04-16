@@ -71,7 +71,9 @@ class find:
             elif len(dists) == 0:
                 return render.find_none(i.zip)
             else:
-                dists = db.select(['district' + ' LEFT OUTER JOIN politician ON (politician.district = district.name)'], where=web.sqlors('name=', dists))
+                dists = db.select(['district' + ' LEFT OUTER JOIN politician '
+                                   'ON (politician.district = district.name)'],
+                                  where=web.sqlors('name=', dists))
                 return render.find_multi(i.zip, dists)
         else:
             out = apipublish.publish([{

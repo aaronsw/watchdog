@@ -1,6 +1,6 @@
 #!/usr/bin/python
 "Unit tests for code in webapp.py."
-import string, re
+import string, re, time
 import webapp
 import urllib, web
 
@@ -96,18 +96,46 @@ def test_request():
         'User-Agent': 'a small jumping bean/1.0 (compatible)'
     }).data, 'your user agent is a small jumping bean/1.0 (compatible)')
 
+def time_thunk(thunk):
+    start = time.time()
+    rv = thunk()
+    return time.time() - start, rv
+
 def test_webapp():
     "Test the actual watchdog.net webapp.app app."
     headers = {'Accept': 'text/html'}
     ok(request(webapp.app, '/', headers=headers).status[:3], '200')
 
+    # A ZIP code within a single congressional district.
+    resp = request(webapp.app, '/us/?zip=94070', headers=headers)
+    ok(resp.status[:3], '303')
+    ok(resp.headers.get('Location'), 'http://0.0.0.0:8080/us/ca-12')
+
     # A ZIP code in Indiana that crosses three districts.
     resp = request(webapp.app, '/us/?zip=46131', headers=headers)
     ok(resp.status[:3], '200')
     ok_re(resp.data, '/us/in-04')
+    ok_re(resp.data, 'Stephen Buyer')   # rep for IN-04 at the moment
     ok_re(resp.data, '/us/in-05')
     ok_re(resp.data, '/us/in-06')
     assert '/us/in-07' not in resp.data, resp.data
+    
+    # Test for LEFT OUTER JOIN: district row with no corresponding politician row.
+    resp = request(webapp.app, '/us/?zip=70072', headers=headers)
+    ok(resp.status[:3], '200')
+    ok_re(resp.data, '/us/la-01')       # no rep at the moment
+
+    # Test for /us/ listing of all the districts and reps.
+    # Takes 9-12 seconds on my machine, I think because it's
+    # retrieving the district outline data from MySQL.
+    reqtime, resp = time_thunk(lambda: request(webapp.app, '/us/',
+                                               headers=headers))
+    print "took %.3f sec to get /us/" % reqtime
+    ok(resp.status[:3], '200')
+    ok_re(resp.data, '/us/in-04')
+    ok_re(resp.data, 'Stephen Buyer')
+    ok_re(resp.data, '/us/la-01')       # LEFT OUTER JOIN test
+    assert '(Rep.  )' not in resp.data
 
 def main():
     test_request()
