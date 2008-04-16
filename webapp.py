@@ -111,7 +111,10 @@ class state:
         if out is not False:
             return out
         
-        districts = db.select('district', where='state=$state.code', order='district asc', vars=locals())
+        districts = db.select('district',
+                              where='state=$state.code',
+                              order='district asc',
+                              vars=locals())
         
         return render.state(state, districts.list())
 
@@ -119,7 +122,7 @@ class redistrict:
     def GET(self, district):
         return web.seeother('/us/' + district.lower())
 
-#@@ move to web.py?  if so, handle negative numbers?
+#@@ move to web.py?  if so, handle negative numbers and >100 (e.g. 111st)?
 def nth_string(n):
     "Format an ordinal.  1 -> 1st, 2 -> 2nd, 3 -> 3rd, 33 -> 33rd, 90 -> 90th."
     assert n >= 0
@@ -130,7 +133,16 @@ class district:
     def GET(self, district, format=None):
         try:
             district = district.upper()
-            d = db.select(['district', 'state', 'politician'], what='district.*, state.name as state_name, politician.firstname as pol_firstname, politician.lastname as pol_lastname, politician.id as pol_id, politician.photo_path as pol_photo_path', where='district.name = $district AND district.state = state.code AND politician.district = district.name', vars=locals())[0]
+            d = db.select(['district', 'state', 'politician'],
+                          what=('district.*, state.name as state_name, '
+                                'politician.firstname as pol_firstname, '
+                                'politician.lastname as pol_lastname, '
+                                'politician.id as pol_id, '
+                                'politician.photo_path as pol_photo_path'),
+                          where=('district.name = $district AND '
+                                 'district.state = state.code AND '
+                                 'politician.district = district.name'),
+                          vars=locals())[0]
         except IndexError:
             raise web.notfound
         
