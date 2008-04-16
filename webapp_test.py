@@ -153,7 +153,8 @@ def test_district():
     headers = {'Accept': 'text/html'}
     resp = request(webapp.app, '/us/nm-02', headers=headers)
     ok(resp.status[:3], '200')
-    ok_re(resp.data, r'69,598 sq\. mi\.')  # the area
+    ok_re(resp.data, r'69,598 sq\. mi\.')  # the district's area
+    ok_re(resp.data, 'href=.*/us/nm.html')
 
 def test_webapp():
     "Test the actual watchdog.net webapp.app app."
