@@ -151,6 +151,8 @@ def test_state():
     # JSON
     resp = request(webapp.app, '/us/nm.json')
     ok(resp.status[:3], '200')
+    # Copied and pasted from current output; hope it's right.  See
+    # below about perils of writing unit tests afterwards.
     ok(simplejson.loads(resp.data),
        [{     'code': 'NM',
           'fipscode': '35',

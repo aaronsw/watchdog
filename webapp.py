@@ -99,15 +99,12 @@ class state:
         except IndexError:
             raise web.notfound
         
-        out = apipublish.publish([{
+        out = apipublish.publish(publishify({
           'uri': 'http://watchdog.net/us/' + state.code.lower(),
           'type': 'State',
-          'code': state.code,
-          'fipscode': state.fipscode,
-          'name': state.name,
-          'status': state.status,
-          'wikipedia': apipublish.URI(state.wikipedia)
-         }], format)
+          'wikipedia': apipublish.URI,
+          'code fipscode name status': identity,
+        }, [state]), format)
         if out is not False:
             return out
         
