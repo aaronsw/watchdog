@@ -134,7 +134,8 @@ class district:
         try:
             district = district.upper()
             d = db.select(['district', 'state', 'politician'],
-                          what=('district.*, state.name as state_name, '
+                          what=('district.*, '
+                                'state.name as state_name, '
                                 'politician.firstname as pol_firstname, '
                                 'politician.lastname as pol_lastname, '
                                 'politician.id as pol_id, '

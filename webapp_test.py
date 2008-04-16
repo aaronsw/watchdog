@@ -1,6 +1,6 @@
 #!/usr/bin/python
 "Unit tests for code in webapp.py."
-import string, re, time
+import string, re, time, simplejson, pprint
 import webapp
 import urllib, web
 
@@ -156,11 +156,21 @@ def test_district():
     ok_re(resp.data, r'69,598 sq\. mi\.')  # the district's area
     ok_re(resp.data, 'href=.*/us/nm.html')
 
+    # JSON
+    resp = request(webapp.app, '/us/nm-02.json', headers=headers)
+    ok(resp.status[:3], '200')
+    ok(resp.headers['Content-Type'], 'application/json')
+    payload = simplejson.loads(resp.data)
+    ok(len(payload), 1)
+    district = payload[0]
+    ok(district['area_sqmi'], 69598)
+    #pprint.pprint(payload)
+
 def test_webapp():
     "Test the actual watchdog.net webapp.app app."
-    test_find()
     test_state()
     test_district()
+    test_find()                         # slow
 
 def main():
     test_request()
