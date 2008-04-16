@@ -15,8 +15,6 @@ $var head:
 
 <div id="googlemap" class="bigmap"></div>
 
-<p><a href="/us/${d.state.lower()}">(state info)</a></p>
-
 <table class="charted">
 $if d.cook_index:
     <tr>
@@ -59,6 +57,8 @@ $if d.pol_id and d.pol_firstname:
     
     <p>Represented by <a href="/p/$d.pol_id">$d.pol_firstname 
        $d.pol_lastname</a>.</p>
+
+<p><a href="/us/${d.state.lower()}">More about $d.state_name...</a></p>    
 
 <div class="sources">
   District information from 
