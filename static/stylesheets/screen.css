@@ -1,0 +1,58 @@
+@import "boilerplate.css";
+
+body { text-shadow: 0 0 0 #000; }
+h1 { margin-bottom: 5px; font-size: 28px; line-height: 35px; color: #777; }
+h2 { margin-bottom: 5px; font-size: 28px; line-height: 35px; color: #777; }
+h3 { margin-bottom: 5px; font-size: 20px; line-height: 30px; color: #777; }
+h4 { margin-bottom: 5px; font-size: 20px; line-height: 30px; color: #777; }
+h5 { margin-bottom: 5px; font-size: 18px; line-height: 25px; color: #777; }
+h6 { margin-bottom: 5px; font-size: 18px; line-height: 25px; color: #777; }
+p,ul,ol,dl { font-size: 15px; line-height: 22px; color: #222; }
+strong { font-weight: bold; }
+a { color: #006ce5; }
+code { font-size: 13px; }
+pre code { display: block; padding: 10px; background: #eee; font-size: 12px; color: #333; -webkit-border-radius: 4px; border-radius: 4px; }
+.date { font-size: 13px; line-height: 15px; color: #999; }
+
+#header { position: relative; padding: 10px 20px; background: #0e5190; border-bottom: 2px solid #0a3f6f; }
+#header h1 { margin: 0; font-size: 18px; line-height: 20px; }
+#header h1 a { font-weight: bold; color: #fff; }
+#header h1 a:hover { text-decoration: none; color: #fff; }
+#header h1 a span { font-size: normal; color: #fff; }
+
+#body { position: relative; }
+#body:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+
+#footer { padding: 10px 20px; border-top: 1px solid #ddd; }
+#footer ul { list-style: none; padding: 0; overflow: hidden; font-size: 13px; }
+#footer ul li { float: left; }
+#footer ul li a { float: left; display: block; margin-right: 15px; color: #999; }
+#footer ul li a:hover { color: #555; }
+
+.content_title { padding: 10px 20px; background: #eee; border-bottom: 1px solid #ccc; }
+.content_title h2 { margin-bottom: 5px; font-size: 28px; line-height: 30px; color: #777; }
+.content_title h3 { margin-bottom: 5px; font-size: 16px; line-height: 20px; color: #999; }
+
+.content { padding: 20px; }
+
+form.find_district h4 { margin-bottom: 10px; font-size: 18px; line-height: 20px; color: #777; }
+form.find_district p { margin: 0; padding: 10px 20px; width: 220px; background: #ddd; -webkit-border-radius: 4px; border-radius: 4px; color: #555; }
+form.find_district p input { padding: 2px; width: 100px; font-size: 14px; color: #333; }
+form.find_district p input.submit { width: auto; font-size: 14px; }
+
+#district_map { float: right; margin-bottom: 20px; width: 50%; height: 300px; background: #ddd; border: 10px solid #eee; -webkit-border-radius: 4px; border-radius: 4px; }
+
+.district_info { width: 45%; font-size: 14px; line-height: 18px; }
+.district_info th { padding: 3px 20px 3px 0; border-bottom: 1px solid #ddd; color: #777; }
+.district_info td { padding: 3px 20px 3px 0; border-bottom: 1px solid #ddd; color: #333; }
+
+.credit { padding: 10px 20px; background: #eee; }
+.credit p { margin-bottom: 0; font-size: 13px; line-height: 18px; color: #777; }
+
+.congress_people { width: 100%; clear: both; font-size: 14px; }
+.congress_people th { border-bottom: 1px solid #ddd; font-size: 14px; color: #777; }
+.congress_people td { padding: 5px 20px 5px 0; border-bottom: 1px solid #ddd; vertical-align: top; color: #555; }
+.congress_people .person { width: 200px; overflow: hidden; }
+.congress_people .person img { float: left; margin-right: 10px; }
+.congress_people .person h4 { margin-bottom: 0; font-size: 16px; font-weight: bold; line-height: 20px; }
+.congress_people .person h5 { margin-bottom: 0; font-size: 14px; line-height: 20px; }

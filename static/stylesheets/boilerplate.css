@@ -1,0 +1,64 @@
+/* -------------------------------------------------------------- 
+   RESET
+-------------------------------------------------------------- */
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td { margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; font-weight: normal; vertical-align: baseline; background: transparent; }
+body { line-height: 1; }
+ol, ul { list-style: none; }
+blockquote, q { quotes: none; }
+:focus { outline: none; }
+ins { text-decoration: none; }
+del { text-decoration: line-through; }
+table { border-collapse: collapse; border-spacing: 0; }
+caption, th { text-align: left; font-weight: bold; }
+td { text-align: left; }
+input,textarea { margin: 0; }
+
+
+/* -------------------------------------------------------------- 
+   TYPOGRAPHY
+-------------------------------------------------------------- */
+
+body,h1,h2,h3,h4,h5,h6,p,ul,ol,dl,input,textarea { font-family: 'Helvetica Neue', Helvetica, Arial, FreeSans, sans-serif; }
+
+/* HEADINGS */
+h1 { font-size: 40px; line-height: 50px; margin-bottom: 10px; }
+h2 { font-size: 30px; line-height: 40px; margin-bottom: 10px; }
+h3 { font-size: 20px; line-height: 30px; }
+h4 { font-size: 14px; line-height: 20px; }
+h5 { font-size: 14px; line-height: 20px; }
+h6 { font-size: 14px; line-height: 20px; }
+
+/* TEXT ELEMENTS */
+p, ul, ol, dl { margin-bottom: 20px; font-size: 14px; line-height: 20px; }
+ul, ol { padding-left: 20px;}
+ul { list-style-type: circle; }
+ol { list-style-type: decimal; }
+dl dt { font-weight: bold; }
+dl dd { padding-left: 10px; }
+abbr, acronym { text-decoration: underline; }
+a { color: #009; text-decoration: none; }
+a:hover { text-decoration: underline; }
+blockquote { margin: 20px 0; padding-left: 10px; }
+dfn { font-style: italic; font-weight: bold; }
+pre, code { margin: 20px 0; white-space: pre; }
+pre, code, tt { font: 10px monospace; line-height: 20px; } 
+tt { display: block; margin: 20px 0; line-height: 20px; }
+
+/* TABLES */
+table { margin-bottom: 20px; }
+th { border-bottom: 2px solid #ddd; font-weight: bold; }
+td { border-bottom: 1px solid #ddd; }
+th,td { padding: 5px 10px 5px 0; }
+tfoot { font-style: italic; }
+caption { background: #ffc; }
+
+
+/* -------------------------------------------------------------- 
+   FORMS
+-------------------------------------------------------------- */
+
+label { font-weight: bold; }
+fieldset { padding: 9px; margin-bottom: 20px; border: 1px solid #ddd; }
+legend { padding: 0 10px; font-weight: bold; font-size: 14px; line-height: 20px; }
+textarea { padding: 10px; }
