@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 import os, re
 import web
 from utils import zip2rep, simplegraphs, apipublish

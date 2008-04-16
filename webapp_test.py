@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 "Unit tests for code in webapp.py."
 import string, re, time, simplejson, pprint
 import webapp
