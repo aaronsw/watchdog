@@ -9,12 +9,63 @@ urls = (
 render = web.template.render('templates/', base='base')
 
 content = [
-  web.storage({
-    'slug': 'launch',
-    'title': 'Welcome to watchdog.net!',
-    'author': 'Aaron Swartz',
-    'updated': '2008-04-14T00:00:00Z',
-    'body': """
+  web.storage(
+    slug = 'momentum',
+    title = 'Building Momentum',
+    author = 'Aaron Swartz',
+    updated = '2008-04-16T00:00Z',
+    body = """
+<p>
+The response to the announcement of this little site 
+has been bigger than I ever expected.
+Within hours after I posted about it,
+I'd received a couple dozen emails of support --
+some people asking how they could help,
+others asking sending their ideas and suggestions,
+and many just saying "right on!"
+</p>
+
+<p>
+I've launched dozens of sites but I've never gotten a response quite like this.
+And I think it has to be chalked up to the power of this idea:
+there are lots of people eager for a way to <em>get involved</em>.
+If you want to do your part, 
+I suggest you sign up for
+<a href="http://groups.google.com/group/watchdog-volunteers">our volunteer list</a> -- 
+I'll send an email out there when we need help with something.
+</p>
+
+<p>
+Perhaps the most helpful -- 
+and most unexpected -- 
+piece has been all the Python programmers who wrote in 
+asking how they could help.
+The volunteers quickly ran thru everything I could think of off the top of my head
+and I've had to go thru my todo list and start picking out things
+I never thought I'd get to.
+Of course that's a great problem to have
+and <a href="http://watchdog.net/about/#feedback">we could always use more hands</a>.
+</p>
+
+<p>
+And just a short while ago,
+I did an interview with XM Satellite Radio about the project.
+All in all, not bad for a first day.
+</p>
+
+<p>
+Thanks to everyone who made it happen.
+And let's make sure we don't lose this momentum -- 
+together, let's build something great.
+</p>
+"""
+  ),
+  web.storage(
+    slug = 'launch',
+    title = 'Welcome to watchdog.net!',
+    author = 'Aaron Swartz',
+    updated = '2008-04-14T00:00:00Z',
+    body = """
 <p>
 It's a big election year in the US, 
 which means a lot of people have been thinking about politics lately. 
@@ -63,8 +114,8 @@ This is just the skeleton of the site we hope to build.
 Thanks for bearing with us 
 and <a href="http://watchdog.net/about/#feedback">let us know what you think</a>.
 </p>
-""",
-  })
+"""
+  )
 ]
 content_mapping = dict((x.slug, x) for x in content)
 
