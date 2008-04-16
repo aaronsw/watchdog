@@ -61,6 +61,8 @@ class reblog:
 class find:
     def GET(self, format=None):
         i = web.input(address=None)
+        join = ['district' + ' LEFT OUTER JOIN politician '
+                             'ON (politician.district = district.name)']
         if i.get('zip'):
             try:
                 dists = zip2rep.zip2dist(i.zip, i.address)
@@ -71,9 +73,7 @@ class find:
             elif len(dists) == 0:
                 return render.find_none(i.zip)
             else:
-                dists = db.select(['district' + ' LEFT OUTER JOIN politician '
-                                   'ON (politician.district = district.name)'],
-                                  where=web.sqlors('name=', dists))
+                dists = db.select(join, where=web.sqlors('name=', dists))
                 return render.find_multi(i.zip, dists)
         else:
             out = apipublish.publish([{
@@ -88,7 +88,7 @@ class find:
             if out is not False:
                 return out
             
-            dists = db.select(['district' + ' LEFT OUTER JOIN politician ON (politician.district = district.name)'], order='name asc')
+            dists = db.select(join, order='name asc')
             return render.districtlist(dists)
 
 class state:
