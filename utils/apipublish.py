@@ -158,7 +158,7 @@ def bestaccepted(options, source=None):
     todo: send a 406 if no match
     """
     if source is None:
-        source = web.ctx.env['HTTP_ACCEPT']
+        source = web.ctx.env.get('HTTP_ACCEPT', '')
     
     accepts = [_findq(x) for x in source.split(',')]
     accepts.sort(reverse=True)
