@@ -19,18 +19,12 @@ def scrape_photo_alt(fname, rv, alt):
     for field in 'name party title'.split():
         rv[field] = photo_parts.group(field)
 
-tag = '(?:<[^>]+>)'
-tags = tag + '*'
 def crappy_extract_text(html):
-    value = html
-    value = re.sub(r'(?i)<br[^>]*>', '\n', value)
-    value = re.sub(tags, '', value)
-    value = re.sub(r'(\s|&nbsp;)+', ' ', value)
-    value = re.sub(r'&ndash;', '-', value)
-    value = re.sub(r'&amp;', '&', value)
-    value = re.sub(r'(?s)^\s+', '', value)
-    value = re.sub(r'(?s)\s+$', '', value)
-    return value
+    html = re.sub(r'(?i)<br[^>]*>', '\n', html)
+    soup = BeautifulSoup.BeautifulSoup(html, convertEntities='html')
+    text = ''.join(soup.findAll(text=True))
+    text = text.replace(u'\xa0', ' ')   # &nbsp;
+    return text.strip()
 
 def plain(fieldname):
     "A plain text field."
