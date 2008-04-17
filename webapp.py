@@ -128,11 +128,16 @@ def publishify(fields, data):
         for k, v in fields.items():
             for k in k.split():
                 if callable(v): rv[k] = v(datum[k])
+                elif hasattr(v, 'generic'): rv[k] = v.generic(datum)
                 else: rv[k] = v
         return rv
     return [publishify_item(fields, datum) for datum in data]
 
 identity = lambda x: x
+class generic:
+    "Generic publishable data field computed from the whole source object."
+    def __init__(self, thunk): self.thunk = thunk
+    def generic(self, obj): return self.thunk(obj)
 
 class district:
     def GET(self, district, format=None):
@@ -179,12 +184,13 @@ class politician:
         if polid == "" or polid == "index":
             p = db.select(['politician'], order='district asc').list()
             
-            out = apipublish.publish([{
-              'uri': 'http://watchdog.net/p/' + x.id,
+            out = apipublish.publish(publishify({
+              'uri': generic(lambda x: 'http://watchdog.net/p/' + x.id),
               'type': 'Politician',
-              'district': apipublish.URI('http://watchdog.net/us/' + x.district.lower()),
-              'wikipedia': apipublish.URI(x.wikipedia)
-             } for x in p], format)
+              'district': lambda x: apipublish.URI('http://watchdog.net/us/' +
+                                                   x.lower()),
+              'wikipedia': apipublish.URI,
+             }, p), format)
             if out is not False:
                 return out
             

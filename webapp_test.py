@@ -143,6 +143,17 @@ def test_politician():
         wikipedia = 'http://en.wikipedia.org/wiki/Henry_Waxman',
     ))
 
+    reqtime, listing = time_thunk(lambda:
+        simplejson.loads(webapp.app.request('/p/index.json').data))
+    print "took %.3f sec to get /p/index.json" % reqtime
+    ok_items(listing[0], dict(
+        district = 'http://watchdog.net/us/ak-00',
+        type = 'Politician',
+        uri = 'http://watchdog.net/p/don_young',
+        wikipedia = 'http://en.wikipedia.org/wiki/Don_Young'
+    ))
+    ok(listing[-1]['district'], 'http://watchdog.net/us/wy-00')
+
 def test_webapp():
     "Test the actual watchdog.net webapp.app app."
     test_state()
