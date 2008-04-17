@@ -167,7 +167,7 @@ class district:
         if d.district == 0:
             d.districtth = 'at-large'
         else:
-            d.districtth = web.nth_string(d.district)
+            d.districtth = web.nthstr(d.district)
         
         return render.district(d)
 
