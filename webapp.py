@@ -191,30 +191,26 @@ class politician:
             return render.pollist(p)
         
         try:
-            p = db.select(['politician', 'district'], what="politician.*, district.center_lat as d0, district.center_lng as d1, district.zoom_level as d2", where='id=$polid AND district.name = politician.district', vars=locals())[0]
+            p = db.select(['politician', 'district'],
+                          what=("politician.*, "
+                                "district.center_lat as d0, "
+                                "district.center_lng as d1, "
+                                "district.zoom_level as d2"),
+                          where=('id=$polid AND '
+                                 'district.name = politician.district'),
+                          vars=locals())[0]
         except IndexError:
             raise web.notfound
         
-        out = apipublish.publish([{
+        out = apipublish.publish(publishify({
           'uri': 'http://watchdog.net/p/' + polid,
           'type': 'Politician',
           'district': apipublish.URI('http://watchdog.net/us/' + p.district.lower()),
-          'wikipedia': apipublish.URI(p.wikipedia),
-          'bioguideid': p.bioguideid,
-          'opensecretsid': p.opensecretsid,
-          'govtrackid': p.govtrackid,
-          'gender': p.gender,
-          'birthday': p.birthday,
-          'firstname': p.firstname,
-          'middlename': p.middlename,
-          'lastname': p.lastname,
-          'officeurl': p.officeurl,
-          'party': p.party,
-          'religion': p.religion,
-          'photo_path': p.photo_path,
-          'photo_credit_url': p.photo_credit_url,
-          'photo_credit_text': p.photo_credit_text,
-         }], format)
+          'wikipedia': apipublish.URI,
+          'bioguideid opensecretsid govtrackid gender birthday firstname '
+          'middlename lastname officeurl party religion photo_path '
+          'photo_credit_url photo_credit_text': identity,
+         }, [p]), format)
         if out is not False:
             return out
         

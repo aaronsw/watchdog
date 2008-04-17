@@ -6,6 +6,9 @@ import urllib, web
 
 def ok(a, b): assert a == b, (a, b)
 def ok_re(a, b): assert re.search(b, a), (a, b)
+def ok_items(actual, expected):
+    "Check specified keys in a dict."
+    for k, v in expected.items(): ok(actual[k], v)
 
 def time_thunk(thunk):
     start = time.time()
@@ -99,7 +102,7 @@ def test_district():
     # output --- this is a problem with doing unit tests after the
     # fact.  I omitted floating-point numbers (poverty_pct,
     # center_lat, center_lng) and the outline.
-    expected = dict(
+    ok_items(district, dict(
         almanac = 'http://nationaljournal.com/pubs/almanac/2008/people/nm/rep_nm02.htm',
         area_sqmi = 69598,
         cook_index = 'R+6',
@@ -113,16 +116,38 @@ def test_district():
         wikipedia = "http://en.wikipedia.org/wiki/New_Mexico's_2nd_congressional_district",
         zoom_level = 6,
         voting = True,
-    )
+    ))
 
-    for k, v in expected.items():
-        ok(district[k], v)
-    #pprint.pprint(payload)
+def test_politician():
+    henry = simplejson.loads(webapp.app.request('/p/henry_waxman.json').data)
+    (henry,) = henry                    # unpack single item
+    ok_items(henry, dict(
+        bioguideid = 'W000215',
+        birthday = '1939-09-12',
+        district = 'http://watchdog.net/us/ca-30',
+        firstname = 'Henry',
+        gender = 'M',
+        govtrackid = '400425',
+        lastname = 'Waxman',
+        middlename = 'A.',
+        officeurl = 'http://www.henrywaxman.house.gov',
+        opensecretsid = 'N00001861',
+        party = 'Democrat',
+        photo_credit_text = 'Congressional Biographical Directory',
+        photo_credit_url =
+            'http://bioguide.congress.gov/scripts/bibdisplay.pl?index=W000215',
+        photo_path = '/data/crawl/house/photos/W000215.jpg',
+        religion = 'Jewish',
+        type = 'Politician',
+        uri = 'http://watchdog.net/p/henry_waxman',
+        wikipedia = 'http://en.wikipedia.org/wiki/Henry_Waxman',
+    ))
 
 def test_webapp():
     "Test the actual watchdog.net webapp.app app."
     test_state()
     test_district()
+    test_politician()
     test_find()                         # slow
 
 def main():
