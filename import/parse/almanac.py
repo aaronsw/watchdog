@@ -1,7 +1,5 @@
 #!/usr/bin/python
 # Scrape nationaljournal.com pages.
-import sys
-sys.path.append('/usr/share/pycentral/python-syck/site-packages')
 import re, BeautifulSoup, sys
 
 def scrape_photo_alt(fname, rv, alt):
