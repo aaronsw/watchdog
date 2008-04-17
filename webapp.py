@@ -77,10 +77,10 @@ class find:
                 return render.find_multi(i.zip, dists)
         else:
             out = apipublish.publish({
-              'uri': generic(lambda x: 'http://watchdog.net/us/' +
-                             x.name.lower()),
+              'uri': apipublish.generic(lambda x: 'http://watchdog.net/us/' +
+                                        x.name.lower()),
               'type': 'District',
-              'name state district voting': identity,
+              'name state district voting': apipublish.identity,
               'wikipedia': apipublish.URI,
              }, db.select('district'), format)
             if out is not False:
@@ -101,7 +101,7 @@ class state:
           'uri': 'http://watchdog.net/us/' + state.code.lower(),
           'type': 'State',
           'wikipedia': apipublish.URI,
-          'code fipscode name status': identity,
+          'code fipscode name status': apipublish.identity,
         }, [state], format)
         if out is not False:
             return out
@@ -116,12 +116,6 @@ class state:
 class redistrict:
     def GET(self, district):
         return web.seeother('/us/' + district.lower())
-
-identity = lambda x: x
-class generic:
-    "Generic publishable data field computed from the whole source object."
-    def __init__(self, thunk): self.thunk = thunk
-    def generic(self, obj): return self.thunk(obj)
 
 class district:
     def GET(self, district, format=None):
@@ -148,7 +142,7 @@ class district:
           'wikipedia almanac': apipublish.URI,
           'name voting area_sqmi cook_index poverty_pct median_income '
           'est_population est_population_year outline center_lat '
-          'center_lng zoom_level': identity,
+          'center_lng zoom_level': apipublish.identity,
         }, [d], format)
         if out is not False:
             return out
@@ -169,7 +163,8 @@ class politician:
             p = db.select(['politician'], order='district asc').list()
             
             out = apipublish.publish({
-              'uri': generic(lambda x: 'http://watchdog.net/p/' + x.id),
+              'uri': apipublish.generic(lambda x: 'http://watchdog.net/p/' +
+                                        x.id),
               'type': 'Politician',
               'district': lambda x: apipublish.URI('http://watchdog.net/us/' +
                                                    x.lower()),
@@ -199,7 +194,7 @@ class politician:
           'wikipedia': apipublish.URI,
           'bioguideid opensecretsid govtrackid gender birthday firstname '
           'middlename lastname officeurl party religion photo_path '
-          'photo_credit_url photo_credit_text': identity,
+          'photo_credit_url photo_credit_text': apipublish.identity,
          }, [p], format)
         if out is not False:
             return out

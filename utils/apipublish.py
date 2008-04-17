@@ -6,8 +6,19 @@ import datetime
 import simplejson
 import web
 
+## Field types
+
 class URI:
     def __init__(self, uri): self.uri = uri
+identity = lambda x: x
+
+class generic:
+    "Generic publishable data field computed from the whole source object."
+    def __init__(self, thunk): self.thunk = thunk
+    def generic(self, obj): return self.thunk(obj)
+
+
+##
 
 exampleobj = [
   {
