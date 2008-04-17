@@ -19,8 +19,8 @@ urls = (
   r'/us/([a-z][a-z])%s?' % options, 'state',
   r'/us/([A-Z][A-Z]-\d+)', 'redistrict',
   r'/us/([a-z][a-z]-\d+)%s?' % options, 'district',
-  r'/us/by/(.*)/distribution.png', 'sparkdist',
-  r'/us/by/(.*)', 'dproperty',
+  r'/(us|p)/by/(.*)/distribution.png', 'sparkdist',
+  r'/(us|p)/by/(.*)', 'dproperty',
   r'/p/(.*?)%s?' % options, 'politician',
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
@@ -203,27 +203,43 @@ class politician:
         return render.politician(p)
 
 r_safeproperty = re.compile('^[a-z0-9_]+$')
+table_map = {'us': 'district', 'p': 'politician'}
 
 class dproperty:
-    def GET(self, what):
+    def GET(self, table, what):
+        try:
+            table = table_map[table]
+        except KeyError:
+            raise web.notfound
         if not r_safeproperty.match(what): raise web.notfound
         
-        maxnum = float(db.select('district',
+        maxnum = float(db.select(table,
                                  what='max(%s) as m' % what,
                                  vars=locals())[0].m)
-        dists = db.select('district',
+        items = db.select(table,
                           what="*, 100*(%s/$maxnum) as pct" % what,
                           order='%s desc' % what,
                           where='%s is not null' % what,
-                          vars=locals())
-        return render.dproperty(dists, what)
+                          vars=locals()).list()
+        for item in items:
+            if table == 'district':
+                item.id = 'd' + item.name
+                item.path = '/us/' + item.name.lower()
+            elif table == 'politician':
+                item.name = item.firstname + ' ' + item.lastname
+                item.path = '/p/' + item.id
+        return render.dproperty(items, what)
 
 class sparkdist:
-    def GET(self, what):
+    def GET(self, table, what):
+        try:
+            table = table_map[table]
+        except KeyError:
+            raise web.notfound
         if not r_safeproperty.match(what): raise web.notfound
         
         inp = web.input(point=None)
-        points = db.select('district', what=what, order=what+' desc', where=what+' is not null')
+        points = db.select(table, what=what, order=what+' desc', where=what+' is not null')
         points = [x[what] for x in points.list()]
         
         web.header('Content-Type', 'image/png')

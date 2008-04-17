@@ -55,6 +55,8 @@ CREATE TABLE politician (
   officeurl varchar(256),
   party varchar(256),
   religion varchar(256),
+  n_speeches int,
+  words_per_speech int,
   
   -- photos.json
   photo_path varchar(256),

@@ -15,21 +15,19 @@ class SpeechesXML(handler.ContentHandler):
     def startElement(self, name, attrs):
         if name == 'representative':
             self.current = web.storage(attrs)
-            self.current.speech_data = (self.current.id,self.current.Speeches,
-                                        self.current.WordsPerSpeech)
-            
+    
     def endElement(self, name):
         if name == 'representative':
             self.callback(self.current)
         self.current = None
 
 def callback(rep):
-    if rep.get('Speeches') != '':
-        print rep.speech_data
+    if rep.get('Speeches'):
+        print rep.id, rep.Speeches, rep.WordsPerSpeech
 
 def main(callback):
     parser = make_parser()
     parser.setContentHandler(SpeechesXML(callback))
-    parser.parse('speeches.xml')
+    parser.parse('../data/crawl/govtrack/us/110/repstats/speeches.xml')
 
 if __name__ == "__main__": main(callback)

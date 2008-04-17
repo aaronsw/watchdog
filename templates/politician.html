@@ -21,6 +21,23 @@ $var pretitle:
   <a href="$pol.officeurl">Official website</a>
 </p>
 
+<table class="charted" style="clear: both">
+  <tr>
+    <th>Number of speeches:</th>
+    <td>$commify(pol.n_speeches)</td>
+    <td><a href="/p/by/n_speeches#$pol.id"
+         ><img src="/p/by/n_speeches/distribution.png?point=$pol.n_speeches"
+               class="sparkline" /></a></td>
+  </tr><tr>
+    <th>Avg. speech length:</th>
+    <td>$commify(pol.words_per_speech) words</td>
+    <td><a href="/p/by/words_per_speech#$pol.id"
+         ><img 
+           src="/p/by/words_per_speech/distribution.png?point=$pol.words_per_speech"
+           class="sparkline" /></a></td>
+  </tr><tr>
+</table>
+
 <div class="sources">
   Politician information from <a href="$pol.wikipedia">Wikipedia</a> and 
   <a href="http://www.govtrack.us/congress/person.xpd?id=$pol.govtrackid">GovTrack</a>. 

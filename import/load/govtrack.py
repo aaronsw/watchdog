@@ -6,12 +6,22 @@ from: data/crawl/govtrack/people.xml
 """
 
 import simplejson
-from parse import govtrack
+from parse import govtrack, speeches
 
 reps = simplejson.load(file('../data/parse/politicians/index.json'))
 dist2rep = {}
 for repid, rep in reps.iteritems():
     dist2rep[rep['district']] = repid
+
+govtrack2speechdata = {}
+
+def speech_callback(rep):
+    if rep.get('Speeches'):
+        govtrack2speechdata[rep.id] = {
+          'n_speeches': int(rep.Speeches), 
+          'words_per_speech': int(rep.WordsPerSpeech)
+        }
+speeches.main(speech_callback)
 
 mapping = {
   'bioguideid': 'bioguideid',
@@ -33,6 +43,7 @@ def callback(pol):
     newpol = {}
     for k, v in mapping.iteritems():
         if k in pol: newpol[v] = pol[k]
+    newpol.update(govtrack2speechdata.get(newpol['govtrackid'], {}))
     
     if pol.get('represents') and pol.represents in dist2rep: 
         rep = dist2rep[pol.represents]
