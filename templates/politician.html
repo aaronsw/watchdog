@@ -23,8 +23,8 @@ $var pretitle:
 
 <table class="charted" style="clear: both">
   <tr>
-    <th>Number of speeches:</th>
-    <td>$commify(pol.n_speeches)</td>
+    <th>Spoken:</th>
+    <td><a href="http://www.govtrack.us/congress/person.xpd?tab=speeches&amp;id=400425">$commify(pol.n_speeches) times</a></td>
     <td><a href="/p/by/n_speeches#$pol.id"
          ><img src="/p/by/n_speeches/distribution.png?point=$pol.n_speeches"
                class="sparkline" /></a></td>
@@ -36,6 +36,7 @@ $var pretitle:
            src="/p/by/words_per_speech/distribution.png?point=$pol.words_per_speech"
            class="sparkline" /></a></td>
   </tr><tr>
+  <tr><th colspan="2">(Data for 110th Congress only)</th></tr>
 </table>
 
 <div class="sources">
