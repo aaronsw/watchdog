@@ -19,7 +19,7 @@ def scrape_photo_alt(fname, rv, alt):
     for field in 'name party title'.split():
         rv[field] = photo_parts.group(field)
 
-def crappy_extract_text(html):
+def extract_text(html):
     html = re.sub(r'(?i)<br[^>]*>', '\n', html)
     soup = BeautifulSoup.BeautifulSoup(html, convertEntities='html')
     text = ''.join(soup.findAll(text=True))
@@ -29,7 +29,7 @@ def crappy_extract_text(html):
 def plain(fieldname):
     "A plain text field."
     def handle(rv, html):
-        rv[fieldname] = crappy_extract_text(html)
+        rv[fieldname] = extract_text(html)
     return handle
 
 def html(fieldname):
@@ -64,7 +64,7 @@ def election_table(rv, html):
                     # this happens in
                     # e.g. almanac/nationaljournal.com/pubs/almanac/2002/people/mn/mngv.htm
                     continue
-                cell_value = crappy_extract_text(str(cell))
+                cell_value = extract_text(str(cell))
                 if cell_value != '':
                     current_row[headers[col]] = cell_value
                     actually_got_something = True
@@ -81,7 +81,7 @@ def _parse_list(html):
         if name is None: continue # no bold text, prolly not a name-val pair
         name = name.strip()
         if name.endswith(':'): name = name[:-1]
-        hash[name] = crappy_extract_text(str(li.b.nextSibling))
+        hash[name] = extract_text(str(li.b.nextSibling))
     # original version (which didn't cope well with capitalized and
     # unclosed LI tags, etc.)
     #     for mo in re.finditer(r'<li><b>(.*?): ?</b> (.*?)</li>', html):
@@ -133,7 +133,7 @@ def scrape_table(rv, fields, html):
     for row in tablerows:
         cells = re.findall(r'(?is)<td [^>]*>(.*?)</td>', row)
         if len(cells) != 2: continue
-        name = re.sub(':$', '', crappy_extract_text(cells[0]))
+        name = re.sub(':$', '', extract_text(cells[0]))
         if fields.has_key(name): fields[name](rv, cells[1])
         
 def scrape_person(fname):
