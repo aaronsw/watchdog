@@ -5,9 +5,6 @@ For Debian Etch:
     sudo apt-get install python-imaging
     sudo apt-get install python-psycopg2
 
-    bzr clone http://webpy.org/bzr/webpy.dev/
-    sudo ln -s webpy.dev/web /path/to/python2.5/site-packages/web
-
 * * *
 
 The version of simplejson in Etch is inadequate.  For Aaron's PCA
@@ -22,9 +19,6 @@ Otherwise, I've used only Debian Etch packages:
 - python-imaging 1.1.5-11
 - python-psycopg2 2.0.5.1-6
 - python-mysqldb 1.2.1-p2-4 (to run with MySQL)
-
-The web.py stuff requires web.py 0.3, which is currently only
-available from bzr.
 
 The sparklines don't look quite as nice with this version of PIL
 (python-imaging), perhaps because of `DeprecationWarning: integer

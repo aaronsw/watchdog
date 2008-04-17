@@ -13,7 +13,7 @@ content = [
     slug = 'momentum',
     title = 'Building Momentum',
     author = 'Aaron Swartz',
-    updated = '2008-04-16T00:00Z',
+    updated = '2008-04-16T23:48Z',
     body = """
 <p>
 The response to the announcement of this little site 
@@ -21,7 +21,7 @@ has been bigger than I ever expected.
 Within hours after I posted about it,
 I'd received a couple dozen emails of support --
 some people asking how they could help,
-others asking sending their ideas and suggestions,
+others sending their ideas and suggestions,
 and many just saying "right on!"
 </p>
 

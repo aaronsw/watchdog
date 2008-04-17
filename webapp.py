@@ -119,14 +119,10 @@ class redistrict:
     def GET(self, district):
         return web.seeother('/us/' + district.lower())
 
-#@@ move to web.py?  if so, handle negative numbers and >100 (e.g. 111st)?
-def nth_string(n):
-    "Format an ordinal.  1 -> 1st, 2 -> 2nd, 3 -> 3rd, 33 -> 33rd, 90 -> 90th."
-    assert n >= 0
-    if n in [11, 12, 13]: return '%sth' % n
-    return {1: '%sst', 2: '%snd', 3: '%srd'}.get(n % 10, '%sth') % n
-
 def publishify(fields, data):
+    """Transform fields from an array of hashes.
+    @@ move into apipublish.publish when applicable
+    """
     def publishify_item(fields, datum):
         rv = {}
         for k, v in fields.items():
@@ -171,7 +167,7 @@ class district:
         if d.district == 0:
             d.districtth = 'at-large'
         else:
-            d.districtth = nth_string(d.district)
+            d.districtth = web.nthstr(d.district)
         
         return render.district(d)
 
@@ -252,19 +248,6 @@ class staticdata:
 
         assert '..' not in path, 'security'
         return file('data/' + path).read()
-
-def unit_tests_on_import():
-    def ok(a, b): assert a == b, (a, b)
-    ok([nth_string(x) for x in [0, 1, 2, 3, 4, 5, 9]],
-       "0th 1st 2nd 3rd 4th 5th 9th".split())
-    ok([nth_string(x) for x in [10, 20, 21, 100, 102]],
-       "10th 20th 21st 100th 102nd".split())
-    ok(nth_string(11), "11th")
-    ok(nth_string(12), "12th")
-    ok(nth_string(13), "13th")
-    ok([nth_string(x) for x in [14, 19, 21, 22, 23, 24, 128, 1024]],
-       "14th 19th 21st 22nd 23rd 24th 128th 1024th".split())
-unit_tests_on_import()
 
 app = web.application(urls, globals())
 if __name__ == "__main__": app.run()
