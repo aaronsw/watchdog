@@ -1,7 +1,7 @@
 """
-parse data from govtrack.us
+parse speech data for each representative
 
-from: data/crawl/govtrack/people.xml
+from: data/crawl/govtrack/speeches.xml
 """
 
 import web
