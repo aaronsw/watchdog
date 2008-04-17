@@ -195,7 +195,8 @@ class politician:
           'wikipedia': apipublish.URI,
           'bioguideid opensecretsid govtrackid gender birthday firstname '
           'middlename lastname officeurl party religion photo_path '
-          'photo_credit_url photo_credit_text': apipublish.identity,
+          'photo_credit_url photo_credit_text '
+          'n_speeches words_per_speech': apipublish.identity,
          }, [p], format)
         if out is not False:
             return out
