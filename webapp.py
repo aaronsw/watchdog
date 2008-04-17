@@ -76,13 +76,13 @@ class find:
                 dists = db.select(join, where=web.sqlors('name=', dists))
                 return render.find_multi(i.zip, dists)
         else:
-            out = apipublish.publish(publishify({
+            out = apipublish.publish({
               'uri': generic(lambda x: 'http://watchdog.net/us/' +
                              x.name.lower()),
               'type': 'District',
               'name state district voting': identity,
               'wikipedia': apipublish.URI,
-             }, db.select('district')), format)
+             }, db.select('district'), format)
             if out is not False:
                 return out
             
@@ -97,12 +97,12 @@ class state:
         except IndexError:
             raise web.notfound
         
-        out = apipublish.publish(publishify({
+        out = apipublish.publish({
           'uri': 'http://watchdog.net/us/' + state.code.lower(),
           'type': 'State',
           'wikipedia': apipublish.URI,
           'code fipscode name status': identity,
-        }, [state]), format)
+        }, [state], format)
         if out is not False:
             return out
         
@@ -116,20 +116,6 @@ class state:
 class redistrict:
     def GET(self, district):
         return web.seeother('/us/' + district.lower())
-
-def publishify(fields, data):
-    """Transform fields from an array of hashes.
-    @@ move into apipublish.publish when applicable
-    """
-    def publishify_item(fields, datum):
-        rv = {}
-        for k, v in fields.items():
-            for k in k.split():
-                if callable(v): rv[k] = v(datum[k])
-                elif hasattr(v, 'generic'): rv[k] = v.generic(datum)
-                else: rv[k] = v
-        return rv
-    return [publishify_item(fields, datum) for datum in data]
 
 identity = lambda x: x
 class generic:
@@ -155,7 +141,7 @@ class district:
         except IndexError:
             raise web.notfound
         
-        out = apipublish.publish(publishify({
+        out = apipublish.publish({
           'uri': 'http://watchdog.net/us/' + district.lower(),
           'type': 'District',
           'state': apipublish.URI('http://watchdog.net/us/' + d.state.lower()),
@@ -163,7 +149,7 @@ class district:
           'name voting area_sqmi cook_index poverty_pct median_income '
           'est_population est_population_year outline center_lat '
           'center_lng zoom_level': identity,
-        }, [d]), format)
+        }, [d], format)
         if out is not False:
             return out
         
@@ -182,13 +168,13 @@ class politician:
         if polid == "" or polid == "index":
             p = db.select(['politician'], order='district asc').list()
             
-            out = apipublish.publish(publishify({
+            out = apipublish.publish({
               'uri': generic(lambda x: 'http://watchdog.net/p/' + x.id),
               'type': 'Politician',
               'district': lambda x: apipublish.URI('http://watchdog.net/us/' +
                                                    x.lower()),
               'wikipedia': apipublish.URI,
-             }, p), format)
+             }, p, format)
             if out is not False:
                 return out
             
@@ -206,7 +192,7 @@ class politician:
         except IndexError:
             raise web.notfound
         
-        out = apipublish.publish(publishify({
+        out = apipublish.publish({
           'uri': 'http://watchdog.net/p/' + polid,
           'type': 'Politician',
           'district': apipublish.URI('http://watchdog.net/us/' + p.district.lower()),
@@ -214,7 +200,7 @@ class politician:
           'bioguideid opensecretsid govtrackid gender birthday firstname '
           'middlename lastname officeurl party religion photo_path '
           'photo_credit_url photo_credit_text': identity,
-         }, [p]), format)
+         }, [p], format)
         if out is not False:
             return out
         

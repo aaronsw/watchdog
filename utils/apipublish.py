@@ -162,7 +162,18 @@ def bestaccepted(options, source=None):
                     return option
     return options[0] #@@ should probably send a 406
 
-def publish(lst, ftype=None):
+def transform_item(fields, datum):
+    "Transform a dict for publication using a dict of field definitions."
+    rv = {}
+    for k, v in fields.items():
+        for k in k.split():
+            if callable(v): rv[k] = v(datum[k])
+            elif hasattr(v, 'generic'): rv[k] = v.generic(datum)
+            else: rv[k] = v
+    return rv
+
+def publish(fields, rawdata, ftype=None):
+    lst = [transform_item(fields, datum) for datum in rawdata]
     preferences = ['html', 'n3', 'json', 'xml']
     ftype_map = {
       'html': 'text/html',
@@ -186,7 +197,7 @@ def publish(lst, ftype=None):
         web.header('Content-Type', 'application/json')
         return publishjson(lst)
     else:
-        raise ValueError, 'unkown format'
+        raise ValueError, 'unknown format'
 
 if __name__ == "__main__":
     print publishjson(exampleobj)
