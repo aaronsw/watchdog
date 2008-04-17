@@ -76,15 +76,13 @@ class find:
                 dists = db.select(join, where=web.sqlors('name=', dists))
                 return render.find_multi(i.zip, dists)
         else:
-            out = apipublish.publish([{
-              'uri': 'http://watchdog.net/us/' + x.name.lower(),
+            out = apipublish.publish(publishify({
+              'uri': generic(lambda x: 'http://watchdog.net/us/' +
+                             x.name.lower()),
               'type': 'District',
-              'name': x.name,
-              'state': x.state,
-              'district': x.district,
-              'voting': x.voting,
-              'wikipedia': apipublish.URI(x.wikipedia)
-             } for x in db.select('district')], format)
+              'name state district voting': identity,
+              'wikipedia': apipublish.URI,
+             }, db.select('district')), format)
             if out is not False:
                 return out
             
