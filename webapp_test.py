@@ -52,6 +52,11 @@ def test_find():
     ok_re(resp.data, '/us/la-01')       # LEFT OUTER JOIN test
     assert '(Rep.  )' not in resp.data
 
+    # JSON of /us/ --- very minimal test
+    #@@ make this be json('/us/index')
+    index = simplejson.loads(webapp.app.request('/us/index.json').data)
+    ok(len(index), len(list(webapp.db.select('district'))))
+
 def test_state():
     "Test state pages such as /us/nm.html."
     resp = webapp.app.request('/us/nm.html')
