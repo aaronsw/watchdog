@@ -15,6 +15,13 @@ def time_thunk(thunk):
     rv = thunk()
     return time.time() - start, rv
 
+def json(path):
+    "Get and decode JSON for a certain path."
+    resp = webapp.app.request(path + '.json')
+    ok(resp.status[:3], '200')
+    ok(resp.headers['Content-Type'], 'application/json')
+    return simplejson.loads(resp.data)
+
 def test_find():
     "Test /us/."
     headers = {'Accept': 'text/html'}
@@ -54,7 +61,7 @@ def test_find():
 
     # JSON of /us/ --- very minimal test
     #@@ make this be json('/us/index')
-    index = simplejson.loads(webapp.app.request('/us/index.json').data)
+    index = json('/us/index')
     ok(len(index), len(list(webapp.db.select('district'))))
 
 def test_state():
@@ -97,12 +104,7 @@ def test_district():
     ok_re(resp.data, 'href=".*/us/nm"')
 
     # JSON
-    resp = webapp.app.request('/us/nm-02.json', headers=headers)
-    ok(resp.status[:3], '200')
-    ok(resp.headers['Content-Type'], 'application/json')
-    payload = simplejson.loads(resp.data)
-    ok(len(payload), 1)
-    district = payload[0]
+    (district,) = json('/us/nm-02')
     # I hope these are right.  I just copied them from the current
     # output --- this is a problem with doing unit tests after the
     # fact.  I omitted floating-point numbers (poverty_pct,
@@ -124,8 +126,7 @@ def test_district():
     ))
 
 def test_politician():
-    henry = simplejson.loads(webapp.app.request('/p/henry_waxman.json').data)
-    (henry,) = henry                    # unpack single item
+    (henry,) = json('/p/henry_waxman')  # unpack single item
     ok_items(henry, dict(
         bioguideid = 'W000215',
         birthday = '1939-09-12',
@@ -148,8 +149,7 @@ def test_politician():
         wikipedia = 'http://en.wikipedia.org/wiki/Henry_Waxman',
     ))
 
-    reqtime, listing = time_thunk(lambda:
-        simplejson.loads(webapp.app.request('/p/index.json').data))
+    reqtime, listing = time_thunk(lambda: json('/p/index'))
     print "took %.3f sec to get /p/index.json" % reqtime
     ok_items(listing[0], dict(
         district = 'http://watchdog.net/us/ak-00',
