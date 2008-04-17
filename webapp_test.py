@@ -159,11 +159,27 @@ def test_politician():
     ))
     ok(listing[-1]['district'], 'http://watchdog.net/us/wy-00')
 
+#@@ more places should use this
+def html(path):
+    resp = webapp.app.request(path, headers={ 'Accept': 'text/html' })
+    ok(resp.status[:3], '200')
+    assert resp.headers['Content-Type'].startswith('text/html')
+    return resp.data
+
+def test_dproperty():
+    page = html('/us/by/est_population')
+    montana = re.search('(?s)<li(.*?)</li>', page)
+    assert montana is not None, page
+    montana = montana.group(1)
+    ok_re(montana, 'href="/us/mt-00">')
+    ok_re(montana, 'width: 100%')
+
 def test_webapp():
     "Test the actual watchdog.net webapp.app app."
     test_state()
     test_district()
     test_politician()
+    test_dproperty()
     test_find()                         # slow
 
 def main():

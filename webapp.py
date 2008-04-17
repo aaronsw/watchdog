@@ -8,7 +8,8 @@ web.config.debug = True
 web.template.Template.globals['commify'] = web.commify
 web.template.Template.globals['int'] = int
 render = web.template.render('templates/', base='base')
-db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), db='watchdog_dev')
+db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'),
+                  db='watchdog_dev')
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -207,8 +208,14 @@ class dproperty:
     def GET(self, what):
         if not r_safeproperty.match(what): raise web.notfound
         
-        maxnum = float(db.select('district', what='max(%s) as m' % what, vars=locals())[0].m)
-        dists = db.select('district', what="*, 100*(%s/$maxnum) as pct" % what, order='%s desc' % what, where='%s is not null' % what, vars=locals())
+        maxnum = float(db.select('district',
+                                 what='max(%s) as m' % what,
+                                 vars=locals())[0].m)
+        dists = db.select('district',
+                          what="*, 100*(%s/$maxnum) as pct" % what,
+                          order='%s desc' % what,
+                          where='%s is not null' % what,
+                          vars=locals())
         return render.dproperty(dists, what)
 
 class sparkdist:
