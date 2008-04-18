@@ -174,12 +174,16 @@ def test_dproperty():
     ok_re(montana, 'href="/us/mt-00">')
     ok_re(montana, 'width: 100%')
 
+def test_blog():
+    html('/blog/')
+
 def test_webapp():
     "Test the actual watchdog.net webapp.app app."
     test_state()
     test_district()
     test_politician()
     test_dproperty()
+    test_blog()
     test_find()                         # slow
 
 def main():

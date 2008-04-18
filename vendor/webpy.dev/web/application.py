@@ -13,6 +13,7 @@ import urllib
 import traceback
 import itertools
 import os
+import re
 import types
 
 try:
@@ -346,8 +347,10 @@ class application:
 
     def _match(self, mapping, value):
         for pat, what in utils.group(mapping, 2):
-            what, result = utils.re_subm('^' + pat + '$', what, web.ctx.path)
+            rx = utils.re_compile('^' + pat + '$')
+            result = rx.match(value)
             if result: # it's a match
+                if isinstance(what, basestring): what = re.sub(rx, what, value)
                 return what, [x and urllib.unquote(x) for x in result.groups()]
         return None, None
 
