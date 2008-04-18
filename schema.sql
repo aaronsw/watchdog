@@ -48,7 +48,7 @@ CREATE TABLE politician (
   opensecretsid varchar(256),
   govtrackid varchar(256),
   gender varchar(1),
-  birthday date,
+  birthday varchar(256),        -- we don't really want DateTime objects
   firstname varchar(256),
   middlename varchar(256),
   lastname varchar(256),

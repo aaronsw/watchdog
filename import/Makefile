@@ -1,5 +1,7 @@
 ifeq ($(DATABASE_ENGINE),mysql)
     DBCLIENT=mysql
+else ifeq ($(DATABASE_ENGINE),sqlite)
+    DBCLIENT=sqlite3
 else
     DBCLIENT=psql
 endif

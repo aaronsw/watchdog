@@ -1,6 +1,8 @@
 import os, glob
 import simplejson
 import web
+import cgitb
+cgitb.enable(format='text')
 
 DATA_DIR = '../data/parse'
 db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), db='watchdog_dev')

@@ -13,12 +13,14 @@ script, I installed MDP from the MDP Toolkit from
 
 Otherwise, I've used only Debian Etch packages: 
 
-- python-scipy 0.5.2-0.1
-- python2.4 2.4.4-3
-- python2.4-dev 2.4.4-3
-- python-imaging 1.1.5-11
-- python-psycopg2 2.0.5.1-6
-- python-mysqldb 1.2.1-p2-4 (to run with MySQL)
+- python-scipy        0.5.2-0.1
+- python2.4           2.4.4-3
+- python2.4-dev       2.4.4-3
+- python-imaging      1.1.5-11
+- python-psycopg2     2.0.5.1-6
+- python-mysqldb      1.2.1-p2-4 (to run with MySQL)
+- python-pysqlite1.1  1.1.8a-1 (for unit tests)
+- libsqlite3-0        3.3.8-1.1
 
 The sparklines don't look quite as nice with this version of PIL
 (python-imaging), perhaps because of `DeprecationWarning: integer
