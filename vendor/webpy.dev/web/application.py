@@ -149,7 +149,7 @@ class application:
         headers = headers or {}
         for k, v in headers.items():
             env['HTTP_' + k.upper().replace('-', '_')] = v
-            
+        
         if data:
             import StringIO
             q = urllib.urlencode(data)
@@ -347,10 +347,11 @@ class application:
 
     def _match(self, mapping, value):
         for pat, what in utils.group(mapping, 2):
-            rx = utils.re_compile('^' + pat + '$')
-            result = rx.match(value)
+            if isinstance(what, basestring):
+                what, result = utils.re_subm('^' + pat + '$', what, web.ctx.path)
+            else:
+                result = utils.re_compile('^' + pat + '$').match(web.ctx.path)
             if result: # it's a match
-                if isinstance(what, basestring): what = re.sub(rx, what, value)
                 return what, [x and urllib.unquote(x) for x in result.groups()]
         return None, None
 
