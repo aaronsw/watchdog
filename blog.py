@@ -10,6 +10,43 @@ render = web.template.render('templates/', base='base')
 
 content = [
   web.storage(
+    slug = 'speeches',
+    title = 'Speech Data',
+    author = 'Aaron Swartz',
+    updated = '2008-04-21T00:00Z',
+    body = """
+<p>
+I'm thrilled to say that Thursday, 
+just days after we launched, 
+we got our first volunteer code contribution.
+Didier Deshommes created 
+<a href="http://github.com/dfdeshom/watchdog/">a branch on github</a>,
+added support for parsing some data about speeches politicians have made,
+and I pulled it and added it to the site.
+</p>
+
+<p>
+Now when you visit a page like 
+<a href="http://watchdog.net/p/nancy_pelosi">Nancy Pelosi</a>
+you can see how many times she's spoken this session
+and the average length of her speech.
+</p>
+
+<p>
+It's great to see these kinds of contributions and 
+I know there are more in the pipeline!
+Thanks to everyone who's been pitching in.
+</p>
+
+<p>
+On a darker note, 
+apologies for the outages over the weekend. 
+I think I discovered the cause of the problem
+and it shouldn't happen again.
+</p>
+"""
+  ),
+  web.storage(
     slug = 'momentum',
     title = 'Building Momentum',
     author = 'Aaron Swartz',
