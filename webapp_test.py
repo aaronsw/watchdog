@@ -135,7 +135,79 @@ henry_n3 = \
   :firstname "Henry";
   :gender "M";
   :govtrackid "400425";
-  :interest_group_ratings "[{'groupname': 'FRC', 'rating': 0L, 'year': 2006L}, {'groupname': 'LCV', 'rating': 95L, 'year': 2006L}, {'groupname': 'CFG', 'rating': 8L, 'year': 2006L}, {'groupname': 'ITIC', 'rating': 43L, 'year': 2006L}, {'groupname': 'NTU', 'rating': 15L, 'year': 2006L}, {'groupname': 'COC', 'rating': 33L, 'year': 2006L}, {'groupname': 'ACLU', 'rating': 100L, 'year': 2006L}, {'groupname': 'ACU', 'rating': 4L, 'year': 2006L}, {'groupname': 'ADA', 'rating': 95L, 'year': 2006L}, {'groupname': 'AFS', 'rating': 95L, 'year': 2006L}, {'groupname': 'FRC', 'rating': 0L, 'year': 2005L}, {'groupname': 'LCV', 'rating': 100L, 'year': 2005L}, {'groupname': 'CFG', 'rating': 7L, 'year': 2005L}, {'groupname': 'NTU', 'rating': 15L, 'year': 2005L}, {'groupname': 'COC', 'rating': 38L, 'year': 2005L}, {'groupname': 'ACU', 'rating': 0L, 'year': 2005L}, {'groupname': 'ADA', 'rating': 100L, 'year': 2005L}, {'groupname': 'AFS', 'rating': 100L, 'year': 2005L}]";
+  :interest_group_ratings [
+      :groupname "FRC";
+      :rating "0";
+      :year "2006";
+    ], [
+      :groupname "LCV";
+      :rating "95";
+      :year "2006";
+    ], [
+      :groupname "CFG";
+      :rating "8";
+      :year "2006";
+    ], [
+      :groupname "ITIC";
+      :rating "43";
+      :year "2006";
+    ], [
+      :groupname "NTU";
+      :rating "15";
+      :year "2006";
+    ], [
+      :groupname "COC";
+      :rating "33";
+      :year "2006";
+    ], [
+      :groupname "ACLU";
+      :rating "100";
+      :year "2006";
+    ], [
+      :groupname "ACU";
+      :rating "4";
+      :year "2006";
+    ], [
+      :groupname "ADA";
+      :rating "95";
+      :year "2006";
+    ], [
+      :groupname "AFS";
+      :rating "95";
+      :year "2006";
+    ], [
+      :groupname "FRC";
+      :rating "0";
+      :year "2005";
+    ], [
+      :groupname "LCV";
+      :rating "100";
+      :year "2005";
+    ], [
+      :groupname "CFG";
+      :rating "7";
+      :year "2005";
+    ], [
+      :groupname "NTU";
+      :rating "15";
+      :year "2005";
+    ], [
+      :groupname "COC";
+      :rating "38";
+      :year "2005";
+    ], [
+      :groupname "ACU";
+      :rating "0";
+      :year "2005";
+    ], [
+      :groupname "ADA";
+      :rating "100";
+      :year "2005";
+    ], [
+      :groupname "AFS";
+      :rating "100";
+      :year "2005";
+    ];
   :lastname "Waxman";
   :middlename "A.";
   :n_speeches "8";

@@ -26,7 +26,7 @@ def transform_table(fields, data):
 
 class URI:
     def __init__(self, uri): self.uri = uri
-    def n3ify(self): return '<%s>' % self.uri
+    def n3ify(self, indent): return '<%s>' % self.uri
     def jsonify(self): return self.uri
 
 identity = lambda x: x
@@ -75,7 +75,16 @@ class SmartJSONEncoder(simplejson.JSONEncoder):
 def publishjson(obj):
     return simplejson.dumps(obj, indent=2, sort_keys=True, cls=SmartJSONEncoder) + '\n'
 
-def n3ify(obj):
+n3_basic_indent = '  '
+
+def n3ify_dict(obj, indent):
+    return '[\n%s\n%s]' % (n3ify_items(obj, indent + n3_basic_indent), indent)
+
+def _n3ify(obj, indent):
+    if isinstance(obj, dict):
+        return n3ify_dict(obj, indent)
+    elif isinstance(obj, list):
+        return ', '.join([n3ify(item, indent + n3_basic_indent) for item in obj])
     if isinstance(obj, bool):
         return str(obj).lower()
     elif isinstance(obj, (int, float)):
@@ -83,17 +92,24 @@ def n3ify(obj):
     else:
         return '"%s"' % str(obj).replace('"', r'\"')
 
+def n3ify(obj, indent):
+    return getattr(obj, 'n3ify', lambda indent: _n3ify(obj, indent))(indent)
+
+def n3ify_items(obj, indent):
+    out = []
+    objitems = obj.items()
+    objitems.sort(lambda x, y: cmp(x[0], y[0]))
+    for k, v in objitems:
+        if v is not None:
+            out.append('%s:%s %s;' % (indent, k, n3ify(v, indent)))
+    return '\n'.join(out)
+
 def publishn3(lst, pkey='id'):
     out = ['@prefix : <http://watchdog.net/about/api#> .', '']
     for obj in lst:
         obj = obj.copy()
         out.append('<%s> a :%s;' % (obj.pop('uri'), obj.pop('type')))
-        objitems = obj.items()
-        objitems.sort(lambda x, y: cmp(x[0], y[0]))
-        for k, v in objitems:
-            if v is not None:
-                n3 = getattr(v, 'n3ify', lambda: n3ify(v))()
-                out.append('  :%s %s;' % (k, n3))
+        out.append(n3ify_items(obj, indent=n3_basic_indent))
         out.append('.')
         out.append('')
     return '\n'.join(out)
