@@ -149,6 +149,10 @@ def test_politician():
         wikipedia = 'http://en.wikipedia.org/wiki/Henry_Waxman',
     ))
 
+    ratings = henry['interest_group_ratings']
+    assert dict(year=2006, groupname='ITIC', rating=43) in ratings, ratings
+    assert dict(year=2005, groupname='COC', rating=38) in ratings, ratings
+
     reqtime, listing = time_thunk(lambda: json('/p/index'))
     print "took %.3f sec to get /p/index.json" % reqtime
     ok_items(listing[0], dict(

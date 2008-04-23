@@ -155,6 +155,13 @@ class district:
         
         return render.district(d)
 
+def interest_group_ratings(polid):
+    "Returns the interest group ratings for a politician."
+    return list(db.select(['interest_group_ratings'],
+                          what='year, groupname, rating',
+                          where='politician_id = $polid',
+                          vars=locals()))
+
 class politician:
     def GET(self, polid, format=None):
         if polid != polid.lower():
@@ -187,12 +194,15 @@ class politician:
                           vars=locals())[0]
         except IndexError:
             raise web.notfound
-        
+
+        p.interest_group_ratings = interest_group_ratings(polid)
+
         out = apipublish.publish({
           'uri': 'http://watchdog.net/p/' + polid,
           'type': 'Politician',
           'district': apipublish.URI('http://watchdog.net/us/' + p.district.lower()),
           'wikipedia': apipublish.URI,
+          'interest_group_ratings': apipublish.identity,
           'bioguideid opensecretsid govtrackid gender birthday firstname '
           'middlename lastname officeurl party religion photo_path '
           'photo_credit_url photo_credit_text '
