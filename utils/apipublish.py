@@ -73,7 +73,8 @@ class SmartJSONEncoder(simplejson.JSONEncoder):
         return getattr(obj, 'jsonify', lambda: self._default(obj))()
 
 def publishjson(obj):
-    return simplejson.dumps(obj, indent=2, sort_keys=True, cls=SmartJSONEncoder) + '\n'
+    return simplejson.dumps(
+        obj, indent=2, sort_keys=True, cls=SmartJSONEncoder) + '\n'
 
 n3_basic_indent = '  '
 
@@ -84,8 +85,9 @@ def _n3ify(obj, indent):
     if isinstance(obj, dict):
         return n3ify_dict(obj, indent)
     elif isinstance(obj, list):
-        return ', '.join([n3ify(item, indent + n3_basic_indent) for item in obj])
-    if isinstance(obj, bool):
+        return ', '.join([n3ify(item, indent + n3_basic_indent)
+                          for item in obj])
+    elif isinstance(obj, bool):
         return str(obj).lower()
     elif isinstance(obj, (int, float)):
         return obj
@@ -96,13 +98,10 @@ def n3ify(obj, indent):
     return getattr(obj, 'n3ify', lambda indent: _n3ify(obj, indent))(indent)
 
 def n3ify_items(obj, indent):
-    out = []
     objitems = obj.items()
     objitems.sort(lambda x, y: cmp(x[0], y[0]))
-    for k, v in objitems:
-        if v is not None:
-            out.append('%s:%s %s;' % (indent, k, n3ify(v, indent)))
-    return '\n'.join(out)
+    return '\n'.join(['%s:%s %s;' % (indent, k, n3ify(v, indent))
+                      for k, v in objitems if v is not None])
 
 def publishn3(lst, pkey='id'):
     out = ['@prefix : <http://watchdog.net/about/api#> .', '']
@@ -110,12 +109,15 @@ def publishn3(lst, pkey='id'):
         obj = obj.copy()
         out.append('<%s> a :%s;' % (obj.pop('uri'), obj.pop('type')))
         out.append(n3ify_items(obj, indent=n3_basic_indent))
-        out.append('.')
-        out.append('')
+        out.append('.\n')
     return '\n'.join(out)
 
 def xmlify(obj):
-    if isinstance(obj, bool):
+    if isinstance(obj, dict):
+        # must be only strings as values and words as keys
+        return ' %s>' % ' '.join('x:%s="%s"' % (web.websafe(k), web.websafe(v))
+                                 for k, v in obj.items())
+    elif isinstance(obj, bool):
         return ' rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">%s' % web.websafe(obj).lower()
     elif isinstance(obj, int):
         return ' rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">%s' % web.websafe(obj)
@@ -130,7 +132,8 @@ def publishxml(lst):
     out = [
       '<?xml version="1.0"?>',
       '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"',
-      '  xmlns="http://watchdog.net/about/api#">']
+      '  xmlns="http://watchdog.net/about/api#"',
+      '  xmlns:x="http://watchdog.net/about/api#">']
     for obj in lst:
         obj = obj.copy()
         objtype = obj.pop('type')
@@ -138,8 +141,10 @@ def publishxml(lst):
         objitems = obj.items()
         objitems.sort(lambda x, y: cmp(x[0], y[0]))
         for k, v in objitems:
-            if v is not None:
-                outline = '  <%s%s</%s>' % (k, xmlify(v), k)
+            if v is None: v = []
+            if not isinstance(v, list): v = [v]
+            for item in v:
+                outline = '  <%s%s</%s>' % (k, xmlify(item), k)
                 outline = outline.replace('></%s>' % k, ' />') # clean up empty values
                 out.append(outline)
         out.append('</%s>' % objtype)
