@@ -27,8 +27,8 @@ def load_all():
     
     for fn in ['almanac', 'shapes', 'centers']:
         for name, district in items('districts/' + fn):
-            if 'interest_group_ratings' in district:
-                district.pop('interest_group_ratings')
+            if 'interest_group_rating' in district:
+                district.pop('interest_group_rating')
             db.update('district',
                       where='name = $name',
                       vars=locals(),
@@ -48,10 +48,10 @@ def load_all():
 
     for name, district in items('districts/almanac'):
         if name not in district_to_pol: continue  #@@ desynchronized data!
-        if 'interest_group_ratings' in district:
-            for year, groups in district['interest_group_ratings'].items():
+        if 'interest_group_rating' in district:
+            for year, groups in district['interest_group_rating'].items():
                 for groupname, rating in groups.items():
-                    db.insert('interest_group_ratings',
+                    db.insert('interest_group_rating',
                               politician_id=district_to_pol[name],
                               year=year,
                               groupname=groupname,

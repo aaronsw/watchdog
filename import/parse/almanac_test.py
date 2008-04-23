@@ -147,14 +147,14 @@ def test_scrape_person(scrape):
     ok(demog['Median income'], '$29,269')
 
     ## interest group ratings
-    ratings = steve_pearce['interest_group_ratings']
+    ratings = steve_pearce['interest_group_rating']
     ok(ratings['2006']['ADA'], 5)
     ok(ratings['2005']['ADA'], 0)
     ok(ratings['2006']['ACLU'], 18)
     ok('ACLU' in ratings['2005'], False)  # value in HTML is '-'
 
-    ok(sensenbrenner_1['interest_group_ratings']['2004']['NTU'], 83)
-    ok(jim_bunning['interest_group_ratings']['2006']['FRC'], 87)
+    ok(sensenbrenner_1['interest_group_rating']['2004']['NTU'], 83)
+    ok(jim_bunning['interest_group_rating']['2006']['FRC'], 87)
 
 def test_scrape_state(scrape):
     ## State demographics

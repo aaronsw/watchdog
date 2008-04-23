@@ -51,8 +51,8 @@ def main():
                 (2000, 'Pop. 2000'),
             ])
 
-        if 'interest_group_ratings' in d:
-            district.interest_group_ratings = d['interest_group_ratings']
+        if 'interest_group_rating' in d:
+            district.interest_group_rating = d['interest_group_rating']
 
         district.almanac = 'http://' + d['filename'][d['filename'].find('nationaljournal.com'):]
 

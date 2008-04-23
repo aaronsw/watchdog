@@ -95,7 +95,7 @@ def interest_group_ratings(rv, html):
         for groupname, rating in zip(groupnames, ratings):
             if groupname and number.match(rating):
                 ratings_dict[year][groupname] = int(rating)
-    rv['interest_group_ratings'] = ratings_dict
+    rv['interest_group_rating'] = ratings_dict
 
 def _parse_list(html):
     soup = BeautifulSoup(html)

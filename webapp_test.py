@@ -135,7 +135,7 @@ henry_n3 = \
   :firstname "Henry";
   :gender "M";
   :govtrackid "400425";
-  :interest_group_ratings [
+  :interest_group_rating [
       :groupname "FRC";
       :rating "0";
       :year "2006";
@@ -247,7 +247,7 @@ def test_politician():
         wikipedia = 'http://en.wikipedia.org/wiki/Henry_Waxman',
     ))
 
-    ratings = henry['interest_group_ratings']
+    ratings = henry['interest_group_rating']
     assert dict(year=2006, groupname='ITIC', rating=43) in ratings, ratings
     assert dict(year=2005, groupname='COC', rating=38) in ratings, ratings
 
