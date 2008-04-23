@@ -6,10 +6,29 @@ import datetime
 import simplejson
 import web
 
+## Basic data transformation
+
+def transform_item(fields, datum):
+    "Transform a dict for publication using a dict of field definitions."
+    rv = {}
+    for k, v in fields.items():
+        for k in k.split():
+            if callable(v): rv[k] = v(datum[k])
+            elif hasattr(v, 'generic'): rv[k] = v.generic(datum)
+            else: rv[k] = v
+    return rv
+
+def transform_table(fields, data):
+    "Transform a list of dicts for publication with `transform_item`."
+    return [transform_item(fields, datum) for datum in data]
+
 ## Field types
 
 class URI:
     def __init__(self, uri): self.uri = uri
+    def n3ify(self): return '<%s>' % self.uri
+    def jsonify(self): return self.uri
+
 identity = lambda x: x
 
 class generic:
@@ -17,6 +36,9 @@ class generic:
     def __init__(self, thunk): self.thunk = thunk
     def generic(self, obj): return self.thunk(obj)
 
+class table:
+    def __init__(self, fields): self.fields = fields
+    def __call__(self, data): return transform_table(self.fields, data)
 
 ##
 
@@ -34,19 +56,21 @@ exampleobj = [
 ]
 
 class SmartJSONEncoder(simplejson.JSONEncoder):
+    #@@ I got rid of the date field in schema.sql.  I think that means
+    # that we can dump all this isinstance date handling stuff?
     DATE_FORMAT = "%Y-%m-%d"
     TIME_FORMAT = "%H:%M:%S"
-    def default(self, obj):
+    def _default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.strftime("%sT%sZ" % (self.DATE_FORMAT, self.TIME_FORMAT))
         elif isinstance(obj, datetime.date):
             return obj.strftime(self.DATE_FORMAT)
         elif isinstance(obj, datetime.time):
             return obj.strftime(self.TIME_FORMAT)
-        elif isinstance(obj, URI):
-            return obj.uri
         else:
             return super(SmartJSONEncoder, self).default(obj)
+    def default(self, obj):
+        return getattr(obj, 'jsonify', lambda: self._default(obj))()
 
 def publishjson(obj):
     return simplejson.dumps(obj, indent=2, sort_keys=True, cls=SmartJSONEncoder) + '\n'
@@ -56,8 +80,6 @@ def n3ify(obj):
         return str(obj).lower()
     elif isinstance(obj, (int, float)):
         return obj
-    elif isinstance(obj, URI):
-        return '<%s>' % obj.uri
     else:
         return '"%s"' % str(obj).replace('"', r'\"')
 
@@ -70,7 +92,8 @@ def publishn3(lst, pkey='id'):
         objitems.sort(lambda x, y: cmp(x[0], y[0]))
         for k, v in objitems:
             if v is not None:
-                out.append('  :%s %s;' % (k, n3ify(v)))
+                n3 = getattr(v, 'n3ify', lambda: n3ify(v))()
+                out.append('  :%s %s;' % (k, n3))
         out.append('.')
         out.append('')
     return '\n'.join(out)
@@ -173,18 +196,8 @@ def bestaccepted(options, source=None):
                     return option
     return options[0] #@@ should probably send a 406
 
-def transform_item(fields, datum):
-    "Transform a dict for publication using a dict of field definitions."
-    rv = {}
-    for k, v in fields.items():
-        for k in k.split():
-            if callable(v): rv[k] = v(datum[k])
-            elif hasattr(v, 'generic'): rv[k] = v.generic(datum)
-            else: rv[k] = v
-    return rv
-
 def publish(fields, rawdata, ftype=None):
-    lst = [transform_item(fields, datum) for datum in rawdata]
+    lst = transform_table(fields, rawdata)
     preferences = ['html', 'n3', 'json', 'xml']
     ftype_map = {
       'html': 'text/html',

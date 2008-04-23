@@ -202,7 +202,8 @@ class politician:
           'type': 'Politician',
           'district': apipublish.URI('http://watchdog.net/us/' + p.district.lower()),
           'wikipedia': apipublish.URI,
-          'interest_group_ratings': apipublish.identity,
+          'interest_group_ratings': apipublish.table({
+            'year groupname rating': apipublish.identity}),
           'bioguideid opensecretsid govtrackid gender birthday firstname '
           'middlename lastname officeurl party religion photo_path '
           'photo_credit_url photo_credit_text '

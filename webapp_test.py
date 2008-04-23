@@ -125,6 +125,32 @@ def test_district():
         voting = True,
     ))
 
+henry_n3 = \
+"""@prefix : <http://watchdog.net/about/api#> .
+
+<http://watchdog.net/p/henry_waxman> a :Politician;
+  :bioguideid "W000215";
+  :birthday "1939-09-12";
+  :district <http://watchdog.net/us/ca-30>;
+  :firstname "Henry";
+  :gender "M";
+  :govtrackid "400425";
+  :interest_group_ratings "[{'groupname': 'FRC', 'rating': 0L, 'year': 2006L}, {'groupname': 'LCV', 'rating': 95L, 'year': 2006L}, {'groupname': 'CFG', 'rating': 8L, 'year': 2006L}, {'groupname': 'ITIC', 'rating': 43L, 'year': 2006L}, {'groupname': 'NTU', 'rating': 15L, 'year': 2006L}, {'groupname': 'COC', 'rating': 33L, 'year': 2006L}, {'groupname': 'ACLU', 'rating': 100L, 'year': 2006L}, {'groupname': 'ACU', 'rating': 4L, 'year': 2006L}, {'groupname': 'ADA', 'rating': 95L, 'year': 2006L}, {'groupname': 'AFS', 'rating': 95L, 'year': 2006L}, {'groupname': 'FRC', 'rating': 0L, 'year': 2005L}, {'groupname': 'LCV', 'rating': 100L, 'year': 2005L}, {'groupname': 'CFG', 'rating': 7L, 'year': 2005L}, {'groupname': 'NTU', 'rating': 15L, 'year': 2005L}, {'groupname': 'COC', 'rating': 38L, 'year': 2005L}, {'groupname': 'ACU', 'rating': 0L, 'year': 2005L}, {'groupname': 'ADA', 'rating': 100L, 'year': 2005L}, {'groupname': 'AFS', 'rating': 100L, 'year': 2005L}]";
+  :lastname "Waxman";
+  :middlename "A.";
+  :n_speeches "8";
+  :officeurl "http://www.henrywaxman.house.gov";
+  :opensecretsid "N00001861";
+  :party "Democrat";
+  :photo_credit_text "Congressional Biographical Directory";
+  :photo_credit_url "http://bioguide.congress.gov/scripts/bibdisplay.pl?index=W000215";
+  :photo_path "/data/crawl/house/photos/W000215.jpg";
+  :religion "Jewish";
+  :wikipedia <http://en.wikipedia.org/wiki/Henry_Waxman>;
+  :words_per_speech "1445";
+.
+"""
+
 def test_politician():
     (henry,) = json('/p/henry_waxman')  # unpack single item
     ok_items(henry, dict(
@@ -162,6 +188,8 @@ def test_politician():
         wikipedia = 'http://en.wikipedia.org/wiki/Don_Young'
     ))
     ok(listing[-1]['district'], 'http://watchdog.net/us/wy-00')
+
+    ok(webapp.app.request('/p/henry_waxman.n3').data, henry_n3)
 
 #@@ more places should use this
 def html(path):
