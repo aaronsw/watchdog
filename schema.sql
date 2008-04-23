@@ -1,7 +1,7 @@
-DROP TABLE state CASCADE;
-DROP TABLE district CASCADE;
-DROP TABLE politician CASCADE;
-DROP TABLE interest_group_ratings CASCADE; -- IF EXISTS?
+DROP TABLE IF EXISTS state CASCADE;
+DROP TABLE IF EXISTS district CASCADE;
+DROP TABLE IF EXISTS politician CASCADE;
+DROP TABLE IF EXISTS interest_group_ratings CASCADE;
 
 CREATE TABLE state (
   -- index.json
