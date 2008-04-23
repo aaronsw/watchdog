@@ -13,32 +13,48 @@ def unidecode(d):
         newd[k.encode('utf8')] = v
     return newd
 
-def load():
-    states = simplejson.load(file(DATA_DIR + '/states/index.json'))
-    for code, state in states.iteritems():
+def items(fname):
+    print 'loading', fname
+    return simplejson.load(file(DATA_DIR + '/%s.json' % fname)).iteritems()
+
+def load_all():
+    for code, state in items('states/index'):
         if 'aka' in state: state.pop('aka')
         db.insert('state', seqname=False, code=code, **unidecode(state))
     
-    districts = simplejson.load(file(DATA_DIR + '/districts/index.json'))
-    
-    for name, district in districts.iteritems():
+    for name, district in items('districts/index'):
         db.insert('district', seqname=False, name=name, **unidecode(district))
     
     for fn in ['almanac', 'shapes', 'centers']:
-        print 'loading', fn
-        districts = simplejson.load(file(DATA_DIR + '/districts/%s.json' % fn))
-        for name, district in districts.iteritems():
-            db.update('district', where='name = $name', vars=locals(), **unidecode(district))
-    
-    politicians = simplejson.load(file(DATA_DIR + '/politicians/index.json'))
-    for polid, pol in politicians.iteritems():
+        for name, district in items('districts/' + fn):
+            if 'interest_group_ratings' in district:
+                district.pop('interest_group_ratings')
+            db.update('district',
+                      where='name = $name',
+                      vars=locals(),
+                      **unidecode(district))
+
+    district_to_pol = {}
+    for polid, pol in items('politicians/index'):
         db.insert('politician', seqname=False, id=polid, **unidecode(pol))
+        district_to_pol[pol['district']] = polid
     
     for fn in ['govtrack', 'photos']:
-        print 'loading', fn
-        politicians = simplejson.load(file(DATA_DIR + '/politicians/%s.json' % fn))
-        for polid, pol in politicians.iteritems():
-            db.update('politician', where='id = $polid', vars=locals(), **unidecode(pol))
-    
+        for polid, pol in items('politicians/' + fn):
+            db.update('politician',
+                      where='id = $polid',
+                      vars=locals(),
+                      **unidecode(pol))
 
-if __name__ == "__main__": load()
+    for name, district in items('districts/almanac'):
+        if name not in district_to_pol: continue  #@@ desynchronized data!
+        if 'interest_group_ratings' in district:
+            for year, groups in district['interest_group_ratings'].items():
+                for groupname, rating in groups.items():
+                    db.insert('interest_group_ratings',
+                              politician_id=district_to_pol[name],
+                              year=year,
+                              groupname=groupname,
+                              rating=rating)
+
+if __name__ == "__main__": load_all()

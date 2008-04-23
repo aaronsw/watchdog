@@ -44,7 +44,7 @@ def test_scrape_person(scrape):
     ok(lieberman['name'], 'Joe Lieberman')
     ok(lieberman['party'], 'ID')
 
-    # XXX currently can't find photo in
+    #@@ currently can't find photo in
     # 2004/people/wi/rep_wi09.htm
 
     # Unusual title: "Del.", for "delegate" (from Guam)
@@ -136,7 +136,7 @@ def test_scrape_person(scrape):
                  'totalvotes': '92,620',
                  'percent': '59%', 
                  'expenditures': '$1,349,394'})
-    # XXX here's what it says in the table, but this is an ontological error:
+    #@@ here's what it says in the table, but this is an ontological error:
     ok(sper[2]['totalvotes'], 'Unopposed')
 
     ## District demographics
@@ -145,6 +145,16 @@ def test_scrape_person(scrape):
     ok(demog['Ancestry'], 'German: 7.4%; English: 5.9%; Irish: 5.7%;')
     ok(demog['Poverty status'], '22.4%')
     ok(demog['Median income'], '$29,269')
+
+    ## interest group ratings
+    ratings = steve_pearce['interest_group_ratings']
+    ok(ratings['2006']['ADA'], 5)
+    ok(ratings['2005']['ADA'], 0)
+    ok(ratings['2006']['ACLU'], 18)
+    ok('ACLU' in ratings['2005'], False)  # value in HTML is '-'
+
+    ok(sensenbrenner_1['interest_group_ratings']['2004']['NTU'], 83)
+    ok(jim_bunning['interest_group_ratings']['2006']['FRC'], 87)
 
 def test_scrape_state(scrape):
     ## State demographics

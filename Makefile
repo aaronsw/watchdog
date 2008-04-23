@@ -1,5 +1,5 @@
 COMMAND_LINE_OPTIONS = 
-export PYTHONPATH:= $(PWD)/vendor/:$(PYTHONPATH)
+export PYTHONPATH := $(PWD)/vendor/:$(PYTHONPATH)
 
 all: test
 	./webapp.py $(COMMAND_LINE_OPTIONS)

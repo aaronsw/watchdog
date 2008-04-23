@@ -6,7 +6,9 @@ else
     DBCLIENT=psql
 endif
 
-PYTHON=PYTHONPATH=.:$(PYTHONPATH) python
+export PYTHONPATH := .:$(PWD)/../vendor:$(PYTHONPATH)
+
+PYTHON=python
 
 PARSE=../data/parse
 JSONS=$(PARSE)/states/index.json \

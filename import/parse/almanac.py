@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # Scrape nationaljournal.com pages.
-import re, BeautifulSoup, sys
+import re, sys
+from BeautifulSoup import BeautifulSoup
 
 def scrape_photo_alt(fname, rv, alt):
     "Interpret the alt text of the portrait photos from most pages."
@@ -19,7 +20,7 @@ def scrape_photo_alt(fname, rv, alt):
 
 def extract_text(html):
     html = re.sub(r'(?i)<br[^>]*>', '\n', html)
-    soup = BeautifulSoup.BeautifulSoup(html, convertEntities='html')
+    soup = BeautifulSoup(html, convertEntities='html')
     text = ''.join(soup.findAll(text=True))
     text = text.replace(u'\xa0', ' ')   # &nbsp;
     return text.strip()
@@ -44,7 +45,7 @@ def combine(fielda, fieldb):
     return handle
 
 def election_table(rv, html):
-    soup = BeautifulSoup.BeautifulSoup('<table><tr><td>' + html)
+    soup = BeautifulSoup('<table><tr><td>' + html)
     headers = {0: 'election'}
     other_headers = {'Candidate': 'candidate', 'Total Votes': 'totalvotes',
                      'Percent': 'percent', 'Expenditures': 'expenditures'}
@@ -71,8 +72,33 @@ def election_table(rv, html):
         if actually_got_something: results.append(current_row)
     rv['electionresults'] = results
 
+number = re.compile(r'\d+$')
+def interest_group_ratings(rv, html):
+    ratings_dict = {}
+    soup = BeautifulSoup('<table>' + html)
+    #print soup.prettify()
+    rows = soup('tr')
+    headers = rows[0]
+    datarows = rows[1:]
+    # the first cell (above the years) is a td instead of a th, so
+    # we're missing a column here.
+    groupnames = [extract_text(str(x)) for x in headers('th')]
+    for row in datarows:
+        cells = row('td')
+        year = extract_text(str(cells[0]))
+        ratings_dict[year] = {}
+        ratings = [extract_text(str(cell)) for cell in cells[1:]]
+        # note that several tables either have an extra table header
+        # or an extra column of '--' on the right.  So we can't do
+        # this assertion:
+        # assert len(ratings) == len(groupnames), (ratings, groupnames)
+        for groupname, rating in zip(groupnames, ratings):
+            if groupname and number.match(rating):
+                ratings_dict[year][groupname] = int(rating)
+    rv['interest_group_ratings'] = ratings_dict
+
 def _parse_list(html):
-    soup = BeautifulSoup.BeautifulSoup(html)
+    soup = BeautifulSoup(html)
     hash = {}
     for li in soup('li'):
         name = li.b.string
@@ -105,6 +131,7 @@ person_fields = {
     'Committees': plain('committees'),
     'District Demographics': parse_list('demographics'),
     'Election Results': election_table,
+    'Group Ratings': interest_group_ratings,
 }
 state_fields = {
     'The State': parse_list('state'),
