@@ -1,7 +1,8 @@
 For Debian Etch:
 
     sudo apt-get install python-dev python-setuptools  
-    easy_install simplejson==1.8.1
+    sudo easy_install simplejson==1.8.1
+    sudo easy_install -U "rdflib>=2.4,<=3.0a" # for unit tests
     sudo apt-get install python-imaging
     sudo apt-get install python-psycopg2
 

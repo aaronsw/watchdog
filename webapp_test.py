@@ -1,14 +1,28 @@
 #!/usr/bin/env python
 "Unit tests for code in webapp.py."
-import re, time, simplejson, pprint
+import re, time, urllib, pprint, StringIO
+import simplejson
+import web
+from utils import rdftramp
 import webapp
-import urllib, web
 
 def ok(a, b): assert a == b, (a, b)
 def ok_re(a, b): assert re.search(b, a), (a, b)
 def ok_items(actual, expected):
     "Check specified keys in a dict."
     for k, v in expected.items(): ok(actual[k], v)
+
+defaultns = rdftramp.Namespace('http://watchdog.net/about/api#')
+def ok_graph(actual, expected, ns=defaultns):
+    for k, v in expected.items():
+        if k == 'type':
+            k = rdftramp.rdf.type
+            v = ns[v]
+        else:
+            k = ns[k]
+        if isinstance(v, str) and v.startswith('http://'):
+            v = rdftramp.URI(v)
+        ok(actual[k], v)
 
 def time_thunk(thunk):
     start = time.time()
@@ -125,107 +139,9 @@ def test_district():
         voting = True,
     ))
 
-henry_n3 = \
-"""@prefix : <http://watchdog.net/about/api#> .
-
-<http://watchdog.net/p/henry_waxman> a :Politician;
-  :bioguideid "W000215";
-  :birthday "1939-09-12";
-  :district <http://watchdog.net/us/ca-30>;
-  :firstname "Henry";
-  :gender "M";
-  :govtrackid "400425";
-  :interest_group_rating [
-      :groupname "FRC";
-      :rating 0;
-      :year 2006;
-    ], [
-      :groupname "LCV";
-      :rating 95;
-      :year 2006;
-    ], [
-      :groupname "CFG";
-      :rating 8;
-      :year 2006;
-    ], [
-      :groupname "ITIC";
-      :rating 43;
-      :year 2006;
-    ], [
-      :groupname "NTU";
-      :rating 15;
-      :year 2006;
-    ], [
-      :groupname "COC";
-      :rating 33;
-      :year 2006;
-    ], [
-      :groupname "ACLU";
-      :rating 100;
-      :year 2006;
-    ], [
-      :groupname "ACU";
-      :rating 4;
-      :year 2006;
-    ], [
-      :groupname "ADA";
-      :rating 95;
-      :year 2006;
-    ], [
-      :groupname "AFS";
-      :rating 95;
-      :year 2006;
-    ], [
-      :groupname "FRC";
-      :rating 0;
-      :year 2005;
-    ], [
-      :groupname "LCV";
-      :rating 100;
-      :year 2005;
-    ], [
-      :groupname "CFG";
-      :rating 7;
-      :year 2005;
-    ], [
-      :groupname "NTU";
-      :rating 15;
-      :year 2005;
-    ], [
-      :groupname "COC";
-      :rating 38;
-      :year 2005;
-    ], [
-      :groupname "ACU";
-      :rating 0;
-      :year 2005;
-    ], [
-      :groupname "ADA";
-      :rating 100;
-      :year 2005;
-    ], [
-      :groupname "AFS";
-      :rating 100;
-      :year 2005;
-    ];
-  :lastname "Waxman";
-  :middlename "A.";
-  :n_speeches 8;
-  :officeurl "http://www.henrywaxman.house.gov";
-  :opensecretsid "N00001861";
-  :party "Democrat";
-  :photo_credit_text "Congressional Biographical Directory";
-  :photo_credit_url "http://bioguide.congress.gov/scripts/bibdisplay.pl?index=W000215";
-  :photo_path "/data/crawl/house/photos/W000215.jpg";
-  :religion "Jewish";
-  :wikipedia <http://en.wikipedia.org/wiki/Henry_Waxman>;
-  :words_per_speech 1445;
-.
-"""
-
 def test_politician():
     (henry,) = json('/p/henry_waxman')  # unpack single item
-    ok_items(henry, dict(
+    henry_dict = dict(
         bioguideid = 'W000215',
         birthday = '1939-09-12',
         district = 'http://watchdog.net/us/ca-30',
@@ -245,7 +161,10 @@ def test_politician():
         type = 'Politician',
         uri = 'http://watchdog.net/p/henry_waxman',
         wikipedia = 'http://en.wikipedia.org/wiki/Henry_Waxman',
-    ))
+        words_per_speech = 1445,
+        n_speeches = 8
+    )
+    ok_items(henry, henry_dict)
 
     ratings = henry['interest_group_rating']
     assert dict(year=2006, groupname='ITIC', rating=43) in ratings, ratings
@@ -260,8 +179,20 @@ def test_politician():
         wikipedia = 'http://en.wikipedia.org/wiki/Don_Young'
     ))
     ok(listing[-1]['district'], 'http://watchdog.net/us/wy-00')
+    
+    henry_uri = henry_dict.pop('uri')
+    g = rdftramp.Graph()
+    g.parse(StringIO.StringIO(webapp.app.request('/p/henry_waxman.n3').data), format='n3')
+    ok_graph(rdftramp.Thing(rdftramp.URI(henry_uri), g), henry_dict)
 
-    ok(webapp.app.request('/p/henry_waxman.n3').data, henry_n3)
+    g2 = rdftramp.Graph()
+    g2.parse(StringIO.StringIO(webapp.app.request('/p/henry_waxman.xml').data), format='xml')
+    ok_graph(rdftramp.Thing(rdftramp.URI(henry_uri), g2), henry_dict)
+    
+    # rdflib doesn't support graph equivalence?!
+    # http://code.google.com/p/rdflib/issues/detail?id=24
+    #assert g == g2
+    #@@ probably should test interest group ratings...
 
 #@@ more places should use this
 def html(path):
