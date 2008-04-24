@@ -92,7 +92,13 @@ class PsuedoBase(object):
     def append(self, x):
         self._thing[self._item] = [self, x]
 
-class PsuedoString(PsuedoBase, unicode): pass
+class PsuedoString(PsuedoBase, unicode):
+    def __eq__(self, other):
+        if isinstance(other, URI):
+            return False
+        else:
+            return super(PsuedoString, self).__eq__(other)
+
 class PsuedoInteger(PsuedoBase, int): pass
 class PsuedoFloat(PsuedoBase, float): pass
 class PsuedoList(PsuedoBase, list):
