@@ -137,80 +137,80 @@ henry_n3 = \
   :govtrackid "400425";
   :interest_group_rating [
       :groupname "FRC";
-      :rating "0";
-      :year "2006";
+      :rating 0;
+      :year 2006;
     ], [
       :groupname "LCV";
-      :rating "95";
-      :year "2006";
+      :rating 95;
+      :year 2006;
     ], [
       :groupname "CFG";
-      :rating "8";
-      :year "2006";
+      :rating 8;
+      :year 2006;
     ], [
       :groupname "ITIC";
-      :rating "43";
-      :year "2006";
+      :rating 43;
+      :year 2006;
     ], [
       :groupname "NTU";
-      :rating "15";
-      :year "2006";
+      :rating 15;
+      :year 2006;
     ], [
       :groupname "COC";
-      :rating "33";
-      :year "2006";
+      :rating 33;
+      :year 2006;
     ], [
       :groupname "ACLU";
-      :rating "100";
-      :year "2006";
+      :rating 100;
+      :year 2006;
     ], [
       :groupname "ACU";
-      :rating "4";
-      :year "2006";
+      :rating 4;
+      :year 2006;
     ], [
       :groupname "ADA";
-      :rating "95";
-      :year "2006";
+      :rating 95;
+      :year 2006;
     ], [
       :groupname "AFS";
-      :rating "95";
-      :year "2006";
+      :rating 95;
+      :year 2006;
     ], [
       :groupname "FRC";
-      :rating "0";
-      :year "2005";
+      :rating 0;
+      :year 2005;
     ], [
       :groupname "LCV";
-      :rating "100";
-      :year "2005";
+      :rating 100;
+      :year 2005;
     ], [
       :groupname "CFG";
-      :rating "7";
-      :year "2005";
+      :rating 7;
+      :year 2005;
     ], [
       :groupname "NTU";
-      :rating "15";
-      :year "2005";
+      :rating 15;
+      :year 2005;
     ], [
       :groupname "COC";
-      :rating "38";
-      :year "2005";
+      :rating 38;
+      :year 2005;
     ], [
       :groupname "ACU";
-      :rating "0";
-      :year "2005";
+      :rating 0;
+      :year 2005;
     ], [
       :groupname "ADA";
-      :rating "100";
-      :year "2005";
+      :rating 100;
+      :year 2005;
     ], [
       :groupname "AFS";
-      :rating "100";
-      :year "2005";
+      :rating 100;
+      :year 2005;
     ];
   :lastname "Waxman";
   :middlename "A.";
-  :n_speeches "8";
+  :n_speeches 8;
   :officeurl "http://www.henrywaxman.house.gov";
   :opensecretsid "N00001861";
   :party "Democrat";
@@ -219,7 +219,7 @@ henry_n3 = \
   :photo_path "/data/crawl/house/photos/W000215.jpg";
   :religion "Jewish";
   :wikipedia <http://en.wikipedia.org/wiki/Henry_Waxman>;
-  :words_per_speech "1445";
+  :words_per_speech 1445;
 .
 """
 
