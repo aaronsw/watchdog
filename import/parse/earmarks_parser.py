@@ -23,13 +23,10 @@ SENATE_PARTY=18
 SENATE_STATE = 19
 PRESIDENTIAL_EARMARKS=20
 UNDISCLOSED=21
-INTENTED_RECIP=22
+INTENDED_RECIP=22
 NOTES=23
 
-filename = sys.argv[1]
-data = xls2list(filename)
-
-class Earmark:
+class Earmark(object):
     houseRequest = None
     senateRequest = None
     preReductionAmount = None
@@ -53,35 +50,52 @@ class Earmark:
     undisclosed = None
     intendedRecipient = None
     notes = None
+    
+    def __init__(self):
+        pass
+    
+    def __str__(self):
+        result = ["============================="]
+        for attr in dir(self):
+            if attr.startswith("__"):
+                continue
+            result.append(attr +  ' = ' + str(self.__getattribute__(attr)))
+        return "\n".join(result)
 
 
 def earmarkFromRow(row):
     e = Earmark()
     e.houseRequest = row[HOUSE_REQUEST]
     e.senateRequest = row[SENATE_REQUEST]
-    #etc
-def count_earmarks(data,type=HOUSE_MEMBER):
-	earmarks,pra_total,final_total = {},{},{}
-	for row in data[3:]:
-		if row[type] is None:
-			continue
-		members = row[type]
-		members = re.split(",|;", str(members))
-		for member in members:
-			member = member.strip()
-			earmarks[member] = earmarks.get(member, 0) + 1
-			if row[PRE_REDUCTION_AMT] is None:
-				continue
-			pra_total[member] = pra_total.get(member, 0) + float(row[PRE_REDUCTION_AMT])
-			if row[FINAL_AMT] is None:
-				continue
-			final_total[member] = final_total.get(member, 0) + float(row[FINAL_AMT])
-	return (earmarks,pra_total,final_total)
+    e.preReductionAmount = row[PRE_REDUCTION_AMT]
+    e.finalAmount = row[FINAL_AMOUNT]
+    e.budgetRequest = row[BUDGET_REQUEST]
+    e.description = row[DESCRIPTION]
+    e.cityLocation = row[CITY_LOCATION]
+    e.county = row[COUNTY]
+    e.state = row[STATE]
+    e.bill = row[BILL]
+    e.billSection = row[BILL_SECTION]
+    e.billSubsection = row[BILL_SUBSECTION]
+    e.projectHeading = row[PROJECT_HEADING]
+    if isinstance(row[HOUSE_MEMBER], basestring):
+        e.houseMembers = row[HOUSE_MEMBER].split(",; ")
+    if isinstance(row[SENATE_MEMBER], basestring):
+        e.senateMembers = row[SENATE_MEMBER].split(",; ")
+    e.presidentialEarmarks = row[PRESIDENTIAL_EARMARKS]
+    e.undisclosed = row[UNDISCLOSED]
+    e.intendedRecipient = row[INTENDED_RECIP]
+    e.notes = row[NOTES]
+    return e
 
-def order_by_highest(d):
-	sorted_count = [(v,k) for k, v in d.items()]
-	sorted_count.sort()
-	sorted_count.reverse()
-	return [(k, v) for v, k in sorted_count]
+def getEarmarks(xlsFilename):    
+    data = xls2list(xlsFilename)
+    marks = []
+    for row in data[3:]:
+        marks.append(earmarkFromRow(row))
+    
+    map(lambda m: sys.stdout.write(str(m)+'\n'),  marks[10:20])
 
-earmarks,pra_total,final_total = count_earmarks(data)
+marks = getEarmarks(sys.argv[1])
+
+
