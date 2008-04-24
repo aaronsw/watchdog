@@ -15,7 +15,7 @@ body, table { margin: 0; font: 14px "Georgia"; line-height: 1.4}
 .footer { text-align: left; border-top: 1px solid #ccc; padding: .5em;}
 h1 { font-weight: normal; }
 h1 a, h1 img { color: white; text-decoration: none; border: 0; }
-th { text-align: right; }
+th, table.interest_group_ratings td { text-align: right; }
 
 .explain { color: #999; margin-top: -.5em; font-size: smaller;}
 .explain a { color: #777; text-decoration: underline; }

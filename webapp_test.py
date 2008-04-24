@@ -36,6 +36,13 @@ def json(path):
     ok(resp.headers['Content-Type'], 'application/json')
     return simplejson.loads(resp.data)
 
+#@@ more places should use this
+def html(path):
+    resp = webapp.app.request(path, headers={ 'Accept': 'text/html' })
+    ok(resp.status[:3], '200')
+    assert resp.headers['Content-Type'].startswith('text/html')
+    return resp.data
+
 def test_find():
     "Test /us/."
     headers = {'Accept': 'text/html'}
@@ -47,18 +54,15 @@ def test_find():
     ok(resp.headers.get('Location'), 'http://0.0.0.0:8080/us/ca-12')
 
     # A ZIP code in Indiana that crosses three districts.
-    resp = webapp.app.request('/us/?zip=46131', headers=headers)
-    ok(resp.status[:3], '200')
-    ok_re(resp.data, '/us/in-04')
-    ok_re(resp.data, 'Stephen Buyer')   # rep for IN-04 at the moment
-    ok_re(resp.data, '/us/in-05')
-    ok_re(resp.data, '/us/in-06')
-    assert '/us/in-07' not in resp.data, resp.data
+    in_zip = html('/us/?zip=46131')
+    ok_re(in_zip, '/us/in-04')
+    ok_re(in_zip, 'Stephen Buyer')   # rep for IN-04 at the moment
+    ok_re(in_zip, '/us/in-05')
+    ok_re(in_zip, '/us/in-06')
+    assert '/us/in-07' not in in_zip, in_zip
     
     # Test for LEFT OUTER JOIN: district row with no corresponding politician row.
-    resp = webapp.app.request('/us/?zip=70072', headers=headers)
-    ok(resp.status[:3], '200')
-    ok_re(resp.data, '/us/la-01')       # no rep at the moment
+    ok_re(html('/us/?zip=70072'), '/us/la-01')       # no rep at the moment
 
     # Test for /us/ listing of all the districts and reps.
     # Takes 9-12 seconds on my machine, I think because it's
@@ -74,19 +78,17 @@ def test_find():
     assert '(Rep.  )' not in resp.data
 
     # JSON of /us/ --- very minimal test
-    #@@ make this be json('/us/index')
     index = json('/us/index')
     ok(len(index), len(list(webapp.db.select('district'))))
 
 def test_state():
     "Test state pages such as /us/nm.html."
-    resp = webapp.app.request('/us/nm.html')
-    ok(resp.status[:3], '200')
-    ok_re(resp.data, 'href="/us/nm-01"')
-    assert '/us/NM-01' not in resp.data # the uppercase URLs aren't canonical
-    ok_re(resp.data, 'href="/us/nm-02"')
-    ok_re(resp.data, 'href="/us/nm-03"')
-    assert '/us/nm-04' not in resp.data
+    nm = html('/us/nm')
+    ok_re(nm, 'href="/us/nm-01"')
+    assert '/us/NM-01' not in nm # the uppercase URLs aren't canonical
+    ok_re(nm, 'href="/us/nm-02"')
+    ok_re(nm, 'href="/us/nm-03"')
+    assert '/us/nm-04' not in nm
 
     # JSON
     resp = webapp.app.request('/us/nm.json')
@@ -111,11 +113,9 @@ def test_state():
 
 def test_district():
     "Test district pages such as /us/nm-02."
-    headers = {'Accept': 'text/html'}
-    resp = webapp.app.request('/us/nm-02', headers=headers)
-    ok(resp.status[:3], '200')
-    ok_re(resp.data, r'69,598 sq\. mi\.')  # the district's area
-    ok_re(resp.data, 'href=".*/us/nm"')
+    nm_02 = html('/us/nm-02')
+    ok_re(nm_02, r'69,598 sq\. mi\.')  # the district's area
+    ok_re(nm_02, 'href=".*/us/nm"')
 
     # JSON
     (district,) = json('/us/nm-02')
@@ -194,13 +194,6 @@ def test_politician():
     #assert g == g2
     #@@ probably should test interest group ratings...
 
-#@@ more places should use this
-def html(path):
-    resp = webapp.app.request(path, headers={ 'Accept': 'text/html' })
-    ok(resp.status[:3], '200')
-    assert resp.headers['Content-Type'].startswith('text/html')
-    return resp.data
-
 def test_dproperty():
     page = html('/us/by/est_population')
     montana = re.search('(?s)<li(.*?)</li>', page)
@@ -212,6 +205,16 @@ def test_dproperty():
 def test_blog():
     html('/blog/')
 
+def test_interest_group_table():
+    ok(webapp.interest_group_table([
+        dict(year=2005, groupname='COC', rating=38),
+        dict(year=2006, groupname='COC', rating=48),
+        dict(year=2006, groupname='ACLU', rating=80),
+        ]), dict(groups=['ACLU', 'COC'],
+                 rows=[
+        dict(year=2006, ratings=[80, 48]),
+        dict(year=2005, ratings=[None, 38])]))
+
 def test_webapp():
     "Test the actual watchdog.net webapp.app app."
     test_state()
@@ -222,6 +225,7 @@ def test_webapp():
     test_find()                         # slow
 
 def main():
+    test_interest_group_table()
     test_webapp()
 
 
