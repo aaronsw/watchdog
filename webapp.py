@@ -215,12 +215,12 @@ class politician:
           'uri': 'http://watchdog.net/p/' + polid,
           'type': 'Politician',
           'district': apipublish.URI('http://watchdog.net/us/' + p.district.lower()),
-          'wikipedia': apipublish.URI,
+          'wikipedia photo_credit_url officeurl': apipublish.URI,
           'interest_group_rating': apipublish.table({
             'year groupname rating': apipublish.identity}),
           'bioguideid opensecretsid govtrackid gender birthday firstname '
-          'middlename lastname officeurl party religion photo_path '
-          'photo_credit_url photo_credit_text '
+          'middlename lastname party religion photo_path '
+          'photo_credit_text '
           'n_speeches words_per_speech': apipublish.identity,
          }, [p], format)
         if out is not False:

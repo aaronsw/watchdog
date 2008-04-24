@@ -1,0 +1,21 @@
+Metadata-Version: 1.0
+Name: rdflib
+Version: 2.4.0
+Summary: RDF library containing an RDF triple store and RDF/XML parser/serializer
+Home-page: http://rdflib.net/
+Author: Daniel 'eikeon' Krech
+Author-email: eikeon@eikeon.com
+License: http://rdflib.net/latest/LICENSE
+Download-URL: http://rdflib.net/rdflib-2.4.0.tar.gz
+Description: RDF library containing an RDF triple store and RDF/XML parser/serializer
+        
+        If you have recently reported a bug marked as fixed, or have a craving for
+        the very latest, you may want the development version instead:
+        http://svn.rdflib.net/trunk#egg=rdflib-dev
+        
+Platform: any
+Classifier: Programming Language :: Python
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Operating System :: OS Independent
+Classifier: Natural Language :: English

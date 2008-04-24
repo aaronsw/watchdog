@@ -1,0 +1,6 @@
+[nose.plugins]
+EARLPlugin = rdflib_tools.EARLPlugin:EARLPlugin
+
+[console_scripts]
+rdfpipe = rdflib_tools.RDFPipe:main
+

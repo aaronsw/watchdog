@@ -182,11 +182,13 @@ def test_politician():
     
     henry_uri = henry_dict.pop('uri')
     g = rdftramp.Graph()
-    g.parse(StringIO.StringIO(webapp.app.request('/p/henry_waxman.n3').data), format='n3')
+    g.parse(StringIO.StringIO(webapp.app.request('/p/henry_waxman.n3').data),
+            format='n3')
     ok_graph(rdftramp.Thing(rdftramp.URI(henry_uri), g), henry_dict)
 
     g2 = rdftramp.Graph()
-    g2.parse(StringIO.StringIO(webapp.app.request('/p/henry_waxman.xml').data), format='xml')
+    g2.parse(StringIO.StringIO(webapp.app.request('/p/henry_waxman.xml').data),
+             format='xml')
     ok_graph(rdftramp.Thing(rdftramp.URI(henry_uri), g2), henry_dict)
     
     # rdflib doesn't support graph equivalence?!
@@ -230,3 +232,4 @@ def main():
 
 
 if __name__ == '__main__': main()
+
