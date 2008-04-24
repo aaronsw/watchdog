@@ -18,13 +18,13 @@ PROJECT_HEADING=13
 HOUSE_MEMBER = 14
 HOUSE_PARTY = 15
 HOUSE_STATE = 16
-SENATE_MEMBER = 17
-SENATE_PARTY=18
-SENATE_STATE = 19
-PRESIDENTIAL_EARMARKS=20
-UNDISCLOSED=21
-INTENDED_RECIP=22
-NOTES=23
+SENATE_MEMBER = 18
+SENATE_PARTY= 19
+SENATE_STATE = 20
+PRESIDENTIAL_EARMARKS=21
+UNDISCLOSED=22
+INTENDED_RECIP=23
+NOTES=24
 
 class Earmark(object):
     houseRequest = None
@@ -79,9 +79,9 @@ def earmarkFromRow(row):
     e.billSubsection = row[BILL_SUBSECTION]
     e.projectHeading = row[PROJECT_HEADING]
     if isinstance(row[HOUSE_MEMBER], basestring):
-        e.houseMembers = row[HOUSE_MEMBER].split(",; ")
+        e.houseMembers = re.split("[ ;,]+", row[HOUSE_MEMBER])
     if isinstance(row[SENATE_MEMBER], basestring):
-        e.senateMembers = row[SENATE_MEMBER].split(",; ")
+        e.senateMembers = re.split("[ ;,]+", row[SENATE_MEMBER])
     e.presidentialEarmarks = row[PRESIDENTIAL_EARMARKS]
     e.undisclosed = row[UNDISCLOSED]
     e.intendedRecipient = row[INTENDED_RECIP]
@@ -93,8 +93,8 @@ def getEarmarks(xlsFilename):
     marks = []
     for row in data[3:]:
         marks.append(earmarkFromRow(row))
-    
-    map(lambda m: sys.stdout.write(str(m)+'\n'),  marks[10:20])
+    print data[4]
+    map(lambda m: sys.stdout.write(str(m)+'\n'),  marks[0:1])
 
 marks = getEarmarks(sys.argv[1])
 
