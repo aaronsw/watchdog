@@ -251,7 +251,7 @@ class sparkdist:
         if not r_safeproperty.match(what): raise web.notfound
         
         inp = web.input(point=None)
-        points = db.select(table, what=what, order=what+' desc', where=what+' is not null')
+        points = db.select(table, what=what, order=what+' asc', where=what+' is not null')
         points = [x[what] for x in points.list()]
         
         web.header('Content-Type', 'image/png')
