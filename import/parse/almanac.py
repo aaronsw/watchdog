@@ -67,7 +67,6 @@ def election_table(rv, html):
                 if cell_value != '':
                     current_row[headers[col]] = cell_value
                     actually_got_something = True
-        #print current_row
         last_election_value = current_row['election']
         if actually_got_something: results.append(current_row)
     rv['electionresults'] = results
@@ -76,7 +75,6 @@ number = re.compile(r'\d+$')
 def interest_group_ratings(rv, html):
     ratings_dict = {}
     soup = BeautifulSoup('<table>' + html)
-    #print soup.prettify()
     rows = soup('tr')
     headers = rows[0]
     datarows = rows[1:]
