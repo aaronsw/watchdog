@@ -162,6 +162,19 @@ def interest_group_ratings(polid):
                           where='politician_id = $polid',
                           vars=locals()))
 
+def interest_group_table(data):
+    "Transform the relational form of the data into something mirroring HTML."
+    groups = list(set(datum['groupname'] for datum in data))
+    groups.sort()
+    years = list(set(datum['year'] for datum in data))
+    years.sort(reverse=True)
+    hash = dict(((datum['groupname'], datum['year']), datum['rating'])
+                 for datum in data)
+    rows = [dict(year=year,
+                 ratings=[hash.get((group, year)) for group in groups])
+            for year in years]
+    return dict(groups=groups, rows=rows)
+
 class politician:
     def GET(self, polid, format=None):
         if polid != polid.lower():
@@ -196,6 +209,7 @@ class politician:
             raise web.notfound
 
         p.interest_group_rating = interest_group_ratings(polid)
+        p.interest_group_table = interest_group_table(p.interest_group_rating)
 
         out = apipublish.publish({
           'uri': 'http://watchdog.net/p/' + polid,
