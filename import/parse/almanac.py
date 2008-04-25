@@ -71,6 +71,20 @@ def election_table(rv, html):
         if actually_got_something: results.append(current_row)
     rv['electionresults'] = results
 
+#@@ we're not using these anywhere yet
+fullgroupnames = {
+  'ADA': 'Americans for Democratic Action',
+  'ACLU': 'American Civil Liberties Union',
+  'AFS': 'American Federation of State, County and Municipal Employees (AFSCME)',
+  'LCV': 'League of Conservation Voters',
+  'ITIC': 'Information Technology Industry Council',
+  'NTU': 'National Taxpayers Union',
+  'COC': 'Chamber of Commerce of the United States',
+  'ACU': 'American Conservative Union',
+  'CFG': 'Club for Growth',
+  'FRC': 'Family Research Council'
+}
+
 number = re.compile(r'\d+$')
 def interest_group_ratings(rv, html):
     ratings_dict = {}

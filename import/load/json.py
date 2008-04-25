@@ -4,7 +4,7 @@ import web
 import cgitb
 cgitb.enable(format='text')
 
-DATA_DIR = '../data/parse'
+DATA_DIR = '../data/load'
 db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), db='watchdog_dev')
 
 def unidecode(d):
