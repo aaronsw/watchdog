@@ -10,15 +10,15 @@ export PYTHONPATH := .:$(PWD)/../vendor:$(PYTHONPATH)
 
 PYTHON=python
 
-PARSE=../data/parse
-JSONS=$(PARSE)/states/index.json \
-      $(PARSE)/districts/index.json \
-      $(PARSE)/districts/almanac.json \
-      $(PARSE)/districts/shapes.json \
-      $(PARSE)/politicians/index.json \
-      $(PARSE)/politicians/govtrack.json \
-      $(PARSE)/politicians/photos.json \
-      $(PARSE)/districts/centers.json
+LOAD=../data/load
+JSONS=$(LOAD)/states/index.json \
+      $(LOAD)/districts/index.json \
+      $(LOAD)/districts/almanac.json \
+      $(LOAD)/districts/shapes.json \
+      $(LOAD)/politicians/index.json \
+      $(LOAD)/politicians/govtrack.json \
+      $(LOAD)/politicians/photos.json \
+      $(LOAD)/districts/centers.json
 
 all: .database
 clean:
@@ -37,30 +37,33 @@ clean:
 	$(DBCLIENT) watchdog_dev < $<
 	touch $@
 
-$(PARSE)/states/index.json: parse/manual/states.json
+$(LOAD)/states/index.json: load/manual/states.json
+	mkdir -p $(LOAD)/states
 	cp $< $@
 
-$(PARSE)/districts/index.json: parse/manual/districts.json
+$(LOAD)/districts/index.json: load/manual/districts.json
+	mkdir -p $(LOAD)/districts
 	cp $< $@
 
-$(PARSE)/districts/almanac.json: load/almanac.py parse/almanac.py
+$(LOAD)/districts/almanac.json: load/almanac.py parse/almanac.py
 	$(PYTHON) load/almanac.py > $@.tmp
 	mv $@.tmp $@
 
-$(PARSE)/districts/shapes.json: load/shapes.py
+$(LOAD)/districts/shapes.json: load/shapes.py
 	$(PYTHON) load/shapes.py > $@
 
-$(PARSE)/districts/centers.json: load/govtrack_gis.py
+$(LOAD)/districts/centers.json: load/govtrack_gis.py
 	$(PYTHON) load/govtrack_gis.py > $@
 
-$(PARSE)/politicians/index.json: parse/manual/politicians.json
-	cp parse/manual/politicians.json $@
+$(LOAD)/politicians/index.json: load/manual/politicians.json
+	mkdir -p $(LOAD)/politicians
+	cp $< $@
 
-$(PARSE)/politicians/govtrack.json: load/govtrack.py parse/govtrack.py
+$(LOAD)/politicians/govtrack.json: load/govtrack.py parse/govtrack.py
 	$(PYTHON) load/govtrack.py > $@.tmp
 	mv $@.tmp $@
 
-$(PARSE)/politicians/photos.json: load/photos.py $(PARSE)/politicians/govtrack.json
+$(LOAD)/politicians/photos.json: load/photos.py $(LOAD)/politicians/govtrack.json
 	$(PYTHON) load/photos.py > $@.tmp
 	mv $@.tmp $@
 
