@@ -24,12 +24,9 @@ def has_message(soup,msg):
 
 def has_captcha(soup):
     paras = soup.findAll('p')
-    print 'paras:', len(paras)
     for p in paras:
-        print p.string
-        if p:
-            if p.string.find('spam') > -1:
-                return True
+        if p and p.string.find('spam') > -1:
+            return True
     return False
 
 
@@ -59,11 +56,8 @@ def get_myform(url,data=None):
 
     else: return forms[1]
 
-def writerep(**kw):
-    state = kw.get('state').upper()
-    zipcode = kw.get('zipcode')
-    states = {}
- 
+def writerep(zipcode, state, name, addr1, city, phone, email, msg, addr2='', addr3=''):
+    states = {} 
     form = get_myform('https://forms.house.gov/wyr/welcome.shtml')
 
     # state names are in form: ``PRPuerto Rico"
@@ -76,22 +70,25 @@ def writerep(**kw):
     request = form.click()
     form2 = get_myform(request.get_full_url(), request.get_data())
     
-    form2['name'] = kw.get('name')
-    form2['addr1'] = kw.get('addr1')
-    form2['addr2'] = kw.get('addr2')
-    form2['addr3'] = kw.get('add3')
-    form2['city'] = kw.get('city')
-    form2['phone'] = kw.get('phone')
-    form2['email'] = kw.get('email')
+    form2['name'] = name
+    form2['addr1'] = addr1
+    form2['addr2'] = addr2
+    form2['addr3'] = addr3
+    form2['city'] = city
+    form2['phone'] = phone
+    form2['email'] = email
 
-    form3 = get_myform(form.click())
+    request = form2.click()
+    form3 = get_myform(request.get_full_url(), request.get_data())
     
-    form3['msg'] = kw.get('msg')
-
+    form3['msg'] = msg
+    ## print form3
     ## XXX: uncomment only in production.
     ## request = form.click()
     ## response = urlopen(request.get_full_url(), request.get_data())
     ## XXX: Possibly check for "thank you" message for asserting successful dispatch of mail.
 
 if __name__ == '__main__':
-    writerep(state='MA', zipcode='01773')
+    # state='MA', zipcode='01773'
+    writerep(state='PR', zipcode='00667', name='watchdog test', addr1='111 av', city='test city',
+            phone='001-001-001', email='test@watchdog.net', msg='testing...')
