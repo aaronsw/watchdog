@@ -35,11 +35,11 @@ INTENDED_RECIP=23
 NOTES=24
 
 class Earmark(object):
-    houseRequest = None
-    senateRequest = None
-    preReductionAmount = None
-    finalAmount = None
-    budgetRequest = None
+    houseRequestDollars = None
+    senateRequestDollars = None
+    preReductionAmountDollars = None
+    finalAmountDollars = None
+    budgetRequestDollars = None
     description = None
     cityLocation = None
     county = None
@@ -73,11 +73,11 @@ class Earmark(object):
 
 def earmarkFromRow(row):
     e = Earmark()
-    e.houseRequest = row[HOUSE_REQUEST]
-    e.senateRequest = row[SENATE_REQUEST]
-    e.preReductionAmount = row[PRE_REDUCTION_AMT]
-    e.finalAmount = row[FINAL_AMOUNT]
-    e.budgetRequest = row[BUDGET_REQUEST]
+    e.houseRequestDollars = row[HOUSE_REQUEST]
+    e.senateRequestDollars = row[SENATE_REQUEST]
+    e.preReductionAmountDollars = row[PRE_REDUCTION_AMT]
+    e.finalAmountDollars = row[FINAL_AMOUNT]
+    e.budgetRequestDollars = row[BUDGET_REQUEST]
     e.description = row[DESCRIPTION]
     e.cityLocation = row[CITY_LOCATION]
     e.county = row[COUNTY]
