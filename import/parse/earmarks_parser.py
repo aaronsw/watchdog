@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+#
+# A parser for the 2008 earmarks data (XLS format) from http://taxpayer.net/
+# 
+# This script depends on xls2list which will convert the excel file to a 2d array. 
+# It then does some trivial parsing of each field and outputs the data in a few ways.
+#
+# author: Alex Gourley (acgourley@gmail.com)
+
 import sys, re
 from xls2list import *
 
@@ -88,14 +96,39 @@ def earmarkFromRow(row):
     e.notes = row[NOTES]
     return e
 
-def getEarmarks(xlsFilename):    
+def getEarmarks(xlsFilename):
+    """Break down the xls into a 2d data array, stripping off first rows which do not have data."""
     data = xls2list(xlsFilename)
     marks = []
     for row in data[3:]:
         marks.append(earmarkFromRow(row))
-    print data[4]
-    map(lambda m: sys.stdout.write(str(m)+'\n'),  marks[0:1])
+    return marks
+    
+def getEarmarksByName(xlsFilename):
+    """Take rows (like those returned from getEarmarks) and hash them by representative. If no representative is listed
+    then the earmark will be hashed under the "noname" key."""
+    marks = getEarmarks(xlsFilename)
+    byPerson = {}
+    byPerson["noname"] = []
+    for row in marks:
+        people = row.houseMembers+row.senateMembers
+        if len(people) == 0:
+            byPerson["noname"].append(row)
+        for person in people:
+            if person in byPerson:
+                byPerson[person].append(row)
+            else:
+                byPerson[person] = [row]
+    return byPerson
 
-marks = getEarmarks(sys.argv[1])
+def printEarmarks(rows):
+    """Takes in an array of rows (like those produced from getEarmarks) and pretty prints them."""
+    for row in rows:
+        print row
 
+#Examples of how to use, assuming the path to the earmarks file is passed in as the first arg.
+
+#marks = getEarmarksByName(sys.argv[1])
+#printEarmarks(marks["noname"])
+#printEarmarks(marks["Edwards"])
 
