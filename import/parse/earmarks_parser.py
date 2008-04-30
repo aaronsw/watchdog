@@ -132,3 +132,7 @@ def printEarmarks(rows):
 #printEarmarks(marks["noname"])
 #printEarmarks(marks["Edwards"])
 
+if __name__ == "__main__":
+    import simplejson
+    earmarks = getEarmarks('../data/crawl/taxpayer/bigkahuna.xls')
+    print simplejson.dumps([x.__dict__ for x in earmarks], indent=2, sort_keys=True)

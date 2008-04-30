@@ -68,7 +68,7 @@ def xls2list(fname, worksheet=1,encoding='cp1251'):
     # (i,j) with i=0,1,...,no_columns, j=0,1,...,no_rows 
     # to the associated cell entry. Blank cells are omitted from 
     # the dict. 
-    sheet_name=data[worksheet-1][0].encode(encoding) 
+    sheet_name=data[worksheet-1][0]#.encode(encoding) 
     values = data[worksheet-1][1] 
      
     # first stuff all the nonempty cells into a dict keyed by tuples 
@@ -83,8 +83,8 @@ def xls2list(fname, worksheet=1,encoding='cp1251'):
         row_idx_max = max(row_idx,row_idx_max) 
         col_idx_max = max(col_idx,col_idx_max) 
         v = values[(row_idx, col_idx)] 
-        if isinstance(v, unicode): 
-            v = v.encode(encoding, 'backslashreplace') 
+        #if isinstance(v, unicode): 
+        #    v = v.encode(encoding, 'backslashreplace') 
         vdict[(row_idx,col_idx)] = v 
      
     # Convert vdict (dict of cell values) to vlist (a 2D list). 

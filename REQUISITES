@@ -3,6 +3,7 @@ For Debian Etch:
     sudo apt-get install python-dev python-setuptools  
     sudo easy_install simplejson==1.8.1
     sudo easy_install ClientForm
+    sudo easy_install pyExcelerator
     sudo apt-get install python-imaging
     sudo apt-get install python-psycopg2
 
