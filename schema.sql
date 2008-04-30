@@ -59,6 +59,12 @@ CREATE TABLE politician (
   religion varchar(256),
   n_speeches int,
   words_per_speech int,
+
+  -- earmarks.json
+  amt_earmark_requested int,
+  n_earmark_requested int,
+  n_earmark_received int,
+  amt_earmark_received int,
   
   -- photos.json
   photo_path varchar(256),

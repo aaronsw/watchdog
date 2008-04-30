@@ -87,9 +87,9 @@ def earmarkFromRow(row):
     e.billSubsection = row[BILL_SUBSECTION]
     e.projectHeading = row[PROJECT_HEADING]
     if isinstance(row[HOUSE_MEMBER], basestring):
-        e.houseMembers = re.split("[ ;,]+", row[HOUSE_MEMBER])
+        e.houseMembers = [x.strip() for x in row[HOUSE_MEMBER].split(';')]
     if isinstance(row[SENATE_MEMBER], basestring):
-        e.senateMembers = re.split("[ ;,]+", row[SENATE_MEMBER])
+        e.senateMembers = [x.strip() for x in row[SENATE_MEMBER].split(';')]
     e.presidentialEarmarks = row[PRESIDENTIAL_EARMARKS]
     e.undisclosed = row[UNDISCLOSED]
     e.intendedRecipient = row[INTENDED_RECIP]

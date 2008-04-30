@@ -221,6 +221,8 @@ class politician:
           'bioguideid opensecretsid govtrackid gender birthday firstname '
           'middlename lastname party religion photo_path '
           'photo_credit_text '
+          ' amt_earmark_requested n_earmark_requested n_earmark_received '
+          'amt_earmark_received '
           'n_speeches words_per_speech': apipublish.identity,
          }, [p], format)
         if out is not False:

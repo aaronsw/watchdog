@@ -18,6 +18,7 @@ JSONS=$(LOAD)/states/index.json \
       $(LOAD)/politicians/index.json \
       $(LOAD)/politicians/govtrack.json \
       $(LOAD)/politicians/photos.json \
+      $(LOAD)/politicians/earmarks.json \
       $(LOAD)/districts/centers.json
 
 all: .database
@@ -67,4 +68,7 @@ $(LOAD)/politicians/photos.json: load/photos.py $(LOAD)/politicians/govtrack.jso
 	$(PYTHON) load/photos.py > $@.tmp
 	mv $@.tmp $@
 
+$(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack.json
+	$(PYTHON) load/earmarks.py > $@.tmp
+	mv $@.tmp $@
 
