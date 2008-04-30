@@ -94,4 +94,9 @@ def writerep(**kw):
     ## XXX: Possibly check for "thank you" message for asserting successful dispatch of mail.
 
 if __name__ == '__main__':
-    writerep(state='MA', zipcode='01773')
+    import sys
+    if sys.argv[1:]:
+        writerep(state=sys.argv[1], zipcode=sys.argv[2])
+    else:
+        writerep(state='MA', zipcode='02138')
+
