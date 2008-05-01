@@ -47,7 +47,7 @@ def load_all():
                       **unidecode(pol))
 
     for groupname, longname in items('interest_groups'):
-        db.insert('interest_group', groupname=groupname, longname=longname)
+        db.insert('interest_group', seqname=False, groupname=groupname, longname=longname)
 
     for name, district in items('districts/almanac'):
         if name not in district_to_pol: continue  #@@ desynchronized data!
