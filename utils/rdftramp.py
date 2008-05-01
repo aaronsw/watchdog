@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """rdftramp: Makes RDF look like Python data structures."""
 __version__ = 1.1
 __copyright__ = "(C) 2008 Aaron Swartz <http://www.aaronsw.com/>. GNU GPL 3."
@@ -42,7 +43,7 @@ class Thing:
         if len(out) == 1:
             return out[0]
         else:
-            return PsuedoList(out, self, v)
+            return PseudoList(out, self, v)
     
     def __setitem__(self, k, v):
         if isinstance(v, Thing): v = v.name
@@ -73,32 +74,32 @@ class Thing:
 
 def thing(x, store, prop):
     if isinstance(x, URI): return Thing(x, store.store)
-    if isinstance(x, (Thing, PsuedoBase)): return x
+    if isinstance(x, (Thing, PseudoBase)): return x
     if isinstance(x, Literal):
         if x.datatype in [xsd.integer, xsd.int]:
-            return PsuedoInteger(x, store, prop)
+            return PseudoInteger(x, store, prop)
         elif x.datatype == xsd.float:
-            return PsuedoFloat(x, store, prop)
+            return PseudoFloat(x, store, prop)
         else:
-            return PsuedoString(x, store, prop)
+            return PseudoString(x, store, prop)
     raise ValueError, "couldn't thingify %s (a %s)" % (x, x.__class__)
 
-class PsuedoBase(object):        
+class PseudoBase(object):        
     def __new__(self, name, thing, item):
-        self = super(PsuedoBase, self).__new__(self, name)
+        self = super(PseudoBase, self).__new__(self, name)
         self._thing, self._item = thing, item
         return self
 
     def append(self, x):
         self._thing[self._item] = [self, x]
 
-class PsuedoString(PsuedoBase, unicode):
+class PseudoString(PseudoBase, unicode):
     def __eq__(self, other):
         return unicode(self) == other
 
-class PsuedoInteger(PsuedoBase, int): pass
-class PsuedoFloat(PsuedoBase, float): pass
-class PsuedoList(PsuedoBase, list):
+class PseudoInteger(PseudoBase, int): pass
+class PseudoFloat(PseudoBase, float): pass
+class PseudoList(PseudoBase, list):
     def __init__(self, name, thing, item):
         list.__init__(self, name)
         self._thing, self._item = thing, item
@@ -118,7 +119,7 @@ if __name__ == "__main__":
     # URIs do not equal pseudostrings
     a_uri_string = "http://me.aaronsw.com/"
     a_uri = URI(a_uri_string)
-    pseudo = PsuedoString(a_uri_string, None, None)
+    pseudo = PseudoString(a_uri_string, None, None)
     assert str(pseudo) == a_uri_string
     assert pseudo == pseudo
     assert a_uri == a_uri
