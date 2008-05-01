@@ -94,10 +94,7 @@ class PsuedoBase(object):
 
 class PsuedoString(PsuedoBase, unicode):
     def __eq__(self, other):
-        if isinstance(other, URI):
-            return False
-        else:
-            return super(PsuedoString, self).__eq__(other)
+        return unicode(self) == other
 
 class PsuedoInteger(PsuedoBase, int): pass
 class PsuedoFloat(PsuedoBase, float): pass
@@ -116,15 +113,25 @@ if __name__ == "__main__":
     
     store = Graph(); ex = Namespace("http://example.org/")
     Aaron = Thing(URI("http://me.aaronsw.com/"), store)
-    Aaron == Thing(URI("http://me.aaronsw.com/"), store)
+    assert Aaron == Thing(URI("http://me.aaronsw.com/"), store)
     
+    # URIs do not equal pseudostrings
+    a_uri_string = "http://me.aaronsw.com/"
+    a_uri = URI(a_uri_string)
+    pseudo = PsuedoString(a_uri_string, None, None)
+    assert str(pseudo) == a_uri_string
+    assert pseudo == pseudo
+    assert a_uri == a_uri
+    assert not (pseudo == a_uri)
+    assert not (a_uri == pseudo)
+
     Aaron[ex.name] = "Aaron Swartz"
     assert Aaron[ex.name] == "Aaron Swartz"
     Aaron[ex.homepage] = URI("http://www.aaronsw.com/")
     assert Aaron[ex.homepage] == URI("http://www.aaronsw.com/")
     
     Aaron[ex.machine] = ["vorpal", "slithy"]
-    assert Aaron[ex.machine].sort() == ["vorpal", "slithy"].sort()
+    assert sorted(Aaron[ex.machine]) == ["slithy", "vorpal"]
     # (we sort because order isn't necessarily preserved)
     Aaron[ex.machine] = ["vorpal"]
     # (this replaces old triples)
