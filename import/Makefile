@@ -13,6 +13,7 @@ PYTHON=python
 LOAD=../data/load
 JSONS=$(LOAD)/states/index.json \
       $(LOAD)/districts/index.json \
+      $(LOAD)/interest_groups.json \
       $(LOAD)/districts/almanac.json \
       $(LOAD)/districts/shapes.json \
       $(LOAD)/politicians/index.json \
@@ -44,6 +45,11 @@ $(LOAD)/states/index.json: load/manual/states.json
 
 $(LOAD)/districts/index.json: load/manual/districts.json
 	mkdir -p $(LOAD)/districts
+	cp $< $@
+
+# from nationaljournal
+$(LOAD)/interest_groups.json: load/manual/interest_groups.json
+	mkdir -p $(LOAD)
 	cp $< $@
 
 $(LOAD)/districts/almanac.json: load/almanac.py parse/almanac.py

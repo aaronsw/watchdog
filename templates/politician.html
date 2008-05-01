@@ -71,8 +71,8 @@ $var pretitle:
 
 <table class="interest_group_ratings">
 <tr><td></td>
-$for groupname in pol.interest_group_table['groups']:
-    <th>$groupname</th>
+$for group in pol.interest_group_table['groups']:
+    <th><abbr title="$group['longname']">$group['groupname']</abbr></th>
 </tr>
 $for year in pol.interest_group_table['rows']:
     <tr><th>$year['year']</td>

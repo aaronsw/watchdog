@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS district CASCADE;
 DROP TABLE IF EXISTS politician CASCADE;
 DROP TABLE IF EXISTS interest_group_ratings CASCADE;
 DROP TABLE IF EXISTS interest_group_rating CASCADE;
+DROP TABLE IF EXISTS interest_group CASCADE;
 
 CREATE TABLE state (
   -- index.json
@@ -72,12 +73,17 @@ CREATE TABLE politician (
   photo_credit_text varchar(256)
 );
 
+CREATE TABLE interest_group (
+  groupname varchar(10) primary key,
+  longname varchar(256)
+);
+
 CREATE TABLE interest_group_rating (  -- interest group scores for politicians
   id serial primary key, -- does web.py require this? otherwise let's drop it
   politician_id varchar(256) references politician,
   -- almanac.json
   year int,                     -- 2005, 2006, etc.
-  groupname varchar(10),
+  groupname varchar(10) references interest_group,
   rating int                    -- typically 0-100
 );
 
@@ -85,3 +91,4 @@ GRANT ALL on state TO watchdog;
 GRANT ALL on district TO watchdog;
 GRANT ALL on politician TO watchdog;
 GRANT ALL on interest_group_rating TO watchdog;
+GRANT ALL on interest_group TO watchdog;

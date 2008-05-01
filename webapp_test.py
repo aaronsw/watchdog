@@ -5,6 +5,8 @@ import simplejson
 import web
 from utils import rdftramp
 import webapp
+import cgitb
+cgitb.enable(format='text')
 
 def ok(a, b): assert a == b, (a, b)
 def ok_re(a, b): assert re.search(b, a), (a, b)
@@ -167,8 +169,14 @@ def test_politician():
     ok_items(henry, henry_dict)
 
     ratings = henry['interest_group_rating']
-    assert dict(year=2006, groupname='ITIC', rating=43) in ratings, ratings
-    assert dict(year=2005, groupname='COC', rating=38) in ratings, ratings
+    assert dict(year=2006,
+                groupname='ITIC',
+                longname='Information Technology Industry Council',
+                rating=43) in ratings, ratings
+    assert dict(year=2005,
+                groupname='COC',
+                longname='Chamber of Commerce of the United States',
+                rating=38) in ratings, ratings
 
     reqtime, listing = time_thunk(lambda: json('/p/index'))
     print "took %.3f sec to get /p/index.json" % reqtime
@@ -208,11 +216,14 @@ def test_blog():
     html('/blog/')
 
 def test_interest_group_table():
+    coc = "Chamber of Commerce of the United States"
+    aclu = "American Civil Liberties Union"
     ok(webapp.interest_group_table([
-        dict(year=2005, groupname='COC', rating=38),
-        dict(year=2006, groupname='COC', rating=48),
-        dict(year=2006, groupname='ACLU', rating=80),
-        ]), dict(groups=['ACLU', 'COC'],
+        dict(year=2005, groupname='COC', longname=coc, rating=38),
+        dict(year=2006, groupname='COC', longname=coc, rating=48),
+        dict(year=2006, groupname='ACLU', longname=aclu, rating=80),
+        ]), dict(groups=[dict(groupname='ACLU', longname=aclu),
+                         dict(groupname='COC', longname=coc)],
                  rows=[
         dict(year=2006, ratings=[80, 48]),
         dict(year=2005, ratings=[None, 38])]))
