@@ -36,6 +36,7 @@ def main():
         if 'demographics' in d:
             demog = d['demographics']
         else:
+            #@@ maybe only when diststate + '-00' in districts?
             statefile = ALMANAC_DIR + 'states/%s/index.html' % diststate.lower()
             demog = almanac.scrape_state(statefile).get('state')
 

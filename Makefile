@@ -6,4 +6,5 @@ all: test
 
 test:
 	cd import/parse; ./almanac_test.py
+	utils/rdftramp.py
 	./webapp_test.py
