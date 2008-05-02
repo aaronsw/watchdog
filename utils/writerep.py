@@ -70,7 +70,7 @@ def get_myform(url,data=None):
         return form
     else: return forms[1]
 
-def writerep(zipcode, state, name, addr1, city, phone, email, msg, addr2='', addr3='', zip4=''):
+def writerep_wyr(zipcode, state, name, addr1, city, phone, email, msg, addr2='', addr3='', zip4=''):
     states = {} 
     forms,tf = proc_forms('https://forms.house.gov/wyr/welcome.shtml')
     form = forms[1]
@@ -107,5 +107,5 @@ if __name__ == '__main__':
     # state='PR', zipcode='00667', #success
     # state='MA', zipcode='01073', #captcha
     
-    writerep(state='MA', zipcode='01532', name='watchdog test', addr1='111 av', city='test city',
+    writerep_wyr(state='MA', zipcode='01532', name='watchdog test', addr1='111 av', city='test city',
             phone='001-001-001', email='test@watchdog.net', msg='testing...')
