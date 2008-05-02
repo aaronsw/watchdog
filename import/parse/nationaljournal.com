@@ -1,1 +1,0 @@
-../../data/crawl/almanac/nationaljournal.com/

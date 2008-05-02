@@ -157,23 +157,27 @@ class district:
 
 def interest_group_ratings(polid):
     "Returns the interest group ratings for a politician."
-    return list(db.select(['interest_group_rating'],
-                          what='year, groupname, rating',
-                          where='politician_id = $polid',
+    return list(db.select(['interest_group_rating', 'interest_group'],
+                          what='year, interest_group.groupname, rating, longname',
+                          where=('politician_id = $polid '
+                              'AND interest_group.groupname = '
+                                  'interest_group_rating.groupname'),
                           vars=locals()))
 
 def interest_group_table(data):
     "Transform the relational form of the data into something mirroring HTML."
-    groups = list(set(datum['groupname'] for datum in data))
-    groups.sort()
+    groupnames = list(set(datum['groupname'] for datum in data))
+    groupnames.sort()
+    longnames = dict((datum['groupname'], datum['longname']) for datum in data)
     years = list(set(datum['year'] for datum in data))
     years.sort(reverse=True)
     hash = dict(((datum['groupname'], datum['year']), datum['rating'])
                  for datum in data)
     rows = [dict(year=year,
-                 ratings=[hash.get((group, year)) for group in groups])
+                 ratings=[hash.get((group, year)) for group in groupnames])
             for year in years]
-    return dict(groups=groups, rows=rows)
+    return dict(groups=[dict(groupname=groupname, longname=longnames[groupname])
+                        for groupname in groupnames], rows=rows)
 
 class politician:
     def GET(self, polid, format=None):
@@ -217,10 +221,12 @@ class politician:
           'district': apipublish.URI('http://watchdog.net/us/' + p.district.lower()),
           'wikipedia photo_credit_url officeurl': apipublish.URI,
           'interest_group_rating': apipublish.table({
-            'year groupname rating': apipublish.identity}),
+            'year groupname longname rating': apipublish.identity}),
           'bioguideid opensecretsid govtrackid gender birthday firstname '
           'middlename lastname party religion photo_path '
           'photo_credit_text '
+          ' amt_earmark_requested n_earmark_requested n_earmark_received '
+          'amt_earmark_received '
           'n_speeches words_per_speech': apipublish.identity,
          }, [p], format)
         if out is not False:

@@ -39,12 +39,15 @@ def load_all():
         db.insert('politician', seqname=False, id=polid, **unidecode(pol))
         district_to_pol[pol['district']] = polid
     
-    for fn in ['govtrack', 'photos']:
+    for fn in ['govtrack', 'earmarks', 'photos']:
         for polid, pol in items('politicians/' + fn):
             db.update('politician',
                       where='id = $polid',
                       vars=locals(),
                       **unidecode(pol))
+
+    for groupname, longname in items('interest_groups'):
+        db.insert('interest_group', seqname=False, groupname=groupname, longname=longname)
 
     for name, district in items('districts/almanac'):
         if name not in district_to_pol: continue  #@@ desynchronized data!

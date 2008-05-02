@@ -36,6 +36,34 @@ $var pretitle:
            src="/p/by/words_per_speech/distribution.png?point=$pol.words_per_speech"
            class="sparkline" /></a></td>
   </tr><tr>
+    <th>Requested</th>
+    <td>$commify(pol.n_earmark_requested) earmarks</td>
+    <td><a href="/p/by/n_earmark_requested#$pol.id"
+         ><img 
+           src="/p/by/n_earmark_requested/distribution.png?point=$pol.n_earmark_requested"
+           class="sparkline" /></a></td>
+  </tr><tr>
+    <th>Total earmarks requested</th>
+    <td>\$$commify(pol.amt_earmark_requested)</td>
+    <td><a href="/p/by/amt_earmark_requested#$pol.id"
+        ><img 
+            src="/p/by/amt_earmark_requested/distribution.png?point=$pol.amt_earmark_requested"
+            class="sparkline" /></a></td>
+  </tr><tr>
+    <th>Received</th>
+    <td>$commify(pol.n_earmark_received) earmarks</td>
+    <td><a href="/p/by/n_earmark_received#$pol.id"
+         ><img 
+           src="/p/by/n_earmark_received/distribution.png?point=$pol.n_earmark_received"
+           class="sparkline" /></a></td>
+  </tr><tr>
+    <th>Total earmarks received</th>
+    <td>\$$commify(pol.amt_earmark_received)</td>
+    <td><a href="/p/by/amt_earmark_received#$pol.id"
+         ><img 
+           src="/p/by/amt_earmark_received/distribution.png?point=$pol.amt_earmark_received"
+           class="sparkline" /></a></td>
+  </tr><tr>
   <tr><th colspan="2">(Data for 110th Congress only)</th></tr>
 </table>
 
@@ -43,8 +71,8 @@ $var pretitle:
 
 <table class="interest_group_ratings">
 <tr><td></td>
-$for groupname in pol.interest_group_table['groups']:
-    <th>$groupname</th>
+$for group in pol.interest_group_table['groups']:
+    <th><abbr title="$group['longname']">$group['groupname']</abbr></th>
 </tr>
 $for year in pol.interest_group_table['rows']:
     <tr><th>$year['year']</td>

@@ -13,11 +13,13 @@ PYTHON=python
 LOAD=../data/load
 JSONS=$(LOAD)/states/index.json \
       $(LOAD)/districts/index.json \
+      $(LOAD)/interest_groups.json \
       $(LOAD)/districts/almanac.json \
       $(LOAD)/districts/shapes.json \
       $(LOAD)/politicians/index.json \
       $(LOAD)/politicians/govtrack.json \
       $(LOAD)/politicians/photos.json \
+      $(LOAD)/politicians/earmarks.json \
       $(LOAD)/districts/centers.json
 
 all: .database
@@ -45,6 +47,11 @@ $(LOAD)/districts/index.json: load/manual/districts.json
 	mkdir -p $(LOAD)/districts
 	cp $< $@
 
+# from nationaljournal
+$(LOAD)/interest_groups.json: load/manual/interest_groups.json
+	mkdir -p $(LOAD)
+	cp $< $@
+
 $(LOAD)/districts/almanac.json: load/almanac.py parse/almanac.py
 	$(PYTHON) load/almanac.py > $@.tmp
 	mv $@.tmp $@
@@ -67,4 +74,7 @@ $(LOAD)/politicians/photos.json: load/photos.py $(LOAD)/politicians/govtrack.jso
 	$(PYTHON) load/photos.py > $@.tmp
 	mv $@.tmp $@
 
+$(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack.json
+	$(PYTHON) load/earmarks.py > $@.tmp
+	mv $@.tmp $@
 
