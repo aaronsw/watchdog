@@ -13,6 +13,7 @@ from ClientForm import ParseFile
 from BeautifulSoup import BeautifulSoup
 import tempfile
 import captchasolver
+import web
 
 def has_message(soup,msg):
     bs = soup.findAll('b')
@@ -70,7 +71,7 @@ def get_myform(url,data=None):
         return form
     else: return forms[1]
 
-def writerep_wyr(zipcode, state, name, addr1, city, phone, email, msg, addr2='', addr3='', zip4=''):
+def writerep_wyr(district, zipcode, state, name, addr1, city, phone, email, msg, addr2='', addr3='', zip4=''):
     states = {} 
     forms,tf = proc_forms('https://forms.house.gov/wyr/welcome.shtml')
     form = forms[1]
@@ -102,10 +103,25 @@ def writerep_wyr(zipcode, state, name, addr1, city, phone, email, msg, addr2='',
     ## response = urlopen(request.get_full_url(), request.get_data())
     ## XXX: Possibly check for "thank you" message for asserting successful dispatch of mail.
 
+def has_wyr_form(db, district):
+    wyr_forms = db.select('wyr', what='wyr_form', where='district = $district and wyr_form IS NOT NULL', vars=locals())
+    if wyr_forms:
+        return True
+    return False
+
+def writerep(db, district,zipcode, state, name, addr1, city, phone, email, msg, addr2='', addr3='', zip4=''):
+    
+    if has_wyr_form(db, district):
+        args = locals(); args.pop('db')
+        writerep_wyr(**args)
+
 if __name__ == '__main__':
     # state='MA', zipcode='01773' #shared
     # state='PR', zipcode='00667', #success
     # state='MA', zipcode='01073', #captcha
-    
-    writerep_wyr(state='MA', zipcode='01532', name='watchdog test', addr1='111 av', city='test city',
+    # state='TX', district='TX-24' #no wyr_form
+
+    db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), 
+                      db='watchdog_dev')
+    writerep(db=db, district='PR-00', state='PR', zipcode='00667', name='watchdog test', addr1='111 av', city='test city',
                 phone='001-001-001', email='test@watchdog.net', msg='testing...')
