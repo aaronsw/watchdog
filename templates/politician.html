@@ -21,31 +21,38 @@ $var pretitle:
   <a href="$pol.officeurl">Official website</a>
 </p>
 
-<table class="charted" style="clear: both">
+<h2 style="clear: both">Speeches</h2>
+
+<table class="charted">
   <tr>
-    <th>Spoken:</th>
+    <th>Spoke</th>
     <td><a href="http://www.govtrack.us/congress/person.xpd?tab=speeches&amp;id=$pol.govtrackid">$commify(pol.n_speeches) times</a></td>
     <td><a href="/p/by/n_speeches#$pol.id"
          ><img src="/p/by/n_speeches/distribution.png?point=$pol.n_speeches"
                class="sparkline" /></a></td>
   </tr><tr>
-    <th>Avg. speech length:</th>
+    <th>Avg. length</th>
     <td>$commify(pol.words_per_speech) words</td>
     <td><a href="/p/by/words_per_speech#$pol.id"
          ><img 
            src="/p/by/words_per_speech/distribution.png?point=$pol.words_per_speech"
            class="sparkline" /></a></td>
   </tr>
-  <tr><th colspan="2">(Data for 110th Congress only)</th></tr>
+  <tr><th colspan="2">Data for 110th Congress</th></tr>
+</table>
+
+<h2>Earmarks</h2>
+
+<table class="charted">
   <tr>
     <th>Requested</th>
-    <td>$commify(pol.n_earmark_requested) earmarks</td>
+    <td>$commify(pol.n_earmark_requested)</td>
     <td><a href="/p/by/n_earmark_requested#$pol.id"
          ><img 
            src="/p/by/n_earmark_requested/distribution.png?point=$pol.n_earmark_requested"
            class="sparkline" /></a></td>
   </tr><tr>
-    <th>Total earmarks requested</th>
+    <th>Total cost</th>
     <td>\$$commify(pol.amt_earmark_requested)</td>
     <td><a href="/p/by/amt_earmark_requested#$pol.id"
         ><img 
@@ -53,20 +60,20 @@ $var pretitle:
             class="sparkline" /></a></td>
   </tr><tr>
     <th>Received</th>
-    <td>$commify(pol.n_earmark_received) earmarks</td>
+    <td>$commify(pol.n_earmark_received)</td>
     <td><a href="/p/by/n_earmark_received#$pol.id"
          ><img 
            src="/p/by/n_earmark_received/distribution.png?point=$pol.n_earmark_received"
            class="sparkline" /></a></td>
   </tr><tr>
-    <th>Total earmarks received</th>
+    <th>Total cost</th>
     <td>\$$commify(pol.amt_earmark_received)</td>
     <td><a href="/p/by/amt_earmark_received#$pol.id"
          ><img 
            src="/p/by/amt_earmark_received/distribution.png?point=$pol.amt_earmark_received"
            class="sparkline" /></a></td>
   </tr>
-  <tr><th colspan="2">(Data for fiscal year 2008 only)</th></tr>
+  <tr><th colspan="2">Data for fiscal year 2008</th></tr>
 </table>
 
 <h2>Special Interest Group Ratings</h2>
