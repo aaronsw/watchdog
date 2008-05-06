@@ -93,10 +93,21 @@ def parseall(session=110):
     
         ('PR-00', ['00601', '00602', '00603', ...])
     """
+    # workaround for missing data
+    missing = {
+      110: {
+        'TX-25': ['78701'],
+        'TX-21': ['78701']
+      }
+    }
+    
     for i in range(2, 2 + 55):
         for item in parseone(u % (session, session) + str(i)):
-            yield item
-
+            if item[0] in missing.get(session, {}):
+                yield item[0], item[1] + missing[session][item[0]]
+            else:
+                yield item
+    
 def zipdict(session=110):
     """
     Returns a dictionary mapping zip codes to congressional districts:
@@ -211,3 +222,7 @@ def zip2dist(zipcode, addr=None):
     else:
         lat, lng = geocoder(addr + ', ' + zipcode)[:2]
         return [govtrack(lat, lng)]
+
+if __name__ == "__main__":
+    print "Generating the zipdict (this will take some time and bandwidth)..."
+    file('zipdict.txt', 'w').write(dumpzipdict(zipdict()))
