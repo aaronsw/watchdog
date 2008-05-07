@@ -10,6 +10,47 @@ render = web.template.render('templates/', base='base')
 
 content = [
   web.storage(
+    slug = 'earmarks',
+    title = 'Earmark Info',
+    author = 'Aaron Swartz',
+    updated = '2008-05-07T00:00Z',
+    body = """
+<p>
+Thanks to the work of Alex Gourley
+and data from <a href="http://taxpayer.net/">Taxpayers for Common Sense</a>,
+politician pages now have basic information
+about the earmarks they've requested:
+the size and number requested
+and the size and number eventually passed.
+</p>
+
+<p>
+"Earmark" is the catch-all term for the requests
+that Congresspeople attach to bills requiring Federal money
+be given to particular people or places.
+They've been in the news a lot lately,
+criticized as a form of corruption 
+in which Congresspeople hand out money to lobbyists or campaign contributors
+instead of letting civil servants or the bidding process handle it.
+</p>
+
+<p>
+As with other Congressional perks,
+they're not exactly distributed evenly.
+<a href="http://watchdog.net/p/by/amt_earmark_received">Our chart</a>
+shows how House leaders like Nancy Pelosi come out on top,
+with hundreds of millions of dollars in earmarks,
+while newcomers like Laura Richardson get only hundreds of thousands.
+</p>
+
+<p>
+Whatever your feelings on earmarks,
+we hope this data is interesting to you.
+Thanks to Alex and Taxpayers for Common Sense for making it possible.
+</p>
+"""
+  ),
+  web.storage(
     slug = 'speeches',
     title = 'Speech Data',
     author = 'Aaron Swartz',
