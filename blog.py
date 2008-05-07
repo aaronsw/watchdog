@@ -38,9 +38,13 @@ instead of letting civil servants or the bidding process handle it.
 As with other Congressional perks,
 they're not exactly distributed evenly.
 <a href="http://watchdog.net/p/by/amt_earmark_received">Our chart</a>
-shows how House leaders like Nancy Pelosi come out on top,
+shows how House leaders like 
+<a href="http://watchdog.net/p/nancy_pelosi">Nancy Pelosi</a>
+come out on top,
 with hundreds of millions of dollars in earmarks,
-while newcomers like Laura Richardson get only hundreds of thousands.
+while newcomers like 
+<a href="http://watchdog.net/p/laura_richardson">Laura Richardson</a>
+get only hundreds of thousands.
 </p>
 
 <p>
