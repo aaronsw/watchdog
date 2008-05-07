@@ -8,10 +8,8 @@ CONTENTS:
 
     data/
       # The raw data that powers the site. This is not checked 
-      # into git, but can be downloaded via:
-      # 
-      # rsync -avz watchdog.net:~watchdog/web/data .
-      # 
+      # into git, but can be downloaded (see below).
+      
       crawl/     # incoming data dumps
         almanac/
         census/
