@@ -14,6 +14,7 @@ from BeautifulSoup import BeautifulSoup
 import tempfile
 import captchasolver
 import web
+import re
 
 def has_message(soup,msg):
     bs = soup.findAll('b')
@@ -103,25 +104,96 @@ def writerep_wyr(district, zipcode, state, name, addr1, city, phone, email, msg,
     ## response = urlopen(request.get_full_url(), request.get_data())
     ## XXX: Possibly check for "thank you" message for asserting successful dispatch of mail.
 
+   
+def is_ima_form(form):
+    try:
+        if form.find_control('required-message', type='textarea'):
+            return True
+    except:
+        pass
+    return False
+
+
+def get_generic_issue(form):
+    issues = {}
+    for i in form.find_control('required-issue').items:
+        s = str(i).upper().replace('*', '\*')
+        if s:
+            p = re.compile(s)
+            if filter(lambda x: p.findall(x), ['GEN', 'OTHER']): 
+                  return str(i)
+    return str(i)
+
+
+def writerep_ima(ima_link, district, zipcode, state, prefix_name, first_name, last_name, addr1, city, phone, email, msg, addr2='', addr3='', zip4=''):
+    forms, tf = proc_forms(ima_link)
+    states = {}
+    ima_forms = filter(is_ima_form, forms)[0]
+    if isinstance(ima_forms, list): ima_form = ima_forms[0]
+    else: ima_form = ima_forms
+
+    for i in ima_form.find_control('required-state').items:
+        states.update({str(i): str(i)})
+        
+    ima_form['required-prefix']= prefix_name
+    ima_form['required-first'] = first_name
+    ima_form['required-last'] = last_name
+    ima_form['required-address'] = '  '.join([addr1, addr2, addr3])
+    ima_form['required-city'] = city
+    state = state.upper()
+    ima_form['required-state'] = [states.get(state)] or [states.get('*'+state)]
+    ima_form['zip5'] = zipcode
+    ima_form['zip4'] = zip4
+    ima_form['required-email'] = email
+    ima_form['required-issue'] = [get_generic_issue(ima_form)]
+    ima_form['required-message'] = msg
+    print ima_form
+    ## XXX: uncomment only in production
+    ## request = ima_form.click()
+    ## response = urlopen(request.get_full_url(), request.get_data())
+    ## XXX: Possibly check for "thank you" message for asserting successful dispatch of mail.
+
+
 def has_wyr_form(db, district):
     wyr_forms = db.select('wyr', what='wyr_form', where='district = $district and wyr_form IS NOT NULL', vars=locals())
     if wyr_forms:
         return True
     return False
 
-def writerep(db, district,zipcode, state, name, addr1, city, phone, email, msg, addr2='', addr3='', zip4=''):
+
+def get_ima_link(db,district):
+    contactforms = db.select('wyr', what='contactform', where='district = $district and imaissue = true', vars=locals())
+    if contactforms:
+        return contactforms[0].contactform
+    return None
+
     
+def writerep(db, district,zipcode, state, prefix_name, first_name, last_name, 
+             addr1, city, phone, email, msg,  addr2='', addr3='', zip4=''):
+    args = locals(); args.pop('db')
+
     if has_wyr_form(db, district):
-        args = locals(); args.pop('db')
+        names = [args.pop(n) for n in ['prefix_name', 'first_name', 'last_name']]
+        name = ' '.join(names)
+        args['name'] = name
         writerep_wyr(**args)
+
+    ima_link = get_ima_link(db, district)
+    if ima_link:
+        args['ima_link'] = ima_link
+        writerep_ima(**args)
 
 if __name__ == '__main__':
     # state='MA', zipcode='01773' #shared
-    # state='PR', zipcode='00667', #success
+    # state='PR', district='PR-01', zipcode='00667', #success
     # state='MA', zipcode='01073', #captcha
     # state='TX', district='TX-24' #no wyr_form
+    # state='CA', district='CA-09', zipcode='94720',  #ima issue
+    # state='FL', district='FL-03', zipcode='32206', #ima issue page with multiple forms
 
     db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), 
                       db='watchdog_dev')
-    writerep(db=db, district='PR-00', state='PR', zipcode='00667', name='watchdog test', addr1='111 av', city='test city',
-                phone='001-001-001', email='test@watchdog.net', msg='testing...')
+
+    writerep(db=db, district='FL-03', state='FL', zipcode='32206', prefix_name='Mr.', first_name='watchdog', 
+             last_name ='Tester', 
+             addr1='111 av', city='test city', phone='001-001-001', email='test@watchdog.net', msg='testing...')
