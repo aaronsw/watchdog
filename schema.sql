@@ -4,6 +4,8 @@ DROP TABLE IF EXISTS politician CASCADE;
 DROP TABLE IF EXISTS interest_group_ratings CASCADE;
 DROP TABLE IF EXISTS interest_group_rating CASCADE;
 DROP TABLE IF EXISTS interest_group CASCADE;
+DROP TABLE IF EXISTS bill CASCADE;
+DROP TABLE IF EXISTS vote CASCADE;
 
 CREATE TABLE state (
   -- index.json
@@ -87,8 +89,28 @@ CREATE TABLE interest_group_rating (  -- interest group scores for politicians
   rating int                    -- typically 0-100
 );
 
+CREATE TABLE bill (
+  id varchar(256) primary key,
+  session int,
+  type varchar(5),
+  number int,
+  introduced date,
+  title text,
+  sponsor varchar(256) references politician,
+  summary text
+);
+
+CREATE TABLE vote (
+  bill_id varchar(256) references bill,
+  politician_id varchar(256) references politician,
+  vote int2,
+  primary key (bill_id, politician_id)
+);
+
 GRANT ALL on state TO watchdog;
 GRANT ALL on district TO watchdog;
 GRANT ALL on politician TO watchdog;
 GRANT ALL on interest_group_rating TO watchdog;
 GRANT ALL on interest_group TO watchdog;
+GRANT ALL on bill TO watchdog;
+GRANT ALL on vote TO watchdog;

@@ -1,0 +1,38 @@
+Metadata-Version: 1.0
+Name: ClientForm
+Version: 0.2.2
+Summary: Client-side HTML form handling.
+Home-page: http://wwwsearch.sourceforge.net/ClientForm/
+Author: John J. Lee
+Author-email: jjl@pobox.com
+License: BSD
+Download-URL: http://wwwsearch.sourceforge.net/ClientForm/src/ClientForm-0.2.2.tar.gz
+Description: ClientForm is a Python module for handling HTML forms on the client
+        side, useful for parsing HTML forms, filling them in and returning the
+        completed forms to the server.  It developed from a port of Gisle Aas'
+        Perl module HTML::Form, from the libwww-perl library, but the
+        interface is not the same.
+        
+Platform: any
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: BSD License
+Classifier: License :: OSI Approved :: Zope Public License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Internet
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: Site Management
+Classifier: Topic :: Internet :: WWW/HTTP :: Site Management :: Link Checking
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Software Development :: Testing
+Classifier: Topic :: Software Development :: Testing :: Traffic Generation
+Classifier: Topic :: System :: Networking :: Monitoring
+Classifier: Topic :: System :: Systems Administration
+Classifier: Topic :: Text Processing
+Classifier: Topic :: Text Processing :: Markup
+Classifier: Topic :: Text Processing :: Markup :: HTML
+Classifier: Topic :: Text Processing :: Markup :: XML

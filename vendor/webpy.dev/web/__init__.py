@@ -26,6 +26,10 @@ from request import *
 from httpserver import *
 from debugerror import *
 from application import *
+try:
+    import webopenid as openid
+except ImportError:
+    pass # requires openid module
 
 try:
     import cheetah

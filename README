@@ -53,4 +53,5 @@ INSTALL:
     cd ..
     
     # start the webserver
+    export PYTHONPATH="$PYTHONPATH:$(pwd)/vendor"
     python webapp.py
