@@ -8,6 +8,12 @@ body, table { margin: 0; font: 14px "Georgia"; line-height: 1.4}
 .bigintro { padding: 1em; background-color: #eee;}
 .body { padding: 0 1em 1em 1em;}
 
+.frontbox {
+    padding: .05em; margin: auto; width: 70%;
+    background-color: #e7e7e7;
+    border: 1px solid #ccc;
+}
+
 .sources { background-color: #eee; color: #555; padding: 1em; font-size: smaller; margin-top: 2em; clear: both;}
 
 .answer { margin-left: 1.5em;}
