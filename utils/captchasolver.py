@@ -47,15 +47,10 @@ def sumof(captcha):
     captcha = captcha.replace('?','')
     st = captcha.find('sum of') + len('sum of')+1
     vars = captcha[st:].split(' ')
-    print "Vars: ", vars
     total = 0
     for i in vars:
-        try:
-            t = toint(i)
-            total += t
-        except:
-            pass
-            
+        num = toint(i)
+        if num: total += num
     return total
 
 def mathprob(captcha):
@@ -82,7 +77,7 @@ def beginning(captcha):
     
 def largest(captcha):
     '''
-    Which of the numbers is largest: 1,3,7,19,2 ?
+    >>> largest("Which of the numbers is largest: 1,3,7,19,2 ?")
     19
     '''
     foo = captcha.split(':')[1]
@@ -110,31 +105,34 @@ def nextnum(captcha):
 
 def minus(captcha):
     '''
-    >>> solve ("What is 1 minus 1?")
+    >>> minus ("what is 1 minus 1?")
     0
     '''
     captcha = captcha.rstrip('?')
     pos = captcha.find('what is')
-    vars = captcha[pos+1:].split(' ')
-    return toint(vars[0]) - toint(vars[2])
-    
+    vars = captcha[pos+len('what is'):].split(' ')
+    vars = [toint(v) for v in vars if toint(v)]
+    return reduce(operator.sub, vars)
+
 def solve(captcha):
-    """
-    >>> solve("What is the sum of 1 plus 1")
-    2
-    """
+    '''
+    >>> solve("what is 4 minus 1?")
+    3
+    >>> solve("what is 1 minus 3?")
+    -2
+    >>> largest("Which of the numbers is largest: 1,3,7,19,2 ?")
+    19
+    >>> sumof('What is the sum of 21 plus 23')
+    44
+    '''
     captcha = captcha.lower()
-    if captcha.find('sum of ') > -1:
-        return sumof(captcha)
-    if captcha.find('math problem') > -1:
-        return mathprob(captcha)
-    if captcha.find('largest') > -1:
-        return largest(captcha)
-    if captcha.find('beginning') > -1:
-        return beginning(captcha)
-    if captcha.find('next number') > -1:
-        return nextnum(captcha)
-    
+    result = None
+
+    for s,f in [('sum of', sumof), ('math problem', mathprob),\
+                    ('largest', largest), ('beginning', beginning), \
+                    ('next number', nextnum), ('minus', minus)]:
+        if captcha.find(s) > -1:  result =  f(captcha)
+    return result
 
 def _test():
     import doctest
@@ -142,5 +140,3 @@ def _test():
 
 if __name__ == '__main__':
     _test()
-    #solve("What is the sum of 1 plus 1")
-    print solve("What is the sum of three plus 1?")
