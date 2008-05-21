@@ -6,6 +6,8 @@ DROP TABLE IF EXISTS interest_group_rating CASCADE;
 DROP TABLE IF EXISTS interest_group CASCADE;
 DROP TABLE IF EXISTS bill CASCADE;
 DROP TABLE IF EXISTS vote CASCADE;
+DROP TABLE IF EXISTS interest_group_bill_support CASCADE;
+DROP TABLE IF EXISTS group_politician_similarity CASCADE;
 
 CREATE TABLE state (
   -- index.json
@@ -76,8 +78,9 @@ CREATE TABLE politician (
 );
 
 CREATE TABLE interest_group (
-  groupname varchar(10) primary key,
-  longname varchar(256)
+  id serial primary key,
+  groupname varchar(10), 
+  longname varchar(256) UNIQUE
 );
 
 CREATE TABLE interest_group_rating (  -- interest group scores for politicians
@@ -85,7 +88,7 @@ CREATE TABLE interest_group_rating (  -- interest group scores for politicians
   politician_id varchar(256) references politician,
   -- almanac.json
   year int,                     -- 2005, 2006, etc.
-  groupname varchar(10) references interest_group,
+  group_id int references interest_group,
   rating int                    -- typically 0-100
 );
 
@@ -97,7 +100,8 @@ CREATE TABLE bill (
   introduced date,
   title text,
   sponsor varchar(256) references politician,
-  summary text
+  summary text,
+  maplightid varchar(10)
 );
 
 CREATE TABLE vote (
@@ -107,6 +111,21 @@ CREATE TABLE vote (
   primary key (bill_id, politician_id)
 );
 
+CREATE TABLE interest_group_bill_support(
+  bill_id varchar(256) references bill,
+  group_id int references interest_group,
+  support int2,
+  primary key (bill_id, group_id)
+);
+
+CREATE TABLE group_politician_similarity(
+  group_id int references interest_group,
+  politician_id varchar(256) references politician,
+  agreed int,
+  total int,
+  primary key (politician_id, group_id)  
+);
+
 GRANT ALL on state TO watchdog;
 GRANT ALL on district TO watchdog;
 GRANT ALL on politician TO watchdog;
@@ -114,3 +133,5 @@ GRANT ALL on interest_group_rating TO watchdog;
 GRANT ALL on interest_group TO watchdog;
 GRANT ALL on bill TO watchdog;
 GRANT ALL on vote TO watchdog;
+GRANT ALL on interest_group_bill_support TO watchdog;
+GRANT ALL on group_politician_similarity TO watchdog;
