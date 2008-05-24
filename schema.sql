@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS bill CASCADE;
 DROP TABLE IF EXISTS vote CASCADE;
 DROP TABLE IF EXISTS interest_group_bill_support CASCADE;
 DROP TABLE IF EXISTS group_politician_similarity CASCADE;
+DROP TABLE IF EXISTS category CASCADE;
 
 CREATE TABLE state (
   -- index.json
@@ -80,6 +81,7 @@ CREATE TABLE politician (
 CREATE TABLE interest_group (
   id serial primary key,
   groupname varchar(10), 
+  category_id varchar(10), -- references category,
   longname varchar(256) UNIQUE
 );
 
@@ -126,6 +128,13 @@ CREATE TABLE group_politician_similarity(
   primary key (politician_id, group_id)  
 );
 
+CREATE TABLE category(
+  id varchar(10) primary key,
+  name varchar(256),
+  industry varchar(256),
+  sector varchar(256) 
+);
+
 GRANT ALL on state TO watchdog;
 GRANT ALL on district TO watchdog;
 GRANT ALL on politician TO watchdog;
@@ -135,3 +144,4 @@ GRANT ALL on bill TO watchdog;
 GRANT ALL on vote TO watchdog;
 GRANT ALL on interest_group_bill_support TO watchdog;
 GRANT ALL on group_politician_similarity TO watchdog;
+GRANT ALL on category TO watchdog;
