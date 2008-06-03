@@ -15,6 +15,7 @@ def load_data():
     supportdict = {'0': -1, '1': 1, '2': 0 } #0: oppose ; 1: support; 2: not known (from README)
     
     with db.transaction():
+        db.delete('interest_group_bill_support', '1=1')
         for line in c:
             if not line[0].startswith('#'):
                 category_id, longname, maplightid, session, measure, support = line
@@ -34,6 +35,7 @@ def load_data():
                     bills.loadbill(filename, maplightid=maplightid)
                     
                 try:
+                    #print '\r', bill_id,
                     db.insert('interest_group_bill_support', seqname=False, bill_id=bill_id, group_id=groupid, support=support)
                 except:
                     print '\n Duplicate row with billid %s groupid %s support %s longname %s' % (bill_id, groupid, support, longname)
@@ -81,8 +83,9 @@ def aggregate_similarities():
                       " from group_politician_similarity sim, interest_group grp, category cat"
                       " where sim.group_id=grp.id and grp.category_id != '' and cat.id = grp.category_id"
                       " group by sim.politician_id, cat.name")    
-    for r in result:    
-        print r.politician_id, r.category_name, r['agreed']*100.0/r['total'], r['agreed'], r['total']
+    #for r in result:    
+    #    print r.politician_id, r.category_name, r['agreed']*100.0/r['total'], r['agreed'], r['total']
+    return result
          
 def main():
     load_categories()
