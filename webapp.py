@@ -160,8 +160,8 @@ def interest_group_ratings(polid):
     return list(db.select(['interest_group_rating', 'interest_group'],
                           what='year, interest_group.groupname, rating, longname',
                           where=('politician_id = $polid '
-                              'AND interest_group.groupname = '
-                                  'interest_group_rating.groupname'),
+                              'AND interest_group.id = '
+                              'interest_group_rating.group_id'),
                           vars=locals()))
 
 def interest_group_table(data):
