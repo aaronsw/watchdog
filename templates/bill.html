@@ -1,0 +1,21 @@
+$def with (bill)
+
+$var title: Bill $bill.id
+
+<p>Title: $bill.title</p>
+<p>Introduced on $bill.introduced in ${bill.session}th Congress</p>
+<p>Sponsored by <a href=/p/$bill.sponsor>$bill.sponsor.replace('_', ' ').title()</a></p>
+<p>Summary: $bill.summary </p>
+$if bill.maplightid:
+    <p>MaplightId: $bill.maplightid </p>  
+
+<h2>Interest Group Support</h2>
+<table class="interest_group_support">
+<tr><th>Group</th>
+    <th>Support</th>
+</tr>
+$for group in bill.interest_group_support:
+    <tr><td>$group['longname']</td> <td> $group['support'] </td> </tr>
+</table>
+
+<p><strong>Developers:</strong> Get this page in <a href="/b/${bill.id}.n3">N3</a>, <a href="/b/${bill.id}.xml">XML</a>, or <a href="/b/${bill.id}.json">JSON</a>.</p>

@@ -1,0 +1,8 @@
+$def with (bills)
+
+$var title: Bills
+
+$for b in bills:
+    <p><a href="/b/$b.id">$b.id</a>: $b.title</p>
+
+<p><strong>Developers:</strong> Get this page in <a href="index.n3">N3</a>, <a href="index.xml">XML</a>, or <a href="index.json">JSON</a>.</p>
