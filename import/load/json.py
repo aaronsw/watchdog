@@ -55,7 +55,7 @@ def load_all():
             for year, groups in district['interest_group_rating'].items():
                 for groupname, rating in groups.items():
                     try:
-                        group_id = db.select('interest_group', what='id', where='groupname=$groupname', vars=locals())[0]
+                        group_id = db.select('interest_group', what='id', where='groupname=$groupname', vars=locals())[0].id
                     except:  
                         group_id = db.insert('interest_group', groupname=groupname)
                           
