@@ -21,10 +21,10 @@ def load_all():
     for code, state in items('states/index'):
         if 'aka' in state: state.pop('aka')
         db.insert('state', seqname=False, code=code, **unidecode(state))
-    
+
     for name, district in items('districts/index'):
         db.insert('district', seqname=False, name=name, **unidecode(district))
-    
+
     for fn in ['almanac', 'shapes', 'centers']:
         for name, district in items('districts/' + fn):
             if 'interest_group_rating' in district:
@@ -56,6 +56,11 @@ def load_all():
         if 'interest_group_rating' in district:
             for year, groups in district['interest_group_rating'].items():
                 for groupname, rating in groups.items():
+                    try:
+                        group_id = db.select('interest_group', what='id', where='groupname=$groupname', vars=locals())[0].id
+                    except:  
+                        group_id = db.insert('interest_group', groupname=groupname)
+                          
                     db.insert('interest_group_rating',
                               politician_id=district_to_pol[name],
                               year=year,

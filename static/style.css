@@ -23,6 +23,8 @@ h1 { font-weight: normal; }
 h1 a, h1 img { color: white; text-decoration: none; border: 0; }
 table.interest_group_ratings td { text-align: right; }
 .interest_group_ratings th { padding-left: 0.5em; } /* space out the columns a bit */
+table.interest_group_support td, th { text-align: left; }
+table.interest_group_support td, th{ padding-left: 0.5em; } /* space out the columns a bit */
 
 .explain { color: #999; margin-top: -.5em; font-size: smaller;}
 .explain a { color: #777; text-decoration: underline; }

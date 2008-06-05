@@ -22,6 +22,7 @@ urls = (
   r'/(us|p)/by/(.*)/distribution.png', 'sparkdist',
   r'/(us|p)/by/(.*)', 'dproperty',
   r'/p/(.*?)%s?' % options, 'politician',
+  r'/b/(.*?)%s?' % options, 'bill',
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
@@ -160,8 +161,7 @@ def interest_group_ratings(polid):
     return list(db.select(['interest_group_rating', 'interest_group'],
                           what='year, interest_group.groupname, rating, longname',
                           where=('politician_id = $polid '
-                              'AND interest_group.groupname = '
-                                  'interest_group_rating.groupname'),
+                              'AND interest_group.id = interest_group_rating.group_id'),
                           vars=locals()))
 
 def interest_group_table(data):
@@ -178,6 +178,46 @@ def interest_group_table(data):
             for year in years]
     return dict(groups=[dict(groupname=groupname, longname=longnames[groupname])
                         for groupname in groupnames], rows=rows)
+
+def interest_group_support(bill_id):
+    "Get the support of interest groups for a bill."
+    return db.query('select g.longname as longname, sum(gb.support) as support '
+             'from  interest_group_bill_support gb , interest_group g '
+             'where gb.bill_id = $bill_id and g.id = gb.group_id '
+             'group by  gb.bill_id, g.longname '
+             'order by sum(gb.support) desc', vars=locals()).list()
+
+class bill:
+    def GET(self, bill_id, format=None):
+        if bill_id == "" or bill_id == "index":
+            bills = db.select(['bill'], order='session desc').list()
+
+            out = apipublish.publish({
+              'uri': apipublish.generic(lambda x: 'http://watchdog.net/b/' + x.id),
+              'type': 'Bill',
+              'title': apipublish.identity,
+             }, bills, format)
+            if out:
+                return out
+            return render.bill_list(bills)
+
+        try:
+            b = db.select('bill', where='id=$bill_id', vars=locals())[0]
+        except IndexError:
+            raise web.notfound
+
+        b.interest_group_support = interest_group_support(bill_id)
+        
+        out = apipublish.publish({
+          'uri': 'http://watchdog.net/b/' + bill_id,
+          'type': 'Bill',
+          'session title summary sponsor' : apipublish.identity,
+          'interest_group_support': apipublish.table({
+                'longname support': apipublish.identity}),
+         }, [b], format)
+        if out:
+            return out
+        return render.bill(b)
 
 class politician:
     def GET(self, polid, format=None):

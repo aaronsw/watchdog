@@ -32,11 +32,7 @@ def loadbill(fn, maplightid=None):
     bill = xmltramp.load(fn)
     d = bill2dict(bill)
     if maplightid: d['maplightid'] = maplightid
-    
-    try:
-        db.insert('bill', seqname=False, **d)
-    except:     
-        pass
+    db.insert('bill', seqname=False, **d)
     print '\r', d['id'],
     sys.stdout.flush()
     
@@ -55,19 +51,20 @@ def loadbill(fn, maplightid=None):
         for voter in vote['voter':]:
             rep = govtrackp(voter('id'))
             if rep:
-                try:
-                    db.insert('vote', seqname=False, 
+                db.insert('vote', seqname=False, 
                       politician_id=rep, bill_id=d['id'], vote=fixvote(voter('vote')))
-                except:
-                    pass
+                
 
 def main():
     with db.transaction():
         db.delete('vote', '1=1')
-        #db.delete('bill', '1=1') #interest_group_bill_support refers it now
+        bill_ids = ', '.join((str(s.id) for s in db.select('bill', what='id')))
+        db.delete('interest_group_bill_support', where='bill_id in ($bill_ids)', vars=locals()) 
+        db.delete('bill', '1=1')
         for fn in glob.glob('../data/crawl/govtrack/us/*/bills/*.xml'):
             loadbill(fn)
 
 if __name__ == "__main__":
     main()
 
+    
