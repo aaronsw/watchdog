@@ -15,8 +15,11 @@ def bill2dict(bill):
     d['type'] = bill('type')
     d['number'] = bill('number')
     d['introduced'] = bill.introduced('datetime')
-    d['title'] = [unicode(x) for x in bill.titles['title':] 
-       if x('type') == 'official'][0]
+    titles = [unicode(x) for x in bill.titles['title':] 
+      if x('type') == 'official']
+    if not titles:
+        titles = [unicode(x) for x in bill.titles['title':]]
+    d['title'] = titles[0]
     d['sponsor'] = govtrackp(bill.sponsor().get('id'))
     d['summary'] = unicode(bill.summary)
     return d

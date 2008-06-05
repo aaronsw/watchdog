@@ -5,4 +5,7 @@ tmp
 data
 import/.database
 import/.schema
+import/.bills
+import/.interests
+import/.json
 .DS_Store

@@ -26,7 +26,10 @@ all: .database
 clean:
 	rm $(JSONS) .schema
 
-.database: .schema load/json.py $(JSONS)
+.database: .schema .json .bills .interests
+	touch $@
+
+.json: load/json.py $(JSONS)
 	python load/json.py
 	touch $@
 
@@ -78,3 +81,10 @@ $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack
 	$(PYTHON) load/earmarks.py > $@.tmp
 	mv $@.tmp $@
 
+.bills: load/bills.py .json
+	$(PYTHON) load/bills.py
+	touch $@
+
+.interests: load/maplight.py .bills
+	$(PYTHON) load/maplight.py
+	touch $@

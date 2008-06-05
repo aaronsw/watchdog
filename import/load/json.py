@@ -46,9 +46,11 @@ def load_all():
                       vars=locals(),
                       **unidecode(pol))
 
+    groupname_to_id = {}
     for groupname, longname in items('interest_groups'):
-        db.insert('interest_group', seqname=False, groupname=groupname, longname=longname)
-
+        gid = db.insert('interest_group', groupname=groupname, longname=longname)
+        groupname_to_id[groupname] = gid
+    
     for name, district in items('districts/almanac'):
         if name not in district_to_pol: continue  #@@ desynchronized data!
         if 'interest_group_rating' in district:
@@ -57,7 +59,7 @@ def load_all():
                     db.insert('interest_group_rating',
                               politician_id=district_to_pol[name],
                               year=year,
-                              groupname=groupname,
+                              group_id=groupname_to_id[groupname],
                               rating=rating)
 
 if __name__ == "__main__": load_all()
