@@ -33,6 +33,8 @@ def load_data():
                 if not r:
                     filename = "../data/crawl/govtrack/us/%s/bills/%s.xml" % (session, typenumber)
                     bills.loadbill(filename, maplightid=maplightid)
+                else:
+                    db.update('bill', maplightid=maplightid, where="id=$bill_id", vars=locals())
                     
                 try:
                     #print '\r', bill_id,

@@ -1,21 +1,37 @@
 $def with (bill)
 
-$var title: Bill $bill.id
+$var title: $bill.type.upper(). $bill.number
 
-<p>Title: $bill.title</p>
-<p>Introduced on $bill.introduced in ${bill.session}th Congress</p>
-<p>Sponsored by <a href=/p/$bill.sponsor>$bill.sponsor.replace('_', ' ').title()</a></p>
-<p>Summary: $bill.summary </p>
-$if bill.maplightid:
-    <p>MaplightId: $bill.maplightid </p>  
+<p><strong>$bill.title</strong></p>
 
-<h2>Interest Group Support</h2>
-<table class="interest_group_support">
-<tr><th>Group</th>
-    <th>Support</th>
-</tr>
-$for group in bill.interest_group_support:
-    <tr><td>$group['longname']</td> <td> $group['support'] </td> </tr>
-</table>
+<p>(Introduced on $bill.introduced in the ${bill.session}th Congress.)</p>
+
+$if bill.sponsor:
+    <p>Introduced by <a href="/p/$bill.sponsor">$bill.sponsor.replace('_', ' ').title()</a>.</p>
+
+<blockquote>$bill.summary</blockquote>
+
+$ support_decode = {1: 'Support', 0: 'Unknown', -1: 'Oppose'}
+
+$if bill.interest_group_support:
+    <h2>Interest Group Support</h2>
+    
+    <table class="interest_group_support">
+    <tr><th>Group</th>
+        <th>Support</th>
+    </tr>
+    $for group in bill.interest_group_support:
+        <tr><td>$group['longname']</td> <td class="$support_decode[group['support']]"> $support_decode[group['support']] </td> </tr>
+    </table>
 
 <p><strong>Developers:</strong> Get this page in <a href="/b/${bill.id}.n3">N3</a>, <a href="/b/${bill.id}.xml">XML</a>, or <a href="/b/${bill.id}.json">JSON</a>.</p>
+
+<div class="sources">
+  Bill data comes from <a 
+    href="http://www.govtrack.us/congress/bill.xpd?bill=$bill.type$bill.session-$bill.number"
+  >GovTrack</a>.
+  $if bill.maplightid:
+      Interest group data comes 
+      <a href="http://maplight.org/map/us/bill/$bill.maplightid/default"
+      >MAPLight.org</a>.  
+</div>

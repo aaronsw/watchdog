@@ -51,3 +51,6 @@ table.charted img { border: 0;}
 .minimapbox { float: left; text-align: center; width: 300px; }
 .minimap { width: 200px; height: 200px; margin: auto;}
 .bigmap { width: 50%; height: 300px; margin-bottom: 2em; float: right; }
+
+.support { background-color: #afa;}
+.oppose { background-color: #faa;}
