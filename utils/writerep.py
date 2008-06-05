@@ -117,12 +117,13 @@ def is_ima_form(form):
     return False
 
 
-def get_generic_issue(form):
-    issues = {}
-    for i in form.find_control('required-issue').items:
-        s = str(i).upper()
-        if 'GEN' in s or 'OTHER' in s: return str(i)
-    return str(i)
+def matching_control(form, names):
+    '''return the form control matching given names'''
+    names = [n.upper() for n in names]
+    for c in form.controls:
+        for s in names:
+            if s in c.name.upper(): return c
+    return None
 
 
 def writerep_ima(ima_link, district, zipcode, state, prefix_name, first_name, 
@@ -148,26 +149,10 @@ def writerep_ima(ima_link, district, zipcode, state, prefix_name, first_name,
     ima_form['zip5'] = zipcode
     ima_form['zip4'] = zip4
     ima_form['required-email'] = email
-    ima_form['required-issue'] = [get_generic_issue(ima_form)]
+    ima_form['required-issue'] = [matching_control(ima_form, ['GEN','OTH'])]
     ima_form['required-message'] = msg
     production_click(ima_form)
     
-
-def find_form(forms, names):
-    names = [name.upper() for name in names]
-    for form in forms:
-        for c in form.controls:
-            for name in names:
-                if name in c.name.upper():return form
-    return None
-
-def matching_control(form, names):
-    '''return the form control matching given names'''
-    names = [n.upper() for n in names]
-    for c in form.controls:
-        for s in names:
-            if s in c.name.upper(): return c
-    return None
 
                      
 def has_wyr_form(db, district):
@@ -193,6 +178,66 @@ def get_zipauth_link(db,district):
     if contactforms: return contactforms[0].contactform
     return None
 
+
+def get_gen_issue(control, pref_names):
+    for i in control.items:
+        s = str(i).upper()
+        if any([lambda x: x in s for x in pref_names]): return str(i)
+    return str(i)
+
+
+def find_form(forms, names):
+    names = [name.upper() for name in names]
+    fform = None
+    for form in forms:
+        for c in form.controls:
+            for name in names:
+                if name in c.name.upper():
+                    fform = form
+    return fform
+
+
+
+def writerep_zipauth(zipauth_link, district, zipcode, state, prefix_name, first_name, 
+                     last_name, addr1, city, phone, email, msg, 
+                     addr2='', addr3='', zip4=''):
+    print zipauth_link,
+    print zipcode
+    forms,tf = proc_forms(zipauth_link)
+    print 'Zipauth Form:'
+    form = find_form(forms, ['zip'])
+    if form:
+        zipc5 = matching_control(form, ['zip'])
+        zipc4 = matching_control(form, ['zip4', 'four','4'])
+        form[zipc5.name] = zipcode
+        form[zipc4.name] = zip4
+    else: return
+
+    request = form.click()
+    response = urlopen(request.get_full_url(), request.get_data())
+    forms,tf =  proc_forms(response.url)
+    print "Contact Form:"
+    form = find_form(forms, ['msg', 'message', 'topic', 'city','zip'])
+    if form:
+        ffname = matching_control(form, ['required-name', 'first', 'name'])
+        flname = matching_control(form, ['required-last', 'last', 'name'])
+        faddr1 = matching_control(form, ['required-addr', 'addr1', 'addr'])
+        fcity = matching_control(form, ['required-city','city'])
+        fzip5 = matching_control(form, ['zip', 'zipcode'])
+        femail = matching_control(form, ['required-email', 'email'])
+        ftopic = matching_control(form, ['required-topic', 'topic', 'subject'])
+        fmsg = matching_control(form, ['msg', 'message'])
+
+        form[ffname.name] = first_name
+        form[flname.name] = last_name
+        if faddr1: form[faddr1.name] = addr1
+        if fcity: form[fcity.name] = city
+        if fzip5: form[fzip5.name] = zipcode
+        if femail: form[femail.name] = email
+        if ftopic: form[ftopic.name] =[get_gen_issue(ftopic, ['GEN', 'OTH', 'OTHER'])]
+        if fmsg: form[fmsg.name] = fmsg
+        production_click(form)
+
     
 def writerep(db, district,zipcode, state, prefix_name, first_name, last_name, 
              addr1, city, phone, email, msg,  addr2='', addr3='', zip4=''):
@@ -217,7 +262,7 @@ def writerep(db, district,zipcode, state, prefix_name, first_name, last_name,
     zipauth_link = get_zipauth_link(db, district)
     if zipauth_link:
         args['zipauth_link'] = zipauth_link
-        #writerep_zipauth(**args)
+        writerep_zipauth(**args)
 
 
 if __name__ == '__main__':
@@ -228,10 +273,12 @@ if __name__ == '__main__':
     # state='CA', district='CA-09', zipcode='94720',  #ima issue
     # state='FL', district='FL-03', zipcode='32206', #ima issue page with multiple forms
     # state='VA', district='VA-04', zipcode='23320', #zipauth
+    # state='AR', district='AR-01', zipcode='72023', #generic contactform
+    # state='OH', district='OH-01', zipcode='45202', #zipauth
 
     db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), 
                       db='watchdog_dev')
 
-    writerep(db=db, district='VA-04', state='VA', zipcode='23320', prefix_name='Mr.', 
+    writerep(db=db, district='OH-01', state='OH', zipcode='45203', prefix_name='Mr.', 
              first_name='watchdog', last_name ='Tester', addr1='111 av', city='test city', 
              phone='001-001-001', email='test@watchdog.net', msg='testing...')
