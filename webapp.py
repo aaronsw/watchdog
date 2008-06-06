@@ -66,7 +66,7 @@ class find:
         join = ['district' + ' LEFT OUTER JOIN politician '
                              'ON (politician.district = district.name)']
         pzip5 = re.compile('\d{5}')
-        pname = re.compile('[a-zA-Z]+')
+        pname = re.compile('[a-zA-Z\.]+')
         pdist = re.compile('[a-zA-Z]{2}\-\d{2}')
 
         if i.get('zip'):
@@ -82,8 +82,22 @@ class find:
                 else:
                     dists = db.select(join, where=web.sqlors('name=', dists))
                     return render.find_multi(i.zip, dists)
+
             if pdist.match(i.zip):
                 raise web.seeother('/us/%s' % i.zip)
+
+            if pname.match(i.zip):
+                name = i.zip.lower().replace(' ', '_')
+                vars = {'name':'%%%s%%' % name}
+                reps = db.select('politician', where="id like $name", vars=vars)
+                if len(reps) > 1:
+                    return render.find_multi_reps(reps)
+                else:
+                    try:
+                        rep = reps[0]
+                        web.seeother('/p/%s' % rep.id)
+                    except IndexError:
+                        raise web.notfound
 
         else:
             out = apipublish.publish({

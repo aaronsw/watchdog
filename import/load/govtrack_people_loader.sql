@@ -1,3 +1,11 @@
+DROP TABLE IF EXISTS committee_assignment CASCADE;
+DROP SEQUENCE IF EXISTS committee_assignment_serial CASCADE;
+DROP TABLE IF EXISTS committee CASCADE;
+DROP SEQUENCE IF EXISTS committee_serial CASCADE;
+DROP TABLE IF EXISTS prole ;
+DROP SEQUENCE IF EXISTS prole_serial CASCADE;
+DROP TABLE IF EXISTS person CASCADE;
+
 CREATE TABLE person(
        id INTEGER 
        	  UNIQUE NOT NULL, 
@@ -55,13 +63,3 @@ CREATE TABLE committee_assignment(
        committee_id INTEGER REFERENCES committee(id),
        "role" VARCHAR(255)
 );
-
--- delete 
-
-DROP TABLE committee_assignment;
-DROP SEQUENCE committee_assignment_serial;
-DROP TABLE committee;
-DROP SEQUENCE committee_serial;
-DROP TABLE prole;
-DROP SEQUENCE prole_serial;
-DROP TABLE person;

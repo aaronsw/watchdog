@@ -1,0 +1,10 @@
+$def with (reps)
+
+$var title: Representative Search 
+
+<p>It looks like there are more than one representative matching your search. You can select:</p>
+
+<ul>
+$for r in reps:
+    <li><a href="/p/$r.id.lower()">Rep. $r.firstname $r.lastname</a></li>
+</ul>
