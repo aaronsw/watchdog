@@ -1,0 +1,19 @@
+$def with (votes)
+
+$var title: Votes
+
+<table>
+  <tr><th>Bill</th><th>Pol</th><th>Group</th><th>Full vote</th></tr>
+
+$ support_decode = {1: 'Support', 0: 'Abstain', -1: 'Oppose', None: 'Unknown'}
+
+$for vote in votes:
+    <tr>
+      <td><a href="/b/$vote.bill_id">$vote.type.upper(). $vote.number</a>: $vote.title</td>
+      <td><span class="$support_decode[vote.vote].lower()"
+      >$support_decode[vote.vote]</span></td>
+      <td><span class="$support_decode[vote.support].lower()"
+      >$support_decode[vote.support]</span></td>
+      <td>$vote.yeas-$vote.neas</td>
+    </tr>
+</table>

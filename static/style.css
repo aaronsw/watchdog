@@ -3,6 +3,8 @@ body, table { margin: 0; font: 14px "Georgia"; line-height: 1.4}
 .header h1 { margin: 0; }
 .header .nav { float: right; padding-right: 2em; padding-top: .2em; color: white;}
 .header .nav a { color: #FEFBC3; }
+td { vertical-align: top;}
+th { text-align: left;}
 
 .intro { width: 80%; margin: auto; text-align: center;}
 .bigintro { padding: 1em; background-color: #eee;}
@@ -22,9 +24,8 @@ body, table { margin: 0; font: 14px "Georgia"; line-height: 1.4}
 h1 { font-weight: normal; }
 h1 a, h1 img { color: white; text-decoration: none; border: 0; }
 table.interest_group_ratings td { text-align: right; }
-.interest_group_ratings th { padding-left: 0.5em; } /* space out the columns a bit */
+th, td { padding-left: 0.5em; } /* space out the columns a bit */
 table.interest_group_support td, th { text-align: left; }
-table.interest_group_support td, th{ padding-left: 0.5em; } /* space out the columns a bit */
 
 .explain { color: #999; margin-top: -.5em; font-size: smaller;}
 .explain a { color: #777; text-decoration: underline; }
@@ -52,5 +53,7 @@ table.charted img { border: 0;}
 .minimap { width: 200px; height: 200px; margin: auto;}
 .bigmap { width: 50%; height: 300px; margin-bottom: 2em; float: right; }
 
+.support, .oppose { padding: .2em;}
+td.support, td.oppose { padding-left: .5em; } /* for compatibility with everything else */
 .support { background-color: #afa;}
 .oppose { background-color: #faa;}

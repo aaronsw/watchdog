@@ -1,7 +1,9 @@
 COMMAND_LINE_OPTIONS = 
 export PYTHONPATH := $(PWD)/vendor/:$(PYTHONPATH)
 
-all: test
+all: test run
+
+run:
 	./webapp.py $(COMMAND_LINE_OPTIONS)
 
 test:

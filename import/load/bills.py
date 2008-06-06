@@ -16,7 +16,7 @@ def bill2dict(bill):
     d['number'] = bill('number')
     d['introduced'] = bill.introduced('datetime')
     titles = [unicode(x) for x in bill.titles['title':] 
-      if x('type') == 'official']
+      if x('type') == 'short']
     if not titles:
         titles = [unicode(x) for x in bill.titles['title':]]
     d['title'] = titles[0]
@@ -48,11 +48,18 @@ def loadbill(fn, maplightid=None):
           vote('datetime')[:4], 
           vote('roll'))
         vote = xmltramp.load('../data/crawl/govtrack/us/' + votedoc)
+        yeas = 0
+        neas = 0
         for voter in vote['voter':]:
+            if fixvote(voter('vote')) == 1:
+                yeas += 1
+            elif fixvote(voter('vote')) == -1:
+                neas += 1
             rep = govtrackp(voter('id'))
             if rep:
                 db.insert('vote', seqname=False, 
                       politician_id=rep, bill_id=d['id'], vote=fixvote(voter('vote')))
+        db.update('bill', where="id = $d['id']", yeas=yeas, neas=neas, vars=locals())
                 
 
 def main():

@@ -11,7 +11,7 @@ $if bill.sponsor:
 
 <blockquote>$bill.summary</blockquote>
 
-$ support_decode = {1: 'Support', 0: 'Unknown', -1: 'Oppose'}
+$ support_decode = {1: 'Support', 0: 'Abstain', -1: 'Oppose', None: 'Unknown'}
 
 $if bill.interest_group_support:
     <h2>Interest Group Support</h2>

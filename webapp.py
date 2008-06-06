@@ -21,6 +21,7 @@ urls = (
   r'/us/([a-z][a-z]-\d+)%s?' % options, 'district',
   r'/(us|p)/by/(.*)/distribution.png', 'sparkdist',
   r'/(us|p)/by/(.*)', 'dproperty',
+  r'/p/(.*?)/(\d+)', 'politician_groups',
   r'/p/(.*?)%s?' % options, 'politician',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/about(/?)', 'about',
@@ -156,6 +157,10 @@ class district:
         
         return render.district(d)
 
+def bills_sponsored(polid):
+    "Returns the list of bills sponsored by a politician."
+    return db.select('bill', where="sponsor = $polid", vars=locals())
+
 def interest_group_ratings(polid):
     "Returns the interest group ratings for a politician."
     return list(db.select(['interest_group_rating', 'interest_group'],
@@ -178,6 +183,24 @@ def interest_group_table(data):
             for year in years]
     return dict(groups=[dict(groupname=groupname, longname=longnames[groupname])
                         for groupname in groupnames], rows=rows)
+
+def group_politician_similarity(politician_id):
+    """Find the interest groups that vote most like a politician."""
+    query_min = lambda mintotal, politician_id=politician_id: db.select(
+      'group_politician_similarity'
+      ' JOIN interest_group ON (interest_group.id = group_id)', 
+      what='*, cast(agreed as float)/total as agreement',
+      where='total >= $mintotal AND politician_id=$politician_id ', 
+      vars=locals()).list()
+    
+    q = query_min(5)
+    if not q:
+        q = query_min(3)
+        if not q:
+            q = query_min(1)
+    
+    q.sort(lambda x, y: cmp(x.agreement, y.agreement), reverse=True)
+    return q 
 
 def interest_group_support(bill_id):
     "Get the support of interest groups for a bill."
@@ -254,6 +277,8 @@ class politician:
 
         p.interest_group_rating = interest_group_ratings(polid)
         p.interest_group_table = interest_group_table(p.interest_group_rating)
+        p.related_groups = group_politician_similarity(polid) #@@ API
+        p.sponsored_bills = bills_sponsored(polid) #@@ API
 
         out = apipublish.publish({
           'uri': 'http://watchdog.net/p/' + polid,
@@ -273,6 +298,18 @@ class politician:
             return out
         
         return render.politician(p)
+
+class politician_groups:
+    def GET(self, politician_id, group_id):
+        votes = db.select(['vote', 'interest_group_bill_support', 'bill'],
+          where="interest_group_bill_support.bill_id = vote.bill_id AND "
+                 "vote.bill_id = bill.id AND "
+                "politician_id = $politician_id AND group_id = $group_id",
+         order='vote = support desc',
+          vars=locals())
+
+        return render.politician_group(votes)
+        
 
 r_safeproperty = re.compile('^[a-z0-9_]+$')
 table_map = {'us': 'district', 'p': 'politician'}
