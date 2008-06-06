@@ -29,16 +29,11 @@ clean:
 .database: .schema .json .bills .interests
 	touch $@
 
-.json: load/json.py $(JSONS)
+.json: .schema load/json.py $(JSONS)
 	python load/json.py
 	touch $@
 
-# .schema is separated into a separate target so you can "touch
-# .schema" when you get some crap like this:
-# ERROR 1142 (42000) at line 64: GRANT command denied to user ''@'localhost' for table 'state'
-# Depends on $(JSONS) so you don't end up dropping all the
-# database tables when you have an error generating the .json files.
-.schema: ../schema.sql $(JSONS)
+.schema: ../schema.sql
 	$(DBCLIENT) watchdog_dev < $<
 	touch $@
 
@@ -81,10 +76,10 @@ $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack
 	$(PYTHON) load/earmarks.py > $@.tmp
 	mv $@.tmp $@
 
-.bills: load/bills.py .json
+.bills: .schema load/bills.py .json
 	$(PYTHON) load/bills.py
 	touch $@
 
-.interests: load/maplight.py .bills
+.interests: .schema load/maplight.py .bills
 	$(PYTHON) load/maplight.py
 	touch $@

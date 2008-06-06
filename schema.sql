@@ -103,7 +103,11 @@ CREATE TABLE bill (
   title text,
   sponsor varchar(256) references politician,
   summary text,
-  maplightid varchar(10)
+  maplightid varchar(10),
+  
+  -- computed from vote
+  yeas int,
+  neas int
 );
 
 CREATE TABLE vote (
