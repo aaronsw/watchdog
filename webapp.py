@@ -65,18 +65,26 @@ class find:
         i = web.input(address=None)
         join = ['district' + ' LEFT OUTER JOIN politician '
                              'ON (politician.district = district.name)']
+        pzip5 = re.compile('\d{5}')
+        pname = re.compile('[a-zA-Z]+')
+        pdist = re.compile('[a-zA-Z]{2}\-\d{2}')
+
         if i.get('zip'):
-            try:
-                dists = zip2rep.zip2dist(i.zip, i.address)
-            except zip2rep.BadAddress:
-                return render.find_badaddr(i.zip, i.address)
-            if len(dists) == 1:
-                raise web.seeother('/us/%s' % dists[0].lower())
-            elif len(dists) == 0:
-                return render.find_none(i.zip)
-            else:
-                dists = db.select(join, where=web.sqlors('name=', dists))
-                return render.find_multi(i.zip, dists)
+            if pzip5.match(i.zip):
+                try:
+                    dists = zip2rep.zip2dist(i.zip, i.address)
+                except zip2rep.BadAddress:
+                    return render.find_badaddr(i.zip, i.address)
+                if len(dists) == 1:
+                    raise web.seeother('/us/%s' % dists[0].lower())
+                elif len(dists) == 0:
+                    return render.find_none(i.zip)
+                else:
+                    dists = db.select(join, where=web.sqlors('name=', dists))
+                    return render.find_multi(i.zip, dists)
+            if pdist.match(i.zip):
+                raise web.seeother('/us/%s' % i.zip)
+
         else:
             out = apipublish.publish({
               'uri': apipublish.generic(lambda x: 'http://watchdog.net/us/' +
