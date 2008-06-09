@@ -20,6 +20,7 @@ def load_data():
             if not line[0].startswith('#'):
                 category_id, longname, maplightid, session, measure, support = line
                 support = supportdict[support]
+                if support == 0: continue
                 typenumber = measure.lower().replace(' ', '')
                     
                 r = db.select('interest_group', what="id", where="longname=$longname", vars=locals())
