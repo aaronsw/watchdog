@@ -139,6 +139,12 @@ CREATE TABLE category(
   sector varchar(256) 
 );
 
+
+-- Views
+CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician);
+
+
+-- Permissions
 GRANT ALL on state TO watchdog;
 GRANT ALL on district TO watchdog;
 GRANT ALL on politician TO watchdog;
@@ -149,3 +155,4 @@ GRANT ALL on vote TO watchdog;
 GRANT ALL on interest_group_bill_support TO watchdog;
 GRANT ALL on group_politician_similarity TO watchdog;
 GRANT ALL on category TO watchdog;
+GRANT ALL ON v_politician_name to watchdog;

@@ -88,9 +88,13 @@ class find:
                 raise web.seeother('/us/%s' % i.zip)
 
             if pname.match(i.zip):
-                name = i.zip.lower().replace(' ', '_')
+                in_name = i.zip.lower()
+                name = in_name.replace(' ', '_')
                 vars = {'name':'%%%s%%' % name}
                 reps = db.select('politician', where="id like $name", vars=vars)
+                if len(reps) == 0:
+                    vars = {'name':'%%%s%%' % in_name}
+                    reps = db.select('v_politician_name', where="name ilike $name", vars=vars)
                 if len(reps) > 1:
                     return render.find_multi_reps(reps)
                 else:
