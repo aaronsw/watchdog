@@ -11,13 +11,13 @@ def doesnotexist(pid):
     return not(bool(db.select('petition', where='id=$pid', vars=locals())))
                 
 petitionform = form.Form(
+      form.Textbox('title', description="Title:", size='80'),         
       form.Textbox('id', 
             form.notnull,
             form.Validator('ID already exists, Choose a different one.', doesnotexist),
             post='(this becomes a part of your petition URL)',
             description='Petition ID:',
             size='30'),
-      form.Textbox('title', description="Title:", size='80'),         
       form.Textarea('description', description="Description:", rows='20', cols='80'),        
       form.Textbox('email', 
             form.notnull, 
