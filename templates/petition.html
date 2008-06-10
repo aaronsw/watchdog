@@ -1,0 +1,23 @@
+$def with (p, form, msg=None, passwordform=None)
+
+$if msg:
+	<div class="msg">$msg</div>
+
+$var title: $:p.title
+<p>$:p.description </p>
+
+<hr>
+<p><strong>Sign this petition</strong></p>
+<form name="sign" method="POST" action="/c/$p.id">
+	$if not form.valid: <p class="error">Please try again, after rectifying the below errors:</p>
+	$:form.render() 
+    <p><input type="submit" value="Sign" />
+</form>
+
+$if p.signatory_count == 1:
+	$ ppl = 'person has'
+$else:
+	$ ppl = 'people have'
+	
+<p> $p.signatory_count $ppl signed this petition so far. </p>
+

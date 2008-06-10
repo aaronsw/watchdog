@@ -3,6 +3,7 @@ import os, re
 import web
 from utils import zip2rep, simplegraphs, apipublish
 import blog
+import petition
 
 web.config.debug = True
 web.template.Template.globals['commify'] = web.commify
@@ -24,6 +25,7 @@ urls = (
   r'/p/(.*?)/(\d+)', 'politician_groups',
   r'/p/(.*?)%s?' % options, 'politician',
   r'/b/(.*?)%s?' % options, 'bill',
+  r'/c/(.*)', petition.app,
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',

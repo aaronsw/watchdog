@@ -57,3 +57,5 @@ table.charted img { border: 0;}
 td.support, td.oppose { padding-left: .5em; } /* for compatibility with everything else */
 .support { background-color: #afa;}
 .oppose { background-color: #faa;}
+.wrong, .error {color: red; }
+.msg {display:block; background-color:#E7E7E7; border:1px solid #CCCCCC; width: 50%; text-align: center; color:green;}
