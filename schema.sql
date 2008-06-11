@@ -9,9 +9,6 @@ DROP TABLE IF EXISTS vote CASCADE;
 DROP TABLE IF EXISTS interest_group_bill_support CASCADE;
 DROP TABLE IF EXISTS group_politician_similarity CASCADE;
 DROP TABLE IF EXISTS category CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
-DROP TABLE IF EXISTS petition CASCADE;
-DROP TABLE IF EXISTS signatory CASCADE;
 
 CREATE TABLE state (
   -- index.json
@@ -142,30 +139,8 @@ CREATE TABLE category(
   sector varchar(256) 
 );
 
-CREATE TABLE users(
-    id serial primary key,
-    name varchar(256),
-    password varchar(256),
-    email varchar(320) UNIQUE -- max allowed email length.
-);
-
-CREATE TABLE petition(
-    id varchar(256) primary key,
-    title text,
-    description text,
-    owner_id int references users,
-    created timestamp default now()  
-);
-
-CREATE TABLE signatory(
-    user_id int references users,
-    petition_id varchar(256) references petition,
-    UNIQUE (user_id, petition_id)
-);
-
 -- Views
 CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician);
-
 
 -- Permissions
 GRANT ALL on state TO watchdog;
@@ -179,6 +154,3 @@ GRANT ALL on interest_group_bill_support TO watchdog;
 GRANT ALL on group_politician_similarity TO watchdog;
 GRANT ALL on category TO watchdog;
 GRANT ALL ON v_politician_name to watchdog;
-GRANT ALL on users TO watchdog;
-GRANT ALL on petition TO watchdog;
-GRANT ALL on signatory TO watchdog;

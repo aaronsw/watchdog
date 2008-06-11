@@ -1,9 +1,8 @@
 import os
 import web
 from web import form
+from . settings import db
 
-db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'),
-                  db='watchdog_dev')
 email_regex = r'[\w\.]+@[\w\.]+\.[a-zA-Z]{1,4}'
                  
 def doesnotexist(pid):
@@ -27,10 +26,16 @@ petitionform = form.Form(
       )
       
 signform = form.Form(
-    form.Textbox('name', description='Name', size='30'),
+    form.Textbox('name', form.notnull, description='Name:', size='30'),
     form.Textbox('email', 
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
-            description='Email',
-            size='30')
+            description='Email:',
+            size='30')    
+    )
+
+passwordform = form.Form(
+    form.Password('passwd', form.notnull, description="Password:", size='30'),
+    form.Password('passwd_again', form.notnull, description="Repeat password :", size='30'),
+    validators = [form.Validator("Passwords do not match.", lambda i: i.passwd == i.passwd_again)]
     )
