@@ -1,15 +1,14 @@
 #!/usr/bin/env python
-import os, re
+import re
 import web
 from utils import zip2rep, simplegraphs, apipublish
 import blog
+import petition
+from settings import db, render
 
 web.config.debug = True
 web.template.Template.globals['commify'] = web.commify
 web.template.Template.globals['int'] = int
-render = web.template.render('templates/', base='base')
-db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'),
-                  db='watchdog_dev')
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -24,6 +23,7 @@ urls = (
   r'/p/(.*?)/(\d+)', 'politician_groups',
   r'/p/(.*?)%s?' % options, 'politician',
   r'/b/(.*?)%s?' % options, 'bill',
+  r'/c/(.*)', petition.app,
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',

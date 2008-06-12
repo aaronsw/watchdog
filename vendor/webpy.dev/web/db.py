@@ -458,6 +458,8 @@ class DB:
         This exists specifically for a workaround in SqliteDB.
 
         """
+        if isinstance(val, unicode):
+            val = val.encode('UTF-8')
         return val
 
     def _db_execute(self, cur, sql_query, dorollback=True): 
@@ -815,6 +817,8 @@ class PostgresDB(DB):
     def _connect(self, keywords):
         conn = DB._connect(self, keywords)
         conn.set_client_encoding('UTF8')
+        #self._ctx.db = conn
+        #self.query("SET CLIENT_ENCODING to 'UTF-8'");
         return conn
 
 class MySQLDB(DB): 
