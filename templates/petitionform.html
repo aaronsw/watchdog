@@ -1,0 +1,9 @@
+$def with (form)
+
+$var title: New petition
+
+<form name="petition" method="POST" action="/c/new/"> 
+	$if not form.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
+	$:form.render()
+	<input type="submit" />    
+</form>
