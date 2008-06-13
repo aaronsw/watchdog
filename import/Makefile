@@ -24,7 +24,7 @@ JSONS=$(LOAD)/states/index.json \
 
 all: .database
 clean:
-	rm $(JSONS) .schema
+	rm $(JSONS) .schema .json .bills interest .database
 
 .database: .schema .json .bills .interests
 	touch $@
@@ -64,7 +64,7 @@ $(LOAD)/politicians/index.json: load/manual/politicians.json
 	mkdir -p $(LOAD)/politicians
 	cp $< $@
 
-$(LOAD)/politicians/govtrack.json: load/govtrack.py parse/govtrack.py
+$(LOAD)/politicians/govtrack.json: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/people.xml
 	$(PYTHON) load/govtrack.py > $@.tmp
 	mv $@.tmp $@
 

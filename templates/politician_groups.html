@@ -1,0 +1,12 @@
+$def with (polid, related)
+
+$var title: Interest Group Alignment
+
+<table>
+<tr><th>Group</th><th>Agreement</th></tr>
+$for group in related:
+    <tr>
+      <td>$group.longname</td>
+      <td>$int(group.agreement * 100)% (<a href="/p/$polid/$group.id">$group.agreed/$group.total votes</a>)</td>
+    </tr>
+</table>
