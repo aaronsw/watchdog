@@ -76,14 +76,18 @@ $var pretitle:
   <tr><th colspan="2">Data for fiscal year 2008</th></tr>
 </table>
 
-<h2>Bills Introduced</h2>
+<h2>Bills</h2>
 
-<ul>
-$for bill in pol.sponsored_bills:
-    <li><a href="/b/$bill.id">$bill.type.upper(). $bill.number</a>: $bill.title</li>
-$else:
-    <li><em>no bills sponsored</em></li>
-</ul>
+<table class="charted">
+  <tr>
+    <th>Introduced</th>
+    <td><a href="/p/$pol.id/introduced">$commify(pol.n_bills_introduced) bills</a></td>
+    <td><a href="/p/by/n_bills_introduced#$pol.id"
+         ><img 
+           src="/p/by/n_bills_introduced/distribution.png?point=$pol.n_bills_introduced"
+           class="sparkline" /></a></td>
+  </tr>
+</table>
 
 <h2>Special Interest Group Ratings</h2>
 
@@ -109,6 +113,8 @@ $for group in pol.related_groups:
       <td>$int(group.agreement * 100)% (<a href="/p/$pol.id/$group.id">$group.agreed/$group.total votes</a>)</td>
     </tr>
 </table>
+
+<p><a href="/p/$pol.id/groups">More...</a></p>
 
 <div class="sources">
   Politician information from <a href="$pol.wikipedia">Wikipedia</a> and 

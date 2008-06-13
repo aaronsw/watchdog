@@ -20,7 +20,9 @@ urls = (
   r'/us/([a-z][a-z]-\d+)%s?' % options, 'district',
   r'/(us|p)/by/(.*)/distribution.png', 'sparkdist',
   r'/(us|p)/by/(.*)', 'dproperty',
-  r'/p/(.*?)/(\d+)', 'politician_groups',
+  r'/p/(.*?)/introduced', 'politician_introduced',
+  r'/p/(.*?)/groups', 'politician_groups',
+  r'/p/(.*?)/(\d+)', 'politician_group',
   r'/p/(.*?)%s?' % options, 'politician',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/c/(.*)', petition.app,
@@ -211,7 +213,7 @@ def interest_group_table(data):
     return dict(groups=[dict(groupname=groupname, longname=longnames[groupname])
                         for groupname in groupnames], rows=rows)
 
-def group_politician_similarity(politician_id):
+def group_politician_similarity(politician_id, qmin=None):
     """Find the interest groups that vote most like a politician."""
     query_min = lambda mintotal, politician_id=politician_id: db.select(
       'group_politician_similarity'
@@ -220,11 +222,14 @@ def group_politician_similarity(politician_id):
       where='total >= $mintotal AND politician_id=$politician_id ', 
       vars=locals()).list()
     
-    q = query_min(5)
-    if not q:
-        q = query_min(3)
+    if qmin:
+        q = query_min(qmin)
+    else:
+        q = query_min(5)
         if not q:
-            q = query_min(1)
+            q = query_min(3)
+            if not q:
+                q = query_min(1)
     
     q.sort(lambda x, y: cmp(x.agreement, y.agreement), reverse=True)
     return q 
@@ -326,7 +331,17 @@ class politician:
         
         return render.politician(p)
 
+class politician_introduced:
+    def GET(self, politician_id):
+        sponsored = bills_sponsored(politician_id)
+        return render.politician_introduced(sponsored)
+
 class politician_groups:
+    def GET(self, politician_id):
+        related = group_politician_similarity(politician_id, qmin=1)
+        return render.politician_groups(politician_id, related)
+
+class politician_group:
     def GET(self, politician_id, group_id):
         votes = db.select(['vote', 'interest_group_bill_support', 'bill'],
           where="interest_group_bill_support.bill_id = vote.bill_id AND "

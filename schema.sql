@@ -75,7 +75,10 @@ CREATE TABLE politician (
   -- photos.json
   photo_path varchar(256),
   photo_credit_url varchar(256),
-  photo_credit_text varchar(256)
+  photo_credit_text varchar(256),
+  
+  -- calculated in bills.py
+  n_bills_introduced int default 0  
 );
 
 CREATE TABLE interest_group (
