@@ -29,7 +29,8 @@ urls = (
   r'/about/feedback', 'feedback',
   r'/blog', 'reblog',
   r'/blog(/.*)', blog.app,
-  r'/data/(.*)', 'staticdata'
+  r'/data/(.*)', 'staticdata',
+  r'/ydnlIEWXo\.html', 'yauth'
 )
 
 class index:
@@ -387,6 +388,14 @@ class staticdata:
 
         assert '..' not in path, 'security'
         return file('data/' + path).read()
+
+class yauth:
+    def GET(self):
+        return """
+Phrase: "# and nation nation moved yet so ship or onwhether so now conceived any the that"
+File: "ydnlIEWXo.html"
+Url to Check: "http://watchdog.net/ydnlIEWXo.html"
+"""
 
 app = web.application(urls, globals())
 if __name__ == "__main__": app.run()
