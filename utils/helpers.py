@@ -1,26 +1,19 @@
 import os
 import hmac
 import web
+from config import secret_key
 
-def secretkey():
-    try:
-        secret = file('.secret_key').read()
-    except IOError:
-       secret = os.urandom(20)
-       file('.secret_key', 'w').write(secret)
-    return secret
-
-def _hmac(msg):
-    return hmac.new(secretkey(), msg).hexdigest() 
+def encrypt(msg, key=None):
+    return hmac.new(key or secret_key, msg).hexdigest() 
        
 def setcookie(name, value):
-    encoded = value + '#@#' + _hmac(value)   
+    encoded = value + '#@#' + encrypt(value)   
     web.setcookie(name, encoded)       
     
 def getcookie(name):
     encoded = web.cookies().get(name, '#@#')
-    value, hmac_value = encoded.split('#@#')
-    if _hmac(value) == hmac_value:
+    value, encrypt_value = encoded.split('#@#')
+    if encrypt(value) == encrypt_value:
         return value
     return None  
 

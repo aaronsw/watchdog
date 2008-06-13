@@ -35,7 +35,7 @@ signform = form.Form(
     )
 
 passwordform = form.Form(
-    form.Password('passwd', form.notnull, description="Password:", size='30'),
-    form.Password('passwd_again', form.notnull, description="Repeat password :", size='30'),
-    validators = [form.Validator("Passwords do not match.", lambda i: i.passwd == i.passwd_again)]
+    form.Password('password', form.notnull, description="Password:", size='30'),
+    form.Password('password_again', form.notnull, description="Repeat password :", size='30'),
+    validators = [form.Validator("Passwords do not match.", lambda i: i.password == i.password_again)]
     )
