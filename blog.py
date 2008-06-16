@@ -10,6 +10,60 @@ render = web.template.render('templates/', base='base')
 
 content = [
   web.storage(
+    slug = 'alignment',
+    title = 'Interest Group Alignment',
+    author = 'Aaron Swartz',
+    updated = '2008-06-16T00:00Z',
+    body = """
+<p>
+First, 
+let me say welcome aboard to our newest team member,
+programmer A.S.L. Devi. 
+Devi's already proved herself invaluable 
+by building our latest feature:
+politician&mdash;interest group alignment.
+It's a terrible name
+(my fault; let me know if you have a better one)
+but the idea is simple:
+go to a page like 
+<a href="http://watchdog.net/p/mark_kirk">Mark Kirk's</a>
+and scroll to the bottom.
+There you'll see that Kirk is a big fan of people like
+the National Association of Home Builders and
+the National Association of Realtors,
+but not the American Civil Liberties Union.
+And for each group you can click 
+and see the votes where they agree and disagree.
+</p>
+
+<p>
+Furthermore, 
+if you click on a bill and scroll to the bottom,
+you can see all the groups that supported or opposed the bill.
+</p>
+
+<p>
+It's pretty fun stuff and, 
+in my opinion,
+awfully exciting.
+It's all made possible thanks to our partners:
+<a href="http://www.govtrack.us/">GovTrack.us</a>, 
+a fantastic site which provides data on bills, and
+<a href="http://www.maplight.org/">MAPLight.org</a>, 
+a Berkeley non-profit which each summer
+(including right now)
+brings interns out to search the news 
+to see who is supporting and opposing 
+the bills currently before Congress.
+</p>
+
+<p>
+Thanks to everyone who made this happen.
+I hope you enjoy it!
+</p>
+"""
+  ),
+  web.storage(
     slug = 'earmarks',
     title = 'Earmark Info',
     author = 'Aaron Swartz',
