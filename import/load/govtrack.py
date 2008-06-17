@@ -1,27 +1,12 @@
 """
 load data from govtrack.us
 
-from: data/crawl/govtrack/people.xml
   to: data/parse/politicians/govtrack.json
 """
 
-import simplejson
-from parse import govtrack, speeches
-
-reps = simplejson.load(file('../data/parse/politicians/index.json'))
-dist2rep = {}
-for repid, rep in reps.iteritems():
-    dist2rep[rep['district']] = repid
-
-govtrack2speechdata = {}
-
-def speech_callback(rep):
-    if rep.get('Speeches'):
-        govtrack2speechdata[rep.id] = {
-          'n_speeches': int(rep.Speeches), 
-          'words_per_speech': int(rep.WordsPerSpeech)
-        }
-speeches.main(speech_callback)
+import web, simplejson
+from parse import govtrack
+import tools
 
 mapping = {
   'bioguideid': 'bioguideid',
@@ -38,18 +23,40 @@ mapping = {
   'url': 'officeurl'
 }
 
-out = {}
-def callback(pol):
-    newpol = {}
+watchdog_map = {}
+govtrack_map = {}
+
+for pol in govtrack.parse_basics():
+    watchdog_id = tools.districtp(pol.get('represents'))
+    if watchdog_id and \
+      pol.lastname.lower().replace(' ', '_') in watchdog_id: # sanity check
+        govtrack_map[pol.id] = watchdog_map[watchdog_id] = newpol = web.storage()
+    else:
+        continue
+
     for k, v in mapping.iteritems():
         if k in pol: newpol[v] = pol[k]
-    newpol.update(govtrack2speechdata.get(newpol['govtrackid'], {}))
     
-    if pol.get('represents') and pol.represents in dist2rep: 
-        rep = dist2rep[pol.represents]
-        if pol.lastname.lower().replace(' ', '_') in rep:
-            out[rep] = newpol
+for pol in govtrack.parse_stats(['enacted', 'introduced', 'cosponsor', 
+  'speeches']):
+    if pol.id not in govtrack_map:
+        continue
+    else:
+        newpol = govtrack_map[pol.id]
+    
+    if pol.get('SponsorEnacted'):
+        newpol.n_bills_introduced = int(pol.NumSponsor)
+        newpol.n_bills_enacted = int(pol.SponsorEnacted)
+    
+    if pol.get('SponsorIntroduced'):
+        newpol.n_bills_debated = int(pol.NumSponsor) - int(pol.SponsorIntroduced)
+    
+    if pol.get('NumCosponsor'):
+        newpol.n_bills_cosponsored = int(pol.NumCosponsor)
+    
+    if pol.get('Speeches'):
+        newpol.n_speeches = int(pol.Speeches)
+        newpol.words_per_speech = int(pol.WordsPerSpeech)
 
 if __name__ == "__main__":
-    govtrack.main(callback)
-    print simplejson.dumps(out, indent=2, sort_keys=True)
+    print simplejson.dumps(watchdog_map, indent=2, sort_keys=True)

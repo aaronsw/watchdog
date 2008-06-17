@@ -63,9 +63,13 @@ CREATE TABLE politician (
   officeurl varchar(256),
   party varchar(256),
   religion varchar(256),
+  n_bills_introduced int,
+  n_bills_enacted int,
+  n_bills_debated int,
+  n_bills_cosponsored int,
   n_speeches int,
   words_per_speech int,
-
+  
   -- earmarks.json
   amt_earmark_requested int,
   n_earmark_requested int,
@@ -75,10 +79,7 @@ CREATE TABLE politician (
   -- photos.json
   photo_path varchar(256),
   photo_credit_url varchar(256),
-  photo_credit_text varchar(256),
-  
-  -- calculated in bills.py
-  n_bills_introduced int default 0  
+  photo_credit_text varchar(256)
 );
 
 CREATE TABLE interest_group (

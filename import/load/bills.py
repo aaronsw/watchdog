@@ -76,7 +76,6 @@ def main():
         db.delete('bill', '1=1')
         for fn in glob.glob('../data/crawl/govtrack/us/*/bills/*.xml'):
             loadbill(fn)
-    db.query("update politician set n_bills_introduced = n.c from (select count(*) as c, sponsor from bill where sponsor is not null group by sponsor) as n where id = n.sponsor")
 
 if __name__ == "__main__":
     main()

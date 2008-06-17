@@ -1,17 +1,17 @@
 """
 parse data from govtrack.us
-
-from: data/crawl/govtrack/people.xml
 """
 
-PEOPLE_XML = '../data/crawl/govtrack/people.xml'
+STATS_XML = '../data/crawl/govtrack/us/110/repstats/%s.xml'
+METRICS = ['enacted', 'novote', 'verbosity', 'speeches', 
+  'spectrum', 'introduced', 'cosponsored']
 
 from xml.dom import pulldom
 import web
 import tools
 
-def parse():
-    dom = pulldom.parse(PEOPLE_XML)
+def parse_basics():
+    dom = pulldom.parse(STATS_XML % 'people')
     for event, node in dom:
         if event == "START_ELEMENT" and node.tagName == "person":
             out = web.storage(node.attributes.items())
@@ -31,4 +31,13 @@ def parse():
 
             yield out
 
-if __name__ == "__main__": tools.export(parse())
+def parse_stats(metrics=METRICS):
+    for metric in metrics:
+        dom = pulldom.parse(STATS_XML % metric)
+        for event, node in dom:
+            if event == "START_ELEMENT" and node.tagName == 'representative':
+                yield web.storage(node.attributes.items())
+
+if __name__ == "__main__":
+    tools.export(parse_basics())
+    tools.export(parse_speeches())

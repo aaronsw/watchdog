@@ -13,6 +13,10 @@ test:
 	import/load/tools.py
 	./webapp_test.py
 
-sync:
+sync: rsync gitsync
+
+rsync:
 	rsync -avzu watchdog.net:~watchdog/web/data .
+
+gitsync:
 	git pull

@@ -80,11 +80,35 @@ $var pretitle:
 
 <table class="charted">
   <tr>
+    <th>Co-sponsored</th>
+    <td>$commify(pol.n_bills_cosponsored)</td>
+    <td><a href="/p/by/n_bills_cosponsored#$pol.id"
+         ><img 
+           src="/p/by/n_bills_cosponsored/distribution.png?point=$pol.n_bills_cosponsored"
+           class="sparkline" /></a></td>
+  </tr>
+  <tr>
     <th>Introduced</th>
-    <td><a href="/p/$pol.id/introduced">$commify(pol.n_bills_introduced) bills</a></td>
+    <td><a href="/p/$pol.id/introduced">$commify(pol.n_bills_introduced)</a></td>
     <td><a href="/p/by/n_bills_introduced#$pol.id"
          ><img 
            src="/p/by/n_bills_introduced/distribution.png?point=$pol.n_bills_introduced"
+           class="sparkline" /></a></td>
+  </tr>
+  <tr>
+    <th>Debated</th>
+    <td>$commify(pol.n_bills_debated)</td>
+    <td><a href="/p/by/n_bills_debated#$pol.id"
+         ><img 
+           src="/p/by/n_bills_debated/distribution.png?point=$pol.n_bills_debated"
+           class="sparkline" /></a></td>
+  </tr>
+  <tr>
+    <th>Enacted</th>
+    <td>$commify(pol.n_bills_enacted)</td>
+    <td><a href="/p/by/n_bills_enacted#$pol.id"
+         ><img 
+           src="/p/by/n_bills_enacted/distribution.png?point=$pol.n_bills_enacted"
            class="sparkline" /></a></td>
   </tr>
 </table>
@@ -126,15 +150,16 @@ $for group in pol.related_groups:
   >Taxpayers for Common Sense</a>.
   Interest group alignment from 
   <a href="http://maplight.org/map/us/legislator">MAPLight.org</a>.
+  $if pol.photo_credit_text:
+      Photo from <a href="$pol.photo_credit_url">$pol.photo_credit_text</a>.
   
+  <br /><br /><strong>More:</strong>
   Campaign finance information from <a 
     href="http://opensecrets.org/politicians/summary.asp?CID=$pol.opensecretsid"
   >Open Secrets</a>. 
   Voting record from the <a 
     href="http://projects.washingtonpost.com/congress/members/$pol.bioguideid.lower()"
   >Washington Post</a>.
-  $if pol.photo_credit_text:
-      Photo from <a href="$pol.photo_credit_url">$pol.photo_credit_text</a>.
 </div>
 
 <p><strong>Developers:</strong> Get this page in <a href="${pol.id.lower()}.n3">N3</a>, <a href="${pol.id.lower()}.xml">XML</a>, or <a href="${pol.id.lower()}.json">JSON</a>.</p>
