@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import re
 import web
-from utils import zip2rep, simplegraphs, apipublish
+from utils import zip2rep, simplegraphs, apipublish, helpers
 import blog
 import petition
 from settings import db, render
@@ -10,6 +10,10 @@ web.config.debug = True
 web.template.Template.globals['commify'] = web.commify
 web.template.Template.globals['int'] = int
 web.template.Template.globals['abs'] = abs
+web.template.Template.globals['len'] = len
+web.template.Template.globals['query_param'] = helpers.query_param
+web.template.Template.globals['changequery'] = web.changequery
+
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -243,26 +247,52 @@ def interest_group_support(bill_id):
              'group by  gb.bill_id, g.longname '
              'order by sum(gb.support) desc', vars=locals()).list()
 
+def votes_by_party(bill_id):
+    "Get the votes of the political parties for a bill"
+    result = db.select(['politician p, vote v'],
+            what="count(v.vote) as n_votes, sum(v.vote) as sum_votes, p.party",
+            where="v.politician_id = p.id and v.bill_id = $bill_id",
+            group="p.party",
+            vars = locals()
+            ).list()
+    for r in result:
+        r.positive = (r.n_votes + r.sum_votes)/2
+        r.negative = (r.n_votes - r.positive)
+    return result    
+
+def polname_by_id(pol_id):
+    try:
+        p = db.select('politician', what='firstname, middlename, lastname', where='id=$pol_id', vars=locals())[0]
+    except:
+        return None
+    else:
+        return ' '.join([p.firstname, p.middlename, p.lastname])
+        
+def bill_list(format, page=0, limit=50):
+    bills = db.select('bill', limit=limit, offset=page*limit, order='session desc').list()
+    out = apipublish.publish({
+          'uri': apipublish.generic(lambda x: 'http://watchdog.net/b/' + x.id),
+          'type': 'Bill',
+          'title': apipublish.identity,
+         }, bills, format)
+    if out:
+        return out
+    return render.bill_list(bills, limit)
+
 class bill:
     def GET(self, bill_id, format=None):
         if bill_id == "" or bill_id == "index":
-            bills = db.select(['bill'], order='session desc').list()
-
-            out = apipublish.publish({
-              'uri': apipublish.generic(lambda x: 'http://watchdog.net/b/' + x.id),
-              'type': 'Bill',
-              'title': apipublish.identity,
-             }, bills, format)
-            if out:
-                return out
-            return render.bill_list(bills)
-
+            i = web.input(page=0)
+            return bill_list(format, int(i.page))
+            
         try:
             b = db.select('bill', where='id=$bill_id', vars=locals())[0]
         except IndexError:
             raise web.notfound
 
+        b.sponsorname = polname_by_id(b.sponsor)
         b.interest_group_support = interest_group_support(bill_id)
+        b.votes_by_party = votes_by_party(bill_id)
         
         out = apipublish.publish({
           'uri': 'http://watchdog.net/b/' + bill_id,
@@ -327,7 +357,7 @@ class politician:
           'amt_earmark_received '
           'n_bills_introduced n_bills_enacted n_bills_debated '
           'n_bills_cosponsored '
-          'icpsrid nominate predictability '
+          'icpsrid '
           'n_speeches words_per_speech': apipublish.identity,
          }, [p], format)
         if out is not False:

@@ -27,3 +27,10 @@ def get_delete_msg():
     msg = web.cookies().get('wd_msg', None)
     web.setcookie('wd_msg', '', expires=-1)
     return msg
+
+def query_param(param, default_value):
+    i = web.input()
+    if param in i:
+        return getattr(i, param)
+    else:
+        return default_value

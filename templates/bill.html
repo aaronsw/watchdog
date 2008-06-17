@@ -7,7 +7,7 @@ $var title: $bill.type.upper(). $bill.number
 <p>(Introduced on $bill.introduced in the ${bill.session}th Congress.)</p>
 
 $if bill.sponsor:
-    <p>Introduced by <a href="/p/$bill.sponsor">$bill.sponsor.replace('_', ' ').title()</a>.</p>
+    <p>Introduced by <a href="/p/$bill.sponsor">$bill.sponsorname</a>.</p>
 
 <blockquote>$bill.summary</blockquote>
 
@@ -23,6 +23,16 @@ $if bill.interest_group_support:
     $for group in bill.interest_group_support:
         <tr><td>$group['longname']</td> <td class="$support_decode[group['support']]"> $support_decode[group['support']] </td> </tr>
     </table>
+
+$if bill.votes_by_party:
+	<h2>Votes</h2>
+	<table class="interest_group_support">
+	<tr><th>Party</th>
+	    <th>Votes</th>
+	</tr>
+	$for vote in bill.votes_by_party:
+		<tr><td>$vote.party</td><td>$vote.positive - $vote.negative</td></tr>
+	</table>	
 
 <p><strong>Developers:</strong> Get this page in <a href="/b/${bill.id}.n3">N3</a>, <a href="/b/${bill.id}.xml">XML</a>, or <a href="/b/${bill.id}.json">JSON</a>.</p>
 
