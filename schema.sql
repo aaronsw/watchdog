@@ -75,10 +75,10 @@ CREATE TABLE politician (
   nominate real,
   
   -- earmarks.json
-  amt_earmark_requested int,
-  n_earmark_requested int,
-  n_earmark_received int,
-  amt_earmark_received int,
+  amt_earmark_requested int default 0,
+  n_earmark_requested int default 0,
+  n_earmark_received int default 0,
+  amt_earmark_received int default 0,
   
   -- photos.json
   photo_path varchar(256),
