@@ -117,11 +117,24 @@ $var pretitle:
 
 <table class="charted">
   <tr>
-    <th>Ideology score</th>
-    <td>$pol.nominate</td>
+    <th>Ideology</th>
+    <td>
+    $if pol.nominate >= 0:
+        ${pol.nominate * 100}% right-wing
+    $else:
+        $abs(pol.nominate * 100)% left-wing
+    </td>
     <td><a href="/p/by/nominate#$pol.id"
          ><img 
            src="/p/by/nominate/distribution.png?point=$pol.nominate"
+           class="sparkline" /></a></td>
+  </tr>
+  <tr>
+    <th>Predictability</th>
+    <td>$int(pol.predictability * 100)%</td>
+    <td><a href="/p/by/predictability#$pol.id"
+         ><img 
+           src="/p/by/predictability/distribution.png?point=$pol.predictability"
            class="sparkline" /></a></td>
   </tr>
 </table>

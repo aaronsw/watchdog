@@ -73,6 +73,7 @@ CREATE TABLE politician (
   -- voteview.json
   icpsrid int,
   nominate real,
+  predictability real,
   
   -- earmarks.json
   amt_earmark_requested int default 0,

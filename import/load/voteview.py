@@ -17,7 +17,8 @@ for pol in voteview.parse():
     if watchdog_id:
         out[watchdog_id] = {
           'icpsrid': pol.icpsr_id,
-          'nominate': pol.dim1
+          'nominate': pol.dim1,
+          'predictability': 1 - (pol.n_errs / float(pol.n_votes))
         }
 
 if __name__ == "__main__":
