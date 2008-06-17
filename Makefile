@@ -9,6 +9,8 @@ run:
 test:
 	cd import/parse; ./almanac_test.py
 	utils/rdftramp.py
+	import/parse/tools.py
+	import/load/tools.py
 	./webapp_test.py
 
 sync:

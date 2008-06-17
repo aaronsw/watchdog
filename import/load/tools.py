@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 common tools for load scripts
 """
