@@ -7,7 +7,6 @@ import simplejson
 import web
 db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), db='watchdog_dev')
 
-
 _districtcache = {}
 def districtp(district):
     """

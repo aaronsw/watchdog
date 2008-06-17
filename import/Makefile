@@ -18,9 +18,11 @@ JSONS=$(LOAD)/states/index.json \
       $(LOAD)/districts/shapes.json \
       $(LOAD)/politicians/index.json \
       $(LOAD)/politicians/govtrack.json \
+      $(LOAD)/politicians/voteview.json \
       $(LOAD)/politicians/photos.json \
       $(LOAD)/politicians/earmarks.json \
       $(LOAD)/districts/centers.json
+      
 
 all: .database
 clean:
@@ -64,8 +66,12 @@ $(LOAD)/politicians/index.json: load/manual/politicians.json
 	mkdir -p $(LOAD)/politicians
 	cp $< $@
 
-$(LOAD)/politicians/govtrack.json: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/
+$(LOAD)/politicians/govtrack.json: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml
 	$(PYTHON) load/govtrack.py > $@.tmp
+	mv $@.tmp $@
+
+$(LOAD)/politicians/voteview.json: load/voteview.py parse/voteview.py ../data/crawl/voteview/
+	$(PYTHON) load/voteview.py > $@.tmp
 	mv $@.tmp $@
 
 $(LOAD)/politicians/photos.json: load/photos.py $(LOAD)/politicians/govtrack.json

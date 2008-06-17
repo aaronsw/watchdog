@@ -70,6 +70,10 @@ CREATE TABLE politician (
   n_speeches int,
   words_per_speech int,
   
+  -- voteview.json
+  icpsrid int,
+  nominate real,
+  
   -- earmarks.json
   amt_earmark_requested int,
   n_earmark_requested int,

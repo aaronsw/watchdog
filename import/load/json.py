@@ -39,7 +39,7 @@ def load_all():
         db.insert('politician', seqname=False, id=polid, **unidecode(pol))
         district_to_pol[pol['district']] = polid
     
-    for fn in ['govtrack', 'earmarks', 'photos']:
+    for fn in ['govtrack', 'voteview', 'earmarks', 'photos']:
         for polid, pol in items('politicians/' + fn):
             db.update('politician',
                       where='id = $polid',

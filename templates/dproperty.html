@@ -7,6 +7,6 @@ $for item in items:
     <li id="$item.id">
       <a href="$item.path">$item.name</a>
       <span class="count">$item[what]</span>
-      <span class="index" style="width: $int(item.pct)%">$int(item.pct)%</span>
+      <span class="index" style="width: $abs(int(item.pct))%">$int(item.pct)%</span>
     </li>
 </table>

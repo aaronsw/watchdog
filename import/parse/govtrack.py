@@ -2,6 +2,7 @@
 parse data from govtrack.us
 """
 
+#@@ implicit 110 assumption
 STATS_XML = '../data/crawl/govtrack/us/110/repstats/%s.xml'
 METRICS = ['enacted', 'novote', 'verbosity', 'speeches', 
   'spectrum', 'introduced', 'cosponsored']

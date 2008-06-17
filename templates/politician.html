@@ -115,6 +115,17 @@ $var pretitle:
 
 <h2>Special Interest Group Ratings</h2>
 
+<table class="charted">
+  <tr>
+    <th>Ideology score</th>
+    <td>$pol.nominate</td>
+    <td><a href="/p/by/nominate#$pol.id"
+         ><img 
+           src="/p/by/nominate/distribution.png?point=$pol.nominate"
+           class="sparkline" /></a></td>
+  </tr>
+</table>
+
 <table class="interest_group_ratings">
 <tr><td></td>
 $for group in pol.interest_group_table['groups']:
@@ -163,3 +174,5 @@ $for group in pol.related_groups:
 </div>
 
 <p><strong>Developers:</strong> Get this page in <a href="${pol.id.lower()}.n3">N3</a>, <a href="${pol.id.lower()}.xml">XML</a>, or <a href="${pol.id.lower()}.json">JSON</a>.</p>
+
+<p><em>Also known as:</em> $pol.govtrackid (GovTrack), $pol.opensecretsid (OpenSecrets), $pol.bioguideid (Biography), $pol.icpsrid (ICPSR).</p>
