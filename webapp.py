@@ -357,7 +357,7 @@ class politician:
           'amt_earmark_received '
           'n_bills_introduced n_bills_enacted n_bills_debated '
           'n_bills_cosponsored '
-          'icpsrid '
+          'icpsrid nominate predictability '
           'n_speeches words_per_speech': apipublish.identity,
          }, [p], format)
         if out is not False:
