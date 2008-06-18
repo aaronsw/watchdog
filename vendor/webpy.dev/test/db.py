@@ -68,10 +68,9 @@ class DBTest(webtest.TestCase):
         self.assertRows(2)
         
     def testPooling(self):
-        db = webtest.setup_database(self.dbname)
-        db.hasPooling = True
-        import DBUtils
-        self.assertTrue(isinstance(db.ctx.db, DBUtils.PooledDB.PooledDB))
+        db = webtest.setup_database(self.dbname, pooling=True)
+        self.assertEquals(db.ctx.db.__class__.__module__, 'DBUtils.PooledDB')
+        db.select('person', limit=1)
 
     def test_multiple_insert(self):
         db = webtest.setup_database(self.dbname)

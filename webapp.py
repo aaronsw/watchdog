@@ -30,12 +30,11 @@ urls = (
   r'/p/(.*?)/(\d+)', 'politician_group',
   r'/p/(.*?)%s?' % options, 'politician',
   r'/b/(.*?)%s?' % options, 'bill',
-  r'/c/(.*)', petition.app,
+  r'/c', petition.app,
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
-  r'/blog', 'reblog',
-  r'/blog(/.*)', blog.app,
+  r'/blog', blog.app,
   r'/data/(.*)', 'staticdata',
   r'/ydnlIEWXo\.html', 'yauth'
 )
@@ -64,10 +63,6 @@ class feedback:
           i.content +'\n\n' + web.ctx.ip)
         
         return render.feedback_thanks()
-
-class reblog:
-    def GET(self):
-        raise web.seeother('/blog/')
 
 class find:
     def GET(self, format=None):

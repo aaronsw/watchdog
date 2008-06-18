@@ -6,11 +6,15 @@ from utils import forms, helpers
 from settings import db, render
 
 urls = (
-  '/c/', 'index',
-  '/c/new/', 'new', 
-  '/c/(.*)', 'petition'
+  '', 'redir',
+  '/', 'index',
+  '/new', 'new', 
+  '/(.*)', 'petition'
 )
-        
+
+class redir:
+    def GET(self): raise web.seeother('/')
+
 class index:
     def GET(self):
         petitions = db.select('petition', what='id, title',  order='created desc').list()
@@ -39,7 +43,7 @@ class new:
                 db.insert('signatory', seqname=False, user_id=owner_id, petition_id=p.id)
                 helpers.setcookie('wd_email', p.email)
                 helpers.set_msg("Congratulations, you've created your petition. Now share it with all your friends.")                        
-                return web.seeother('/c/%s' % p.id)
+                return web.seeother('/%s' % p.id)
         else:
             return render.petitionform(pform)
             
@@ -96,7 +100,7 @@ class petition:
         i = web.input()
         if form.validates(i):
             insert_password(i)
-            raise web.seeother('/c/%s' % pid)
+            raise web.seeother('/%s' % pid)
         else:
             return self.GET(pid, passwordform=form)
             
@@ -105,7 +109,7 @@ class petition:
         i = web.input()
         if form.validates(i):
             take_signature(i, pid)
-            return web.seeother('/c/%s' % pid)
+            return web.seeother('/%s' % pid)
         else:
             return self.GET(pid, signform=form)
   

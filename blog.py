@@ -1,9 +1,10 @@
 import web
 
 urls = (
-  '/blog/', 'index',
-  '/blog/feed', 'feed',
-  '/blog/(.*)', 'post',
+  '', 'reblog',
+  '/', 'index',
+  '/feed', 'feed',
+  '/(.*)', 'post',
 )
 
 render = web.template.render('templates/', base='base')
@@ -271,5 +272,9 @@ class post:
             return render.blog_post(content_mapping[name])
         else:
             raise web.notfound
+
+class reblog:
+    def GET(self):
+        raise web.seeother('/')
 
 app = web.application(urls, globals())

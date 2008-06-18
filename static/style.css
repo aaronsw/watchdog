@@ -24,7 +24,7 @@ th { text-align: left;}
 h1 { font-weight: normal; }
 h1 a, h1 img { color: white; text-decoration: none; border: 0; }
 table.interest_group_ratings td { text-align: right; }
-th, td { padding-left: 0.5em; } /* space out the columns a bit */
+th, td { padding-left: 0.5em; vertical-align: top; } /* space out the columns a bit */
 table.interest_group_support td, th { text-align: left; }
 
 .explain { color: #999; margin-top: -.5em; font-size: smaller;}
