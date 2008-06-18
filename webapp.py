@@ -343,16 +343,29 @@ class politician:
 
         p.interest_group_rating = interest_group_ratings(polid)
         p.interest_group_table = interest_group_table(p.interest_group_rating)
-        p.related_groups = group_politician_similarity(polid) #@@ API
-        p.sponsored_bills = bills_sponsored(polid) #@@ API
-
+        p.related_groups = group_politician_similarity(polid)
+        p.sponsored_bills = bills_sponsored(polid)                           
+            
         out = apipublish.publish({
           'uri': 'http://watchdog.net/p/' + polid,
           'type': 'Politician',
           'district': apipublish.URI('http://watchdog.net/us/' + p.district.lower()),
           'wikipedia photo_credit_url officeurl': apipublish.URI,
           'interest_group_rating': apipublish.table({
-            'year groupname longname rating': apipublish.identity}),
+                'year groupname longname rating': apipublish.identity}),
+          'related_groups' : apipublish.table({
+                'longname': apipublish.identity,
+                'num_bills_agreed': apipublish.generic(lambda g: g.agreed),
+                'num_bills_voted': apipublish.generic(lambda g: g.total),
+                'agreement_percent': apipublish.generic(lambda g: int(g.agreement * 100)),
+                'group_politician_url': apipublish.generic(lambda g: 
+                                        'http://watchdog.net/p/%s/%s' % (polid, g.id))
+            }), 
+            'sponsored_bills': apipublish.table({
+                'id': apipublish.generic(lambda b: '%s. %s' % (b.type.upper(), b.number)),
+                'session title introduced': apipublish.identity,
+                'url': apipublish.generic(lambda b: 'http://watchdog.net/b/%s' % (b.id))
+            }),
           'bioguideid opensecretsid govtrackid gender birthday firstname '
           'middlename lastname party religion photo_path '
           'photo_credit_text '
@@ -363,7 +376,7 @@ class politician:
           'icpsrid nominate predictability '
           'n_speeches words_per_speech': apipublish.identity,
          }, [p], format)
-        if out is not False:
+        if out:
             return out
         
         return render.politician(p)
