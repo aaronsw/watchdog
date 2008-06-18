@@ -250,15 +250,18 @@ def interest_group_support(bill_id):
 def votes_by_party(bill_id):
     "Get the votes of the political parties for a bill"
     result = db.select(['politician p, vote v'],
-            what="count(v.vote) as n_votes, sum(v.vote) as sum_votes, p.party",
-            where="v.politician_id = p.id and v.bill_id = $bill_id",
-            group="p.party",
+            what="v.vote, count(v.vote), p.party",
+            where="v.politician_id = p.id and v.bill_id = $bill_id "
+                    "AND v.vote is not null",
+            group="p.party, v.vote",
             vars = locals()
             ).list()
+    
+    d = {}
     for r in result:
-        r.positive = (r.n_votes + r.sum_votes)/2
-        r.negative = (r.n_votes - r.positive)
-    return result    
+        d.setdefault(r.party, {})
+        d[r.party][r.vote] = r.count
+    return d
 
 def polname_by_id(pol_id):
     try:
@@ -266,7 +269,7 @@ def polname_by_id(pol_id):
     except:
         return None
     else:
-        return ' '.join([p.firstname, p.middlename, p.lastname])
+        return "%s %s %s" %(p.firstname or '', p.middlename or '', p.lastname or '')
         
 def bill_list(format, page=0, limit=50):
     bills = db.select('bill', limit=limit, offset=page*limit, order='session desc').list()
@@ -398,9 +401,14 @@ class dproperty:
             raise web.notfound
         if not r_safeproperty.match(what): raise web.notfound
         
-        maxnum = float(db.select(table,
+        #if `what` is not there in the `table` (provide available options rather than 404???)
+        try:
+            maxnum = float(db.select(table,
                                  what='max(%s) as m' % what,
                                  vars=locals())[0].m)
+        except:
+            raise web.notfound
+                                     
         items = db.select(table,
                           what="*, 100*(%s/$maxnum) as pct" % what,
                           order='%s desc' % what,

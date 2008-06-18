@@ -28,10 +28,16 @@ $if bill.votes_by_party:
 	<h2>Votes</h2>
 	<table class="interest_group_support">
 	<tr><th>Party</th>
-	    <th>Votes</th>
+		<th>Support</th>
+		<th>Oppose</th>
+		<th>Abstain</th>
 	</tr>
-	$for vote in bill.votes_by_party:
-		<tr><td>$vote.party</td><td>$vote.positive - $vote.negative</td></tr>
+	$for party, votes in bill.votes_by_party.items():
+		<tr><th>$party</th>
+			<td>$votes.get(1, 0)</td>
+			<td>$votes.get(-1, 0)</td>
+			<td>$votes.get(0, 0)</td>
+		</tr>
 	</table>	
 
 <p><strong>Developers:</strong> Get this page in <a href="/b/${bill.id}.n3">N3</a>, <a href="/b/${bill.id}.xml">XML</a>, or <a href="/b/${bill.id}.json">JSON</a>.</p>
