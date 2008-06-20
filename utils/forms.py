@@ -14,8 +14,8 @@ petitionform = form.Form(
       form.Textbox('id', 
             form.notnull,
             form.Validator('ID already exists, Choose a different one.', doesnotexist),
-            post='(this becomes a part of your petition URL)',
-            description='Petition ID:',
+            pre='http://watchdog.net/c/',
+            description='URL:',
             size='30'),
       form.Textarea('description', description="Description:", rows='20', cols='80'),        
       form.Textbox('email', 
@@ -35,7 +35,7 @@ signform = form.Form(
     )
 
 passwordform = form.Form(
-    form.Password('password', form.notnull, description="Password:", size='30'),
-    form.Password('password_again', form.notnull, description="Repeat password :", size='30'),
+    form.Password('password', form.notnull, description="Password:", size='10'),
+    form.Password('password_again', form.notnull, description="Repeat:", size='10'),
     validators = [form.Validator("Passwords do not match.", lambda i: i.password == i.password_again)]
     )

@@ -16,8 +16,8 @@ $var pretitle:
 
 <p>
   represents <a href="/us/$pol.district">$pol.district</a><br />
-  $if pol.birthday: b. $pol.birthday<br />
   $pol.party, $pol.religion<br />
+  $if pol.birthday: b. $pol.birthday<br />
   <a href="$pol.officeurl">Official website</a>
 </p>
 
@@ -76,16 +76,68 @@ $var pretitle:
   <tr><th colspan="2">Data for fiscal year 2008</th></tr>
 </table>
 
-<h2>Bills Introduced</h2>
+<h2>Bills</h2>
 
-<ul>
-$for bill in pol.sponsored_bills:
-    <li><a href="/b/$bill.id">$bill.type.upper(). $bill.number</a>: $bill.title</li>
-$else:
-    <li><em>no bills sponsored</em></li>
-</ul>
+<table class="charted">
+  <tr>
+    <th>Co-sponsored</th>
+    <td>$commify(pol.n_bills_cosponsored)</td>
+    <td><a href="/p/by/n_bills_cosponsored#$pol.id"
+         ><img 
+           src="/p/by/n_bills_cosponsored/distribution.png?point=$pol.n_bills_cosponsored"
+           class="sparkline" /></a></td>
+  </tr>
+  <tr>
+    <th>Introduced</th>
+    <td><a href="/p/$pol.id/introduced">$commify(pol.n_bills_introduced)</a></td>
+    <td><a href="/p/by/n_bills_introduced#$pol.id"
+         ><img 
+           src="/p/by/n_bills_introduced/distribution.png?point=$pol.n_bills_introduced"
+           class="sparkline" /></a></td>
+  </tr>
+  <tr>
+    <th>Debated</th>
+    <td>$commify(pol.n_bills_debated)</td>
+    <td><a href="/p/by/n_bills_debated#$pol.id"
+         ><img 
+           src="/p/by/n_bills_debated/distribution.png?point=$pol.n_bills_debated"
+           class="sparkline" /></a></td>
+  </tr>
+  <tr>
+    <th>Enacted</th>
+    <td>$commify(pol.n_bills_enacted)</td>
+    <td><a href="/p/by/n_bills_enacted#$pol.id"
+         ><img 
+           src="/p/by/n_bills_enacted/distribution.png?point=$pol.n_bills_enacted"
+           class="sparkline" /></a></td>
+  </tr>
+</table>
 
 <h2>Special Interest Group Ratings</h2>
+
+<table class="charted">
+  <tr>
+    <th>Ideology</th>
+    <td>
+    $if pol.nominate >= 0:
+        ${pol.nominate * 100}% right-wing
+    $else:
+        $abs(pol.nominate * 100)% left-wing
+    </td>
+    <td><a href="/p/by/nominate#$pol.id"
+         ><img 
+           src="/p/by/nominate/distribution.png?point=$pol.nominate"
+           class="sparkline" /></a></td>
+  </tr>
+  <tr>
+    <th>Predictability</th>
+    <td>$int(pol.predictability * 100)%</td>
+    <td><a href="/p/by/predictability#$pol.id"
+         ><img 
+           src="/p/by/predictability/distribution.png?point=$pol.predictability"
+           class="sparkline" /></a></td>
+  </tr>
+</table>
 
 <table class="interest_group_ratings">
 <tr><td></td>
@@ -110,6 +162,8 @@ $for group in pol.related_groups:
     </tr>
 </table>
 
+<p><a href="/p/$pol.id/groups">More...</a></p>
+
 <div class="sources">
   Politician information from <a href="$pol.wikipedia">Wikipedia</a> and 
   <a 
@@ -118,14 +172,22 @@ $for group in pol.related_groups:
   Earmark information from <a 
     href="http://taxpayer.net/budget/fy08earmarks/fy08databasemain.html"
   >Taxpayers for Common Sense</a>.
+  Interest group alignment from 
+  <a href="http://maplight.org/map/us/legislator">MAPLight.org</a>.
+  Ideology and predictability from
+  <a href="http://voteview.com/">VoteView</a>.
+  $if pol.photo_credit_text:
+      Photo from <a href="$pol.photo_credit_url">$pol.photo_credit_text</a>.
+  
+  <br /><br /><strong>More:</strong>
   Campaign finance information from <a 
     href="http://opensecrets.org/politicians/summary.asp?CID=$pol.opensecretsid"
   >Open Secrets</a>. 
   Voting record from the <a 
     href="http://projects.washingtonpost.com/congress/members/$pol.bioguideid.lower()"
   >Washington Post</a>.
-  $if pol.photo_credit_text:
-      Photo from <a href="$pol.photo_credit_url">$pol.photo_credit_text</a>.
 </div>
 
 <p><strong>Developers:</strong> Get this page in <a href="${pol.id.lower()}.n3">N3</a>, <a href="${pol.id.lower()}.xml">XML</a>, or <a href="${pol.id.lower()}.json">JSON</a>.</p>
+
+<p><em>Also known as:</em> $pol.govtrackid (GovTrack), $pol.opensecretsid (OpenSecrets), $pol.bioguideid (Biography), $pol.icpsrid (ICPSR).</p>

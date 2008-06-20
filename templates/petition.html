@@ -4,31 +4,34 @@ $var title: $:p.title
 
 $if msg:
     $var msg: $msg
+
+$if passwordform:
+    <div class="passbox">
+  	<h2>Set a password</h2>
+  	<form name="passwdform" method="POST" action="/c/$p.id?m=password">
+  		$:passwordform.render() 
+  		<input type="hidden" name="user_id" value="$p.owner_id" />
+  	  
+  	  <p><input type="submit" value="Set Password" /></p>
+  	</form>	
+  	</div>
+
 	
 <p>$:p.description </p>
 
-$if passwordform:
-	<hr>
-	<p><strong>Set Password</strong></p>
-	<form name="passwdform" method="POST" action="/c/$p.id?m=password">
-		$:passwordform.render() 
-		<input type="hidden" name="user_id" value=$p.owner_id>
-	    <input type="submit" value="Set Password" />
-	</form>	
+$if p.signatory_count == 1:
+	$ ppl = 'person</strong> has'
+$else:
+	$ ppl = 'people</strong> have'
+	
+<div class="signatories"> <strong>$p.signatory_count $:ppl signed this petition so far. </div>
 
-<hr>
 
-<p><strong>Sign this petition</strong></p>
+<h2>Sign</h2>
 <form name="sign" method="POST" action="/c/$p.id?m=sign">
 	$if not signform.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
 	$:signform.render() 
     <p><input type="submit" value="Sign" /></p>
 </form>
 
-$if p.signatory_count == 1:
-	$ ppl = 'person has'
-$else:
-	$ ppl = 'people have'
-	
-<p> $p.signatory_count $ppl signed this petition so far. </p>
 

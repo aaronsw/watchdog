@@ -184,8 +184,7 @@ def input(*requireds, **defaults):
     try:
         return storify(out, *requireds, **defaults)
     except KeyError:
-        badrequest()
-        raise StopIteration
+        raise badrequest()
 
 def data():
     """Returns the data sent with the request."""

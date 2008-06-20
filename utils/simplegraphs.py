@@ -11,9 +11,12 @@ def sparkline(points, point=None, height=15*2, width=40*2, bubble=2*2, linewidth
     height -= margin
     width -= margin
     
+    maxpoint = max(points)
+    minpoint = min(points)
+    
     mypoints = [(
       margin/2. + (width*(n/float(len(points)))),
-      (height+margin/2.) - ((height*(float(i)/max(points))))
+      (height+margin/2.) - ((height*((float(i) - minpoint)/(maxpoint-minpoint))))
     ) for (n, i) in enumerate(points)]
     draw.line(mypoints, fill='#888888', width=linewidth*scalefactor)
     

@@ -2,7 +2,11 @@ $def with (petitions)
 
 $var title: Recent petitions
 
+<p><a href="/c/new">Start a new petition...</a></p>
+
 <ul>
 $for p in petitions:
     <li><a href="/c/$p.id">$p.title</a></li>
 </ul>
+
+<p><a href="/c/new">Start a new petition...</a></p>

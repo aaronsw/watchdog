@@ -63,14 +63,23 @@ CREATE TABLE politician (
   officeurl varchar(256),
   party varchar(256),
   religion varchar(256),
+  n_bills_introduced int,
+  n_bills_enacted int,
+  n_bills_debated int,
+  n_bills_cosponsored int,
   n_speeches int,
   words_per_speech int,
-
+  
+  -- voteview.json
+  icpsrid int,
+  nominate real,
+  predictability real,
+  
   -- earmarks.json
-  amt_earmark_requested int,
-  n_earmark_requested int,
-  n_earmark_received int,
-  amt_earmark_received int,
+  amt_earmark_requested int default 0,
+  n_earmark_requested int default 0,
+  n_earmark_received int default 0,
+  amt_earmark_received int default 0,
   
   -- photos.json
   photo_path varchar(256),

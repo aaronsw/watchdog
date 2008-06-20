@@ -1,0 +1,10 @@
+$def with (bills)
+
+$var title: Bills Introduced
+
+<ul>
+$for bill in bills:
+    <li><a href="/b/$bill.id">$bill.type.upper(). $bill.number</a>: $bill.title</li>
+$else:
+    <li><em>no bills sponsored</em></li>
+</ul>

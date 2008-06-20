@@ -1,41 +1,44 @@
 """
 parse data from govtrack.us
-
-from: data/crawl/govtrack/people.xml
 """
 
+#@@ implicit 110 assumption
+STATS_XML = '../data/crawl/govtrack/us/110/repstats/%s.xml'
+METRICS = ['enacted', 'novote', 'verbosity', 'speeches', 
+  'spectrum', 'introduced', 'cosponsored']
+
+from xml.dom import pulldom
 import web
-from xml.sax import make_parser, handler
+import tools
 
-class PeopleXML(handler.ContentHandler):
-    def __init__(self, callback):
-        self.callback = callback
-        self.current = None
-        
-    def startElement(self, name, attrs):
-        if name == 'person':
-            self.current = web.storage(attrs)
-            if self.current.get('district'):
-                self.current.represents = self.current.state + '-' + self.current.district.zfill(2)
+def parse_basics():
+    dom = pulldom.parse(STATS_XML % 'people')
+    for event, node in dom:
+        if event == "START_ELEMENT" and node.tagName == "person":
+            out = web.storage(node.attributes.items())
+            dom.expandNode(node)
+            
+            if out.get('district'):
+                out.represents = out.state + '-' + out.district.zfill(2)
             else:
-                if self.current.get('state'):
-                    self.current.represents = self.current.state
-                    assert self.current.title == 'Sen.'
-        if name == 'current-committee-assignment':
-            self.current.active = True
-    
-    def endElement(self, name):
-        if name == 'person':
-            self.callback(self.current)
-            self.current = None
+                if out.get('state'):
+                    out.represents = out.state
+                    assert out.title == 'Sen.'
+            
+            if 'current-committee-assignment' in [
+              hasattr(x, 'tagName') and x.tagName for x in node.childNodes
+            ]:
+                out.active = True
 
-def callback(pol):
-    if pol.get('active', False):
-        print pol.represents
+            yield out
 
-def main(callback):
-    parser = make_parser()
-    parser.setContentHandler(PeopleXML(callback))
-    parser.parse('../data/crawl/govtrack/people.xml')
+def parse_stats(metrics=METRICS):
+    for metric in metrics:
+        dom = pulldom.parse(STATS_XML % metric)
+        for event, node in dom:
+            if event == "START_ELEMENT" and node.tagName == 'representative':
+                yield web.storage(node.attributes.items())
 
-if __name__ == "__main__": main(callback)
+if __name__ == "__main__":
+    tools.export(parse_basics())
+    tools.export(parse_speeches())

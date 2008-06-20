@@ -1,9 +1,23 @@
+#!/usr/bin/env python
 """
 common tools for load scripts
 """
 import os
+import simplejson
 import web
 db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), db='watchdog_dev')
+
+_districtcache = {}
+def districtp(district):
+    """
+    Return the watchdog ID for the represenative of `district`.
+    """
+    if not _districtcache:
+        reps = simplejson.load(file('../data/parse/politicians/index.json'))
+        for repid, rep in reps.iteritems():
+            _districtcache[rep['district']] = repid
+    
+    return _districtcache.get(district)
 
 _govtrackcache = {}
 

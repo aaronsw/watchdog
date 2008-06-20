@@ -20,8 +20,14 @@ def bill2dict(bill):
     if not titles:
         titles = [unicode(x) for x in bill.titles['title':]]
     d['title'] = titles[0]
+
+    summaries = [unicode(x) for x in bill.titles['title':] 
+      if x('type') == 'official']
+    if not summaries:
+        summaries = [unicode(x) for x in bill.titles['title':]]
+    d['summary'] = summaries[0]
+    
     d['sponsor'] = govtrackp(bill.sponsor().get('id'))
-    d['summary'] = unicode(bill.summary)
     return d
 
 def fixvote(s):

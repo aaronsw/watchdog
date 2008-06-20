@@ -333,13 +333,13 @@ class Transaction:
         class transaction_engine:
             """Transaction Engine used in top level transactions."""
             def do_transact(self):
-                ctx.db.commit()
+                ctx.commit(unload=False)
 
             def do_commit(self):
-                ctx.db.commit()
+                ctx.commit()
 
             def do_rollback(self):
-                ctx.db.rollback()
+                ctx.rollback()
 
         class subtransaction_engine:
             """Transaction Engine used in sub transactions."""
@@ -394,25 +394,38 @@ class Transaction:
 
 class DB: 
     """Database"""
-    def __init__(self):
+    def __init__(self, db_module, keywords):
+        """Creates a database.
+        """
+        self.db_module = db_module
+        self.keywords = keywords
+        
         self._ctx = threadeddict()
-
         # flag to enable/disable printing queries
         self.printing = False
-        self.hasPooling = False
         self.supports_multiple_insert = False
-
+        
+        try:
+            import DBUtils
+            # enable pooling if DBUtils module is available.
+            self.has_pooling = True
+        except ImportError:
+            self.has_pooling = False
+            
+        # Pooling can be disabled by passing pooling=False in the keywords.
+        self.has_pooling = self.has_pooling and self.keywords.pop('pooling', True)        
+            
     def _getctx(self): 
         if not self._ctx.get('db'):
             self._load_context(self._ctx)
         return self._ctx
     ctx = property(_getctx)
-
+    
     def _load_context(self, ctx):
         ctx.dbq_count = 0
         ctx.transactions = [] # stack of transactions
         
-        if self.hasPooling:
+        if self.has_pooling:
             ctx.db = self._connect_with_pooling(self.keywords)
         else:
             ctx.db = self._connect(self.keywords)
@@ -424,18 +437,44 @@ class DB:
         if not hasattr(ctx.db, 'rollback'):
             ctx.db.rollback = lambda: None
             
+        def commit(unload=True):
+            # do db commit and release the connection if pooling is enabled.            
+            ctx.db.commit()
+            if unload and self.has_pooling:
+                self._unload_context(self._ctx)
+                
+        def rollback():
+            # do db rollback and release the connection if pooling is enabled.
+            ctx.db.rollback()
+            if self.has_pooling:
+                self._unload_context(self._ctx)
+                
+        ctx.commit = commit
+        ctx.rollback = rollback
+            
+    def _unload_context(self, ctx):
+        del ctx.db
+            
     def _connect(self, keywords):
         return self.db_module.connect(**keywords)
         
     def _connect_with_pooling(self, keywords):
-        from DBUtils import PooledDB
-        # In DBUtils 0.9.3, `dbapi` argument is renamed as `creator`
-        # see Bug#122112
-        if PooledDB.__version__.split('.') < '0.9.3'.split('.'):
-            return PooledDB.PooledDB(dbapi=self._connect, **keywords)
-        else:
-            return PooledDB.PooledDB(creator=self._connect, **keywords)
+        def get_pooled_db():
+            from DBUtils import PooledDB
+
+            # In DBUtils 0.9.3, `dbapi` argument is renamed as `creator`
+            # see Bug#122112
             
+            if PooledDB.__version__.split('.') < '0.9.3'.split('.'):
+                return PooledDB.PooledDB(dbapi=self.db_module, **keywords)
+            else:
+                return PooledDB.PooledDB(creator=self.db_module, **keywords)
+        
+        if getattr(self, '_pooleddb', None) is None:
+            self._pooleddb = get_pooled_db()
+        
+        return self._pooleddb.connection()
+        
     def _db_cursor(self):
         return self.ctx.db.cursor()
 
@@ -462,7 +501,7 @@ class DB:
             val = val.encode('UTF-8')
         return val
 
-    def _db_execute(self, cur, sql_query, dorollback=True): 
+    def _db_execute(self, cur, sql_query): 
         """executes an sql query"""
         self.ctx.dbq_count += 1
 
@@ -476,11 +515,10 @@ class DB:
         except:
             if self.printing:
                 print >> debug, 'ERR:', str(sql_query)
-            if dorollback: 
-                if self.ctx.transactions:
-                    self.ctx.transactions[-1].rollback()
-                else:
-                    self.ctx.db.rollback()
+            if self.ctx.transactions:
+                self.ctx.transactions[-1].rollback()
+            else:
+                self.ctx.rollback()
             raise
 
         if self.printing:
@@ -505,7 +543,7 @@ class DB:
         If `processed=True`, `vars` is a `reparam`-style list to use 
         instead of interpolating.
         
-            >>> db = DB()
+            >>> db = DB(None, {})
             >>> db.query("SELECT * FROM foo", _test=True)
             <sql: 'SELECT * FROM foo'>
             >>> db.query("SELECT * FROM foo WHERE x = $x", vars=dict(x='f'), _test=True)
@@ -537,7 +575,8 @@ class DB:
         else:
             out = db_cursor.rowcount
         
-        if not self.ctx.transactions: self.ctx.db.commit()
+        if not self.ctx.transactions: 
+            self.ctx.commit()
         return out
     
     def select(self, tables, vars=None, what='*', where=None, order=None, group=None, 
@@ -547,7 +586,7 @@ class DB:
         `group`, `limit`, and `offset`. Uses vars to interpolate. 
         Otherwise, each clause can be a SQLQuery.
         
-            >>> db = DB()
+            >>> db = DB(None, {})
             >>> db.select('foo', _test=True)
             <sql: 'SELECT * FROM foo'>
             >>> db.select(['foo', 'bar'], where="foo.bar_id = bar.id", limit=5, _test=True)
@@ -565,7 +604,7 @@ class DB:
         """
         Selects from `table` where keys are equal to values in `kwargs`.
         
-            >>> db = DB()
+            >>> db = DB(None, {})
             >>> db.where('foo', bar_id=3, _test=True)
             <sql: 'SELECT * FROM foo WHERE bar_id = 3'>
             >>> db.where('foo', source=2, crust='dewey', _test=True)
@@ -614,7 +653,7 @@ class DB:
         Set `seqname` to the ID if it's not the default, or to `False`
         if there isn't one.
         
-            >>> db = DB()
+            >>> db = DB(None, {})
             >>> q = db.insert('foo', name='bob', age=2, created=SQLLiteral('NOW()'), _test=True)
             >>> q
             <sql: "INSERT INTO foo (age, name, created) VALUES (2, 'bob', NOW())">
@@ -652,7 +691,8 @@ class DB:
         except Exception: 
             out = None
         
-        if not self.ctx.transactions: self.ctx.db.commit()
+        if not self.ctx.transactions: 
+            self.ctx.commit()
         return out
         
     def multiple_insert(self, tablename, values, seqname=None, _test=False):
@@ -663,7 +703,7 @@ class DB:
         Set `seqname` to the ID if it's not the default, or to `False`
         if there isn't one.
         
-            >>> db = DB()
+            >>> db = DB(None, {})
             >>> db.supports_multiple_insert = True
             >>> values = [{"name": "foo", "email": "foo@example.com"}, {"name": "bar", "email": "bar@example.com"}]
             >>> db.multiple_insert('person', values=values, _test=True)
@@ -716,7 +756,8 @@ class DB:
         except Exception: 
             out = None
 
-        if not self.ctx.transactions: self.ctx.db.commit()
+        if not self.ctx.transactions: 
+            self.ctx.commit()
         return out
 
     
@@ -725,7 +766,7 @@ class DB:
         Update `tables` with clause `where` (interpolated using `vars`)
         and setting `values`.
 
-            >>> db = DB()
+            >>> db = DB(None, {})
             >>> name = 'Joseph'
             >>> q = db.update('foo', where='name = $name', name='bob', age=2,
             ...     created=SQLLiteral('NOW()'), vars=locals(), _test=True)
@@ -748,14 +789,15 @@ class DB:
         
         db_cursor = self._db_cursor()
         self._db_execute(db_cursor, query)
-        if not self.ctx.transactions: self.ctx.db.commit()
+        if not self.ctx.transactions: 
+            self.ctx.commit()
         return db_cursor.rowcount
     
     def delete(self, table, where, using=None, vars=None, _test=False): 
         """
         Deletes from `table` with clauses `where` and `using`.
 
-            >>> db = DB()
+            >>> db = DB(None, {})
             >>> name = 'Joe'
             >>> db.delete('foo', where='name = $name', vars=locals(), _test=True)
             <sql: "DELETE FROM foo WHERE name = 'Joe'">
@@ -771,7 +813,8 @@ class DB:
 
         db_cursor = self._db_cursor()
         self._db_execute(db_cursor, q)
-        if not self.ctx.transactions: self.ctx.db.commit()
+        if not self.ctx.transactions: 
+            self.ctx.commit()
         return db_cursor.rowcount
 
     def _process_insert_query(self, query, tablename, seqname):
@@ -784,19 +827,18 @@ class DB:
 class PostgresDB(DB): 
     """Postgres driver."""
     def __init__(self, **keywords):
-        DB.__init__(self)
         if 'pw' in keywords:
             keywords['password'] = keywords['pw']
             del keywords['pw']
-        keywords['database'] = keywords['db']
-        del keywords['db']
-
+            
+        db_module = self.get_db_module()
+        keywords['database'] = keywords.pop('db')
         self.dbname = "postgres"
-        self.db_module = self.get_db_module()
-        self.paramstyle = self.db_module.paramstyle
-        self.keywords = keywords
+        self.paramstyle = db_module.paramstyle
         self.supports_multiple_insert = True
 
+        DB.__init__(self, db_module, keywords)
+        
     def get_db_module(self):
         try: 
             import psycopg2 as db
@@ -820,26 +862,28 @@ class PostgresDB(DB):
         #self._ctx.db = conn
         #self.query("SET CLIENT_ENCODING to 'UTF-8'");
         return conn
+        
+    def _connect_with_pooling(self, keywords):
+        conn = DB._connect_with_pooling(self, keywords)
+        conn._con._con.set_client_encoding('UTF8')
+        return conn
 
 class MySQLDB(DB): 
     def __init__(self, **keywords):
-        DB.__init__(self)
         import MySQLdb as db
         if 'pw' in keywords:
             keywords['passwd'] = keywords['pw']
             del keywords['pw']
         self.paramstyle = db.paramstyle = 'pyformat' # it's both, like psycopg
-        self.db_module = db
-        self.keywords = keywords
         self.dbname = "mysql"
         self.supports_multiple_insert = True
+        DB.__init__(self, db, keywords)
         
     def _process_insert_query(self, query, tablename, seqname):
         return query, SQLQuery('SELECT last_insert_id();')
 
 class SqliteDB(DB): 
     def __init__(self, **keywords):
-        DB.__init__(self)
         try:
             import sqlite3 as db
             db.paramstyle = 'qmark'
@@ -849,13 +893,10 @@ class SqliteDB(DB):
                 db.paramstyle = 'qmark'
             except ImportError:
                 import sqlite as db
-        #web.config._hasPooling = False
         self.paramstyle = db.paramstyle
-        keywords['database'] = keywords['db']
-        del keywords['db']
-        self.keywords = keywords
-        self.db_module = db
-        self.dbname = "sqlite"
+        keywords['database'] = keywords.pop('db')
+        self.dbname = "sqlite"        
+        DB.__init__(self, db, keywords)
 
     def _process_insert_query(self, query, tablename, seqname):
         return query, SQLQuery('SELECT last_insert_rowid();')
@@ -894,7 +935,6 @@ class FirebirdDB(DB):
     """Firebird Database.
     """
     def __init__(self, **keywords):
-        DB.__init__(self)
         try:
             import kinterbasdb as db
         except Exception:
@@ -905,9 +945,8 @@ class FirebirdDB(DB):
             del keywords['pw']
         keywords['database'] = keywords['db']
         del keywords['db']
-        self.keywords = keywords
-        self.db_module = db
-
+        DB.__init__(self, db, keywords)
+        
     def delete(self, table, where=None, using=None, vars=None, _test=False):
         # firebird doesn't support using clause
         using=None
@@ -925,9 +964,21 @@ class FirebirdDB(DB):
             ('ORDER BY', order)
         )
 
+class MSSQLDB(DB):
+    def __init__(self, **keywords):
+        import pymssql as db    
+        if 'pw' in keywords:
+            keywords['password'] = keywords.pop('kw')
+        keywords['database'] = keywords.pop('db')
+        self.dbname = "mssql"
+        DB.__init__(self, db, keywords)
+
 _databases = {}
 def database(dburl=None, **params):
     """Creates appropriate database using params.
+    
+    Pooling will be enabled if DBUtils module is available. 
+    Pooling can be disabled by passing pooling=False in params.
     """
     dbn = params.pop('dbn')
     if dbn in _databases:
@@ -951,6 +1002,7 @@ register_database('mysql', MySQLDB)
 register_database('postgres', PostgresDB)
 register_database('sqlite', SqliteDB)
 register_database('firebird', FirebirdDB)
+register_database('mssql', MSSQLDB)
 
 def _interpolate(format): 
     """

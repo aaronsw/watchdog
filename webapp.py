@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import re
 import web
-from utils import zip2rep, simplegraphs, apipublish
+from utils import zip2rep, simplegraphs, apipublish, helpers
 import blog
 import petition
 from settings import db, render
@@ -12,6 +12,11 @@ import urllib, urllib2
 web.config.debug = True
 web.template.Template.globals['commify'] = web.commify
 web.template.Template.globals['int'] = int
+web.template.Template.globals['abs'] = abs
+web.template.Template.globals['len'] = len
+web.template.Template.globals['query_param'] = helpers.query_param
+web.template.Template.globals['changequery'] = web.changequery
+
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -23,15 +28,16 @@ urls = (
   r'/us/([a-z][a-z]-\d+)%s?' % options, 'district',
   r'/(us|p)/by/(.*)/distribution.png', 'sparkdist',
   r'/(us|p)/by/(.*)', 'dproperty',
-  r'/p/(.*?)/(\d+)', 'politician_groups',
+  r'/p/(.*?)/introduced', 'politician_introduced',
+  r'/p/(.*?)/groups', 'politician_groups',
+  r'/p/(.*?)/(\d+)', 'politician_group',
   r'/p/(.*?)%s?' % options, 'politician',
   r'/b/(.*?)%s?' % options, 'bill',
-  r'/c/(.*)', petition.app,
+  r'/c', petition.app,
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
-  r'/blog', 'reblog',
-  r'/blog(/.*)', blog.app,
+  r'/blog', blog.app,
   r'/data/(.*)', 'staticdata',
   r'/importcontacts', 'importcontacts',
   r'/bbauth', 'bbauth',
@@ -63,10 +69,6 @@ class feedback:
           i.content +'\n\n' + web.ctx.ip)
         
         return render.feedback_thanks()
-
-class reblog:
-    def GET(self):
-        raise web.seeother('/blog/')
 
 class find:
     def GET(self, format=None):
@@ -217,7 +219,7 @@ def interest_group_table(data):
     return dict(groups=[dict(groupname=groupname, longname=longnames[groupname])
                         for groupname in groupnames], rows=rows)
 
-def group_politician_similarity(politician_id):
+def group_politician_similarity(politician_id, qmin=None):
     """Find the interest groups that vote most like a politician."""
     query_min = lambda mintotal, politician_id=politician_id: db.select(
       'group_politician_similarity'
@@ -226,11 +228,14 @@ def group_politician_similarity(politician_id):
       where='total >= $mintotal AND politician_id=$politician_id ', 
       vars=locals()).list()
     
-    q = query_min(5)
-    if not q:
-        q = query_min(3)
+    if qmin:
+        q = query_min(qmin)
+    else:
+        q = query_min(5)
         if not q:
-            q = query_min(1)
+            q = query_min(3)
+            if not q:
+                q = query_min(1)
     
     q.sort(lambda x, y: cmp(x.agreement, y.agreement), reverse=True)
     return q 
@@ -243,26 +248,55 @@ def interest_group_support(bill_id):
              'group by  gb.bill_id, g.longname '
              'order by sum(gb.support) desc', vars=locals()).list()
 
+def votes_by_party(bill_id):
+    "Get the votes of the political parties for a bill"
+    result = db.select(['politician p, vote v'],
+            what="v.vote, count(v.vote), p.party",
+            where="v.politician_id = p.id and v.bill_id = $bill_id "
+                    "AND v.vote is not null",
+            group="p.party, v.vote",
+            vars = locals()
+            ).list()
+    
+    d = {}
+    for r in result:
+        d.setdefault(r.party, {})
+        d[r.party][r.vote] = r.count
+    return d
+
+def polname_by_id(pol_id):
+    try:
+        p = db.select('politician', what='firstname, middlename, lastname', where='id=$pol_id', vars=locals())[0]
+    except:
+        return None
+    else:
+        return "%s %s %s" %(p.firstname or '', p.middlename or '', p.lastname or '')
+        
+def bill_list(format, page=0, limit=50):
+    bills = db.select('bill', limit=limit, offset=page*limit, order='session desc').list()
+    out = apipublish.publish({
+          'uri': apipublish.generic(lambda x: 'http://watchdog.net/b/' + x.id),
+          'type': 'Bill',
+          'title': apipublish.identity,
+         }, bills, format)
+    if out:
+        return out
+    return render.bill_list(bills, limit)
+
 class bill:
     def GET(self, bill_id, format=None):
         if bill_id == "" or bill_id == "index":
-            bills = db.select(['bill'], order='session desc').list()
-
-            out = apipublish.publish({
-              'uri': apipublish.generic(lambda x: 'http://watchdog.net/b/' + x.id),
-              'type': 'Bill',
-              'title': apipublish.identity,
-             }, bills, format)
-            if out:
-                return out
-            return render.bill_list(bills)
-
+            i = web.input(page=0)
+            return bill_list(format, int(i.page))
+            
         try:
             b = db.select('bill', where='id=$bill_id', vars=locals())[0]
         except IndexError:
             raise web.notfound
 
+        b.sponsorname = polname_by_id(b.sponsor)
         b.interest_group_support = interest_group_support(bill_id)
+        b.votes_by_party = votes_by_party(bill_id)
         
         out = apipublish.publish({
           'uri': 'http://watchdog.net/b/' + bill_id,
@@ -310,29 +344,55 @@ class politician:
 
         p.interest_group_rating = interest_group_ratings(polid)
         p.interest_group_table = interest_group_table(p.interest_group_rating)
-        p.related_groups = group_politician_similarity(polid) #@@ API
-        p.sponsored_bills = bills_sponsored(polid) #@@ API
-
+        p.related_groups = group_politician_similarity(polid)
+        p.sponsored_bills = bills_sponsored(polid)                           
+            
         out = apipublish.publish({
           'uri': 'http://watchdog.net/p/' + polid,
           'type': 'Politician',
           'district': apipublish.URI('http://watchdog.net/us/' + p.district.lower()),
           'wikipedia photo_credit_url officeurl': apipublish.URI,
           'interest_group_rating': apipublish.table({
-            'year groupname longname rating': apipublish.identity}),
+                'year groupname longname rating': apipublish.identity}),
+          'related_groups' : apipublish.table({
+                'longname': apipublish.identity,
+                'num_bills_agreed': apipublish.generic(lambda g: g.agreed),
+                'num_bills_voted': apipublish.generic(lambda g: g.total),
+                'agreement_percent': apipublish.generic(lambda g: int(g.agreement * 100)),
+                'group_politician_url': apipublish.generic(lambda g: 
+                                        'http://watchdog.net/p/%s/%s' % (polid, g.id))
+            }), 
+            'sponsored_bills': apipublish.table({
+                'id': apipublish.generic(lambda b: '%s. %s' % (b.type.upper(), b.number)),
+                'session title introduced': apipublish.identity,
+                'url': apipublish.generic(lambda b: 'http://watchdog.net/b/%s' % (b.id))
+            }),
           'bioguideid opensecretsid govtrackid gender birthday firstname '
           'middlename lastname party religion photo_path '
           'photo_credit_text '
-          ' amt_earmark_requested n_earmark_requested n_earmark_received '
+          'amt_earmark_requested n_earmark_requested n_earmark_received '
           'amt_earmark_received '
+          'n_bills_introduced n_bills_enacted n_bills_debated '
+          'n_bills_cosponsored '
+          'icpsrid nominate predictability '
           'n_speeches words_per_speech': apipublish.identity,
          }, [p], format)
-        if out is not False:
+        if out:
             return out
         
         return render.politician(p)
 
+class politician_introduced:
+    def GET(self, politician_id):
+        sponsored = bills_sponsored(politician_id)
+        return render.politician_introduced(sponsored)
+
 class politician_groups:
+    def GET(self, politician_id):
+        related = group_politician_similarity(politician_id, qmin=1)
+        return render.politician_groups(politician_id, related)
+
+class politician_group:
     def GET(self, politician_id, group_id):
         votes = db.select(['vote', 'interest_group_bill_support', 'bill'],
           where="interest_group_bill_support.bill_id = vote.bill_id AND "
@@ -355,9 +415,14 @@ class dproperty:
             raise web.notfound
         if not r_safeproperty.match(what): raise web.notfound
         
-        maxnum = float(db.select(table,
+        #if `what` is not there in the `table` (provide available options rather than 404???)
+        try:
+            maxnum = float(db.select(table,
                                  what='max(%s) as m' % what,
                                  vars=locals())[0].m)
+        except:
+            raise web.notfound
+                                     
         items = db.select(table,
                           what="*, 100*(%s/$maxnum) as pct" % what,
                           order='%s desc' % what,
@@ -368,7 +433,8 @@ class dproperty:
                 item.id = 'd' + item.name
                 item.path = '/us/' + item.name.lower()
             elif table == 'politician':
-                item.name = item.firstname + ' ' + item.lastname
+                item.name = '%s %s (%s-%s)' % (item.firstname, item.lastname,
+                  item.party[0], item.district.split('-')[0])
                 item.path = '/p/' + item.id
         return render.dproperty(items, what)
 
