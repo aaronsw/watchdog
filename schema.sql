@@ -139,6 +139,15 @@ CREATE TABLE category(
   sector varchar(256) 
 );
 
+-- save contacts imported from yahoo, google etc.,
+-- emails can be 64+1+255 char 
+CREATE TABLE contacts(
+  uemail VARCHAR(320);
+  cemail VARCHAR(320);
+  cname VARCHAR(80);
+  provider VARCHAR(20);
+);
+
 -- Views
 CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician);
 
