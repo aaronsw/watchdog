@@ -486,6 +486,15 @@ class importcontacts:
         if token: furl = '%s&token=%s' % ( furl, token)
         return  furl
 
+
+    def gmailLoginURL(self, email):
+        url = 'https://www.google.com/accounts/AuthSubRequest?'
+        scope = urllib2.quote('http://www.google.com/m8/feeds/')
+        next = urllib2.quote('http://test.pgowda.webfactional.com/authsub')
+        url += 'scope='+scope+'&session=1&secure=0&next='+ next
+        return url
+
+
     def GET(self):
         return render.import_contacts()
     
@@ -495,13 +504,16 @@ class importcontacts:
         if 'yahoo' in email:
             ylogin_url = self.yahooLoginURL(email, '/WSLogin/V1/wslogin')
             web.seeother(ylogin_url)
-        #elif 'google' in email: web.seeother(glogin_url)
+
+        elif 'google' in email or 'googlemail' in email: 
+            glogin_url = self.gmailLoginURL(email)
+            web.seeother(glogin_url)
         else:
             return render.import_contacts(message='Not a valid email address. Please try again')
 
 
 class bbauth:
-    def save_contacts(email, contacts, provider):
+    def save_contacts(self,email, contacts):
         for c in contacts:
             fields = c['fields']
             cemail = fields[0]['data']
@@ -514,7 +526,7 @@ class bbauth:
             cname = u'%s %s' % (cfname, clname)
             cname = cname.replace('&#39;', ' ').strip()
             vars = {'uemail': email, 'cemail': cemail,
-                    'cname': cname, 'provider': provider}
+                    'cname': cname, 'provider': 'YAHOO'}
             e = db.select('contacts', where='uemail=$uemail and cemail=$cemail',
                           vars=vars)
             if not e: n = db.insert('contacts', seqname=False, **vars)
@@ -539,7 +551,7 @@ class bbauth:
         wssid = soup.findAll('wssid')[0].contents[0]        
         cookie =soup.findAll('cookie')[0].contents[0]        
         cookie = cookie.strip()        
-        ccount = 0        
+
         for letter in string.uppercase+string.digits:            
             furl = aurl + '&fields=email,name&email.startswith=%s&appid=%s&WSSID=%s' % (letter, appid, wssid)
             req = urllib2.Request(furl)
@@ -549,11 +561,43 @@ class bbauth:
             content = demjson.decode(resp)
             contacts = content.get('contacts')
             if contacts:
-                self.save_contacts(email, contacts, 'YAHOO')
-                ccount += 1
-        msg = '%s contacts were imported from your %s address' % (ccount, email)
+                self.save_contacts(email, contacts)
+        msg = 'Contacts were imported from your Yahoo address'
         return render.import_contacts(msg)
 
+class authsub:
+    def save_contacts(self, uemail,contacts):
+        for cemail in contacts:
+            cname = ''
+            vars = {'uemail': uemail, 'cemail': cemail,
+                    'cname':cname, 'provider': 'GMAIL'}
+            e = db.select('contacts', where='uemail=$uemail and cemail=$cemail', 
+                          vars=vars)
+            if not e: n = db.insert('contacts', seqname=False, **vars)
+            else: db.update('contacts', where='uemail=$uemail and cemail=$cemail',
+                      vars=vars, cname=cname)
+
+    def GET(self):
+        i = web.input()
+        authToken = i.get('token')
+        email = session.mail
+        email = quote(email)
+        url = ("http://www.google.com/m8/feeds/contacts/%s/full?max-results=999" % email)
+        headers = { 'Authorization' : 'AuthSub token="%s"' % authToken.strip() }
+        request = urllib2.Request(url, None, headers)
+        response = urllib2.urlopen(request)
+        tree = ET.XML(response.read())
+        items = tree.getiterator()
+        contacts = []
+        for e in items:
+            for i in e:
+                #XXX: extract names
+                address = i.attrib.get('address')
+                if address: emails.append(address)
+        
+        self.save_contacts(email, contacts)
+        msg = 'Contacts were imported from your Gmail Address'
+        return render.import_contacts(msg)
 
 app = web.application(urls, globals())
 if __name__ == "__main__": app.run()
