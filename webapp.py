@@ -512,7 +512,7 @@ class importcontacts:
             ylogin_url = yahooLoginURL(email, '/WSLogin/V1/wslogin')
             web.seeother(ylogin_url)
 
-        elif 'google' in email or 'googlemail' in email: 
+        elif 'gmail' in email or 'googlemail' in email: 
             glogin_url = self.gmailLoginURL(email)
             web.seeother(glogin_url)
         else:
@@ -587,8 +587,8 @@ class authsub:
     def GET(self):
         i = web.input()
         authToken = i.get('token')
-        email = session.mail
-        email = quote(email)
+        email = session.email
+        email = urllib2.quote(email)
         url = ("http://www.google.com/m8/feeds/contacts/%s/full?max-results=999" % email)
         headers = { 'Authorization' : 'AuthSub token="%s"' % authToken.strip() }
         request = urllib2.Request(url, None, headers)
@@ -600,7 +600,7 @@ class authsub:
             for i in e:
                 #XXX: extract names
                 address = i.attrib.get('address')
-                if address: emails.append(address)
+                if address: contacts.append(address)
         
         self.save_contacts(email, contacts)
         msg = 'Contacts were imported from your Gmail Address'
