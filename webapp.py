@@ -472,23 +472,23 @@ Url to Check: "http://watchdog.net/ydnlIEWXo.html"
 """
 
 
+def yahooLoginURL(self, email, url, token=None):
+    email = urllib.quote(email)
+    lines = open('/home/watchdog/certs/yauth', 'r').readlines()
+    appid = lines[0].rstrip()
+    secret = lines[1].rstrip()
+    ts = time.time()
+    appdata = email
+    yurl = 'https://api.login.yahoo.com'
+    purl = '%s?appid=%s&appdata=%s&ts=%s' % (url,appid, appdata, ts)
+    surl ='%s%s' % (purl, secret)
+    sig = md5.new(surl).hexdigest()
+    furl = '%s%s&sig=%s' % (yurl, purl, sig)
+    if token: furl = '%s&token=%s' % ( furl, token)
+    return  furl
+
+
 class importcontacts:
-    def yahooLoginURL(self, email, url, token=None):
-        email = urllib.quote(email)
-        lines = open('/home/watchdog/certs/yauth', 'r').readlines()
-        appid = lines[0].rstrip()
-        secret = lines[1].rstrip()
-        ts = time.time()
-        appdata = email
-        yurl = 'https://api.login.yahoo.com'
-        purl = '%s?appid=%s&appdata=%s&ts=%s' % (url,appid, appdata, ts)
-        surl ='%s%s' % (purl, secret)
-        sig = md5.new(surl).hexdigest()
-        furl = '%s%s&sig=%s' % (yurl, purl, sig)
-        if token: furl = '%s&token=%s' % ( furl, token)
-        return  furl
-
-
     def gmailLoginURL(self, email):
         url = 'https://www.google.com/accounts/AuthSubRequest?'
         scope = urllib2.quote('http://www.google.com/m8/feeds/')
@@ -499,12 +499,14 @@ class importcontacts:
 
     def GET(self):
         return render.import_contacts()
+
     
     def POST(self):
         i = web.input()
         email = i.get('email')
+        session.email = email
         if 'yahoo' in email:
-            ylogin_url = self.yahooLoginURL(email, '/WSLogin/V1/wslogin')
+            ylogin_url = yahooLoginURL(email, '/WSLogin/V1/wslogin')
             web.seeother(ylogin_url)
 
         elif 'google' in email or 'googlemail' in email: 
