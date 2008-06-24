@@ -588,8 +588,8 @@ class authsub:
         i = web.input()
         authToken = i.get('token')
         email = session.email
-        email = urllib2.quote(email)
-        url = ("http://www.google.com/m8/feeds/contacts/%s/full?max-results=999" % email)
+        emailq = urllib2.quote(email)
+        url = ("http://www.google.com/m8/feeds/contacts/%s/full?max-results=999" % emailq)
         headers = { 'Authorization' : 'AuthSub token="%s"' % authToken.strip() }
         request = urllib2.Request(url, None, headers)
         response = urllib2.urlopen(request)
