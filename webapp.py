@@ -8,6 +8,7 @@ from settings import db, render
 import time
 import md5
 import urllib, urllib2 
+from xml.etree import ElementTree as ET
 
 web.config.debug = True
 web.template.Template.globals['commify'] = web.commify
