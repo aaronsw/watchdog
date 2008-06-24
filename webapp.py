@@ -9,6 +9,7 @@ import time
 import md5
 import urllib, urllib2 
 from xml.etree import ElementTree as ET
+import tempfile
 
 web.config.debug = True
 web.template.Template.globals['commify'] = web.commify
@@ -18,6 +19,10 @@ web.template.Template.globals['len'] = len
 web.template.Template.globals['query_param'] = helpers.query_param
 web.template.Template.globals['changequery'] = web.changequery
 
+sess_store = tempfile.mkdtemp()
+session = web.session.Session(app,
+              web.session.DiskStore(sess_store),
+              initializer={})
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
