@@ -19,10 +19,6 @@ web.template.Template.globals['len'] = len
 web.template.Template.globals['query_param'] = helpers.query_param
 web.template.Template.globals['changequery'] = web.changequery
 
-sess_store = tempfile.mkdtemp()
-session = web.session.Session(app,
-              web.session.DiskStore(sess_store),
-              initializer={})
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -606,4 +602,9 @@ class authsub:
         return render.import_contacts(msg)
 
 app = web.application(urls, globals())
+sess_store = tempfile.mkdtemp()
+session = web.session.Session(app,
+              web.session.DiskStore(sess_store),
+              initializer={})
+
 if __name__ == "__main__": app.run()
