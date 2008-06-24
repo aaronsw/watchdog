@@ -21,6 +21,16 @@ CREATE TABLE signatory(
     UNIQUE (user_id, petition_id)
 );
 
-GRANT ALL on users TO watchdog;
-GRANT ALL on petition TO watchdog;
-GRANT ALL on signatory TO watchdog;
+-- save contacts imported from yahoo, google etc.,
+-- emails can be 64+1+255 char 
+CREATE TABLE contacts(
+    uemail VARCHAR(320);
+    cemail VARCHAR(320);
+    cname VARCHAR(80);
+    provider VARCHAR(20);
+);
+
+GRANT ALL ON users TO watchdog;
+GRANT ALL ON petition TO watchdog;
+GRANT ALL ON signatory TO watchdog;
+GRANT ALL ON contacts TO watchdog;
