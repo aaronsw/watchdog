@@ -24,10 +24,10 @@ CREATE TABLE signatory(
 -- save contacts imported from yahoo, google etc.,
 -- emails can be 64+1+255 char 
 CREATE TABLE contacts(
-    uemail VARCHAR(320);
-    cemail VARCHAR(320);
-    cname VARCHAR(80);
-    provider VARCHAR(20);
+    uemail VARCHAR(320),
+    cemail VARCHAR(320),
+    cname VARCHAR(80),
+    provider VARCHAR(20)
 );
 
 GRANT ALL ON users TO watchdog;
