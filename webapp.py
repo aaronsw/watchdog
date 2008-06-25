@@ -495,7 +495,7 @@ class importcontacts:
     def gmailLoginURL(self, email):
         url = 'https://www.google.com/accounts/AuthSubRequest?'
         scope = urllib2.quote('http://www.google.com/m8/feeds/')
-        next = urllib2.quote('http://test.pgowda.webfactional.com/authsub')
+        next = urllib2.quote('http://watchdog.net/authsub')
         url += 'scope='+scope+'&session=1&secure=0&next='+ next
         return url
 
