@@ -7,9 +7,15 @@ email_regex = r'[\w\.]+@[\w\.]+\.[a-zA-Z]{1,4}'
                  
 def doesnotexist(pid):
     "Return True if petition with id `pid` does not exist"
-    return not(bool(db.select('petition', where='id=$pid', vars=locals())))
+    exists = bool(db.select('petition', where='id=$pid', vars=locals()))
+    return pid != 'new' and not(exists)
                 
 petitionform = form.Form(
+      form.Textbox('email', 
+            form.notnull, 
+            form.regexp(email_regex, 'Please enter a valid email'),
+            description="Your email:",
+            size='30'),
       form.Textbox('title', description="Title:", size='80'),         
       form.Textbox('id', 
             form.notnull,
@@ -17,21 +23,28 @@ petitionform = form.Form(
             pre='http://watchdog.net/c/',
             description='URL:',
             size='30'),
-      form.Textarea('description', description="Description:", rows='20', cols='80'),        
-      form.Textbox('email', 
-            form.notnull, 
-            form.regexp(email_regex, 'Please enter a valid email'),
-            description="Your email:",
-            size='30')
+      form.Textarea('description', form.notnull, description="Description:", rows='20', cols='80')
       )
       
 signform = form.Form(
-    form.Textbox('name', form.notnull, description='Name:', size='30'),
+    form.Textbox('name', form.notnull, description='Name:', post=' *', size='30'),
     form.Textbox('email', 
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
             description='Email:',
-            size='30')    
+            post=' *',
+            size='30'),
+    form.Dropdown('email_privacy', 
+            [('N', 'Nobody'), 
+             ('A', 'Author of this petition'),
+             ('E', 'Everybody')
+             ],
+             description='Share my email with:'),
+    form.Textarea('comment',
+            description='Comments:',
+            cols=70,
+            rows=10
+            )         
     )
 
 passwordform = form.Form(

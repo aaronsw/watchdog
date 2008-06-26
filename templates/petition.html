@@ -3,7 +3,7 @@ $def with (p, signform, passwordform=None, msg=None)
 $var title: $:p.title
 
 $if msg:
-    $var msg: $msg
+    $var msg: $:msg
 
 $if passwordform:
     <div class="passbox">
@@ -19,15 +19,17 @@ $if passwordform:
 	
 <p>$:p.description </p>
 
-$if p.signatory_count == 1:
-	$ ppl = 'person</strong> has'
+$if p.signatory_count == 0:
+	<div class="signatories"> Be the first to sign this petition! </div>
 $else:
-	$ ppl = 'people</strong> have'
-	
-<div class="signatories"> <strong>$p.signatory_count $:ppl signed this petition so far. </div>
+	$if p.signatory_count == 1:
+		$ ppl = 'person</strong> has'
+	$else:
+		$ ppl = 'people</strong> have'
+	<div class="signatories"> <strong>$p.signatory_count $:ppl signed this petition so far. </div>
 
 
-<h2>Sign</h2>
+<a name="sign"><h2>Sign</h2></a>
 <form name="sign" method="POST" action="/c/$p.id?m=sign">
 	$if not signform.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
 	$:signform.render() 

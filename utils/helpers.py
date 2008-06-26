@@ -28,6 +28,18 @@ def get_delete_msg():
     web.setcookie('wd_msg', '', expires=-1)
     return msg
 
+def get_loggedin_email():
+    return getcookie('wd_login') 
+
+def get_unverified_email():
+    return getcookie('wd_email')                
+
+def login(email):
+    setcookie('wd_login', email)
+
+def unverified_login(email):
+    setcookie('wd_email', email)
+
 def query_param(param, default_value):
     i = web.input()
     if param in i:
