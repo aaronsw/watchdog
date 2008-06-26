@@ -4,6 +4,7 @@ parse data from govtrack.us
 
 #@@ implicit 110 assumption
 STATS_XML = '../data/crawl/govtrack/us/110/repstats/%s.xml'
+FEC_XML = '../data/crawl/govtrack/us/fec/campaigns-2008.xml'
 METRICS = ['enacted', 'novote', 'verbosity', 'speeches', 
   'spectrum', 'introduced', 'cosponsored']
 
@@ -39,6 +40,18 @@ def parse_stats(metrics=METRICS):
             if event == "START_ELEMENT" and node.tagName == 'representative':
                 yield web.storage(node.attributes.items())
 
+def parse_fec():
+    dom = pulldom.parse(FEC_XML)
+    for event, node in dom:
+        if event == "START_ELEMENT" and node.tagName == 'candidate':
+            dom.expandNode(node)
+            fec_id = node.getElementsByTagName('id')[0].firstChild.nodeValue
+            uri = node.getElementsByTagName('uri')[0].firstChild.nodeValue
+            if fec_id in uri: continue
+            bioguide_id = uri.split('/')[-1]
+            yield {'fecid': fec_id, 'bioguideid': bioguide_id}
+
 if __name__ == "__main__":
     tools.export(parse_basics())
     tools.export(parse_speeches())
+    tools.export(parse_fec())
