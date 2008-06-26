@@ -42,9 +42,27 @@ def save_petition(p):
         #make the owner of the petition sign for it (??)  NO. better take name, comments also from sign form.              
         #db.insert('signatory', seqname=False, user_id=owner_id, petition_id=p.id)      
         
+def fill_user_details(form, fillings):
+    details = {}
+    if 'email' in fillings:
+        email = helpers.get_loggedin_email() or helpers.get_unverified_email()
+        details['email'] = email
+
+    if email and 'name' in fillings: 
+        name = db.select('users', what='name', where='email=$email', vars=locals())[0].name
+        details['name'] = name    
+    
+    form.fill(**details)
+    
+    if helpers.get_loggedin_email():
+        for i in form.inputs:
+            if i.name in fillings:
+                i.attrs['readonly'] = 'true'
+        
 class new:
     def GET(self):
         pform = forms.petitionform()
+        fill_user_details(pform, 'email')
         return render.petitionform(pform)
          
     def POST(self):
@@ -98,20 +116,7 @@ def sendmail_to_signatory(user, pid):
     render_plain = web.template.render('templates/') 
     msg = render_plain.signatory_mailer(user.name, p)
     #@@@ shouldn't this web.utf8 stuff taken care by in web.py?
-    web.sendmail(web.utf8(config.from_address), web.utf8(user.email), web.utf8(msg.subject.strip()), web.utf8(msg))  
-                
-def getsignform():
-    signform = forms.signform()
-    email = helpers.get_loggedin_email() or helpers.get_unverified_email()
-    
-    if email: 
-        name = db.select('users', what='name', where='email=$email', vars=locals())[0].name
-        signform.fill(name=name, email=email)
-    if helpers.get_loggedin_email(): 
-        email_textbox = list(signform.inputs)[1]
-        email_textbox.attrs['readonly'] = 'true'
-                
-    return signform
+    web.sendmail(web.utf8(config.from_address), web.utf8(user.email), web.utf8(msg.subject.strip()), web.utf8(msg))
                 
 class petition:
     def GET(self, pid, signform=None, passwordform=None):
@@ -122,8 +127,11 @@ class petition:
         
         p.signatory_count = db.query('select count(*) from signatory where petition_id=$pid',
                                         vars=locals())[0].count
-                                           
-        signform = signform or getsignform() 
+        
+        if not signform:
+            signform = forms.signform()
+            fill_user_details(signform, ['name', 'email'])
+                                              
         if askforpasswd(p.owner_id) and not passwordform: passwordform = forms.passwordform()
         msg = helpers.get_delete_msg()    
         return render.petition(p, signform, passwordform, msg)
