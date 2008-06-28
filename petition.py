@@ -11,11 +11,21 @@ urls = (
   '', 'redir',
   '/', 'index',
   '/new', 'new', 
+  '/checkID', 'checkID',
   '/(.*)', 'petition'
 )
 
+web.template.Template.globals['format'] = markdown.markdown
+
 class redir:
     def GET(self): raise web.seeother('/')
+    
+class checkID:
+    def POST(self):
+        "Return True if petition with id `pid` does not exist"
+        pid = web.input().pid
+        exists = bool(db.select('petition', where='id=$pid', vars=locals()))
+        return pid != 'new' and not(exists)    
 
 class index:
     def GET(self):
@@ -35,9 +45,7 @@ def save_petition(p):
         except:
             owner_id = db.insert('users', email=p.email) 
 
-        #@@@@@@ use web.safeunicode before using markdown.
-        description = markdown.markdown(p.description, safe_mode=False)
-        db.insert('petition', seqname=False, id=p.id, title=p.title, description=description,
+        db.insert('petition', seqname=False, id=p.id, title=p.title, description=p.description,
                     owner_id=owner_id)
         #make the owner of the petition sign for it (??)  NO. better take name, comments also from sign form.              
         #db.insert('signatory', seqname=False, user_id=owner_id, petition_id=p.id)      
@@ -117,9 +125,22 @@ def sendmail_to_signatory(user, pid):
     msg = render_plain.signatory_mailer(user.name, p)
     #@@@ shouldn't this web.utf8 stuff taken care by in web.py?
     web.sendmail(web.utf8(config.from_address), web.utf8(user.email), web.utf8(msg.subject.strip()), web.utf8(msg))
+    
+def is_owner(email, pid):    
+    try:
+        user_id = db.select('users', where='email=$email', what='id', vars=locals())[0].id
+        owner_id = db.select('petition', where='id=$pid', what='owner_id', vars=locals())[0].owner_id
+        print user_id, owner_id
+    except:
+        return False
+    else:
+        return user_id == owner_id
                 
 class petition:
     def GET(self, pid, signform=None, passwordform=None):
+        i = web.input()
+        if ('m' in i) and (i.m == 'edit'):  return self.GET_edit(pid)
+
         try:
             p = db.select('petition', where='id=$pid', vars=locals())[0]
         except:
@@ -133,17 +154,31 @@ class petition:
             fill_user_details(signform, ['name', 'email'])
                                               
         if askforpasswd(p.owner_id) and not passwordform: passwordform = forms.passwordform()
-        msg = helpers.get_delete_msg()    
+        msg = helpers.get_delete_msg()   
         return render.petition(p, signform, passwordform, msg)
+    
+    def GET_edit(self, pid):
+        user_email = helpers.get_loggedin_email()
+        if is_owner(user_email, pid):
+            p = db.select('petition', where='id=$pid', vars=locals())[0]
+            p.email = user_email
+            pform = forms.petitionform()            
+            pform.fill(**p)
+            for i in pform.inputs:
+                if i.id in ['id', 'email']: i.attrs['readonly'] = 'true'
+            title = "Edit petition"    
+            return render.petitionform(pform, title, target='/c/%s?m=edit' % (pid))     
+        else:
+            helpers.set_msg('Only author of this petition can edit it.')
+            raise web.seeother('/%s' % pid)
+            
         
     def POST(self, pid):
         i = web.input('m', _method='GET')
-        if i.m == 'sign':
-            return self.POST_sign(pid)
-        elif i.m == 'password':
-            return self.POST_password(pid)
-        elif i.m == 'unsign':
-            return self.POST_unsign(pid)
+        options = ['sign', 'unisign', 'edit', 'password']
+        if i.m in options:
+            handler = getattr(self, 'POST_'+i.m)
+            return handler(pid)
         else:    
             raise ValueError
     
@@ -166,9 +201,15 @@ class petition:
         else:
             return self.GET(pid, signform=form)
     
+    def POST_edit(self, pid):
+        i = web.input()
+        db.update('petition', where='id=$pid', title=i.title, description=i.description, vars=locals())
+        raise web.seeother('/%s' % (pid))
+    
     def POST_unsign(self, pid):
-        pass #@@@for now
-  
+        pass #@@@for now                               
+        
+        
 app = web.application(urls, globals())
 
 if __name__ == '__main__':
