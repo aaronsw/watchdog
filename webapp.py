@@ -475,7 +475,7 @@ Url to Check: "http://watchdog.net/ydnlIEWXo.html"
 """
 
 
-def yahooLoginURL(self, email, url, token=None):
+def yahooLoginURL(email, url, token=None):
     email = urllib.quote(email)
     lines = open('/home/watchdog/certs/yauth', 'r').readlines()
     appid = lines[0].rstrip()
@@ -503,7 +503,7 @@ class importcontacts:
     def GET(self):
         return render.import_contacts()
 
-    
+
     def POST(self):
         i = web.input()
         email = i.get('email')
@@ -607,9 +607,12 @@ class authsub:
         return render.import_contacts(msg)
 
 app = web.application(urls, globals())
-sess_store = tempfile.mkdtemp()
-session = web.session.Session(app,
-              web.session.DiskStore(sess_store),
-              initializer={})
 
+if getattr(web, '_session', None) is None:
+    sess_store = tempfile.mkdtemp()
+    session = web.session.Session(app, web.session.DiskStore(sess_store))
+    web._session = session
+else:
+    session = web._session
+    
 if __name__ == "__main__": app.run()
