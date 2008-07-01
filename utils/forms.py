@@ -34,7 +34,7 @@ signform = form.Form(
             description='Email:',
             post=' *',
             size='30'),
-    form.Dropdown('email_privacy', 
+    form.Dropdown('share_with', 
             [('N', 'Nobody'), 
              ('A', 'Author of this petition'),
              ('E', 'Everybody')
@@ -43,7 +43,7 @@ signform = form.Form(
     form.Textarea('comment',
             description='Comments:',
             cols=70,
-            rows=10
+            rows=5
             )         
     )
 

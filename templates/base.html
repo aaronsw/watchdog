@@ -1,7 +1,7 @@
 $def with (page)
 <html>
 <head>
-  <title>$page.title.strip() (watchdog.net)</title>
+  <title>$:page.title.strip() (watchdog.net)</title>
   <link href="/static/style.css" type="text/css" rel="stylesheet" />
   $:page.get('head')
 </head><body>
@@ -23,7 +23,7 @@ $ msg = page.get('msg')
 $if msg:
     <div class="msg">$:msg</div>
 
-<h1>$page.title.strip()</h1>
+<h1>$:page.title.strip()</h1>
 
 $:page
 </div>

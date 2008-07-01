@@ -4,11 +4,23 @@ $var title: $title
 
 <script type="text/javascript" src="/static/javascripts/jquery.js"></script>
 <script>
+
 \$(document).ready( function(){
+
+strip = function(s) { return s.replace(/^\s+/, '').replace(/\s+$/, ''); }
 petition_id = $('id'); 
 note_id = $('note_id');
+title_field = $('title')
+\$(title_field).change(function fillURL(){
+    if(! \$(petition_id).attr('readonly')){
+        url = strip(this.value).toLowerCase().replace(/\s+/g, '-');
+        \$(petition_id).val(url);
+    }    
+    return;
+});
+
 \$(petition_id).change( function checkID(){
-    \$.post("/c/checkID", {pid: this.value},
+    \$.post("/c/checkID", {pid: strip(this.value)},
          function(available){
             if (available == 'False'){
                 msg = 'ID already exists, Choose a different one';

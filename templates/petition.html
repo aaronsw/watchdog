@@ -1,6 +1,6 @@
 $def with (p, signform, passwordform=None, msg=None)
 
-$var title: $:p.title
+$var title: $p.title
 
 $if msg:
     $var msg: $:msg
@@ -23,10 +23,10 @@ $if p.signatory_count == 0:
 	<div class="signatories"> Be the first to sign this petition! </div>
 $else:
 	$if p.signatory_count == 1:
-		$ ppl = 'person</strong> has'
+		$ ppl = 'person</a></strong> has'
 	$else:
-		$ ppl = 'people</strong> have'
-	<div class="signatories"> <strong>$p.signatory_count $:ppl signed this petition so far. </div>
+		$ ppl = 'people</a></strong> have'
+	<div class="signatories"> <strong><a href='/c/$p.id?m=signatories'>$p.signatory_count $:ppl signed this petition so far. </div>
 
 
 <a name="sign"><h2>Sign</h2></a>

@@ -18,8 +18,9 @@ CREATE TABLE petition(
 CREATE TABLE signatory(
     user_id int references users,
     petition_id varchar(256) references petition,
-    email_privacy varchar(1), --    E-everybody, A-author of petition, N-nobody
+    share_with varchar(1), --   E-everybody, A-author of petition, N-nobody
     comment text,
+    signtime timestamp default now(),
     UNIQUE (user_id, petition_id)
 );
 

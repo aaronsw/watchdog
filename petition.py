@@ -2,7 +2,6 @@
 from __future__ import with_statement
 
 import web
-import markdown
 from utils import forms, helpers
 from settings import db, render
 import config
@@ -14,8 +13,6 @@ urls = (
   '/checkID', 'checkID',
   '/(.*)', 'petition'
 )
-
-web.template.Template.globals['format'] = markdown.markdown
 
 class redir:
     def GET(self): raise web.seeother('/')
@@ -54,17 +51,17 @@ def fill_user_details(form, fillings):
     details = {}
     if 'email' in fillings:
         email = helpers.get_loggedin_email() or helpers.get_unverified_email()
-        details['email'] = email
+        if email: details['email'] = email
 
     if email and 'name' in fillings: 
         name = db.select('users', what='name', where='email=$email', vars=locals())[0].name
-        details['name'] = name    
+        if name: details['name'] = name
     
     form.fill(**details)
     
     if helpers.get_loggedin_email():
         for i in form.inputs:
-            if i.name in fillings:
+            if i.name in details.keys():
                 i.attrs['readonly'] = 'true'
         
 class new:
@@ -112,7 +109,7 @@ def save_signature(forminput, pid):
     signed = db.select('signatory', where='petition_id=$pid AND user_id=$user.id', vars=locals())
     if not signed:
         signature = dict(petition_id=pid, user_id=user_id, 
-                        email_privacy=forminput.email_privacy, comment=forminput.comment)
+                        share_with=forminput.share_with, comment=forminput.comment)
         db.insert('signatory', seqname=False, **signature)
         helpers.set_msg('Your signature has been taken for this petition.')
         helpers.unverified_login(user.email)
@@ -126,11 +123,12 @@ def sendmail_to_signatory(user, pid):
     #@@@ shouldn't this web.utf8 stuff taken care by in web.py?
     web.sendmail(web.utf8(config.from_address), web.utf8(user.email), web.utf8(msg.subject.strip()), web.utf8(msg))
     
-def is_owner(email, pid):    
+def is_author(email, pid):
+    if not email: return False
+     
     try:
         user_id = db.select('users', where='email=$email', what='id', vars=locals())[0].id
         owner_id = db.select('petition', where='id=$pid', what='owner_id', vars=locals())[0].owner_id
-        print user_id, owner_id
     except:
         return False
     else:
@@ -139,8 +137,10 @@ def is_owner(email, pid):
 class petition:
     def GET(self, pid, signform=None, passwordform=None):
         i = web.input()
-        if ('m' in i) and (i.m == 'edit'):  return self.GET_edit(pid)
-
+        if ('m' in i):
+            if i.m == 'edit':  return self.GET_edit(pid)
+            elif i.m == 'signatories': return self.GET_signatories(pid)
+        
         try:
             p = db.select('petition', where='id=$pid', vars=locals())[0]
         except:
@@ -159,7 +159,7 @@ class petition:
     
     def GET_edit(self, pid):
         user_email = helpers.get_loggedin_email()
-        if is_owner(user_email, pid):
+        if is_author(user_email, pid):
             p = db.select('petition', where='id=$pid', vars=locals())[0]
             p.email = user_email
             pform = forms.petitionform()            
@@ -171,6 +171,17 @@ class petition:
         else:
             helpers.set_msg('Only author of this petition can edit it.')
             raise web.seeother('/%s' % pid)
+            
+    def GET_signatories(self, pid):
+        user_email = helpers.get_loggedin_email()
+        ptitle = db.select('petition', what='title', where='id=$pid', vars=locals())[0].title
+        signs = db.select(['signatory', 'users'], 
+                        what='users.name, users.email, '
+                             'signatory.share_with, signatory.comment',
+                        where='petition_id=$pid AND user_id=users.id',
+                        order='signtime desc',
+                        vars=locals()).list()
+        return render.signature_list(pid, ptitle, signs, is_author(user_email, pid))
             
         
     def POST(self, pid):
