@@ -8,13 +8,17 @@ __author__ = "Jeremy Schwartz <jerschwartz@gmail.com>"
 
 import web
 
-COBOL_INT_HASH = dict(']0 j1 k2 l3 m4 n5 o6 p7 q8 r9'.split())
+COBOL_INT_TABLE = dict(']0 j1 k2 l3 m4 n5 o6 p7 q8 r9'.split())
 def get_data_int(d):
     if not d or d[0] == '?':
         return d
-    elif d[-1].lower() in COBOL_INT_HASH:
-        d1 = d[:-1] + COBOL_INT_HASH[d[-1].lower()]
-        return int(d1) * -1
+    elif d[-1].lower() in COBOL_INT_TABLE:
+        d1 = d[:-1] + COBOL_INT_TABLE[d[-1].lower()]
+        return -int(d1)
+    elif d[0] == '+':
+        return int(d[1:])
+    elif d[0] == "-":
+        return -int(d[1:])
     else:
         return int(d)
 
@@ -24,19 +28,56 @@ def get_data_str(d):
 def get_data_date(d):
     return d[4:8] + "-" + d[0:2] + "-" + d[2:4]
 
-PARTY_HASH = {"1": "Democratic", "2": "Republican", "3": "Other"}
-def get_data_party(d):
-    if d in PARTY_HASH:
-        return PARTY_HASH[d]
-    else:
-        return get_data_str(d)
+def get_data_date2(d):
+    return d[6:10] + "-" + d[4:6] + "-" + d[2:4]
 
-ICO_HASH = {" ": " ", "I": "Incumbent", "C": "Challenger", "O": "Open-Seat"}
-def get_data_ico(d):
-    if d in ICO_HASH:
-        return ICO_HASH[d]
-    else:
-        return get_data_str(d)
+def table_lookup(table):
+    def get_from_table(d):
+        if d in table:
+            return table[d]
+        else:
+            return get_data_str(d)
+    return get_from_table
+
+get_data_party = table_lookup({
+  "1": "Democratic",
+  "2": "Republican",
+  "3": "Other"
+})
+
+get_data_ico = table_lookup({
+  " ": " ",
+  "I": "Incumbent",
+  "C": "Challenger",
+  "O": "Open-Seat"
+})
+
+get_ff_type = table_lookup({ # filing frequency
+    'M': "Monthly",
+    'Q': "Quarterly",
+    "T": "Terminated"
+})
+
+get_comte_type = table_lookup({
+    'C': "COMMUNICATION COST",
+    'D': "DELEGATE",
+    'H': "HOUSE",
+    'I': "INDEPENDENT EXPENDITURE (PERSON OR GROUP, NOT A COMMITTEE)",
+    'N': "NON-PARTY NON-QUALIFIED",
+    'P': "PRESIDENTIAL",
+    'Q': "QUALIFIED NON-PARTY (SEE 2 USC 441(A)(4))",
+    'S': "SENATE",
+    'X': "NON-QUALIFIED PARTY",
+    'Y': "QUALIFIED PARTY (SEE 2 USC 441(A)(4))",
+    'Z': "NATIONAL PARTY ORGANIZATION. NON FED ACCT."
+})
+
+get_comte_desig = table_lookup({
+   'A': "AUTHORIZED BY A CANDIDATE",
+   'J': "JOINT FUND RAISER",
+   'P': "PRINCIPAL CAMPAIGN COMMITTEE OF A CANDIDATE",
+   'U': "UNAUTHORIZED"
+})
 
 def read_row(row, row_def):
     """Reads one row from data file and returns a list of columns."""
@@ -326,6 +367,182 @@ CM_DEF = [
   ("candidate_id", 9, get_data_str)
 ]
 
+WEBK_ROW_DEF = [
+    ("id",9,get_data_str),
+    ("name",90,get_data_str),
+    ("type",1,get_comte_type),
+    ("desig",1,get_comte_desig),
+    ("ff",1,get_ff_type),
+    ("total_receipts",10,get_data_int),
+    ("trans_from_aff",10,get_data_str),
+    ("contrib_rec_from_indiv",10,get_data_int),
+    ("contrib_rec_from_other_pc",10,get_data_int),
+    ("contrib_from_cand",10,get_data_int),
+    ("cand_loans",10,get_data_int),
+    ("total_loans_rec",10,get_data_int),
+    ("total_disbursment",10,get_data_int),
+    ("trans_to_aff",10,get_data_int),
+    ("refunds_to_indiv",10,get_data_int),
+    ("refunds_to_other_pc",10,get_data_int),
+    ("cand_loan_repayments",10,get_data_int),
+    ("loan_repayments",10,get_data_int),
+    ("cash_begin",10,get_data_int),
+    ("cash_close",10,get_data_int),
+    ("debts_bowned_by",10,get_data_int),
+    ("nonfederal_trans_rec",10,get_data_int),
+    ("contrib_made_to_other",10,get_data_int),
+    ("indep_exped_made",10,get_data_str),
+    ("party_coord_expend_made",10,get_data_int),
+    ("nonfederal_share_of_expend",10,get_data_int),
+    ("month",2,get_data_int),
+    ("day",2,get_data_int),
+    ("year",4,get_data_int)
+]
+#Supporst PACSUM[92-04]
+PAC_SUM_ROW_DEF = [
+    ("committee_id",9,get_data_str),
+    ("committee_name",90,get_data_str),
+    ("sig",1,get_data_str),
+    ("end_coverage_date",6,get_data_date),
+    ("total_receipts",10,get_data_int),
+    ("trans_from_aff",10,get_data_int),
+    ("contrib_from_party",10,get_data_int),
+    ("contrib_from_non_party",10,get_data_int),
+    ("total_indiv_contrib",10,get_data_int),
+    ("indiv_contrib_200+",10,get_data_int),
+    ("in_kind_contrib",10,get_data_int),
+    ("total_disbursements",10,get_data_int),
+    ("trans_to_aff",10,get_data_int),
+    ("contrib_to_party",10,get_data_int),
+    ("contrib_to_non_party",10,get_data_int),
+    ("indiv_contrib_refund",10,get_data_int),
+    ("begin_cash",10,get_data_int),
+    ("end_cash",10,get_data_int),
+    ("debts_owed_to",10,get_data_int),
+    ("debts_owed_by",10,get_data_int),
+    ("total_in_kind_contrib",10,get_data_int),
+    ("total_1999_contrib",10,get_data_int),
+    ("total_for",10,get_data_int),
+    ("total_against",10,get_data_int),
+    ("pres_contrib_dem",10,get_data_int),
+    ("pres_contrib_rep",10,get_data_int),
+    ("pres_contrib_oth",10,get_data_int),
+    ("senate_contrib_dem",10,get_data_int),
+    ("senate_contrib_rep",10,get_data_int),
+    ("senate_contrib_oth",10,get_data_int),
+    ("house_contrib_dem",10,get_data_int),
+    ("house_contrib_rep",10,get_data_int),
+    ("house_contrib_oth",10,get_data_int),
+    ("senate_inc_contrib",10,get_data_int),
+    ("senate_cha_contrib",10,get_data_int),
+    ("senate_opn_contrib",10,get_data_int),
+    ("house_inc_contrib",10,get_data_int),
+    ("house_cha_contrib",10,get_data_int),
+    ("house_opn_contrib",10,get_data_int),
+    ("non_federal_trans",10,get_data_int),
+    ("non_federal_expend",10,get_data_int)]
+
+
+#Supporst PACSUM[84-90]
+PAC_SUM_90_ROW_DEF = [
+    ("committee_id",9,get_data_str),
+    ("committee_name",90,get_data_str),
+    ("sig",1,get_data_str),
+    ("end_coverage_date",10,get_data_date2),
+    ("total_receipts",12,get_data_int),
+    ("contrib_from_aff",12,get_data_int),
+    ("contrib_from_party",12,get_data_int),
+    ("contrib_from_non_party",12,get_data_int),
+    ("indiv_contrib",12,get_data_int),
+    ("total_contrib",12,get_data_int),
+    ("in_kind_contrib",12,get_data_int),
+    ("total_disbursements",12,get_data_int),
+    ("contrib_to_non_party_aff",12,get_data_int),
+    ("contrib_to_party",12,get_data_int),
+    ("contrib_to_non_party",12,get_data_int),
+    ("indiv_contrib_refund",12,get_data_int),
+    ("begin_cash_year_1",12,get_data_int),
+    ("end_cash_year_2",12,get_data_int),
+    ("debts_owed_to",12,get_data_int),
+    ("debts_owed_by",12,get_data_int),
+    ("total_in_kind_contrib",12,get_data_int),
+    ("total_1_contrib",12,get_data_int),
+    ("total_indep_for",12,get_data_int),
+    ("total_indep_against",12,get_data_int),
+    ("pres_contrib_dem",12,get_data_int),
+    ("pres_contrib_rep",12,get_data_int),
+    ("pres_contrib_oth",12,get_data_int),
+    ("senate_contrib_dem",12,get_data_int),
+    ("senate_contrib_rep",12,get_data_int),
+    ("senate_contrib_oth",12,get_data_int),
+    ("house_contrib_dem",12,get_data_int),
+    ("house_contrib_rep",12,get_data_int),
+    ("house_contrib_oth",12,get_data_int),
+    ("senate_inc_contrib",12,get_data_int),
+    ("senate_cha_contrib",12,get_data_int),
+    ("senate_opn_contrib",12,get_data_int),
+    ("house_inc_contrib",12,get_data_int),
+    ("house_cha_contrib",12,get_data_int),
+    ("house_opn_contrib",12,get_data_int)]
+    
+
+#Supporst PACSUM[80-82]
+PAC_SUM_82_ROW_DEF = [
+    ("committee_id",9,get_data_str),
+    ("committee_name",90,get_data_str),
+    ("committee_type",1,get_data_str),
+    ("sig",1,get_data_str),
+    ("party",3,get_data_str),
+    ("not_used",1,get_data_str),
+    ("state",2,get_data_str),
+    ("total_receipts",10,get_data_int),
+    ("trans_in_party",10,get_data_int),
+    ("trans_in_party_other",10,get_data_int),
+    ("corp_contrib",10,get_data_int),
+    ("labor_contrib",10,get_data_int),
+    ("non_connected_contrib",10,get_data_int),
+    ("tmh_contrib",10,get_data_int),
+    ("coop_contrib",10,get_data_int),
+    ("corp_wo_stock_contrib",10,get_data_int),
+    ("num_cand_contrib_to",10,get_data_int),
+    ("total_party_contrib",10,get_data_int),
+    ("not_used2",10,get_data_str),
+    ("not_used3",10,get_data_str),
+    ("contrib_500+",10,get_data_int),
+    ("total_disbursements",10,get_data_int),    
+    ("trans_out_party_same",10,get_data_int),
+    ("trans_out_party_other",10,get_data_int),
+    ("total_contrib",10,get_data_int),
+    ("not_used4",80,get_data_str),
+    ("latest_cash_on_hand",10,get_data_int),
+    ("jan_1_cash_on_hand",10,get_data_int),
+    ("debts_owed_to",10,get_data_int),
+    ("debts_owed_by",10,get_data_int),
+    ("in_kind_contrib",10,get_data_int),
+    ("contrib_refunds",10,get_data_int),
+    ("contrib_to_dem_pres",10,get_data_int),
+    ("contrib_to_rep_pres",10,get_data_int),
+    ("contrib_to_other_pres",10,get_data_int),
+    ("contrib_to_dem_senate",10,get_data_int),
+    ("contrib_to_rep_senate",10,get_data_int),
+    ("contrib_to_other_senate",10,get_data_int),
+    ("contrib_to_dem_house",10,get_data_int),
+    ("contrib_to_rep_house",10,get_data_int),
+    ("contrib_to_other_house",10,get_data_int),
+    ("expend_on_dem_pres",10,get_data_int),
+    ("expend_on_rep_pres",10,get_data_int),
+    ("expend_on_other_pres",10,get_data_int),
+    ("expend_on_dem_senate",10,get_data_int),
+    ("expend_on_rep_senate",10,get_data_int),
+    ("expend_on_other_senate",10,get_data_int),
+    ("expend_on_dem_house",10,get_data_int),
+    ("expend_on_rep_house",10,get_data_int),
+    ("expend_on_other_house",10,get_data_int),
+    ("end_coverage_date",8,get_data_date),
+    ("senate_house_inc_contrib",9,get_data_int),
+    ("senate_house_cha_contrib",9,get_data_int),
+    ("senate_house_opn_contrib",9,get_data_int)]
+    
 
 def parse_candidates():
     return read_fec_file("../data/crawl/fec/2008/weball.dat", WEB_ROW_DEF)
