@@ -22,7 +22,7 @@ th { text-align: left;}
 
 .footer { text-align: left; border-top: 1px solid #ccc; padding: .5em;}
 h1 { font-weight: normal; }
-h1 a, h1 img { color: white; text-decoration: none; border: 0; }
+.header h1 a, h1 img { color: white; text-decoration: none; border: 0; }
 table.interest_group_ratings td { text-align: right; }
 th, td { padding-left: 0.5em; vertical-align: top; } /* space out the columns a bit */
 table.interest_group_support td, th { text-align: left; }
@@ -63,3 +63,5 @@ td.support, td.oppose { padding-left: .5em; } /* for compatibility with everythi
 .signatories { text-align: center; border: 1px solid #ccc; padding: 1em; font-size: larger; margin: auto; width: 20em; background-color: #eee; clear: both;}
 .passbox { width: 15em; float: right; border: 1px solid #999; padding: 0 1em; text-align: center; background-color: #ccc; color: #444;}
 .passbox * { color: #444;}
+.editlink {float:right; }
+.table.signs {border:0;}

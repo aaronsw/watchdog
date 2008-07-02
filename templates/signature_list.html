@@ -1,0 +1,24 @@
+$def with (pid, ptitle, signs, is_author)
+
+$var title: Signatories for the petition - <a href='/c/$pid'>$ptitle</a>
+
+$ sign_count = len(signs)
+
+<a href='/c/$pid#sign'>Sign it</a>  
+<table class="signs">
+<tr><td>&nbsp;</td><td><b>Name</b></td>
+    <td><b>Comment</b></td>
+</tr>
+
+$for i, sign in enumerate(signs):
+    <tr><td> ${sign_count - i}.</td><td>
+    $if is_author and (sign.share_with != 'N'):
+        <a href='mailto:$sign.email'>$sign.name</a>
+    $elif sign.share_with == 'E':
+        $sign.name
+    $else:
+        Anonymous    
+    </td>
+    <td>$sign.comment</td></tr>
+</table>
+<a href='/c/$pid#sign'>Sign it</a>

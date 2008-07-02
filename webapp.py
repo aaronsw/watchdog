@@ -1,18 +1,12 @@
 #!/usr/bin/env python
 import re
+import markdown
 import web
 from utils import zip2rep, simplegraphs, apipublish, helpers
 import blog
 import petition
+import settings
 from settings import db, render
-import time
-import md5
-import urllib, urllib2 
-from xml.etree import ElementTree as ET
-import tempfile
-from BeautifulSoup import BeautifulSoup
-import string
-import demjson
 
 web.config.debug = True
 web.template.Template.globals['commify'] = web.commify
@@ -21,7 +15,8 @@ web.template.Template.globals['abs'] = abs
 web.template.Template.globals['len'] = len
 web.template.Template.globals['query_param'] = helpers.query_param
 web.template.Template.globals['changequery'] = web.changequery
-
+web.template.Template.globals['enumerate'] = enumerate
+web.template.Template.globals['format'] = markdown.markdown
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -44,10 +39,10 @@ urls = (
   r'/about/feedback', 'feedback',
   r'/blog', blog.app,
   r'/data/(.*)', 'staticdata',
-  r'/importcontacts', 'importcontacts',
-  r'/bbauth', 'bbauth',
-  r'/authsub', 'authsub',
-  r'/ydnlIEWXo\.html', 'yauth'
+  r'/importcontacts', 'contacts.importcontacts',
+  r'/bbauth/', 'contacts.bbauth',
+  r'/authsub', 'contacts.authsub',
+  r'/ydnlIEWXo\.html', 'contacts.yauth'
 )
 
 class index:
@@ -465,151 +460,8 @@ class staticdata:
 
         assert '..' not in path, 'security'
         return file('data/' + path).read()
-
-class yauth:
-    def GET(self):
-        return """
-Phrase: "# and nation nation moved yet so ship or onwhether so now conceived any the that"
-File: "ydnlIEWXo.html"
-Url to Check: "http://watchdog.net/ydnlIEWXo.html"
-"""
-
-
-def yahooLoginURL(self, email, url, token=None):
-    email = urllib.quote(email)
-    lines = open('/home/watchdog/certs/yauth', 'r').readlines()
-    appid = lines[0].rstrip()
-    secret = lines[1].rstrip()
-    ts = time.time()
-    appdata = email
-    yurl = 'https://api.login.yahoo.com'
-    purl = '%s?appid=%s&appdata=%s&ts=%s' % (url,appid, appdata, ts)
-    surl ='%s%s' % (purl, secret)
-    sig = md5.new(surl).hexdigest()
-    furl = '%s%s&sig=%s' % (yurl, purl, sig)
-    if token: furl = '%s&token=%s' % ( furl, token)
-    return  furl
-
-
-class importcontacts:
-    def gmailLoginURL(self, email):
-        url = 'https://www.google.com/accounts/AuthSubRequest?'
-        scope = urllib2.quote('http://www.google.com/m8/feeds/')
-        next = urllib2.quote('http://watchdog.net/authsub')
-        url += 'scope='+scope+'&session=1&secure=0&next='+ next
-        return url
-
-
-    def GET(self):
-        return render.import_contacts()
-
-    
-    def POST(self):
-        i = web.input()
-        email = i.get('email')
-        session.email = email
-        if 'yahoo' in email:
-            ylogin_url = yahooLoginURL(email, '/WSLogin/V1/wslogin')
-            web.seeother(ylogin_url)
-
-        elif 'gmail' in email or 'googlemail' in email: 
-            glogin_url = self.gmailLoginURL(email)
-            web.seeother(glogin_url)
-        else:
-            return render.import_contacts(message='Not a valid email address. Please try again')
-
-
-class bbauth:
-    def save_contacts(self,email, contacts):
-        for c in contacts:
-            fields = c['fields']
-            cemail = fields[0]['data']
-            cfname = ' '; clname = ' '
-
-            if len(fields) > 1:
-                cfname = fields[1].get('first', ' ')
-                clname = fields[1].get('last', ' ')
-
-            cname = u'%s %s' % (cfname, clname)
-            cname = cname.replace('&#39;', ' ').strip()
-            vars = {'uemail': email, 'cemail': cemail,
-                    'cname': cname, 'provider': 'YAHOO'}
-            e = db.select('contacts', where='uemail=$uemail and cemail=$cemail',
-                          vars=vars)
-            if not e: n = db.insert('contacts', seqname=False, **vars)
-            else: db.update('contacts', where='uemail=$uemail and cemail=$cemail',
-                            vars=vars, cname=cname)
-
-
-    def GET(self):
-        i = web.input()
-        appid = i.get('appid').rstrip()        
-        appdata = i.get('appdata')        
-        userhash = i.get('userhash')        
-        ts = i.get('ts')        
-        token = i.get('token')        
-        email = session.email        
-        #XXX: security verification etc..         
-        url = yahooLoginURL(email, '/WSLogin/V1/wspwtoken_login', token)
-        resp = urllib2.urlopen(url)        
-        content = resp.read()        
-        soup = BeautifulSoup(content)        
-        aurl = 'http://address.yahooapis.com/v1/searchContacts?format=json'
-        wssid = soup.findAll('wssid')[0].contents[0]        
-        cookie =soup.findAll('cookie')[0].contents[0]        
-        cookie = cookie.strip()        
-
-        for letter in string.uppercase+string.digits:            
-            furl = aurl + '&fields=email,name&email.startswith=%s&appid=%s&WSSID=%s' % (letter, appid, wssid)
-            req = urllib2.Request(furl)
-            req.add_header('Cookie', cookie)
-            req.add_header('Content-Type', 'application/json')
-            resp = urllib2.urlopen(req).read()
-            content = demjson.decode(resp)
-            contacts = content.get('contacts')
-            if contacts:
-                self.save_contacts(email, contacts)
-        msg = 'Contacts were imported from your Yahoo address'
-        return render.import_contacts(msg)
-
-class authsub:
-    def save_contacts(self, uemail,contacts):
-        for cemail in contacts:
-            cname = ''
-            vars = {'uemail': uemail, 'cemail': cemail,
-                    'cname':cname, 'provider': 'GMAIL'}
-            e = db.select('contacts', where='uemail=$uemail and cemail=$cemail', 
-                          vars=vars)
-            if not e: n = db.insert('contacts', seqname=False, **vars)
-            else: db.update('contacts', where='uemail=$uemail and cemail=$cemail',
-                      vars=vars, cname=cname)
-
-    def GET(self):
-        i = web.input()
-        authToken = i.get('token')
-        email = session.email
-        emailq = urllib2.quote(email)
-        url = ("http://www.google.com/m8/feeds/contacts/%s/full?max-results=999" % emailq)
-        headers = { 'Authorization' : 'AuthSub token="%s"' % authToken.strip() }
-        request = urllib2.Request(url, None, headers)
-        response = urllib2.urlopen(request)
-        tree = ET.XML(response.read())
-        items = tree.getiterator()
-        contacts = []
-        for e in items:
-            for i in e:
-                #XXX: extract names
-                address = i.attrib.get('address')
-                if address: contacts.append(address)
         
-        self.save_contacts(email, contacts)
-        msg = 'Contacts were imported from your Gmail Address'
-        return render.import_contacts(msg)
-
 app = web.application(urls, globals())
-sess_store = tempfile.mkdtemp()
-session = web.session.Session(app,
-              web.session.DiskStore(sess_store),
-              initializer={})
-
+settings.setup_session(app)
+            
 if __name__ == "__main__": app.run()

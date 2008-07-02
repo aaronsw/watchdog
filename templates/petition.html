@@ -1,9 +1,11 @@
 $def with (p, signform, passwordform=None, msg=None)
 
-$var title: $:p.title
+$var title: $p.title
 
 $if msg:
     $var msg: $:msg
+
+<p style="float:right"><a href="?m=edit">Edit</a></p>
 
 $if passwordform:
     <div class="passbox">
@@ -11,22 +13,20 @@ $if passwordform:
   	<form name="passwdform" method="POST" action="/c/$p.id?m=password">
   		$:passwordform.render() 
   		<input type="hidden" name="user_id" value="$p.owner_id" />
-  	  
-  	  <p><input type="submit" value="Set Password" /></p>
+  	  	<p><input type="submit" value="Set Password" /></p>
   	</form>	
   	</div>
 
-	
-<p>$:p.description </p>
+<p>$:format(p.description) </p>
 
 $if p.signatory_count == 0:
 	<div class="signatories"> Be the first to sign this petition! </div>
 $else:
 	$if p.signatory_count == 1:
-		$ ppl = 'person</strong> has'
+		$ ppl = 'person</a></strong> has'
 	$else:
-		$ ppl = 'people</strong> have'
-	<div class="signatories"> <strong>$p.signatory_count $:ppl signed this petition so far. </div>
+		$ ppl = 'people</a></strong> have'
+	<div class="signatories"> <strong><a href='/c/$p.id?m=signatories'>$p.signatory_count $:ppl signed this petition so far. </div>
 
 
 <a name="sign"><h2>Sign</h2></a>
