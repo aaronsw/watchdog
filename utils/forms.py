@@ -50,5 +50,24 @@ signform = form.Form(
 passwordform = form.Form(
     form.Password('password', form.notnull, description="Password:", size='10'),
     form.Password('password_again', form.notnull, description="Repeat:", size='10'),
-    validators = [form.Validator("Passwords do not match.", lambda i: i.password == i.password_again)]
+    validators = [form.Validator("Passwords do not match.", 
+                    lambda i: i.password == i.password_again)]
     )
+
+emailform = form.Form(
+    form.Textarea('emails', form.notnull, description="To:", cols=70, rows=3),
+    form.Textbox('subject', form.notnull, description="Subject:", size='50'),
+    form.Textarea('body', form.notnull, description="", cols=70, rows=12)            
+    )
+    
+loadcontactsform = form.Form(
+    form.Textbox('email', 
+            form.notnull,
+            form.regexp(email_regex, 'Please enter a valid email'),
+            description='Email:',
+            size='30',
+            validators = [form.Validator("Enter your google or yahoo email address",
+                    lambda i: ('yahoo' in i.email) or ('google' in i.email))]
+            )
+    )
+

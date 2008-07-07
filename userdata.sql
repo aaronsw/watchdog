@@ -30,7 +30,8 @@ CREATE TABLE contacts(
     uemail VARCHAR(320),
     cemail VARCHAR(320),
     cname VARCHAR(80),
-    provider VARCHAR(20)
+    provider VARCHAR(20),
+    UNIQUE(uemail, cemail)
 );
 
 GRANT ALL ON users TO watchdog;

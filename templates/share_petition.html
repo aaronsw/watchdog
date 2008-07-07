@@ -1,0 +1,55 @@
+$def with (petition, emailform, contacts, loadcontactsform=None)
+
+$var title: Share petition <a href='$petition.url'>$petition.title</a> 
+
+<script>
+function checkAll(){
+    cbs = document.getElementsByName('contacts');
+    checked = document.getElementsByName('selectall')[0].checked;
+    for (i in cbs){
+        cbs[i].checked = checked;
+    } 
+}
+function fillTo(){
+    cbs = document.getElementsByName('contacts');
+    to_addresses = ""
+    for (i in cbs){
+        if (cbs[i].checked){
+            to_addresses += cbs[i].value + ", "
+        }
+    }
+    to_field = document.getElementsByName('emails')[0]
+    to_field.value = to_addresses;
+}
+</script>
+
+
+<table><tr>
+    <form name='contactform' method='POST' action='/c/share'>
+    <td style="border-right: solid #ddd 1pt">
+        $:emailform.render()
+        <input type="hidden" name="pid" value="$petition.id">
+        <input type="submit" name="submit" value="Send">
+    </td>
+    </form>
+    <td style="margin-left:10px;">
+        $if loadcontactsform:
+            <form name="loadcontacts" method="POST" action='/importcontacts' >
+                <p>Enter your email address to import contacts from your Yahoo or Google Account.</p>
+                $:loadcontactsform.render()
+                <input type="hidden" name="pid" value="$petition.id">
+                <input type="submit" value="Load Contacts">
+            </form>
+        $else:
+            <p class='select-all'><input type="checkbox" name="selectall" value='all' onclick='checkAll();fillTo()' />Select all</br>
+            <div class='contacts-listing'>
+                <ul>
+                $for c in contacts:
+                    <li><input type='checkbox' name='contacts' value='$c.email' onclick='fillTo()'/><b>$c.name</b></br> $c.email</li>
+                </ul>    
+            </div>
+            
+    </td>
+</tr></table>
+
+</div>

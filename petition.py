@@ -11,8 +11,11 @@ urls = (
   '/', 'index',
   '/new', 'new', 
   '/checkID', 'checkID',
+  '/share', 'share',
   '/(.*)', 'petition'
 )
+
+render_plain = web.template.render('templates/') #without base, useful for sending mails
 
 class redir:
     def GET(self): raise web.seeother('/')
@@ -77,8 +80,9 @@ class new:
             save_petition(p)
             helpers.login(p.email)
             signurl = '<a href="#sign">sign</a>'
+            shareurl = '<a href="/c/share?pid=%s">share it</a>' %(p.id)
             msg = """Congratulations, you've created your petition. 
-                    Now %s and share it with all your friends.""" %(signurl)
+                    Now %s and %s it with all your friends.""" %(signurl, shareurl)
             helpers.set_msg(msg)                        
             return web.seeother('/%s' % p.id)
         else:
@@ -117,8 +121,7 @@ def save_signature(forminput, pid):
                
 def sendmail_to_signatory(user, pid):
     p = db.select('petition', where='id=$pid', vars=locals())[0]
-    p.url = 'http//watchdog.net/c/%s' % (pid)
-    render_plain = web.template.render('templates/') 
+    p.url = 'http//watchdog.net/c/%s' % (pid) 
     msg = render_plain.signatory_mailer(user.name, p)
     #@@@ shouldn't this web.utf8 stuff taken care by in web.py?
     web.sendmail(web.utf8(config.from_address), web.utf8(user.email), web.utf8(msg.subject.strip()), web.utf8(msg))
@@ -219,7 +222,38 @@ class petition:
     
     def POST_unsign(self, pid):
         pass #@@@for now                               
-        
+
+
+class share:
+    def GET(self):
+        i = web.input()
+        email = helpers.get_loggedin_email()
+        contacts = db.select('contacts', 
+                        what='cname as name, cemail as email',
+                        where='uemail=$email',
+                        vars=locals()).list()
+        for c in contacts:
+            c.name = c.name or c.email.split('@')[0]
+        contacts.sort(key=lambda x: x.name.lower())
+        emailform = forms.emailform
+        petition = db.select('petition', where='id=$i.pid', vars=locals())[0]
+        petition.url = 'http://watchdog.net/c/%s' %(petition.id)     
+        msg = render_plain.share_petition_mail(petition)
+        subject='Share petition "%s"' % (petition.title)   
+        emailform.fill(subject=subject, body=msg)
+        if contacts:
+            loadcontactsform = None
+        else:
+            loadcontactsform = forms.loadcontactsform    
+        return render.share_petition(petition, emailform, contacts, loadcontactsform)
+
+    def POST(self):
+        i = web.input()
+        pid, msg, subject = i.pid, i.body, i.subject
+        emails = [e.strip() for e in i.emails.strip(', ').split(',')]
+        web.sendmail(config.from_address, emails, subject, msg)
+        helpers.set_msg('Thanks for sharing this petition with your friends!')    
+        raise web.seeother('/%s' % (pid))
         
 app = web.application(urls, globals())
 

@@ -8,7 +8,7 @@ import demjson
 
 import web
 from settings import db, render, session
-from utils import helpers
+from utils import helpers, forms
 
 def yahooLoginURL(email, url, token=None):
     email = urllib.quote(email)
@@ -42,6 +42,7 @@ class importcontacts:
         i = web.input()
         email = i.get('email')
         session.email = email
+        session.pid = i.pid
         if 'yahoo' in email:
             ylogin_url = yahooLoginURL(email, '/WSLogin/V1/wslogin')
             web.seeother(ylogin_url)
@@ -93,19 +94,16 @@ class bbauth:
         cookie =soup.findAll('cookie')[0].contents[0]        
         cookie = cookie.strip()        
 
-        for letter in string.uppercase+string.digits:            
-            furl = aurl + '&fields=email,name&email.startswith=%s&appid=%s&WSSID=%s' % (letter, appid, wssid)
-            req = urllib2.Request(furl)
-            req.add_header('Cookie', cookie)
-            req.add_header('Content-Type', 'application/json')
-            resp = urllib2.urlopen(req).read()
-            content = demjson.decode(resp)
-            contacts = content.get('contacts')
-            if contacts:
-                self.save_contacts(email, contacts)
-        msg = 'Contacts were loaded from your Yahoo address'
-        helpers.set_msg(msg)        
-        raise web.seeother('/importcontacts')
+        furl = aurl + '&fields=email,name&email.present=1&appid=%s&WSSID=%s' % (appid, wssid)
+        req = urllib2.Request(furl)
+        req.add_header('Cookie', cookie)
+        req.add_header('Content-Type', 'application/json')
+        resp = urllib2.urlopen(req).read()
+        content = demjson.decode(resp)
+        contacts = content.get('contacts')
+        if contacts:
+            self.save_contacts(email, contacts)
+        raise web.seeother('/c/share?pid=%s' % (session.pid))
 
 class authsub:
     def save_contacts(self, uemail,contacts):
@@ -138,9 +136,7 @@ class authsub:
                 if address: contacts.append(address)
         
         self.save_contacts(email, contacts)
-        msg = 'Contacts were loaded from your Gmail Address'
-        helpers.set_msg(msg)
-        raise web.seeother('/importcontacts')
+        raise web.seeother('/c/share?pid=%s' % (session.pid))
     
 class yauth:
     def GET(self):
@@ -149,4 +145,3 @@ Phrase: "# and nation nation moved yet so ship or onwhether so now conceived any
 File: "ydnlIEWXo.html"
 Url to Check: "http://watchdog.net/ydnlIEWXo.html"
 """
-

@@ -65,3 +65,6 @@ td.support, td.oppose { padding-left: .5em; } /* for compatibility with everythi
 .passbox * { color: #444;}
 .editlink {float:right; }
 .table.signs {border:0;}
+.contacts-listing { width: 30em; height: 300px; overflow: auto; border: 1px solid #ddd;}
+.contacts-listing li{ display: block; border-bottom: 0.1em solid #ddd; padding:2px 2px 2px 2px; }
+.select-all {width: 28em; background-color:#ddd; display:block; padding-left:2em; margin-bottom:0px;}
