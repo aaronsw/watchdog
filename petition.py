@@ -222,38 +222,61 @@ class petition:
     
     def POST_unsign(self, pid):
         pass #@@@for now                               
-
-
+    
+def get_contacts(user_id):    
+    contacts = db.select('contacts', 
+                    what='cname as name, cemail as email, provider',
+                    where='user_id=$user_id',
+                    vars=locals()).list()
+    #remove repeated emails due to multiple providers; prefer the one which has name
+    cdict = {} 
+    for c in contacts:
+        if c.email not in cdict.keys():
+            cdict[c.email] = c 
+        elif c.name:
+            cdict[c.email] = c
+    contacts = cdict.values()
+    for c in contacts:
+        c.name = c.name or c.email.split('@')[0]
+                    
+    contacts.sort(key=lambda x: x.name.lower())
+    return contacts
+    
 class share:
-    def GET(self):
+    def GET(self, emailform=None, loadcontactsform=None):
         i = web.input()
-        email = helpers.get_loggedin_email()
-        contacts = db.select('contacts', 
-                        what='cname as name, cemail as email',
-                        where='uemail=$email',
-                        vars=locals()).list()
-        for c in contacts:
-            c.name = c.name or c.email.split('@')[0]
-        contacts.sort(key=lambda x: x.name.lower())
-        emailform = forms.emailform
+        user_id = helpers.get_loggedin_userid()
+        contacts = get_contacts(user_id)
         petition = db.select('petition', where='id=$i.pid', vars=locals())[0]
-        petition.url = 'http://watchdog.net/c/%s' %(petition.id)     
-        msg = render_plain.share_petition_mail(petition)
-        subject='Share petition "%s"' % (petition.title)   
-        emailform.fill(subject=subject, body=msg)
-        if contacts:
-            loadcontactsform = None
-        else:
-            loadcontactsform = forms.loadcontactsform    
-        return render.share_petition(petition, emailform, contacts, loadcontactsform)
-
+        petition.url = 'http://watchdog.net/c/%s' %(i.pid)
+        
+        if not emailform: 
+            emailform = forms.emailform
+            subject='Share petition "%s"' % (petition.title)   
+            msg = render_plain.share_petition_mail(petition)
+            emailform.fill(subject=subject, body=msg)
+            
+        current_providers = set(c.provider.lower() for c in contacts)
+        all_providers = set(['google', 'yahoo'])
+        remaining_providers = all_providers.difference(current_providers)
+        remaining_providers = ' or '.join(p.title() for p in remaining_providers)
+        
+        if remaining_providers and not loadcontactsform: 
+            loadcontactsform = forms.loadcontactsform
+        return render.share_petition(petition, emailform, 
+                            contacts, remaining_providers, loadcontactsform)
+        
     def POST(self):
         i = web.input()
-        pid, msg, subject = i.pid, i.body, i.subject
-        emails = [e.strip() for e in i.emails.strip(', ').split(',')]
-        web.sendmail(config.from_address, emails, subject, msg)
-        helpers.set_msg('Thanks for sharing this petition with your friends!')    
-        raise web.seeother('/%s' % (pid))
+        emailform = forms.emailform()
+        if emailform.validates(i):
+            pid, msg, subject = i.pid, i.body, i.subject
+            emails = [e.strip() for e in i.emails.strip(', ').split(',')]
+            web.sendmail(config.from_address, emails, subject, msg)
+            helpers.set_msg('Thanks for sharing this petition with your friends!')    
+            raise web.seeother('/%s' % (pid))
+        else:
+            return self.GET(emailform=emailform)    
         
 app = web.application(urls, globals())
 

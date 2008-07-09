@@ -1,7 +1,7 @@
 import time
 import md5
 import urllib, urllib2 
-from xml.etree import ElementTree as ET
+from xml.dom import minidom    
 from BeautifulSoup import BeautifulSoup
 import string
 import demjson
@@ -41,22 +41,41 @@ class importcontacts:
     def POST(self):
         i = web.input()
         email = i.get('email')
-        session.email = email
-        session.pid = i.pid
-        if 'yahoo' in email:
-            ylogin_url = yahooLoginURL(email, '/WSLogin/V1/wslogin')
-            web.seeother(ylogin_url)
-
-        elif 'gmail' in email or 'googlemail' in email: 
-            glogin_url = gmailLoginURL(email)
-            web.seeother(glogin_url)
+        form = forms.loadcontactsform()
+        if form.validates(i):
+            session.email = email
+            session.pid = i.pid
+            if i.provider == 'Yahoo':
+                ylogin_url = yahooLoginURL(email, '/WSLogin/V1/wslogin')
+                raise web.seeother(ylogin_url)
+            elif i.provider == 'Google': 
+                glogin_url = gmailLoginURL(email)
+                raise web.seeother(glogin_url)
         else:
-            return render.import_contacts(message='Not a valid email address. Please try again')
-
+            import petition
+            share_obj = petition.share()
+            return share_obj.GET(form)
+            
+def save_contacts(email, contacts, provider):
+    user_id = helpers.get_loggedin_userid()
+    for c in contacts:
+        cname, cemail = c['name'], c['email']
+        vars = dict(user_id=user_id, uemail=email, cemail=cemail,
+                    cname=cname, provider=provider)
+        e = db.select('contacts', 
+                    where='user_id=$user_id and uemail=$uemail and cemail=$cemail',
+                    vars=vars)
+        if not e: n = db.insert('contacts', seqname=False, **vars)
+        else: db.update('contacts', cname=cname,
+                    where='user_id=$user_id and uemail=$uemail and cemail=$cemail',
+                    vars=vars)
 
 class bbauth:
-    def save_contacts(self,email, contacts):
-        for c in contacts:
+    def get_contacts(self, contacts_json):
+        content = demjson.decode(contacts_json)
+        
+        contacts = []
+        for c in content.get('contacts'):
             fields = c['fields']
             cemail = fields[0]['data']
             cfname = ' '; clname = ' '
@@ -64,17 +83,11 @@ class bbauth:
             if len(fields) > 1:
                 cfname = fields[1].get('first', ' ')
                 clname = fields[1].get('last', ' ')
-
+        
             cname = u'%s %s' % (cfname, clname)
             cname = cname.replace('&#39;', ' ').strip()
-            vars = {'uemail': email, 'cemail': cemail,
-                    'cname': cname, 'provider': 'YAHOO'}
-            e = db.select('contacts', where='uemail=$uemail and cemail=$cemail',
-                          vars=vars)
-            if not e: n = db.insert('contacts', seqname=False, **vars)
-            else: db.update('contacts', where='uemail=$uemail and cemail=$cemail',
-                            vars=vars, cname=cname)
-
+            contacts.append(dict(email=cemail, name=cname))
+        return contacts
 
     def GET(self):
         i = web.input()
@@ -98,24 +111,31 @@ class bbauth:
         req = urllib2.Request(furl)
         req.add_header('Cookie', cookie)
         req.add_header('Content-Type', 'application/json')
-        resp = urllib2.urlopen(req).read()
-        content = demjson.decode(resp)
-        contacts = content.get('contacts')
-        if contacts:
-            self.save_contacts(email, contacts)
+        response = urllib2.urlopen(req).read()
+        contacts = self.get_contacts(response)
+        save_contacts(email, contacts, provider='YAHOO')
         raise web.seeother('/c/share?pid=%s' % (session.pid))
 
 class authsub:
-    def save_contacts(self, uemail,contacts):
-        for cemail in contacts:
-            cname = ''
-            vars = {'uemail': uemail, 'cemail': cemail,
-                    'cname':cname, 'provider': 'GMAIL'}
-            e = db.select('contacts', where='uemail=$uemail and cemail=$cemail', 
-                          vars=vars)
-            if not e: n = db.insert('contacts', seqname=False, **vars)
-            else: db.update('contacts', where='uemail=$uemail and cemail=$cemail',
-                      vars=vars, cname=cname)
+    def get_contacts(self, contacts_feed):
+        ATOM_NS = 'http://www.w3.org/2005/Atom'
+        doc = minidom.parse(contacts_feed)
+        entries = doc.getElementsByTagNameNS(ATOM_NS, u'entry')
+        
+        def get_text(elem):
+            text = ''
+            for node in elem.childNodes:
+                if node.nodeType == node.TEXT_NODE:
+                    text += node.data
+            return text
+                    
+        contacts = []
+        for e in entries:
+            e_title = e.getElementsByTagNameNS(ATOM_NS, u'title')[0]
+            name = get_text(e_title)
+            email = e.getElementsByTagName('gd:email')[0].getAttribute('address')
+            contacts.append(dict(name=name, email=email))
+        return contacts    
 
     def GET(self):
         i = web.input()
@@ -126,16 +146,8 @@ class authsub:
         headers = { 'Authorization' : 'AuthSub token="%s"' % authToken.strip() }
         request = urllib2.Request(url, None, headers)
         response = urllib2.urlopen(request)
-        tree = ET.XML(response.read())
-        items = tree.getiterator()
-        contacts = []
-        for e in items:
-            for i in e:
-                #XXX: extract names
-                address = i.attrib.get('address')
-                if address: contacts.append(address)
-        
-        self.save_contacts(email, contacts)
+        contacts = self.get_contacts(response)
+        save_contacts(email, contacts, provider='GOOGLE')
         raise web.seeother('/c/share?pid=%s' % (session.pid))
     
 class yauth:

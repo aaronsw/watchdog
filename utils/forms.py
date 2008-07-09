@@ -3,7 +3,8 @@ import web
 from web import form
 from . settings import db
 
-email_regex = r'[\w\.]+@[\w\.]+\.[a-zA-Z]{1,4}'
+email_regex = r'[\w\.-]+@[\w\.-]+\.[a-zA-Z]{1,4}'
+email_list_regex = r'^%s$|^(%s *, *)*(%s)?$' % (email_regex, email_regex, email_regex)
                  
 def doesnotexist(pid):
     "Return True if petition with id `pid` does not exist"
@@ -55,9 +56,14 @@ passwordform = form.Form(
     )
 
 emailform = form.Form(
-    form.Textarea('emails', form.notnull, description="To:", cols=70, rows=3),
+    form.Textarea('emails', 
+                form.notnull, 
+                form.regexp(email_list_regex, 'One or more emails are not valid'),
+                description="To:", 
+                cols=70,
+                rows=3),
     form.Textbox('subject', form.notnull, description="Subject:", size='50'),
-    form.Textarea('body', form.notnull, description="", cols=70, rows=12)            
+    form.Textarea('body', form.notnull, description="", cols=70, rows=12)
     )
     
 loadcontactsform = form.Form(
@@ -65,9 +71,10 @@ loadcontactsform = form.Form(
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
             description='Email:',
-            size='30',
-            validators = [form.Validator("Enter your google or yahoo email address",
-                    lambda i: ('yahoo' in i.email) or ('google' in i.email))]
-            )
+            size='30'),
+    form.Radio('provider', 
+            ['Google', 'Yahoo'],
+            value='Google', 
+            description='')
     )
 

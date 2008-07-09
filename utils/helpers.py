@@ -2,6 +2,7 @@ import os
 import hmac
 import web
 from config import secret_key
+from . settings import db
 
 def encrypt(msg, key=None):
     return hmac.new(key or secret_key, msg).hexdigest() 
@@ -33,6 +34,13 @@ def get_loggedin_email():
 
 def get_unverified_email():
     return getcookie('wd_email')                
+
+def get_loggedin_userid():
+    email = get_loggedin_email()
+    if email:
+        return db.select('users', what='id', where='email=$email', vars=locals())[0].id
+    else:
+        return None    
 
 def login(email):
     setcookie('wd_login', email)

@@ -1,4 +1,4 @@
-$def with (petition, emailform, contacts, loadcontactsform=None)
+$def with (petition, emailform, contacts, providers, loadcontactsform=None)
 
 $var title: Share petition <a href='$petition.url'>$petition.title</a> 
 
@@ -13,7 +13,7 @@ function checkAll(){
 function fillTo(){
     cbs = document.getElementsByName('contacts');
     to_addresses = ""
-    for (i in cbs){
+    for (i=0; i< cbs.length; i++){
         if (cbs[i].checked){
             to_addresses += cbs[i].value + ", "
         }
@@ -35,13 +35,14 @@ function fillTo(){
     <td style="margin-left:10px;">
         $if loadcontactsform:
             <form name="loadcontacts" method="POST" action='/importcontacts' >
-                <p>Enter your email address to import contacts from your Yahoo or Google Account.</p>
+                <p>Enter your $providers email address to load contacts.</p>
                 $:loadcontactsform.render()
                 <input type="hidden" name="pid" value="$petition.id">
                 <input type="submit" value="Load Contacts">
             </form>
-        $else:
-            <p class='select-all'><input type="checkbox" name="selectall" value='all' onclick='checkAll();fillTo()' />Select all</br>
+        $if contacts:
+            <p class='select-all'>
+                <input type="checkbox" name="selectall" value='all' onclick='checkAll();fillTo()' />Select all ($len(contacts) contacts)</p>
             <div class='contacts-listing'>
                 <ul>
                 $for c in contacts:

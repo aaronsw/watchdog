@@ -8,12 +8,14 @@ $var title: $title
 \$(document).ready( function(){
 
 strip = function(s) { return s.replace(/^\s+/, '').replace(/\s+$/, ''); }
+remove_punctuation = function(s) { return s.replace(/[,.;]/g,''); }
 petition_id = $('id'); 
 note_id = $('note_id');
 title_field = $('title')
 \$(title_field).change(function fillURL(){
     if(! \$(petition_id).attr('readonly')){
         url = strip(this.value).toLowerCase().replace(/\s+/g, '-');
+        url = remove_punctuation(url);
         \$(petition_id).val(url);
     }    
     return;
