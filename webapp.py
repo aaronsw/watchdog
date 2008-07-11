@@ -8,6 +8,9 @@ import petition
 import settings
 from settings import db, render
 
+#@@@ utils.auth.login doesn't work in urls as webpy tries to import auth from its own utils
+from utils.auth import login, logout, forgot_password, set_password
+
 web.config.debug = True
 web.template.Template.globals['commify'] = web.commify
 web.template.Template.globals['int'] = int
@@ -17,6 +20,7 @@ web.template.Template.globals['query_param'] = helpers.query_param
 web.template.Template.globals['changequery'] = web.changequery
 web.template.Template.globals['enumerate'] = enumerate
 web.template.Template.globals['format'] = markdown.markdown
+web.template.Template.globals['is_logged_in'] = lambda : bool(helpers.get_loggedin_email())
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -39,6 +43,10 @@ urls = (
   r'/about/feedback', 'feedback',
   r'/blog', blog.app,
   r'/data/(.*)', 'staticdata',
+  r'/login', 'login',
+  r'/logout', 'logout',
+  r'/forgot_password', 'forgot_password',
+  r'/set_password', 'set_password',
   r'/importcontacts', 'contacts.importcontacts',
   r'/bbauth/', 'contacts.bbauth',
   r'/authsub', 'contacts.authsub',

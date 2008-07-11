@@ -2,7 +2,7 @@
 from __future__ import with_statement
 
 import web
-from utils import forms, helpers
+from utils import forms, helpers, auth
 from settings import db, render
 import config
 
@@ -78,7 +78,7 @@ class new:
         if pform.validates(): 
             p = pform.d
             save_petition(p)
-            helpers.login(p.email)
+            helpers.set_login_cookie(p.email)
             signurl = '<a href="#sign">sign</a>'
             shareurl = '<a href="/c/share?pid=%s">share it</a>' %(p.id)
             msg = """Congratulations, you've created your petition. 
@@ -95,7 +95,7 @@ def askforpasswd(user_id):
     return bool(r)
 
 def save_password(forminput):
-    password = helpers.encrypt(forminput.password)
+    password = auth.encrypt_password(forminput.password)
     db.update('users', where='id=$forminput.user_id', password=password, vars=locals())
     helpers.set_msg('Password stored')
 

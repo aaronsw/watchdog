@@ -1,5 +1,6 @@
 import os
 import hmac
+
 import web
 from config import secret_key
 from . settings import db
@@ -7,9 +8,9 @@ from . settings import db
 def encrypt(msg, key=None):
     return hmac.new(key or secret_key, msg).hexdigest() 
        
-def setcookie(name, value):
+def setcookie(name, value, expires=''):
     encoded = value + '#@#' + encrypt(value)   
-    web.setcookie(name, encoded)       
+    web.setcookie(name, encoded, expires)       
     
 def getcookie(name):
     encoded = web.cookies().get(name, '#@#')
@@ -37,20 +38,25 @@ def get_unverified_email():
 
 def get_loggedin_userid():
     email = get_loggedin_email()
-    if email:
-        return db.select('users', what='id', where='email=$email', vars=locals())[0].id
-    else:
-        return None    
+    user = get_user_by_email(email)
+    return user and user.id or None
 
-def login(email):
+def get_user_by_email(email):
+    try:
+        return db.select('users', where='email=$email', vars=locals())[0]
+    except:
+        return None
+            
+def set_login_cookie(email):
     setcookie('wd_login', email)
+
+def del_login_cookie():
+    web.setcookie("wd_login", "", expires=-1)
 
 def unverified_login(email):
     setcookie('wd_email', email)
 
 def query_param(param, default_value):
-    i = web.input()
-    if param in i:
-        return getattr(i, param)
-    else:
-        return default_value
+    d = {param:default_value}
+    i = web.input(**d)
+    return i.get(param)

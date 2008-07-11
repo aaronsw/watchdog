@@ -77,4 +77,19 @@ loadcontactsform = form.Form(
             value='Google', 
             description='')
     )
+loginform = form.Form(
+    form.Textbox('useremail', 
+            form.notnull,
+            form.regexp(email_regex, 'Please enter a valid email'),
+            description='Email:'),
+    form.Password('password', form.notnull, description='Password:'),
+    form.Hidden('redirect')
+    )
 
+forgot_password = form.Form(
+    form.Textbox('email',
+            form.notnull,
+            form.regexp(email_regex, 'Please enter a valid email'),
+            description='Email:'
+            )
+    )
