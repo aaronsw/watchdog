@@ -4,6 +4,7 @@ CREATE TABLE users(
     id serial primary key,
     name varchar(256),
     password varchar(256),
+    verified boolean default false, #done verified activity atleast once
     email varchar(320) UNIQUE -- max allowed email length.
 );
 

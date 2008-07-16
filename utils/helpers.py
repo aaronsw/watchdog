@@ -56,6 +56,10 @@ def del_login_cookie():
 def unverified_login(email):
     setcookie('wd_email', email)
 
+def no_verified_activity(email):
+    verified = db.select('users', where='email=$email and verified=True', vars=locals())
+    return not bool(verified)
+
 def query_param(param, default_value):
     d = {param:default_value}
     i = web.input(**d)

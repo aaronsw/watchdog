@@ -41,14 +41,17 @@ def save_petition(p):
     p.id = p.id.replace(' ', '_')
     with db.transaction():
         try:
-            owner_id = db.select('users', what='id', where='email=$p.email', vars=locals())[0].id
+            owner = db.select('users', where='email=$p.email', vars=locals())[0]
         except:
-            owner_id = db.insert('users', email=p.email) 
-
+            owner_id = db.insert('users', email=p.email, verified=True) 
+        else:
+            if not owner.verified: db.update('users', where='email=$p.email', verified=True, vars=locals())
+            owner_id = owner.id
+            
         db.insert('petition', seqname=False, id=p.id, title=p.title, description=p.description,
                     owner_id=owner_id)
-        #make the owner of the petition sign for it (??)  NO. better take name, comments also from sign form.              
-        #db.insert('signatory', seqname=False, user_id=owner_id, petition_id=p.id)      
+        #make the owner of the petition sign for it (??)             
+        db.insert('signatory', seqname=False, user_id=owner_id, share_with='E', petition_id=p.id)      
         
 def fill_user_details(form, fillings):
     details = {}
@@ -72,22 +75,21 @@ class new:
         pform = forms.petitionform()
         fill_user_details(pform, 'email')
         return render.petitionform(pform)
-         
+
     def POST(self):
+        p = web.input()
         pform = forms.petitionform()
-        if pform.validates(): 
-            p = pform.d
+        auth.assert_verified(p.email)
+        if pform.validates(p):
             save_petition(p)
             helpers.set_login_cookie(p.email)
-            signurl = '<a href="#sign">sign</a>'
-            shareurl = '<a href="/c/share?pid=%s">share it</a>' %(p.id)
             msg = """Congratulations, you've created your petition. 
-                    Now %s and %s it with all your friends.""" %(signurl, shareurl)
-            helpers.set_msg(msg)                        
+                    Now sign and share it with all your friends."""
+            helpers.set_msg(msg)
             return web.seeother('/%s' % p.id)
         else:
             return render.petitionform(pform)
-            
+    
 def askforpasswd(user_id):
     useremail = helpers.get_loggedin_email()
     #if the current user is the owner of the petition and has not set the password
@@ -210,7 +212,8 @@ class petition:
         i = web.input()
         if form.validates(i):
             user = save_signature(i, pid)
-            sendmail_to_signatory(user, pid)
+            #@@@ no need of this anymore, as we have sharing through imported contacts
+            #sendmail_to_signatory(user, pid) 
             return web.seeother('/%s' % pid)
         else:
             return self.GET(pid, signform=form)

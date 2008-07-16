@@ -92,7 +92,7 @@ class forgot_password:
                 The watchdog.net team
                 """ % (reset_url)
             web.sendmail(config.from_address, i.email, subject, msg )
-            helpers.set_msg('Check your email to reset your password %s.' % reset_url)
+            helpers.set_msg('Check your email to reset your password.')
             raise web.seeother('/forgot_password')
         else:
             return self.GET(form)
@@ -112,18 +112,18 @@ class set_password:
         form = forms.passwordform()
         if form.validates(i):
             password = encrypt_password(i.password)        
-            db.update('users', password=password, where='email=$i.email', vars=locals())
+            db.update('users', password=password, verified=True, where='email=$i.email', vars=locals())
             helpers.set_msg('Login with your new password.')
             raise web.seeother('/login')
         else:
             return self.GET(form)
         
-def require_login(f):
-    def g(*args, **kw):
-        if helpers.get_loggedin_email():
-            return f(*args, **kw)
-        else:
-            query = urllib.urlencode(dict(redirect=web.ctx.path))
-            raise web.seeother("/login?%s" % query)
-    return g
-
+def assert_verified(email):
+    if helpers.get_loggedin_email():
+        pass
+    elif helpers.no_verified_activity(email):
+        helpers.set_login_cookie(email)
+    else:
+        query = urllib.urlencode(dict(redirect=web.ctx.fullpath))
+        raise web.seeother("/login?%s" % query)
+            
