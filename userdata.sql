@@ -4,7 +4,7 @@ CREATE TABLE users(
     id serial primary key,
     name varchar(256),
     password varchar(256),
-    verified boolean default false, #done verified activity atleast once
+    verified boolean default false, -- done verified activity at least once
     email varchar(320) UNIQUE -- max allowed email length.
 );
 
@@ -19,7 +19,7 @@ CREATE TABLE petition(
 CREATE TABLE signatory(
     user_id int references users,
     petition_id varchar(256) references petition,
-    share_with varchar(1), --   E-everybody, A-author of petition, N-nobody
+    share_with varchar(1), -- E=everybody, A=author of petition, N=nobody
     comment text,
     signtime timestamp default now(),
     UNIQUE (user_id, petition_id)
