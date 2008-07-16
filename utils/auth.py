@@ -53,17 +53,17 @@ class logout:
         referer = web.ctx.env.get('HTTP_REFERER', '/')
         raise web.seeother(referer)
 
-def get_secret_token(email):
-    ts = datetime.date.today().isoformat()
-    return '@'.join([ts, helpers.encrypt(email + ts)])
+def get_secret_token(email, validity=7):
+    valid_till = (datetime.date.today() + datetime.timedelta(validity)).isoformat()
+    return '@'.join([valid_till, helpers.encrypt(email + valid_till)])
 
 def check_secret_token(email, token):
-    ts, enc_email_ts = token.split('@')
-    tampered = helpers.encrypt(email + ts) != enc_email_ts
-    def expired(valid_period=7):    #valid for 7 days
+    valid_till, enc_email_ts = token.split('@')
+    tampered = helpers.encrypt(email + valid_till) != enc_email_ts
+    def expired():
         today = datetime.date.today()
-        created = datetime.date(*[int(t) for t in ts.split('-')])
-        return today > created + datetime.timedelta(valid_period)
+        valid_date = datetime.date(*[int(t) for t in valid_till.split('-')])
+        return today > valid_date
 
     return not(tampered or expired())
                 
@@ -118,11 +118,25 @@ class set_password:
         else:
             return self.GET(form)
         
+def send_mail_to_set_password(email):
+    token = get_secret_token(email, validity=365)
+    url = set_password_url(email, token)
+    subject = 'Set your Watchdog.net password'
+    msg = """
+        You can set your password at %s. If you have already set your password, please ignore this mail.
+        
+        
+        Thanks,
+        The watchdog.net team
+        """ % (url)
+    web.sendmail(config.from_address, email, subject, msg )
+        
 def assert_verified(email):
     if helpers.get_loggedin_email():
         pass
     elif helpers.no_verified_activity(email):
         helpers.set_login_cookie(email)
+        send_mail_to_set_password(email)
     else:
         query = urllib.urlencode(dict(redirect=web.ctx.fullpath))
         raise web.seeother("/login?%s" % query)
