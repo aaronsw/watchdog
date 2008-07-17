@@ -6,7 +6,7 @@ import datetime
 
 import web
 import helpers, forms
-from . settings import db, render
+from settings import db, render
 import config
 
 def get_hexdigest(key, s):
@@ -129,7 +129,7 @@ def send_mail_to_set_password(email):
         Thanks,
         The watchdog.net team
         """ % (url)
-    web.sendmail(config.from_address, email, subject, msg )
+    #web.sendmail(config.from_address, email, subject, msg )
         
 def assert_verified(email):
     if helpers.get_loggedin_email():

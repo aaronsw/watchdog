@@ -5,7 +5,7 @@ common tools for load scripts
 import os
 import simplejson
 import web
-db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), db='watchdog_dev')
+from settings import db
 
 _districtcache = {}
 def districtp(district):

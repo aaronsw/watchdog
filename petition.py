@@ -212,8 +212,7 @@ class petition:
         i = web.input()
         if form.validates(i):
             user = save_signature(i, pid)
-            #@@@ no need of this anymore, as we have sharing through imported contacts
-            #sendmail_to_signatory(user, pid) 
+            sendmail_to_signatory(user, pid) 
             return web.seeother('/%s' % pid)
         else:
             return self.GET(pid, signform=form)

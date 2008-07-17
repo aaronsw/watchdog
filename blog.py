@@ -1,13 +1,11 @@
 import web
-
+from settings import render
 urls = (
   '', 'reblog',
   '/', 'index',
   '/feed', 'feed',
   '/(.*)', 'post',
 )
-
-render = web.template.render('templates/', base='base')
 
 content = [
   web.storage(

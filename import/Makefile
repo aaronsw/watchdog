@@ -6,7 +6,7 @@ else
     DBCLIENT=psql
 endif
 
-export PYTHONPATH := .:$(PWD)/../vendor:$(PYTHONPATH)
+export PYTHONPATH := ../:.:$(PWD)/../vendor:$(PYTHONPATH)
 
 PYTHON=python
 

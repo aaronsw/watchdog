@@ -1,7 +1,7 @@
 import os
 import web
 from web import form
-from . settings import db
+from settings import db
 
 email_regex = r'[\w\.-]+@[\w\.-]+\.[a-zA-Z]{1,4}'
 email_list_regex = r'^%s$|^(%s *, *)*(%s)?$' % (email_regex, email_regex, email_regex)

@@ -3,7 +3,7 @@ import hmac
 
 import web
 from config import secret_key
-from . settings import db
+from settings import db
 
 def encrypt(msg, key=None):
     return hmac.new(key or secret_key, msg).hexdigest() 

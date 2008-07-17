@@ -276,8 +276,7 @@ if __name__ == '__main__':
     # state='AR', district='AR-01', zipcode='72023', #generic contactform
     # state='OH', district='OH-01', zipcode='45202', #zipauth
 
-    db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), 
-                      db='watchdog_dev')
+    from settings import db
 
     writerep(db=db, district='OH-01', state='OH', zipcode='45203', prefix_name='Mr.', 
              first_name='watchdog', last_name ='Tester', addr1='111 av', city='test city', 

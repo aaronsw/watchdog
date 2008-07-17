@@ -9,10 +9,7 @@ from __future__ import with_statement
 import os
 import web
 from BeautifulSoup import BeautifulSoup
-
-
-db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'),
-                  db='watchdog_dev')
+from settings import db
 
 soup = BeautifulSoup(open('../../data/crawl/govtrack/people.xml','r'))
 
