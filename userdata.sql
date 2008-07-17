@@ -37,6 +37,7 @@ CREATE TABLE contacts(
 );
 
 GRANT ALL ON users TO watchdog;
+GRANT ALL ON users_id_seq TO watchdog;
 GRANT ALL ON petition TO watchdog;
 GRANT ALL ON signatory TO watchdog;
 GRANT ALL ON contacts TO watchdog;

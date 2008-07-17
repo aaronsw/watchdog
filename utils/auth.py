@@ -84,13 +84,18 @@ class forgot_password:
         if form.validates(i):
             token = get_secret_token(i.email)
             reset_url = set_password_url(i.email, token)
-            subject = 'Reset your Watchdog.net password'
-            msg = """
-                You can reset your password at %s, which will be valid for 7 days.
-                
-                Thanks,
-                The watchdog.net team
-                """ % (reset_url)
+            subject = 'Reset your watchdog.net password'
+            msg = """\
+You asked to reset your password on watchdog.net.
+You can do so at:
+
+%s
+
+but you have to do it within the next 7 days.
+
+Thanks,
+watchdog.net
+""" % (reset_url)
             web.sendmail(config.from_address, i.email, subject, msg )
             helpers.set_msg('Check your email to reset your password.')
             raise web.seeother('/forgot_password')
@@ -121,14 +126,22 @@ class set_password:
 def send_mail_to_set_password(email):
     token = get_secret_token(email, validity=365)
     url = set_password_url(email, token)
-    subject = 'Set your Watchdog.net password'
-    msg = """
-        You can set your password at %s. If you have already set your password, please ignore this mail.
-        
-        
-        Thanks,
-        The watchdog.net team
-        """ % (url)
+    subject = 'Set your watchdog.net password'
+    msg = """\
+Thanks for using watchdog.net. We've created an account 
+for you with this email address -- but we don't have 
+a password for it. So that you can log in later, please 
+set your password at:
+
+%s
+
+If you've already set a password, then don't worry about 
+it and sorry for the interruption. If you think you received 
+this email in error, please hit reply and let us know.
+
+Thanks,
+watchdog.net
+""" % (url)
     web.sendmail(config.from_address, email, subject, msg )
         
 def assert_verified(email):
