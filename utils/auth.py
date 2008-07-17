@@ -6,7 +6,7 @@ import datetime
 
 import web
 import helpers, forms
-from . settings import db, render
+from settings import db, render
 import config
 
 def get_hexdigest(key, s):
@@ -142,7 +142,7 @@ this email in error, please hit reply and let us know.
 Thanks,
 watchdog.net
 """ % (url)
-    web.sendmail(config.from_address, email, subject, msg )
+    web.sendmail(config.from_address, email, subject, msg)
         
 def assert_verified(email):
     if helpers.get_loggedin_email():
