@@ -16,7 +16,8 @@ test:
 sync: rsync gitsync
 
 rsync:
-	rsync -avzu watchdog.net:~watchdog/web/data .
+	# rsync -avzu rsync://watchdog.net/data data ||
+	rsync -avzu rsync://watchdog.net/data data
 
 gitsync:
 	git pull
