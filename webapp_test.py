@@ -203,6 +203,9 @@ def test_politician():
     # http://code.google.com/p/rdflib/issues/detail?id=24
     #assert g == g2
     #@@ probably should test interest group ratings...
+    
+    ok_re(webapp.app.request('/p/eleanor_holmes_norton').data, "Eleanor Holmes Norton")
+    
 
 def test_dproperty():
     page = html('/us/by/est_population')
