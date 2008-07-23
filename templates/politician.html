@@ -21,7 +21,48 @@ $var pretitle:
   <a href="$pol.officeurl">Official website</a>
 </p>
 
-<h2 style="clear: both">Speeches</h2>
+<h2 style="clear: both">Money</h2>
+
+<table class="charted">
+  <tr>
+    <th>Raised</th>
+    <td>\$$commify(pol.money_raised)</a></td>
+    <td><a href="/p/by/money_raised#$pol.id"
+         ><img src="/p/by/money_raised/distribution.png?point=$pol.money_raised"
+               class="sparkline" /></a></td>
+  </tr><tr>
+    <th>% spent</th>
+    <td>${int(pol.pct_spent * 100)}%</td>
+    <td><a href="/p/by/pct_spent#$pol.id"
+         ><img 
+           src="/p/by/pct_spent/distribution.png?point=$pol.pct_spent"
+           class="sparkline" /></a></td>
+
+  </tr><tr>
+    <th>% from self</th>
+    <td>${int(pol.pct_self * 100)}%</td>
+    <td><a href="/p/by/pct_self#$pol.id"
+         ><img 
+           src="/p/by/pct_self/distribution.png?point=$pol.pct_self"
+           class="sparkline" /></a></td>
+  </tr><tr>
+    <th>% from individuals</th>
+    <td>${int(pol.pct_indiv * 100)}%</td>
+    <td><a href="/p/by/pct_indiv#$pol.id"
+         ><img 
+           src="/p/by/pct_indiv/distribution.png?point=$pol.pct_indiv"
+           class="sparkline" /></a></td>
+  </tr><tr>
+    <th>% from <acronym title="Political Action Committees">PAC</acronym>s</th>
+    <td>${int(pol.pct_pac * 100)}%</td>
+    <td><a href="/p/by/pct_pac#$pol.id"
+         ><img 
+           src="/p/by/pct_pac/distribution.png?point=$pol.pct_pac"
+           class="sparkline" /></a></td>
+  </tr>
+</table>
+
+<h2>Speeches</h2>
 
 <table class="charted">
   <tr>
@@ -192,4 +233,9 @@ $for group in pol.related_groups:
 
 <p><strong>Developers:</strong> Get this page in <a href="${pol.id.lower()}.n3">N3</a>, <a href="${pol.id.lower()}.xml">XML</a>, or <a href="${pol.id.lower()}.json">JSON</a>.</p>
 
-<p><em>Also known as:</em> $pol.govtrackid (GovTrack), $pol.opensecretsid (OpenSecrets), $pol.bioguideid (Biography), $pol.icpsrid (ICPSR).</p>
+<p><em>Also known as:</em> $pol.govtrackid (GovTrack), $pol.opensecretsid (OpenSecrets), $pol.bioguideid (Biography), $pol.icpsrid (ICPSR)\
+$if pol.fec_ids:
+    , \
+    $for fec_id in pol.fec_ids: $fec_id \
+    (FEC)\
+</p>
