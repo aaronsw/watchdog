@@ -6,7 +6,7 @@ parse data from govtrack.us
 STATS_XML = '../data/crawl/govtrack/us/110/repstats/%s.xml'
 FEC_XML = '../data/crawl/govtrack/us/fec/campaigns-2008.xml'
 METRICS = ['enacted', 'novote', 'verbosity', 'speeches', 
-  'spectrum', 'introduced', 'cosponsored']
+  'spectrum', 'introduced', 'cosponsor']
 
 from xml.dom import pulldom
 import web
@@ -53,5 +53,5 @@ def parse_fec():
 
 if __name__ == "__main__":
     tools.export(parse_basics())
-    tools.export(parse_speeches())
+    tools.export(parse_stats())
     tools.export(parse_fec())

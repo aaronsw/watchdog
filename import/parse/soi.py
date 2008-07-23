@@ -142,21 +142,24 @@ def parse_state(state):
         
         loc += 8
 
-def parse_soi():
+def parse_soi(verbose=False):
+    import sys
+
     states = ['AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA', 
     'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME', 'MI', 
     'MN', 'MO', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM', 'NV', 'NY', 
     'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VA', 'VT', 
     'WA', 'WI', 'WV', 'WY']
-    
+
+    if verbose: print>>sys.stderr
     for state in states:
-        import sys
-        print>>sys.stderr, state
+        if verbose: print>>sys.stderr, "\rParsing", state + '...',
         for x in parse_state(state):
             if x.loc.strip() == 'Total':
                 x.loc = state
             yield x
+    if verbose: print >>sys.stderr, '\r                     '
 
 if __name__ == "__main__":
     import tools
-    tools.export(parse_soi())
+    tools.export(parse_soi(verbose=True))

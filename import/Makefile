@@ -10,6 +10,8 @@ export PYTHONPATH := ../:.:$(PWD)/../vendor:$(PYTHONPATH)
 
 PYTHON=python
 
+CRAWL=../data/crawl
+PARSE=../data/parse
 LOAD=../data/load
 JSONS=$(LOAD)/states/index.json \
       $(LOAD)/districts/index.json \
@@ -89,3 +91,37 @@ $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack
 .interests: .schema load/maplight.py .bills
 	$(PYTHON) load/maplight.py
 	touch $@
+
+
+# new way of doing things: parse to .njs files
+
+parse: $(PARSE)/almanac.njs \
+	   $(PARSE)/earmarks.njs \
+       $(PARSE)/fec.njs \
+       $(PARSE)/govtrack.njs \
+       $(PARSE)/soi.njs \
+       $(PARSE)/voteview.njs
+
+$(PARSE)/almanac.njs: parse/almanac.py 
+	$(PYTHON) parse/almanac.py --dump > $@.tmp
+	mv $@.tmp $@
+
+$(PARSE)/earmarks.njs: parse/earmarks.py $(CRAWL)/taxpayer/bigkahuna.xls
+	$(PYTHON) parse/earmarks.py > $@.tmp
+	mv $@.tmp $@
+
+$(PARSE)/fec.njs: parse/fec.py $(CRAWL)/fec
+	$(PYTHON) parse/fec.py > $@.tmp
+	mv $@.tmp $@
+
+$(PARSE)/govtrack.njs: parse/govtrack.py
+	$(PYTHON) parse/govtrack.py > $@.tmp
+	mv $@.tmp $@
+
+$(PARSE)/soi.njs: parse/soi.py $(CRAWL)/irs/soi/
+	$(PYTHON) parse/soi.py > $@.tmp
+	mv $@.tmp $@
+
+$(PARSE)/voteview.njs: parse/voteview.py
+	$(PYTHON) parse/voteview.py > $@.tmp
+	mv $@.tmp $@
