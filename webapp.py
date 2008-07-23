@@ -349,7 +349,10 @@ class politician:
                           vars=locals())[0]
         except IndexError:
             raise web.notfound
-
+        
+        p.fec_ids = [x.fec_id for x in db.select('politician_fec_ids', what='fec_id', 
+          where='politician_id=$polid', vars=locals())]
+        
         p.interest_group_rating = interest_group_ratings(polid)
         p.interest_group_table = interest_group_table(p.interest_group_rating)
         p.related_groups = group_politician_similarity(polid)
@@ -383,7 +386,9 @@ class politician:
           'n_bills_introduced n_bills_enacted n_bills_debated '
           'n_bills_cosponsored '
           'icpsrid nominate predictability '
-          'n_speeches words_per_speech': apipublish.identity,
+          'n_speeches words_per_speech '
+          'fec_ids money_raised pct_spent pct_self '
+          'pct_indiv pct_pac': apipublish.identity,
          }, [p], format)
         if out:
             return out

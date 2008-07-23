@@ -45,6 +45,20 @@ CREATE TABLE district (
   zoom_level int
 );
 
+CREATE TABLE zip (
+  zip varchar(5) primary key,
+  
+  gini float,
+  -- @@other IRS stuff
+);
+
+CREATE TABLE zip2dist (
+  zip int references zip,
+  district varchar(10) references district,
+  
+  primary key (zip, district)
+);
+
 CREATE TABLE politician (
   -- index.json
   id varchar(256) primary key,
@@ -85,6 +99,20 @@ CREATE TABLE politician (
   photo_path varchar(256),
   photo_credit_url varchar(256),
   photo_credit_text varchar(256)
+  
+  -- fec
+  money_raised int,
+  pct_spent float,
+  pct_self float,
+  pct_indiv float,
+  pct_pac float
+);
+
+CREATE TABLE politician_fec_ids (
+  politician_id varchar(256) references politician,
+  fec_id varchar(256),
+  -- cycle int,
+  primary key (politician_id, fec_id)
 );
 
 CREATE TABLE interest_group (
