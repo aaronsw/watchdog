@@ -190,4 +190,5 @@ GRANT ALL on vote TO watchdog;
 GRANT ALL on interest_group_bill_support TO watchdog;
 GRANT ALL on group_politician_similarity TO watchdog;
 GRANT ALL on category TO watchdog;
-GRANT ALL ON v_politician_name to watchdog;
+GRANT ALL on v_politician_name to watchdog;
+GRANT ALL on politician_fec_ids to watchdog;
