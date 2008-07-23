@@ -2,6 +2,7 @@
 Parse IRS SOI statistics.
 """
 
+import web
 import xls2list
 
 SOI_PATH = "../data/crawl/irs/soi/2005/ZIP Code 2005 %s.xls"
@@ -10,8 +11,8 @@ class MissingData(Exception): pass
 def gini_est(data):
     """
     Estimates upper and lower bounds for Gini coefficient based on
-    equations 1.1 thru 1.3 from Mehran 1975 summary Gastwirth 1972
-    in <http://www.jstor.org/stable/2285377?seq=1>.
+    equations 1.1 thru 1.3 from Mehran 1975 as summarized in
+    Gastwirth 1972 at <http://www.jstor.org/stable/2285377?seq=1>.
     
     `data` is a list of dictionaries with the keys
     `lower_bound`, `n_filers`, and `adjusted_gross_income`.
@@ -31,16 +32,17 @@ def gini_est(data):
         return out/total
 
     people_f = lambda i: fraction(i, 'n_filers')
-    income_f = lambda i: fraction(i, 'adjusted_gross_income')
+    income_f = lambda i: fraction(i, 'agi')
+
     def mean_r(i):
-        if data[i]['adjusted_gross_income'] == 0: return 0
-        return float(data[i]['adjusted_gross_income'])/data[i]['n_filers']
+        if data[i].agi == 0: return 0
+        return float(data[i].agi)/data[i].n_filers
 
     def topof(i):
         if i < len(data)-1:
-            return data[i+1]['lower_bound']
+            return data[i+1].bracket_low
         else:
-            return data[-1]['adjusted_gross_income']
+            return data[-1].agi
 
     ksum = 0
     for i in range(1, len(data)):
@@ -70,15 +72,20 @@ def parse_state(state):
     
     loc = 11 # rest is all headers
     while loc+7 < len(stats):
-        out = {}
+        out = web.storage()
         bundle = stats[loc:loc+7]
         if bundle[0][0] == None:
             break
 
-        out['where'] = bundle[0][0]
-        if isinstance(out['where'], float):
-            out['where'] = int(out['where'])
-        out['groupings'] = []
+        out.loc = bundle[0][0]
+        if isinstance(out.loc, float):
+            out.loc = str(int(out.loc)).zfill(5)
+        
+        if out.loc.strip() == "MISSOURI":
+            loc += 8 # duped data
+            continue
+
+        out.brackets = []
         
         for line in bundle:
             if (isinstance(line[0], unicode) and line[0].strip() == 'Total'
@@ -88,15 +95,49 @@ def parse_state(state):
                 line[0] = 0
             else:
                 line[0] = int(''.join([x for x in line[0].split()[0] if x.isdigit()]))
-            out['groupings'].append(dict(
-              lower_bound=line[0], 
+            out.brackets.append(web.storage(
+              bracket_low=line[0], 
               n_filers=fixnum(line[1]), 
-              adjusted_gross_income=fixnum(line[4], 1000)))
+              agi=fixnum(line[4], 1000),
+              tot_tax=fixnum(line[35], 1000),
+              n_dependents=fixnum(line[3]),
+              n_eitc=fixnum(line[36]),
+              tot_eitc=fixnum(line[37], 1000),
+              tot_charity=fixnum(line[26], 1000),
+              n_prepared=fixnum(line[38])
+            ))
+            
+            br = out.brackets[-1]            
+            err = (TypeError, ZeroDivisionError)
+            
+            try: br.pct_prepared = float(br.n_prepared)/br.n_filers
+            except err: pass
+
+            try: br.pct_charity = float(br.tot_charity)/br.agi
+            except err: pass
+
+            try:
+                br.avg_eitc = float(br.tot_eitc)/br.n_eitc
+            except TypeError:
+                pass
+            except ZeroDivisionError:
+                br.avg_eitc = 0
+
+            try: br.pct_eitc = float(br.n_eitc)/br.n_filers
+            except err: pass
+
+            try: br.avg_dependents = float(br.n_dependents)/br.n_filers
+            except err: pass
+
+            try: br.avg_taxburden = float(br.tot_tax)/br.agi
+            except err: pass
+
+            try: br.avg_income = float(br.agi)/br.n_filers
+            except err: pass
+                
+        try: out.gini = gini_est(out.brackets)
+        except MissingData: pass
         
-        try:
-            out['gini'] = gini_est(out['groupings'])
-        except MissingData:
-            pass
         yield out
         
         loc += 8
@@ -109,18 +150,13 @@ def parse_soi():
     'WA', 'WI', 'WV', 'WY']
     
     for state in states:
+        import sys
+        print>>sys.stderr, state
         for x in parse_state(state):
-            print state, x['gini']
-            break
+            if x.loc.strip() == 'Total':
+                x.loc = state
+            yield x
 
 if __name__ == "__main__":
-    def fixit(x):
-        if isinstance(x, unicode) and x.strip() == "Total":
-            return 'None'
-        elif isinstance(x, (float, int)):
-            return str(int(x))
-        else:
-            return str(x)
-    for row in parse_state('CA'):
-        for g in row['groupings']:
-            print ','.join(fixit(x) for x in [row['where'], g['lower_bound'], g['n_filers'], g['adjusted_gross_income']])
+    import tools
+    tools.export(parse_soi())
