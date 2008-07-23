@@ -20,6 +20,14 @@ def export(generator):
     for item in generator:
         sys.stdout.write(netstring(jsonify(item)))
 
+def unexport(fh):
+    n = '0'
+    while n:
+        n = int(n + ''.join(c for c in iter(lambda: fh.read(1), ':')))
+        yield simplejson.loads(fh.read(n))
+        assert fh.read(1) == ','
+        n = fh.read(1)
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
