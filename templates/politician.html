@@ -24,45 +24,42 @@ $var pretitle:
 <h2 style="clear: both">Money</h2>
 
 <table class="charted">
-$if pol.money_raised:
-    <tr>
-      <th>Raised</th>
-      <td>\$$commify(pol.money_raised)</a></td>
-      <td><a href="/p/by/money_raised#$pol.id"
-           ><img src="/p/by/money_raised/distribution.png?point=$pol.money_raised"
-                 class="sparkline" /></a></td>
-    </tr><tr>
-      <th>Spent</th>
-      <td>${int(pol.pct_spent * 100)}%</td>
-      <td><a href="/p/by/pct_spent#$pol.id"
-           ><img 
-             src="/p/by/pct_spent/distribution.png?point=$pol.pct_spent"
-             class="sparkline" /></a></td>
-    
-    </tr><tr>
-      <th>From self</th>
-      <td>${int(pol.pct_self * 100)}%</td>
-      <td><a href="/p/by/pct_self#$pol.id"
-           ><img 
-             src="/p/by/pct_self/distribution.png?point=$pol.pct_self"
-             class="sparkline" /></a></td>
-    </tr><tr>
-      <th>From individuals</th>
-      <td>${int(pol.pct_indiv * 100)}%</td>
-      <td><a href="/p/by/pct_indiv#$pol.id"
-           ><img 
-             src="/p/by/pct_indiv/distribution.png?point=$pol.pct_indiv"
-             class="sparkline" /></a></td>
-    </tr><tr>
-      <th>From <acronym title="Political Action Committees">PAC</acronym>s</th>
-      <td>${int(pol.pct_pac * 100)}%</td>
-      <td><a href="/p/by/pct_pac#$pol.id"
-           ><img 
-             src="/p/by/pct_pac/distribution.png?point=$pol.pct_pac"
-             class="sparkline" /></a></td>
-    </tr>
-$else:
-    <tr><th>No information available.</th></tr>
+  <tr>
+    <th>Raised</th>
+    <td>\$$commify(pol.money_raised)</a></td>
+    <td><a href="/p/by/money_raised#$pol.id"
+         ><img src="/p/by/money_raised/distribution.png?point=$pol.money_raised"
+               class="sparkline" /></a></td>
+  </tr><tr>
+    <th>Spent</th>
+    <td>${int(pol.pct_spent * 100)}%</td>
+    <td><a href="/p/by/pct_spent#$pol.id"
+         ><img 
+           src="/p/by/pct_spent/distribution.png?point=$pol.pct_spent"
+           class="sparkline" /></a></td>
+
+  </tr><tr>
+    <th>From self</th>
+    <td>${int(pol.pct_self * 100)}%</td>
+    <td><a href="/p/by/pct_self#$pol.id"
+         ><img 
+           src="/p/by/pct_self/distribution.png?point=$pol.pct_self"
+           class="sparkline" /></a></td>
+  </tr><tr>
+    <th>From individuals</th>
+    <td>${int(pol.pct_indiv * 100)}%</td>
+    <td><a href="/p/by/pct_indiv#$pol.id"
+         ><img 
+           src="/p/by/pct_indiv/distribution.png?point=$pol.pct_indiv"
+           class="sparkline" /></a></td>
+  </tr><tr>
+    <th>From <acronym title="Political Action Committees">PAC</acronym>s</th>
+    <td>${int(pol.pct_pac * 100)}%</td>
+    <td><a href="/p/by/pct_pac#$pol.id"
+         ><img 
+           src="/p/by/pct_pac/distribution.png?point=$pol.pct_pac"
+           class="sparkline" /></a></td>
+  </tr>
 </table>
 
 <h2>Speeches</h2>

@@ -10,7 +10,7 @@ import simplejson
 r_center = re.compile(r'map\.setCenter\(new GLatLng\(([-0-9.]+), ([-0-9.]+)\), (\d+)\);')
 
 def main():
-    districts = simplejson.load(file('../data/load/districts/index.json'))
+    districts = simplejson.load(file('../data/parse/districts/index.json'))
     out = {}
     for dist in districts.iterkeys():
         try:

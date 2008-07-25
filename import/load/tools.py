@@ -13,7 +13,7 @@ def districtp(district):
     Return the watchdog ID for the represenative of `district`.
     """
     if not _districtcache:
-        reps = simplejson.load(file('../data/load/politicians/index.json'))
+        reps = simplejson.load(file('../data/parse/politicians/index.json'))
         for repid, rep in reps.iteritems():
             _districtcache[rep['district']] = repid
     

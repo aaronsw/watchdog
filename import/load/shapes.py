@@ -11,7 +11,7 @@ DATA_DIR = '../data/crawl/census'
 
 def fips2state():
     out = {}
-    states = simplejson.load(file('../data/load/states/index.json'))
+    states = simplejson.load(file('../data/parse/states/index.json'))
     for stateid, state in states.iteritems():
         out[state['fipscode']] = stateid
     return out
