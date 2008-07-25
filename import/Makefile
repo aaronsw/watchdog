@@ -38,7 +38,7 @@ clean:
 	touch $@
 
 .schema: ../schema.sql
-	$(DBCLIENT) watchdog_dev < $<
+	$(DBCLIENT) watchdog_dev < $< 2>&1 | grep -v 'role "watchdog" does not exist'
 	touch $@
 
 $(LOAD)/states/index.json: load/manual/states.json
