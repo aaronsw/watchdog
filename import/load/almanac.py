@@ -21,7 +21,7 @@ def coalesce_population(data, fields):
     return (None, None)
 
 def main():
-    districts = simplejson.load(file(DATA_DIR + '/parse/districts/index.json'))
+    districts = simplejson.load(file(DATA_DIR + '/load/districts/index.json'))
     
     assert os.path.exists(ALMANAC_DIR), ALMANAC_DIR
     out = {}
