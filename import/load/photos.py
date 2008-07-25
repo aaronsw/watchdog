@@ -32,7 +32,7 @@ def govtrackcredit(govtrackid):
 def load():
     out = {}
 
-    pols = simplejson.load(file('../data/parse/politicians/govtrack.json'))
+    pols = simplejson.load(file('../data/load/politicians/govtrack.json'))
 
     for polid, pol in pols.iteritems():
         options = [
