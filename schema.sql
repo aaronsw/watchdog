@@ -48,7 +48,7 @@ CREATE TABLE district (
 CREATE TABLE zip (
   zip varchar(5) primary key,
   
-  gini float,
+  gini float
   -- @@other IRS stuff
 );
 
@@ -98,7 +98,7 @@ CREATE TABLE politician (
   -- photos.json
   photo_path varchar(256),
   photo_credit_url varchar(256),
-  photo_credit_text varchar(256)
+  photo_credit_text varchar(256),
   
   -- fec
   money_raised int,

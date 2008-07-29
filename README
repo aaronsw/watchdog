@@ -45,13 +45,12 @@ INSTALL:
     createdb watchdog_dev
     make
     
-    # this will:
-    # a) set up your database tables
-    # b) parse the raw data (from data/crawl) into json (stored in data/parse)
-    # c) import the json into your database tables
+    # this will parse, process, and import all the data
     
     cd ..
     
+    # run the unit tests
+    make test
+    
     # start the webserver
-    export PYTHONPATH="$PYTHONPATH:$(pwd)/vendor"
-    python webapp.py
+    make run

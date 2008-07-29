@@ -4,8 +4,12 @@ Parser for FEC Files for files that conform to webl.txt and weball.txt
 Started 2008-04-16.
 """
 
-__author__ = "Jeremy Schwartz <jerschwartz@gmail.com>"
+__author__ = [
+  "Jeremy Schwartz <jerschwartz@gmail.com>",
+  "Aaron Swartz <me@aaronsw.com>"
+]
 
+import gzip
 import web
 
 COBOL_INT_TABLE = dict(']0 j1 k2 l3 m4 n5 o6 p7 q8 r9'.split())
@@ -26,9 +30,11 @@ def get_data_str(d):
     return d.decode('cp1251').rstrip()
 
 def get_data_date(d):
+    "MMDDYYYY"
     return d[4:8] + "-" + d[0:2] + "-" + d[2:4]
 
 def get_data_date2(d):
+    "??DDMMYYYY"
     return d[6:10] + "-" + d[4:6] + "-" + d[2:4]
 
 def table_lookup(table):
@@ -89,9 +95,9 @@ def read_row(row, row_def):
         offset = offset + col[COL_LENGTH]
     return out
 
-def read_fec_file(name, row_def):
+def read_fec_file(fh, row_def):
     """Read an entire file."""
-    for line in open(name):
+    for line in fh:
         yield read_row(line, row_def)
 
 COL_NAME = 0
@@ -542,19 +548,40 @@ PAC_SUM_82_ROW_DEF = [
     ("senate_house_inc_contrib",9,get_data_int),
     ("senate_house_cha_contrib",9,get_data_int),
     ("senate_house_opn_contrib",9,get_data_int)]
-    
+
+INDIV_ROW_DEF = [
+  ('filer_id', 9, get_data_str),
+  ('amendment_type', 1, get_data_str), #@@enumeration
+  ('report_type', 3, get_data_str), #@@enumeration
+  ('primary_general', 1, get_data_str), #@@enumeration
+  ('microfilm_loc', 11, get_data_str),
+  ('transaction_type', 3, get_data_str), #@@important enumeration
+  ('src_name', 34, get_data_str),
+  ('src_city', 18, get_data_str),
+  ('src_state', 2, get_data_str),
+  ('src_zip', 5, get_data_str),
+  ('src_occupation', 35, get_data_str),
+  ('date', 8, get_data_date),
+  ('amount', 7, get_data_int),
+  ('src_id', 9, get_data_str),
+  ('fec_record_id', 7, get_data_str)
+]
 
 def parse_candidates():
-    return read_fec_file("../data/crawl/fec/2008/weball.dat", WEB_ROW_DEF)
+    return read_fec_file(file("../data/crawl/fec/2008/weball.dat"), WEB_ROW_DEF)
 def parse_committees():
-    return read_fec_file("../data/crawl/fec/2008/cm.dat", CM_DEF)
+    return read_fec_file(file("../data/crawl/fec/2008/cm.dat"), CM_DEF)
 def parse_transfers():
-    return read_fec_file("../data/crawl/fec/2008/pas2.dat", PAS2_DEF)
+    return read_fec_file(file("../data/crawl/fec/2008/pas2.dat"), PAS2_DEF)
+def parse_contributions():
+    return read_fec_file(gzip.open("../data/crawl/fec/2008/indiv.dat.gz"), INDIV_ROW_DEF)
 
 if __name__ == "__main__":
     import tools
-    tools.export(parse_candidates())
     tools.export(parse_committees())
+    tools.export(parse_transfers())
+    tools.export(parse_contributions())    
+    tools.export(parse_candidates())
     tools.export(parse_transfers())
 
 #result = read_fec_file("WEBL08.DAT",WEB_ROW_DEF,WEB_ROW_DEF_SIZE)

@@ -101,7 +101,7 @@ def n3ify_items(obj, indent):
     objitems = obj.items()
     objitems.sort(lambda x, y: cmp(x[0], y[0]))
     return '\n'.join(['%s:%s %s;' % (indent, k, n3ify(v, indent))
-                      for k, v in objitems if v is not None])
+                      for k, v in objitems if v not in [None, []]])
 
 def publishn3(lst, pkey='id'):
     out = ['@prefix : <http://watchdog.net/about/api#> .', '']
