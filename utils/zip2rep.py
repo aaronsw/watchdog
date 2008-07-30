@@ -224,5 +224,6 @@ def zip2dist(zipcode, addr=None):
         return [govtrack(lat, lng)]
 
 if __name__ == "__main__":
-    print "Generating the zipdict (this will take some time and bandwidth)..."
-    file('zipdict.txt', 'w').write(dumpzipdict(zipdict()))
+    #print "Generating the zipdict (this will take some time and bandwidth)..."
+    #file('zipdict.txt', 'w').write(dumpzipdict(zipdict()))
+    print "Get the latest zipdict.txt file at http://watchdog.net/about/api#zip2rep"
