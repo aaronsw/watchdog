@@ -1,10 +1,9 @@
+/*
 body, table { margin: 0; font: 14px "Georgia"; line-height: 1.4}
 .header { background-color: #182053; margin: 0 0 1em 0 ; color: white; padding: .4em;}
 .header h1 { margin: 0; }
 .header .nav { float: right; padding-right: 2em; padding-top: .2em; color: white;}
 .header .nav a { color: #FEFBC3; }
-td { vertical-align: top;}
-th { text-align: left;}
 
 .intro { width: 80%; margin: auto; text-align: center;}
 .bigintro { padding: 1em; background-color: #eee;}
@@ -15,14 +14,19 @@ th { text-align: left;}
     background-color: #e7e7e7;
     border: 1px solid #ccc;
 }
+.footer { text-align: left; border-top: 1px solid #ccc; padding: .5em;}
+h1 { font-weight: normal; }
+.header h1 a, h1 img { color: white; text-decoration: none; border: 0; }
+
+*/
+td { vertical-align: top;}
+th { text-align: left;}
+
 
 .sources { background-color: #eee; color: #555; padding: 1em; font-size: smaller; margin-top: 2em; clear: both;}
 
 .answer { margin-left: 1.5em;}
 
-.footer { text-align: left; border-top: 1px solid #ccc; padding: .5em;}
-h1 { font-weight: normal; }
-.header h1 a, h1 img { color: white; text-decoration: none; border: 0; }
 table.interest_group_ratings td { text-align: right; }
 th, td { padding-left: 0.5em; vertical-align: top; } /* space out the columns a bit */
 table.interest_group_support td, th { text-align: left; }

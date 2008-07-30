@@ -1,28 +1,58 @@
 $def with (page)
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>$:page.title.strip() (watchdog.net)</title>
-  <link href="/static/style.css" type="text/css" rel="stylesheet" />
+  <link href="/static/css/style.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="/static/js/jquery.js"></script>
+  <script type="text/javascript" src="/static/js/slicker.js"></script>
   $:page.get('head')
 </head><body>
-<div class="header">
-  <div class="nav">
-    $if is_logged_in():
-        <a href="#" onclick="document.forms['logout'].submit()">logout</a>
-        <form name="logout" action="/logout" method='POST' style="display: none;"> </form>
-    $else:
-        <a href="/login">login</a>
-
-     | <a href="/about/">about</a> | <a href="/blog/">blog</a> | <a href="/about/#feedback">feedback</a> </div>
-  <h1><a href="/"><img src="/static/nameplate.png" alt="watchdog.net" /></a></h1>
-</div>
-<div class="body">
-  
-<div style="border: 1px solid #D8D600; background-color: #FFF399; padding: 1em; margin-right: auto;">
-  <strong>Pardon the mess</strong> &mdash; we're building this site right before your eyes.
-  So expect things to break, fix, appear, and disappear before your very eyes.
-  We'd love your <a href="/about/#feedback">feedback</a> and your <a href="/about/#help">help</a>. (<a href="/about/#hiring">We're hiring!</a>)
-</div>
+<div id="container\
+$if not page.get('front'): -leaf\
+">
+<!-- header -->
+$if page.get('front'):
+    <div id="logo"><a href="/"><img src="/static/images/watchdog.big.gif" alt="Watchdog" /></a></div>
+  <div id="intro">
+    $if not page.get('front'): <div style="float: left; padding-bottom: 10px;">
+	  <a href="/">Watchdog.net.</a>
+	  $if page.get('front'): <br />
+	  $:page.title.strip()
+	  $if not page.get('front'): </div>
+  $if not page.get('front'):
+      <div style="float: right; padding-right: 32px; padding-top: 10px;">
+        $if is_logged_in():
+            <a href="#" onclick="document.forms['logout'].submit()">logout</a
+        $else:
+            <a href="#" id="login-toggle" title="log in" class="footer">login</a
+          ><a href="/about/" class="footer">about</a
+          ><a href="/blog/" class="footer">blog</a
+          ><a href="/about/#feedback" class="footer">feedback</a>
+      </div>
+  </div>
+  <div id="header\
+$if not page.get('front'): -leaf\
+"></div>
+<!-- /header -->
+<div id="main">
+  <div id="sidebar" style="clear: right">
+    <!--
+      <h2>Site News</h2>
+      @@blog
+    -->
+    <div class="postit">
+      <p><strong>Pardon the mess</strong> &mdash;<br />
+      we're building this site right before your eyes.
+      So expect things to break, fix, appear, and disappear before your very eyes.
+      We'd love your <a href="/about/#feedback">feedback</a> and your <a href="/about/#help">help</a>.</p>
+      
+      <p><a href="/about/#hiring" class="highlight">We're hiring!</a></p>
+    </div>
+  </div>
+  <div id="text"\
+  $if page.get('front'): style="margin-top: -10px;"\
+  >
 
 $:page.get('pretitle')
 
@@ -30,12 +60,32 @@ $ msg = page.get('msg')
 $if msg:
     <div class="msg">$:msg</div>
 
-<h1>$:page.title.strip()</h1>
-
 $:page
-</div>
 
-<div class="footer">
-  What do you think? <a href="/about/#feedback">Send us your feedback.</a>
 </div>
-</body></html>
+<div id="menu_footer">
+  $if is_logged_in():
+      <form name="logout" action="/logout" method='POST' style="display: none;"></form>
+
+	<a href="/" class="watchdog">watchdog.net</a>\
+$if is_logged_in():
+    <a href="#" onclick="document.forms['logout'].submit()">logout</a
+$else:
+    <a href="#" id="footer-login-toggle" title="log in" class="footer">login</a
+  ><a href="/about/" class="footer">about</a
+  ><a href="/blog/" class="footer">blog</a
+  ><a href="/about/#feedback" class="footer">feedback</a>
+</div>
+</div><!-- /main -->
+
+<div id="footer\
+$if not page.get('front'): -leaf\
+">
+<div id="left_footer">What do you think? <a href="/about/l#feedback"><strong>Send us your feedback.</strong></a></div>
+<div id="right_footer">
+Site created by <a href="http://groups.google.com/group/watchdog-devel/"><strong>the watchdog team</strong></a> &amp; <a href="http://groups.google.com/group/watchdog-volunteers"><strong>volunteers like you!</strong></a>
+</div>
+</div><!-- /footer -->
+</div>
+</body>
+</html>

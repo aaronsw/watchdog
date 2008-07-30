@@ -2,7 +2,7 @@ import os
 import tempfile
 import web
 
-render = web.template.render('templates/', base='base')
+render = web.template.render('templates/', base='base', cache=False)
 db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'),
                   db=os.environ.get('TABLE_NAME', 'watchdog_dev'))
                   
