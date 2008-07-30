@@ -1,51 +1,25 @@
-#!/usr/bin/python
-# Turn Aaron's crawl of the votesmart.org API data into SQL.
-import pickle, cgitb, sys
-cgitb.enable(format='text')
+"""
+Load Project Vote Smart data.
+"""
 
-def escapechar(char):
-    if char in "'\\": return "\\" + char
-    else: return char
-def sqlescape(astr):
-    return "'%s'" % (''.join(escapechar(char) for char in astr))
-def insert(table, contents):
-    columns = contents.keys()
-    fields = ', '.join(columns)
-    values = ', '.join(sqlescape(contents[field]) for field in columns)
-    return (u'insert into %s (%s) values (%s);' % (table, fields, values)
-            ).encode('utf-8')
-def create(table, fields):
-    linesep = '\n    '
-    sep = ',' + linesep
-    return (u'create table %s (%s%s\n);' % (table, linesep, sep.join(
-        '%s text' % field for field in fields
-    ))).encode('utf-8')
+import simplejson
+import tools
+from settings import db
 
-files = {
-    'districts': ['name', 'districtId', 'stateId', 'officeId'],
-    'candidates': ['suffix', 'officeStateId', 'electionStatus',
-                   'electionYear', 'officeDistrictId', 'electionDistrictId',
-                   'candidateId', 'firstName', 'title', 'middleName',
-                   'lastName', 'electionParties', 'electionStateId',
-                   'nickName', 'officeParties'],
-    'officials': ['suffix', 'officeStateId', 'electionStatus', 'electionYear',
-                  'officeDistrictId', 'electionDistrictId', 'candidateId',
-                  'firstName', 'title', 'middleName', 'lastName',
-                  'electionParties', 'electionStateId', 'nickName',
-                  'officeParties'],
-}
-
-def insert_from_pickle(fname, fo):
-    for item in pickle.load(fo):
-        if hasattr(item, 'keys'): print insert(fname, item)
-        else: print "-- funky item: %r" % (item,)
+cans = simplejson.load(file('../data/crawl/votesmart/candidates.json'))
+bios = simplejson.load(file('../data/crawl/votesmart/bios.json'))
 
 def main():
-    for fname in files.keys():
-        print create(fname, files[fname])
-        fo = file(fname + '.pkl')
-        while 1: # loop in case there's more than one pickled graph per file
-            try: insert_from_pickle(fname, fo)
-            except EOFError: break
-        print
-if __name__ == '__main__': main()
+    for dist, canl in cans.iteritems():
+        for can in canl:
+            wid = tools.districtp(dist)
+            if wid and can['lastName'].lower() in wid:
+                bio = bios[can['candidateId']]['candidate']
+                db.update('politician', where='id = $wid', vars=locals(),
+                  votesmartid=can['candidateId'], 
+                  nickname=can['nickName'],
+                  birthplace=bio['birthPlace'],
+                  education=bio['education'].replace('\r\n', '\n')
+                )
+              
+if __name__ == "__main__": main()

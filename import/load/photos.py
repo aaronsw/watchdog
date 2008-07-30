@@ -11,6 +11,7 @@ to:   data/parse/politicians/photos.json
 
 import os
 import simplejson
+from settings import db
 
 def govtrack_u(govtrackid):
     return 'http://www.govtrack.us/congress/person.xpd?id=%s' % govtrackid
@@ -20,6 +21,9 @@ def bioguide_u(bioguideid):
 
 def opensecrets_u(opensecretsid):
     return 'http://opensecrets.org/politicians/summary.asp?cid=%s' % opensecretsid
+
+def votesmart_u(votesmartid):
+    return 'http://votesmart.org/bio.php?can_id=%s' % votesmartid
 
 def govtrackcredit(govtrackid):
     """gets the credit for the GovTrack photo; credits GovTrack if we can't find it"""
@@ -32,9 +36,10 @@ def govtrackcredit(govtrackid):
 def load():
     out = {}
 
-    pols = simplejson.load(file('../data/load/politicians/govtrack.json'))
+    pols = db.select('politician')
+    #simplejson.load(file('../data/load/politicians/govtrack.json'))
 
-    for polid, pol in pols.iteritems():
+    for pol in pols:
         options = [
           (
             '../data/crawl/house/photos/%s.jpg' % pol['bioguideid'], 
@@ -46,7 +51,16 @@ def load():
           ),
           (
             '../data/crawl/opensecrets/photos/%s.jpg' % pol.get('opensecretsid'), 
-            (opensecrets_u(pol.get('opensecretsid')), 'Center for Responsive Politics'))
+            (opensecrets_u(pol.get('opensecretsid')), 'Center for Responsive Politics')
+          ),
+          (
+            '../data/crawl/votesmart/photos/%s.jpg' % pol.get('votesmartid'),
+            (votesmart_u(pol.get('votesmartid')), 'Project Vote Smart')
+          ),
+          (
+            '../data/crawl/votesmart/photos/%s.JPG' % pol.get('votesmartid'),
+            (votesmart_u(pol.get('votesmartid')), 'Project Vote Smart')
+          )
         ]
     
         maxsize = 0
@@ -62,12 +76,11 @@ def load():
                 pass
 
         if currentfn:
-            out[polid] = {
-              'photo_path': currentfn[2:],
-              'photo_credit_url': currentcredit[0],
-              'photo_credit_text': currentcredit[1],
-            }
-    return out
+            db.update('politician', where='id=$pol.id', vars=locals(), 
+              photo_path=currentfn[2:],
+              photo_credit_url=currentcredit[0],
+              photo_credit_text=currentcredit[1]
+            )
 
 if __name__ == "__main__":
-    print simplejson.dumps(load(), indent=2, sort_keys=True)
+    load()

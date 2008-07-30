@@ -65,12 +65,12 @@ CREATE TABLE politician (
   district varchar(10) references district,
   wikipedia varchar(256),
   
-  -- govtrack.json
+  -- govtrack.json --@@get from votesmart?
   bioguideid varchar(256),
   opensecretsid varchar(256),
   govtrackid varchar(256),
   gender varchar(1),
-  birthday varchar(256),        -- we don't really want DateTime objects
+  birthday varchar(256),        -- we don't really want DateTime objects --why not? --ASw
   firstname varchar(256),
   middlename varchar(256),
   lastname varchar(256),
@@ -105,7 +105,13 @@ CREATE TABLE politician (
   pct_spent float,
   pct_self float,
   pct_indiv float,
-  pct_pac float
+  pct_pac float,
+  
+  -- votesmart
+  nickname varchar(256),
+  votesmartid varchar(256),
+  birthplace varchar(256),
+  education text
 );
 
 CREATE TABLE politician_fec_ids (

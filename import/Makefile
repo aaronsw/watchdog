@@ -6,6 +6,10 @@ else
     DBCLIENT=psql
 endif
 
+ifeq ($(TABLE_NAME),)
+	TABLE_NAME=watchdog_dev
+endif
+
 export PYTHONPATH := ../:.:$(PWD)/../vendor:$(PYTHONPATH)
 
 PYTHON=python
@@ -30,7 +34,7 @@ all: .database
 clean:
 	rm $(JSONS) .schema .json .bills interest .database
 
-.database: .schema .json .bills .interests
+.database: .schema .json .bills .interests .votesmart .photos
 	touch $@
 
 .json: .schema load/json.py $(JSONS)
@@ -38,7 +42,7 @@ clean:
 	touch $@
 
 .schema: ../schema.sql
-	$(DBCLIENT) watchdog_dev < $< 2>&1 | grep -v 'role "watchdog" does not exist'
+	$(DBCLIENT) $TABLE_NAME < $< 2>&1 | grep -v 'role "watchdog" does not exist'
 	touch $@
 
 $(LOAD)/states/index.json: load/manual/states.json
@@ -76,10 +80,6 @@ $(LOAD)/politicians/voteview.json: load/voteview.py parse/voteview.py ../data/cr
 	$(PYTHON) load/voteview.py > $@.tmp
 	mv $@.tmp $@
 
-$(LOAD)/politicians/photos.json: load/photos.py $(LOAD)/politicians/govtrack.json
-	$(PYTHON) load/photos.py > $@.tmp
-	mv $@.tmp $@
-
 $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack.json
 	$(PYTHON) load/earmarks.py > $@.tmp
 	mv $@.tmp $@
@@ -88,10 +88,17 @@ $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack
 	$(PYTHON) load/bills.py
 	touch $@
 
-.interests: .schema load/maplight.py .bills
+.interests: load/maplight.py .bills
 	$(PYTHON) load/maplight.py
 	touch $@
 
+.votesmart: .json load/votesmart.py $(CRAWL)/votesmart/{bio,candidates}.json
+	$(PYTHON) load/votesmart.py
+	touch $@
+
+.photos: .json .votesmart load/photos.py
+	$(PYTHON) load/photos.py
+	touch $@
 
 # new way of doing things: parse to .njs files
 
