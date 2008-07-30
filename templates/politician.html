@@ -15,11 +15,18 @@ $var pretitle:
         <a href="$pol.photo_path"><img src="$pol.photo_path" alt="Headshot" class="headshot pretitle" /></a>
 
 <p>
+  $if pol.nickname: known as "$pol.nickname"<br />
   represents <a href="/us/$pol.district">$pol.district</a><br />
   $pol.party, $pol.religion<br />
-  $if pol.birthday: b. $pol.birthday<br />
+  $if pol.birthday:
+      b. $pol.birthday\
+      $if pol.birthplace: , $pol.birthplace\
+      <br />
   <a href="$pol.officeurl">Official website</a>
 </p>
+
+$if pol.education:
+    <p>Education: $pol.education</p>
 
 <h2 style="clear: both">Money</h2>
 
@@ -212,8 +219,12 @@ $for group in pol.related_groups:
 
 <div class="sources">
   Money data from <a href="http://www.fec.gov/">the FEC</a>.
-  Politician information from <a href="$pol.wikipedia">Wikipedia</a> and 
-  <a 
+  Politician information from 
+  $if pol.votesmartid:
+      <a href="http://votesmart.org/bio.php?can_id=$pol.votesmartid"
+      >Project Vote Smart</a>,
+  <a href="$pol.wikipedia">Wikipedia</a>, 
+  and <a 
     href="http://www.govtrack.us/congress/person.xpd?id=$pol.govtrackid"
   >GovTrack</a>.
   Earmark information from <a 

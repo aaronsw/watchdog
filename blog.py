@@ -9,6 +9,46 @@ urls = (
 
 content = [
   web.storage(
+    slug='fecpvs',
+    title='More data!',
+    author='Aaron Swartz',
+    updated='2008-07-30T00:00Z',
+    body = """
+<p>
+We've added even more data to the site. 
+Now politician pages 
+feature data from the FEC -- 
+the Federal Election Commission,
+which tracks all usage of money in politics.
+FEC data includes things like
+the amount of money raised,
+who it was raised from,
+and so on.
+We hope to have even more
+(actually, a lot more)
+FEC data soon, 
+but hopefully this provides an interesting start.
+</p>
+
+<p>
+We've also added some more personal data
+from our friends over at <a 
+  href="http://votesmart.org"
+>Project Vote Smart</a>.
+The data includes things like
+a politician's nickname
+and educational history,
+all of which we now provide on politician pages.
+</p>
+
+<p>
+I hope you enjoy the new features 
+and stay tuned for some even more exciting stuff tonight
+and later this week.
+</p>
+    """
+  ),
+  web.storage(
     slug = 'alignment',
     title = 'Interest Group Alignment',
     author = 'Aaron Swartz',
