@@ -93,3 +93,72 @@ forgot_password = form.Form(
             description='Email:'
             )
     )
+
+writerep = form.Form(
+    form.Dropdown('prefix_name', 
+        ['Mr.', 'Mrs.', 'Dr.', 'Ms.', 'Miss'], 
+        description='Prefix',
+        post='*'
+        ),
+    form.Textbox('last_name',
+        form.notnull,
+        description='Last Name',
+        post='*'
+        ),
+    form.Textbox('first_name',
+        form.notnull,
+        description='First Name',
+        post='*'
+        ),    
+    form.Textbox('addr1',
+        form.notnull,
+        description='Address',
+        size='20',
+        post='*'
+        ),
+    form.Textbox('addr2',
+        description='Address',
+        size='20'
+        ),    
+    form.Textbox('city',
+        form.notnull,
+        description='City',
+        post='*'
+        ),
+    form.Textbox('zipcode',
+        form.notnull,
+        form.regexp(r'[0-9]{5}', 'Please enter a valid zip'),
+        size='5',
+        maxlength='5',
+        description='Zip',
+        post='*'
+        ),
+    form.Textbox('phone',
+        form.notnull,
+        form.regexp(r'[0-9-.]*', 'Please enter a valid phone number'),
+        description='Phone',
+        post='*'
+        ),    
+    form.Textbox('email',
+        form.notnull,
+        form.regexp(email_regex, 'Please enter a valid email'),
+        description='Email',
+        size='20',
+        post='*'
+        ),
+    form.Textarea('msg',
+        form.notnull,
+        description='Message',
+        rows='15', 
+        cols='60',
+        post='*'
+        )               
+    )
+    
+zip4_textbox = form.Textbox('zip4',
+        form.notnull,
+        form.regexp(r'[0-9]{4}', 'Please Enter a valid zip'),
+        size='4',
+        maxlength='4',
+        description='Zip4'
+    )   

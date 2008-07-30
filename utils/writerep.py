@@ -268,17 +268,14 @@ def writerep_zipauth(zipauth_link, district, zipcode, state, prefix_name, first_
     else:
         print 'Error:', response
     
-def writerep(rep, zipcode, prefix_name, first_name, last_name, 
+def writerep(district, zipcode, prefix_name, first_name, last_name, 
              addr1, city, phone, email, msg, addr2='', addr3='', zip4=''):
     '''
     Note: zip4 is required for contactforms with `zipauth` flag
     as well as those with multiple representatives for the district
     '''
-    state, district, zipcodes = rep2state_dist_zips(rep)
-    if not zipcode: zipcode = zipcodes[0]
-    
+    state = district[:2]
     args = locals();
-    args.pop('rep'); args.pop('zipcodes')
     
     wyr = has_wyr_form(district)
     ima_link = get_ima_link(district)
@@ -301,17 +298,6 @@ def writerep(rep, zipcode, prefix_name, first_name, last_name,
     
     return msg_sent
 
-def rep2state_dist_zips(repname):
-    repname = repname.replace(' ', '_')
-    try:
-        district = db.select('politician', what='district', where='id=$repname', vars=locals())[0].district
-    except:
-        return None
-    else:
-        zipcodes = getzips(district)
-        state = district[:2]
-        return state, district, zipcodes
-
 def getdistzipdict(zipdump):
     """returns a dict with district names as keys zipcodes falling in it as values"""
     d = {}
@@ -333,16 +319,16 @@ def getzips(dist):
     return dist_zip_dict[dist]
         
 def test(formtype=None):
-    query = "select id from wyr, politician where politician.district=wyr.district " 
-    if formtype == 'wyr':  query += "and wyr_form='t'"
-    elif formtype == 'ima': query += "and imaissue='t'"
-    elif formtype == 'zipauth': query += "and zipauth='t'"
+    query = "select district from wyr " 
+    if formtype == 'wyr':  query += "where wyr_form='t'"
+    elif formtype == 'ima': query += "where imaissue='t'"
+    elif formtype == 'zipauth': query += "where zipauth='t'"
     
     pols = (p.id for p in db.query(query))
     
-    for pol in pols:
-        print '\n', pol,        
-        writerep(pol, zipcode='', prefix_name='Mr.', 
+    for dist in dists:
+        print '\n', dist,        
+        writerep(dist, zipcode='', prefix_name='Mr.', 
                  first_name='watchdog', last_name ='Tester', addr1='111 av', city='test city', 
                  phone='001-001-001', email='test@watchdog.net', msg='testing...')
 
