@@ -30,7 +30,7 @@ def _login(useremail, password):
 
 class login:
     def GET(self):
-        referer = web.ctx.env['HTTP_REFERER']
+        referer = web.ctx.env.get('HTTP_REFERER', '/')
         i = web.input(redirect=referer)
         form = forms.loginform()
         form['redirect'].value = i.redirect

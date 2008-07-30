@@ -25,7 +25,7 @@ $if page.get('front'):
         $if is_logged_in():
             <a href="#" onclick="document.forms['logout'].submit()">logout</a
         $else:
-            <a href="#" id="login-toggle" title="log in" class="footer">login</a
+            <a href="/login" id="login-toggle" class="footer">login</a
           ><a href="/about/" class="footer">about</a
           ><a href="/blog/" class="footer">blog</a
           ><a href="/about/#feedback" class="footer">feedback</a>
@@ -71,7 +71,7 @@ $:page
 $if is_logged_in():
     <a href="#" onclick="document.forms['logout'].submit()">logout</a
 $else:
-    <a href="#" id="footer-login-toggle" title="log in" class="footer">login</a
+    <a href="/login" id="footer-login-toggle" title="log in" class="footer">login</a
   ><a href="/about/" class="footer">about</a
   ><a href="/blog/" class="footer">blog</a
   ><a href="/about/#feedback" class="footer">feedback</a>
@@ -81,7 +81,7 @@ $else:
 <div id="footer\
 $if not page.get('front'): -leaf\
 ">
-<div id="left_footer">What do you think? <a href="/about/l#feedback"><strong>Send us your feedback.</strong></a></div>
+<div id="left_footer">What do you think? <a href="/about/#feedback"><strong>Send us your feedback.</strong></a></div>
 <div id="right_footer">
 Site created by <a href="http://groups.google.com/group/watchdog-devel/"><strong>the watchdog team</strong></a> &amp; <a href="http://groups.google.com/group/watchdog-volunteers"><strong>volunteers like you!</strong></a>
 </div>
