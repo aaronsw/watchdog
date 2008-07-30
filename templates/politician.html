@@ -248,7 +248,12 @@ $for group in pol.related_groups:
 
 <p><strong>Developers:</strong> Get this page in <a href="${pol.id.lower()}.n3">N3</a>, <a href="${pol.id.lower()}.xml">XML</a>, or <a href="${pol.id.lower()}.json">JSON</a>.</p>
 
-<p><em>Also known as:</em> $pol.govtrackid (GovTrack), $pol.opensecretsid (OpenSecrets), $pol.bioguideid (Biography), $pol.icpsrid (ICPSR)\
+<p><em>Also known as:</em>
+  $pol.govtrackid (GovTrack), 
+  $pol.opensecretsid (OpenSecrets), 
+  $pol.bioguideid (Congressional Bio), 
+  $pol.icpsrid (ICPSR), 
+  $pol.votesmartid (Vote Smart)\
 $if pol.fec_ids:
     , \
     $for fec_id in pol.fec_ids: $fec_id \
