@@ -2,7 +2,7 @@
 import re
 import markdown
 import web
-from utils import zip2rep, simplegraphs, apipublish, helpers
+from utils import zip2rep, simplegraphs, apipublish, helpers, forms, writerep
 import blog
 import petition
 import settings
@@ -38,6 +38,7 @@ urls = (
   r'/p/(.*?)%s?' % options, 'politician',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/c', petition.app,
+  r'/writerep', 'write_your_rep', 
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
@@ -465,6 +466,41 @@ class sparkdist:
         
         web.header('Content-Type', 'image/png')
         return simplegraphs.sparkline(points, inp.point)
+
+def add_zip4(form):
+    inputs = list(form.inputs)
+    for index, input in enumerate(inputs):
+        if input.name == 'zipcode' or input.name == 'zip5':
+            inputs.insert(index+1, forms.zip4_textbox)
+    form.inputs = tuple(inputs)
+    return form
+    
+class write_your_rep:
+    def GET(self, form=None):
+        form = forms.writerep
+        msg = helpers.get_delete_msg()
+        return render.writerep(form, msg=msg)
+        
+    def POST(self):
+        i = web.input()
+        form = forms.writerep
+        if form.validates(i):
+            try:
+                dists = zip2rep.zip2dist(i.zipcode, i.addr1+i.addr2)
+            except zip2rep.BadAddress:
+                dists = []
+            print dists    
+            if len(dists) != 1:
+                form = add_zip4(form)
+                return self.GET(form)
+            else:
+                msg_sent = writerep.writerep(district=dists[0], **i)
+                print 'after writerep'
+                if msg_sent: helpers.set_msg('Your message has been sent.')
+                raise web.seeother('/writerep')
+        else:
+            return self.GET(form)        
+            
 
 class staticdata:
     def GET(self, path):

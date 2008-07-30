@@ -1,0 +1,13 @@
+$def with (form, msg=None)
+
+$var title: Write your representative
+
+$if msg:
+    $var msg: $:msg
+
+<form name="writerepform" method="POST" action="/writerep">
+    $if not form.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
+	$:form.render() 
+  	<p><input type="submit" value="Send message" /></p>
+</form>    
+
