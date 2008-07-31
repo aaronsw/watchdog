@@ -271,5 +271,19 @@ def parse_tigerzip(fh):
 
         yield parse_line(def_tigerzip[t], line)
 
+def parse_zip2dist(fh):
+    for row in parse_file(def_zip4, fh):
+        if row['_type'] != 'ZIP+4 Detail': continue
+        if row['congress_dist'] == 'AL':
+            row['congress_dist'] = '00'
+        if row['zip4_lo'] == row['zip4_hi']:
+            zip4s = [row['zip4_lo']]
+        else:
+            zip4s = [str(x).zfill(4) for x in xrange(int(row['zip4_lo']), int(row['zip4_hi']) + 1)]
+        for zip4 in zip4s:
+            yield row['zip'] + '-' + zip4, row['state_abbrev'] + '-' + row['congress_dist']
+
+    
+
 if __name__ == "__main__":
     pass
