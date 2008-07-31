@@ -3,9 +3,5 @@
 *.tmproj
 tmp
 data
-import/.database
-import/.schema
-import/.bills
-import/.interests
-import/.json
+import/.*
 .DS_Store
