@@ -1746,5 +1746,408 @@
   "zoe_lofgren": {
     "district": "CA-16", 
     "wikipedia": "http://en.wikipedia.org/wiki/Zoe_Lofgren"
+  },
+
+
+
+  "richard_shelby": {
+	  "district": "AL",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Richard_Shelby"
+  },
+  "jeff_sessions": {
+	  "district": "AL",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Jeff_Sessions"
+  },
+  "ted_stevens": {
+	  "district": "AK",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Ted_Stevens"
+  },
+  "lisa_murkowski": {
+	  "district": "AK",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Lisa_Murkowski"
+  },
+  "john_mccain": {
+	  "district": "AZ",
+	  "wikipedia":"http://en.wikipedia.org//wiki/John_McCain"
+  },
+  "jon_kyl": {
+	  "district": "AZ",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Jon_Kyl"
+  },
+  "blanche_lincoln": {
+	  "district": "AR",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Blanche_Lincoln"
+  },
+  "mark_pryor": {
+	  "district": "AR",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Mark_Pryor"
+  },
+  "dianne_feinstein": {
+	  "district": "CA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Dianne_Feinstein"
+  },
+  "barbara_boxer": {
+	  "district": "CA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Barbara_Boxer"
+  },
+  "wayne_allard": {
+	  "district": "CO",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Wayne_Allard"
+  },
+  "ken_salazar": {
+	  "district": "CO",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Ken_Salazar"
+  },
+  "christopher_dodd": {
+	  "district": "CT",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Christopher_Dodd"
+  },
+  "joe_lieberman": {
+	  "district": "CT",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Joe_Lieberman"
+  },
+  "joe_biden": {
+	  "district": "DE",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Joe_Biden"
+  },
+  "thomas_carper": {
+	  "district": "DE",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Thomas_R._Carper"
+  },
+  "bill_nelson": {
+	  "district": "FL",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Bill_Nelson_%28politician%29"
+  },
+  "mel_martinez": {
+	  "district": "FL",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Mel_Martinez"
+  },
+  "saxby_chambliss": {
+	  "district": "GA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Saxby_Chambliss"
+  },
+  "johnny_isakson": {
+	  "district": "GA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Johnny_Isakson"
+  },
+  "daniel_inouye": {
+	  "district": "HI",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Daniel_Inouye"
+  },
+  "daniel_akaka": {
+	  "district": "HI",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Daniel_Akaka"
+  },
+  "larry_craig": {
+	  "district": "ID",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Larry_Craig"
+  },
+  "mike_crapo": {
+	  "district": "ID",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Mike_Crapo"
+  },
+  "richard_durbin": {
+	  "district": "IL",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Richard_Durbin"
+  },
+  "barack_obama": {
+	  "district": "IL",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Barack_Obama"
+  },
+  "richard_lugar": {
+	  "district": "IN",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Richard_Lugar"
+  },
+  "evan_bayh": {
+	  "district": "IN",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Evan_Bayh"
+  },
+  "chuck_grassley": {
+	  "district": "IA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Chuck_Grassley"
+  },
+  "tom_harkin": {
+	  "district": "IA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Tom_Harkin"
+  },
+  "sam_brownback": {
+	  "district": "KS",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Sam_Brownback"
+  },
+  "pat_roberts": {
+	  "district": "KS",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Pat_Roberts"
+  },
+  "mitch_mcconnell": {
+	  "district": "KY",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Mitch_McConnell"
+  },
+  "jim_bunning": {
+	  "district": "KY",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Jim_Bunning"
+  },
+  "mary_landrieu": {
+	  "district": "LA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Mary_Landrieu"
+  },
+  "david_vitter": {
+	  "district": "LA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/David_Vitter"
+  },
+  "olympia_snowe": {
+	  "district": "ME",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Olympia_Snowe"
+  },
+  "susan_collins": {
+	  "district": "ME",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Susan_Collins"
+  },
+  "barbara_mikulski": {
+	  "district": "MD",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Barbara_Mikulski"
+  },
+  "ben_cardin": {
+	  "district": "MD",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Ben_Cardin"
+  },
+  "ted_kennedy": {
+	  "district": "MA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Ted_Kennedy"
+  },
+  "john_kerry": {
+	  "district": "MA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/John_Kerry"
+  },
+  "carl_levin": {
+	  "district": "MI",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Carl_Levin"
+  },
+  "debbie_stabenow": {
+	  "district": "MI",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Debbie_Stabenow"
+  },
+  "norm_coleman": {
+	  "district": "MN",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Norm_Coleman"
+  },
+  "amy_klobuchar": {
+	  "district": "MN",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Amy_Klobuchar"
+  },
+  "thad_cochran": {
+	  "district": "MS",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Thad_Cochran"
+  },
+  "roger_wicker": {
+	  "district": "MS",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Roger_Wicker"
+  },
+  "kit_bond": {
+	  "district": "MO",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Kit_Bond"
+  },
+  "claire_mccaskill": {
+	  "district": "MO",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Claire_McCaskill"
+  },
+  "max_baucus": {
+	  "district": "MT",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Max_Baucus"
+  },
+  "jon_tester": {
+	  "district": "MT",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Jon_Tester"
+  },
+  "chuck_hagel": {
+	  "district": "NE",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Chuck_Hagel"
+  },
+  "ben_nelson": {
+	  "district": "NE",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Ben_Nelson"
+  },
+  "harry_reid": {
+	  "district": "NV",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Harry_Reid"
+  },
+  "john_ensign": {
+	  "district": "NV",
+	  "wikipedia":"http://en.wikipedia.org//wiki/John_Ensign"
+  },
+  "judd_gregg": {
+	  "district": "NH",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Judd_Gregg"
+  },
+  "john_sununu": {
+	  "district": "NH",
+	  "wikipedia":"http://en.wikipedia.org//wiki/John_E._Sununu"
+  },
+  "frank_lautenberg": {
+	  "district": "NJ",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Frank_Lautenberg"
+  },
+  "bob_menendez": {
+	  "district": "NJ",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Bob_Menendez"
+  },
+  "pete_domenici": {
+	  "district": "NM",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Pete_Domenici"
+  },
+  "jeff_bingaman": {
+	  "district": "NM",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Jeff_Bingaman"
+  },
+  "charles_schumer": {
+	  "district": "NY",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Charles_Schumer"
+  },
+  "hillary_clinton": {
+	  "district": "NY",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Hillary_Clinton"
+  },
+  "elizabeth_dole": {
+	  "district": "NC",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Elizabeth_Dole"
+  },
+  "richard_burr": {
+	  "district": "NC",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Richard_Burr"
+  },
+  "kent_conrad": {
+	  "district": "ND",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Kent_Conrad"
+  },
+  "byron_dorgan": {
+	  "district": "ND",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Byron_Dorgan"
+  },
+  "george_voinovich": {
+	  "district": "OH",
+	  "wikipedia":"http://en.wikipedia.org//wiki/George_Voinovich"
+  },
+  "sherrod_brown": {
+	  "district": "OH",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Sherrod_Brown"
+  },
+  "james_inhofe": {
+	  "district": "OK",
+	  "wikipedia":"http://en.wikipedia.org//wiki/James_Inhofe"
+  },
+  "tom_coburn": {
+	  "district": "OK",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Tom_Coburn"
+  },
+  "ron_wyden": {
+	  "district": "OR",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Ron_Wyden"
+  },
+  "gordon_smith": {
+	  "district": "OR",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Gordon_Harold_Smith"
+  },
+  "arlen_specter": {
+	  "district": "PA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Arlen_Specter"
+  },
+  "bob_Casey": {
+	  "district": "PA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Bob_Casey%2C_Jr."
+  },
+  "jack_reed": {
+	  "district": "RI",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Jack_Reed"
+  },
+  "sheldon_whitehouse": {
+	  "district": "RI",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Sheldon_Whitehouse"
+  },
+  "lindsey_graham": {
+	  "district": "SC",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Lindsey_Graham"
+  },
+  "jim_demint": {
+	  "district": "SC",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Jim_DeMint"
+  },
+  "tim_johnson": {
+	  "district": "SD",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Tim_Johnson_%28South_Dakota%29"
+  },
+  "john_thune": {
+	  "district": "SD",
+	  "wikipedia":"http://en.wikipedia.org//wiki/John_Thune"
+  },
+  "lamar_alexander": {
+	  "district": "TN",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Lamar_Alexander"
+  },
+  "bob_corker": {
+	  "district": "TN",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Bob_Corker"
+  },
+  "kay_bailey_hutchison": {
+	  "district": "TX",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Kay_Bailey_Hutchison"
+  },
+  "john_cornyn": {
+	  "district": "TX",
+	  "wikipedia":"http://en.wikipedia.org//wiki/John_Cornyn"
+  },
+  "orrin_hatch": {
+	  "district": "UT",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Orrin_Hatch"
+  },
+  "robert_bennett": {
+	  "district": "UT",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Robert_Foster_Bennett"
+  },
+  "patrick_leahy": {
+	  "district": "VT",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Patrick_Leahy"
+  },
+  "bernie_sanders": {
+	  "district": "VT",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Bernie_Sanders"
+  },
+  "john_warner": {
+	  "district": "VA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/John_Warner"
+  },
+  "jim_webb": {
+	  "district": "VA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Jim_Webb"
+  },
+  "patty_murray": {
+	  "district": "WA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Patty_Murray"
+  },
+  "maria_cantwell": {
+	  "district": "WA",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Maria_Cantwell"
+  },
+  "robert_byrd": {
+	  "district": "WV",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Robert_Byrd"
+  },
+  "jay_rockefeller": {
+	  "district": "WV",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Jay_Rockefeller"
+  },
+  "herbert_kohl": {
+	  "district": "WI",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Herbert_Kohl_%28senator%29"
+  },
+  "russ_feingold": {
+	  "district": "WI",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Russ_Feingold"
+  },
+  "michael_enzi": {
+	  "district": "WY",
+	  "wikipedia":"http://en.wikipedia.org//wiki/Michael_Enzi"
+  },
+  "john_barrasso": {
+	  "district": "WY",
+	  "wikipedia":"http://en.wikipedia.org//wiki/John_Barrasso"
   }
 }

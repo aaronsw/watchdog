@@ -11,9 +11,10 @@ bios = simplejson.load(file('../data/crawl/votesmart/bios.json'))
 
 def main():
     for dist, canl in cans.iteritems():
+        dist=dist.replace("-SEN1","").replace("-SEN2","") ## JT: Hack
         for can in canl:
-            wid = tools.districtp(dist)
-            if wid and can['lastName'].lower() in wid:
+            wid = tools.getWatchdogID(dist,can['lastName'])
+            if wid:
                 bio = bios[can['candidateId']]['candidate']
                 db.update('politician', where='id = $wid', vars=locals(),
                   votesmartid=can['candidateId'], 

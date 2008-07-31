@@ -34,7 +34,7 @@ all: .database
 clean:
 	rm $(JSONS) .schema .json .bills interest .database
 
-.database: .schema .json .bills .interests .votesmart .photos
+.database: .schema .json .bills .interests .votesmart .photos .fec
 	touch $@
 
 .json: .schema load/json.py $(JSONS)
@@ -42,7 +42,7 @@ clean:
 	touch $@
 
 .schema: ../schema.sql
-	$(DBCLIENT) $TABLE_NAME < $< 2>&1 | grep -v 'role "watchdog" does not exist'
+	$(DBCLIENT) $(TABLE_NAME) < $< 2>&1 | grep -v 'role "watchdog" does not exist'
 	touch $@
 
 $(LOAD)/states/index.json: load/manual/states.json
@@ -92,13 +92,16 @@ $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack
 	$(PYTHON) load/maplight.py
 	touch $@
 
-.votesmart: .json load/votesmart.py $(CRAWL)/votesmart/{bio,candidates}.json
+.votesmart: .json load/votesmart.py $(CRAWL)/votesmart/candidates.json $(CRAWL)/votesmart/bios.json
 	$(PYTHON) load/votesmart.py
 	touch $@
 
 .photos: .json .votesmart load/photos.py
 	$(PYTHON) load/photos.py
 	touch $@
+
+.fec: .json
+	$(PYTHON) load/fec.py
 
 # new way of doing things: parse to .njs files
 
