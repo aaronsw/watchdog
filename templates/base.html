@@ -18,7 +18,7 @@ $if page.get('front'):
     $if not page.get('front'): <div style="float: left; padding-bottom: 10px;">
 	  <a href="/">Watchdog.net.</a>
 	  $if page.get('front'): <br />
-	  $:page.title.strip()
+	  $:page.title.strip().
 	  $if not page.get('front'): </div>
   $if not page.get('front'):
       <div style="float: right; padding-right: 32px; padding-top: 10px;">
