@@ -28,21 +28,29 @@ JSONS=$(LOAD)/states/index.json \
       $(LOAD)/politicians/photos.json \
       $(LOAD)/politicians/earmarks.json \
       $(LOAD)/districts/centers.json
-      
 
-all: .database
+NJS=$(PARSE)/almanac.njs \
+    $(PARSE)/earmarks.njs \
+    $(PARSE)/fec.njs \
+    $(PARSE)/govtrack.njs \
+    $(PARSE)/soi.njs \
+    $(PARSE)/voteview.njs
+
+all: database
 clean:
-	rm $(JSONS) .schema .json .bills interest .database
+	rm $(JSONS) .schema .json .bills .interests .votesmart .photos
 
-.database: .schema .json .bills .interests .votesmart .photos
-	touch $@
+cleanparse:
+	rm $(NJS)
+
+database: .schema .json .bills .interests .votesmart .photos
 
 .json: .schema load/json.py $(JSONS)
 	python load/json.py
 	touch $@
 
 .schema: ../schema.sql
-	$(DBCLIENT) $TABLE_NAME < $< 2>&1 | grep -v 'role "watchdog" does not exist'
+	$(DBCLIENT) $(TABLE_NAME) < $< 2>&1 | grep -v 'role "watchdog" does not exist'
 	touch $@
 
 $(LOAD)/states/index.json: load/manual/states.json
@@ -92,7 +100,7 @@ $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack
 	$(PYTHON) load/maplight.py
 	touch $@
 
-.votesmart: .json load/votesmart.py $(CRAWL)/votesmart/{bio,candidates}.json
+.votesmart: .json load/votesmart.py $(CRAWL)/votesmart/bios.json $(CRAWL)/votesmart/candidates.json
 	$(PYTHON) load/votesmart.py
 	touch $@
 
@@ -102,12 +110,7 @@ $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack
 
 # new way of doing things: parse to .njs files
 
-parse: $(PARSE)/almanac.njs \
-	   $(PARSE)/earmarks.njs \
-       $(PARSE)/fec.njs \
-       $(PARSE)/govtrack.njs \
-       $(PARSE)/soi.njs \
-       $(PARSE)/voteview.njs
+parse: $(NJS)
 
 $(PARSE)/almanac.njs: parse/almanac.py 
 	$(PYTHON) parse/almanac.py --dump > $@.tmp
