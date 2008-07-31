@@ -2,6 +2,8 @@
 Parser for USPS AIS records.
 """
 
+## Types used in definitions
+
 def date(s):
     return s[0:4] + '-' + s[4:6] + '-' + s[6:8]
 
@@ -32,29 +34,13 @@ def integer(s):
             return s
     else: return None
 
-def parse_line(linedef, line):
-    out = {}
-    n = 0
-    for (k, l, t) in linedef:
-        if k is not None:
-            out[k] = t(line[n:n+l])
-        n += l
-    return out
-
-def get_len(filedef):
-    linelen = set(sum(line[FIELD_LEN] for line in kind) for kind in filedef.itervalues())
-    assert len(linelen) == 1, [(kind_name, sum(line[FIELD_LEN] for line in kind)) for kind_name, kind in filedef.iteritems()]
-    linelen = list(linelen)[0]
-    return linelen
-
-def parse_file(filedef, fh):
-    linelen = get_len(filedef)
-    for line in iter(lambda: fh.read(linelen), ''):
-        yield parse_line(filedef[line[0]], line)
+## Format of the definitions
 
 FIELD_KEY = 0
 FIELD_LEN = 1
 FIELD_TYP = 2
+
+## The definitions
 
 def def_copyright(n):
     return [
@@ -252,6 +238,28 @@ def_tigerzip = {
     (None, 2, filler)
   ]
 }
+
+def parse_line(linedef, line):
+    out = {}
+    n = 0
+    for (k, l, t) in linedef:
+        if k is not None:
+            out[k] = t(line[n:n+l])
+        n += l
+    return out
+
+def get_len(filedef):
+    linelen = set(sum(line[FIELD_LEN] for line in kind) for kind in filedef.itervalues())
+    assert len(linelen) == 1, [(kind_name, sum(line[FIELD_LEN] for line in kind)) for kind_name, kind in filedef.iteritems()]
+    linelen = list(linelen)[0]
+    return linelen
+
+## The functions you might want to call
+
+def parse_file(filedef, fh):
+    linelen = get_len(filedef)
+    for line in iter(lambda: fh.read(linelen), ''):
+        yield parse_line(filedef[line[0]], line)
 
 def parse_tigerzip(fh):
     linelen = get_len(def_tigerzip)
