@@ -2638,5 +2638,308 @@
     "state": "WY", 
     "voting": true, 
     "wikipedia": "http://en.wikipedia.org/wiki/Wyoming's_At-large_congressional_district"
+  },
+
+
+
+  "AK": {
+    "district": -1,
+    "voting": true,
+    "state": "AK",
+    "wikipedia": "http://en.wikipedia.org/wiki/Alaska"
+  }, 
+  "AL": {
+    "district": -1,
+    "voting": true,
+    "state": "AL",
+    "wikipedia": "http://en.wikipedia.org/wiki/Alabama"
+  }, 
+  "AR": {
+    "district": -1,
+    "voting": true,
+    "state": "AR",
+    "wikipedia": "http://en.wikipedia.org/wiki/Arkansas"
+  }, 
+  "AZ": {
+    "district": -1,
+    "voting": true,
+    "state": "AZ",
+    "wikipedia": "http://en.wikipedia.org/wiki/Arizona"
+  }, 
+  "CA": {
+    "district": -1,
+    "voting": true,
+    "state": "CA",
+    "wikipedia": "http://en.wikipedia.org/wiki/California"
+  }, 
+  "CO": {
+    "district": -1,
+    "voting": true,
+    "state": "CO",
+    "wikipedia": "http://en.wikipedia.org/wiki/Colorado"
+  }, 
+  "CT": {
+    "district": -1,
+    "voting": true,
+    "state": "CT",
+    "wikipedia": "http://en.wikipedia.org/wiki/Connecticut"
+  }, 
+  "DE": {
+    "district": -1,
+    "voting": true,
+    "state": "DE",
+    "wikipedia": "http://en.wikipedia.org/wiki/Delaware"
+  }, 
+  "FL": {
+    "district": -1,
+    "voting": true,
+    "state": "FL",
+    "wikipedia": "http://en.wikipedia.org/wiki/Florida"
+  }, 
+  "GA": {
+    "district": -1,
+    "voting": true,
+    "state": "GA",
+    "wikipedia": "http://en.wikipedia.org/wiki/Georgia_(U.S._state)"
+  }, 
+  "HI": {
+    "district": -1,
+    "voting": true,
+    "state": "HI",
+    "wikipedia": "http://en.wikipedia.org/wiki/Hawaii"
+  }, 
+  "IA": {
+    "district": -1,
+    "voting": true,
+    "state": "IA",
+    "wikipedia": "http://en.wikipedia.org/wiki/Iowa"
+  }, 
+  "ID": {
+    "district": -1,
+    "voting": true,
+    "state": "ID",
+    "wikipedia": "http://en.wikipedia.org/wiki/Idaho"
+  }, 
+  "IL": {
+    "district": -1,
+    "voting": true,
+    "state": "IL",
+    "wikipedia": "http://en.wikipedia.org/wiki/Illinois"
+  }, 
+  "IN": {
+    "district": -1,
+    "voting": true,
+    "state": "IN",
+    "wikipedia": "http://en.wikipedia.org/wiki/Indiana"
+  }, 
+  "KS": {
+    "district": -1,
+    "voting": true,
+    "state": "KS",
+    "wikipedia": "http://en.wikipedia.org/wiki/Kansas"
+  }, 
+  "KY": {
+    "district": -1,
+    "voting": true,
+    "state": "KY",
+    "wikipedia": "http://en.wikipedia.org/wiki/Kentucky"
+  }, 
+  "LA": {
+    "district": -1,
+    "voting": true,
+    "state": "LA",
+    "wikipedia": "http://en.wikipedia.org/wiki/Louisiana"
+  }, 
+  "MA": {
+    "district": -1,
+    "voting": true,
+    "state": "MA",
+    "wikipedia": "http://en.wikipedia.org/wiki/Massachusetts"
+  }, 
+  "MD": {
+    "district": -1,
+    "voting": true,
+    "state": "MD",
+    "wikipedia": "http://en.wikipedia.org/wiki/Maryland"
+  }, 
+  "ME": {
+    "district": -1,
+    "voting": true,
+    "state": "ME",
+    "wikipedia": "http://en.wikipedia.org/wiki/Maine"
+  }, 
+  "MI": {
+    "district": -1,
+    "voting": true,
+    "state": "MI",
+    "wikipedia": "http://en.wikipedia.org/wiki/Michigan"
+  }, 
+  "MN": {
+    "district": -1,
+    "voting": true,
+    "state": "MN",
+    "wikipedia": "http://en.wikipedia.org/wiki/Minnesota"
+  }, 
+  "MO": {
+    "district": -1,
+    "voting": true,
+    "state": "MO",
+    "wikipedia": "http://en.wikipedia.org/wiki/Missouri"
+  }, 
+  "MS": {
+    "district": -1,
+    "voting": true,
+    "state": "MS",
+    "wikipedia": "http://en.wikipedia.org/wiki/Mississippi"
+  }, 
+  "MT": {
+    "district": -1,
+    "voting": true,
+    "state": "MT",
+    "wikipedia": "http://en.wikipedia.org/wiki/Montana"
+  }, 
+  "NC": {
+    "district": -1,
+    "voting": true,
+    "state": "NC",
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Carolina"
+  }, 
+  "ND": {
+    "district": -1,
+    "voting": true,
+    "state": "ND",
+    "wikipedia": "http://en.wikipedia.org/wiki/North_Dakota"
+  }, 
+  "NE": {
+    "district": -1,
+    "voting": true,
+    "state": "NE",
+    "wikipedia": "http://en.wikipedia.org/wiki/Nebraska"
+  }, 
+  "NH": {
+    "district": -1,
+    "voting": true,
+    "state": "NH",
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Hampshire"
+  }, 
+  "NJ": {
+    "district": -1,
+    "voting": true,
+    "state": "NJ",
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Jersey"
+  }, 
+  "NM": {
+    "district": -1,
+    "voting": true,
+    "state": "NM",
+    "wikipedia": "http://en.wikipedia.org/wiki/New_Mexico"
+  }, 
+  "NV": {
+    "district": -1,
+    "voting": true,
+    "state": "NV",
+    "wikipedia": "http://en.wikipedia.org/wiki/Nevada"
+  }, 
+  "NY": {
+    "district": -1,
+    "voting": true,
+    "state": "NY",
+    "wikipedia": "http://en.wikipedia.org/wiki/New_York"
+  }, 
+  "OH": {
+    "district": -1,
+    "voting": true,
+    "state": "OH",
+    "wikipedia": "http://en.wikipedia.org/wiki/Ohio"
+  }, 
+  "OK": {
+    "district": -1,
+    "voting": true,
+    "state": "OK",
+    "wikipedia": "http://en.wikipedia.org/wiki/Oklahoma"
+  }, 
+  "OR": {
+    "district": -1,
+    "voting": true,
+    "state": "OR",
+    "wikipedia": "http://en.wikipedia.org/wiki/Oregon"
+  }, 
+  "PA": {
+    "district": -1,
+    "voting": true,
+    "state": "PA",
+    "wikipedia": "http://en.wikipedia.org/wiki/Pennsylvania"
+  }, 
+  "RI": {
+    "district": -1,
+    "voting": true,
+    "state": "RI",
+    "wikipedia": "http://en.wikipedia.org/wiki/Rhode_Island"
+  }, 
+  "SC": {
+    "district": -1,
+    "voting": true,
+    "state": "SC",
+    "wikipedia": "http://en.wikipedia.org/wiki/South_Carolina"
+  }, 
+  "SD": {
+    "district": -1,
+    "voting": true,
+    "state": "SD",
+    "wikipedia": "http://en.wikipedia.org/wiki/South_Dakota"
+  }, 
+  "TN": {
+    "district": -1,
+    "voting": true,
+    "state": "TN",
+    "wikipedia": "http://en.wikipedia.org/wiki/Tennessee"
+  }, 
+  "TX": {
+    "district": -1,
+    "voting": true,
+    "state": "TX",
+    "wikipedia": "http://en.wikipedia.org/wiki/Texas"
+  }, 
+  "UT": {
+    "district": -1,
+    "voting": true,
+    "state": "UT",
+    "wikipedia": "http://en.wikipedia.org/wiki/Utah"
+  }, 
+  "VA": {
+    "district": -1,
+    "voting": true,
+    "state": "VA",
+    "wikipedia": "http://en.wikipedia.org/wiki/Virginia"
+  }, 
+  "VT": {
+    "district": -1,
+    "voting": true,
+    "state": "VT",
+    "wikipedia": "http://en.wikipedia.org/wiki/Vermont"
+  }, 
+  "WA": {
+    "district": -1,
+    "voting": true,
+    "state": "WA",
+    "wikipedia": "http://en.wikipedia.org/wiki/Washington"
+  }, 
+  "WI": {
+    "district": -1,
+    "voting": true,
+    "state": "WI",
+    "wikipedia": "http://en.wikipedia.org/wiki/Wisconsin"
+  }, 
+  "WV": {
+    "district": -1,
+    "voting": true,
+    "state": "WV",
+    "wikipedia": "http://en.wikipedia.org/wiki/West_Virginia"
+  }, 
+  "WY": {
+    "district": -1,
+    "voting": true,
+    "state": "WY",
+    "wikipedia": "http://en.wikipedia.org/wiki/Wyoming"
   }
 }

@@ -39,7 +39,7 @@ def loadbill(fn, maplightid=None):
     d = bill2dict(bill)
     if maplightid: d['maplightid'] = maplightid
     db.insert('bill', seqname=False, **d)
-    print '\r', d['id'],
+    print '\r %25s' % d['id'],
     sys.stdout.flush()
     
     done = []
@@ -63,8 +63,14 @@ def loadbill(fn, maplightid=None):
                 neas += 1
             rep = govtrackp(voter('id'))
             if rep:
-                db.insert('vote', seqname=False, 
-                      politician_id=rep, bill_id=d['id'], vote=fixvote(voter('vote')))
+                # UGLY HACK: if a politician (bob_menendez for instance) voted
+                # for the same bill in both chambers of congress the insert
+                # fails.
+                if not db.select('vote',where="bill_id=$d['id'] AND politician_id=$rep", vars=locals()):
+                    db.insert('vote', seqname=False, politician_id=rep, bill_id=d['id'], vote=fixvote(voter('vote')))
+                else:
+                    print "Updating:", votedoc, rep, d['id'], fixvote(voter('vote'))
+                    db.update('vote', where="bill_id=$d['id'] AND politician_id=$rep", vote=fixvote(voter('vote')),vars=locals())
         db.update('bill', where="id = $d['id']", yeas=yeas, neas=neas, vars=locals())
                 
 

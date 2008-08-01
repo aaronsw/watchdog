@@ -27,9 +27,8 @@ watchdog_map = {}
 govtrack_map = {}
 
 for pol in govtrack.parse_basics():
-    watchdog_id = tools.districtp(pol.get('represents'))
-    if watchdog_id and \
-      pol.lastname.lower().replace(' ', '_') in watchdog_id: # sanity check
+    watchdog_id = tools.getWatchdogID(pol.get('represents'),pol.lastname)
+    if watchdog_id:
         govtrack_map[pol.id] = watchdog_map[watchdog_id] = newpol = web.storage()
     else:
         continue

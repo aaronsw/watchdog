@@ -7,6 +7,7 @@ STATS_XML = '../data/crawl/govtrack/us/110/repstats/%s.xml'
 FEC_XML = '../data/crawl/govtrack/us/fec/campaigns-2008.xml'
 METRICS = ['enacted', 'novote', 'verbosity', 'speeches', 
   'spectrum', 'introduced', 'cosponsor']
+FORCE_SENATE = ['Wicker']
 
 from xml.dom import pulldom
 import web
@@ -21,6 +22,7 @@ def parse_basics():
             
             if out.get('district'):
                 out.represents = out.state + '-' + out.district.zfill(2)
+                if out.lastname in FORCE_SENATE: out.represents = out.state
             else:
                 if out.get('state'):
                     out.represents = out.state

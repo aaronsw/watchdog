@@ -157,8 +157,9 @@ class state:
                               where='state=$state.code',
                               order='district asc',
                               vars=locals())
+        senators = db.select('politician',where='district=$state.code',vars=locals())
         
-        return render.state(state, districts.list())
+        return render.state(state, districts.list(),senators.list())
 
 class redistrict:
     def GET(self, district):

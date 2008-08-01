@@ -28,6 +28,9 @@ def load_fec_cans():
             pol_id = fec2pol[can.candidate_id]
             
             total = float(can.total_receipts)
+            if total == 0.0: 
+                print "Oops:", pol_id, total, can.total_receipts, can.total_disbursements, can.contrib_from_candidate, can.total_indiv_contrib, can.contrib_from_other_pc
+                continue
             db.update('politician', where='id = $pol_id', vars=locals(), 
               money_raised = can.total_receipts,
               pct_spent = can.total_disbursements/total,

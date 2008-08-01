@@ -43,7 +43,7 @@ clean:
 cleanparse:
 	rm $(NJS)
 
-database: .schema .json .bills .interests .votesmart .photos
+database: .schema .json .bills .interests .votesmart .photos .fec
 
 .json: .schema load/json.py $(JSONS)
 	python load/json.py
@@ -107,6 +107,9 @@ $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack
 .photos: .json .votesmart load/photos.py
 	$(PYTHON) load/photos.py
 	touch $@
+
+.fec: .json
+	$(PYTHON) load/fec.py
 
 # new way of doing things: parse to .njs files
 
