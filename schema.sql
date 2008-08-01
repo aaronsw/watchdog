@@ -111,7 +111,15 @@ CREATE TABLE politician (
   nickname varchar(256),
   votesmartid varchar(256),
   birthplace varchar(256),
-  education text
+  education text,
+  
+  -- punch
+  chips2008 float,
+  progressive2008 float,
+  progressiveall float,
+  
+  -- opensecrets
+  pct_pac_business float
 );
 
 CREATE TABLE politician_fec_ids (
