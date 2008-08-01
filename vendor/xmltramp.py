@@ -1,6 +1,6 @@
 """xmltramp: Make XML documents easily accessible."""
 
-__version__ = "2.17"
+__version__ = "2.18"
 __author__ = "Aaron Swartz"
 __credits__ = "Many thanks to pjz, bitsko, and DanC."
 __copyright__ = "(C) 2003-2006 Aaron Swartz. GNU GPL 2."
@@ -140,7 +140,7 @@ class Element:
 			if self._dNS and not islst(n): n = (self._dNS, n)
 			for x in self._dir:
 				if isinstance(x, Element) and x._name == n: return x
-			raise KeyError
+			raise KeyError, n
 	
 	def __setitem__(self, n, v):
 		if isinstance(n, type(0)): # d[1]
