@@ -43,9 +43,8 @@ for earmark in earmarks.getEarmarks('../data/crawl/taxpayer/bigkahuna.xls'):
                     requested = earmark.finalAmountDollars
                 if requested:
                     outdb[rep]['amt_earmark_requested'] += requested
-                if not isinstance(earmark.finalAmountDollars, float) or not earmark.finalAmountDollars:
-                    continue
-                outdb[rep]['n_earmark_received'] += 1
-                outdb[rep]['amt_earmark_received'] += earmark.finalAmountDollars
+                if isinstance(earmark.finalAmountDollars, float) and earmark.finalAmountDollars:
+                    outdb[rep]['n_earmark_received'] += 1
+                    outdb[rep]['amt_earmark_received'] += earmark.finalAmountDollars
 
 print simplejson.dumps(outdb, indent=2, sort_keys=True)

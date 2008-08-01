@@ -69,6 +69,7 @@ def loadbill(fn, maplightid=None):
                 if not db.select('vote',where="bill_id=$d['id'] AND politician_id=$rep", vars=locals()):
                     db.insert('vote', seqname=False, politician_id=rep, bill_id=d['id'], vote=fixvote(voter('vote')))
                 else:
+                    print
                     print "Updating:", votedoc, rep, d['id'], fixvote(voter('vote'))
                     db.update('vote', where="bill_id=$d['id'] AND politician_id=$rep", vote=fixvote(voter('vote')),vars=locals())
         db.update('bill', where="id = $d['id']", yeas=yeas, neas=neas, vars=locals())
