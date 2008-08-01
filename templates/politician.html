@@ -28,7 +28,9 @@ $var pretitle:
 $if pol.education:
     <p>Education: $pol.education</p>
 
-<h2 style="clear: both">Money</h2>
+<table class="structure" style="clear: both">
+<tr><td>
+<h2>Money</h2>
 
 <table class="charted">
 $if pol.money_raised:
@@ -71,27 +73,7 @@ $if pol.money_raised:
 $else:
     <tr><th>No information available.</th></tr>
 </table>
-
-<h2>Speeches</h2>
-
-<table class="charted">
-  <tr>
-    <th>Spoke</th>
-    <td><a href="http://www.govtrack.us/congress/person.xpd?tab=speeches&amp;id=$pol.govtrackid">$commify(pol.n_speeches) times</a></td>
-    <td><a href="/p/by/n_speeches#$pol.id"
-         ><img src="/p/by/n_speeches/distribution.png?point=$pol.n_speeches"
-               class="sparkline" /></a></td>
-  </tr><tr>
-    <th>Avg. length</th>
-    <td>$commify(pol.words_per_speech) words</td>
-    <td><a href="/p/by/words_per_speech#$pol.id"
-         ><img 
-           src="/p/by/words_per_speech/distribution.png?point=$pol.words_per_speech"
-           class="sparkline" /></a></td>
-  </tr>
-  <tr><th colspan="2">Data for 110th Congress</th></tr>
-</table>
-
+</td><td>
 <h2>Earmarks</h2>
 
 <table class="charted">
@@ -126,7 +108,7 @@ $else:
   </tr>
   <tr><th colspan="2">Data for fiscal year 2008</th></tr>
 </table>
-
+</td></tr><tr><td>
 <h2>Bills</h2>
 
 <table class="charted">
@@ -163,8 +145,28 @@ $else:
            class="sparkline" /></a></td>
   </tr>
 </table>
+</td><td>
+<h2>Speeches</h2>
 
-<h2>Special Interest Group Ratings</h2>
+<table class="charted">
+  <tr>
+    <th>Spoke</th>
+    <td><a href="http://www.govtrack.us/congress/person.xpd?tab=speeches&amp;id=$pol.govtrackid">$commify(pol.n_speeches) times</a></td>
+    <td><a href="/p/by/n_speeches#$pol.id"
+         ><img src="/p/by/n_speeches/distribution.png?point=$pol.n_speeches"
+               class="sparkline" /></a></td>
+  </tr><tr>
+    <th>Avg. length</th>
+    <td>$commify(pol.words_per_speech) words</td>
+    <td><a href="/p/by/words_per_speech#$pol.id"
+         ><img 
+           src="/p/by/words_per_speech/distribution.png?point=$pol.words_per_speech"
+           class="sparkline" /></a></td>
+  </tr>
+  <tr><th colspan="2">Data for 110th Congress</th></tr>
+</table>
+</td></tr></table>
+<h2>Voting Analysis</h2>
 
 <table class="charted">
 $if pol.nominate:
@@ -192,6 +194,8 @@ $if pol.predictability:
     </tr>
 </table>
 
+<h2>Interest Group Alignment</h2>
+
 <table class="interest_group_ratings">
 <tr><td></td>
 $for group in pol.interest_group_table['groups']:
@@ -203,8 +207,6 @@ $for year in pol.interest_group_table['rows']:
         <td>$rating</td>
     </tr>
 </table>
-
-<h2>Interest Group Alignment</h2>
 
 <table>
 <tr><th>Group</th><th>Agreement</th></tr>
