@@ -6,8 +6,8 @@ else
     DBCLIENT=psql
 endif
 
-ifeq ($(TABLE_NAME),)
-	TABLE_NAME=watchdog_dev
+ifeq ($(WATCHDOG_TABLE),)
+	WATCHDOG_TABLE=watchdog_dev
 endif
 
 export PYTHONPATH := ../:.:$(PWD)/../vendor:$(PYTHONPATH)
@@ -25,7 +25,6 @@ JSONS=$(LOAD)/states/index.json \
       $(LOAD)/politicians/index.json \
       $(LOAD)/politicians/govtrack.json \
       $(LOAD)/politicians/voteview.json \
-      $(LOAD)/politicians/photos.json \
       $(LOAD)/politicians/earmarks.json \
       $(LOAD)/districts/centers.json
 
@@ -50,7 +49,7 @@ database: .schema .json .bills .interests .votesmart .photos .fec
 	touch $@
 
 .schema: ../schema.sql
-	$(DBCLIENT) $(TABLE_NAME) < $< 2>&1 | grep -v 'role "watchdog" does not exist'
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $< 2>&1 | grep -v 'role "watchdog" does not exist'
 	touch $@
 
 $(LOAD)/states/index.json: load/manual/states.json
@@ -110,6 +109,7 @@ $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack
 
 .fec: .json
 	$(PYTHON) load/fec.py
+	touch $@
 
 # new way of doing things: parse to .njs files
 

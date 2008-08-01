@@ -39,7 +39,7 @@ def loadbill(fn, maplightid=None):
     d = bill2dict(bill)
     if maplightid: d['maplightid'] = maplightid
     db.insert('bill', seqname=False, **d)
-    print '\r %25s' % d['id'],
+    print '\r  %-25s' % d['id'],
     sys.stdout.flush()
     
     done = []
