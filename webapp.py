@@ -84,16 +84,46 @@ class find:
         i = web.input(address=None)
         join = ['district' + ' LEFT OUTER JOIN politician '
                              'ON (politician.district = district.name)']
-        pzip5 = re.compile('\d{5}')
-        pname = re.compile('[a-zA-Z\.]+')
-        pdist = re.compile('[a-zA-Z]{2}\-\d{2}')
+        pzip5 = re.compile(r'\d{5}')
+        pzip4 = re.compile(r'\d{5}-\d{4}')
+        pname = re.compile(r'[a-zA-Z\.]+')
+        pdist = re.compile(r'[a-zA-Z]{2}\-\d{2}')
+        
+        dist_struct = {
+          'uri': apipublish.generic(lambda x: 'http://watchdog.net/us/' +
+                                    x.name.lower()),
+          'type': 'District',
+          'name state district voting': apipublish.identity,
+          'wikipedia': apipublish.URI,
+        }
 
         if i.get('zip'):
+            if pzip4.match(i.zip):
+                zip, plus4 = i.zip.split('-')
+                dists = [x.district for x in 
+                  db.select('zip4', where='zip=$zip and plus4=$plus4', vars=locals())]
+                d_dists = db.select('district', where=web.sqlors('name=', dists))
+                
+                out = apipublish.publish(dist_struct, d_dists, format)
+                if out is not False:
+                    return out
+                
+                if len(dists) == 0:
+                    return render.find_none(i.zip)
+                else: #@@ verify there aren't dupe districts
+                    raise web.seeother('/us/%s' % dists[0].lower())
+            
             if pzip5.match(i.zip):
                 try:
                     dists = zip2rep.zip2dist(i.zip, i.address)
                 except zip2rep.BadAddress:
                     return render.find_badaddr(i.zip, i.address)
+                
+                d_dists = db.select('district', where=web.sqlors('name=', dists))
+                out = apipublish.publish(dist_struct, d_dists, format)
+                if out is not False:
+                    return out
+            
                 if len(dists) == 1:
                     raise web.seeother('/us/%s' % dists[0].lower())
                 elif len(dists) == 0:
@@ -123,13 +153,7 @@ class find:
                         raise web.notfound
 
         else:
-            out = apipublish.publish({
-              'uri': apipublish.generic(lambda x: 'http://watchdog.net/us/' +
-                                        x.name.lower()),
-              'type': 'District',
-              'name state district voting': apipublish.identity,
-              'wikipedia': apipublish.URI,
-             }, db.select('district'), format)
+            out = apipublish.publish(dist_struct, db.select('district'), format)
             if out is not False:
                 return out
             

@@ -283,7 +283,5 @@ def parse_zip2dist(fh):
         for zip4 in zip4s:
             yield row['zip'] + '-' + zip4, row['state_abbrev'] + '-' + row['congress_dist']
 
-    
-
 if __name__ == "__main__":
     pass

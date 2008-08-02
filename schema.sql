@@ -47,17 +47,23 @@ CREATE TABLE district (
 
 CREATE TABLE zip (
   zip varchar(5) primary key,
-  
+  city text,
+  state varchar(2), --references states, (@@no AE=Armed Forces Europe)
   gini float
   -- @@other IRS stuff
 );
 
-CREATE TABLE zip2dist (
-  zip int references zip,
-  district varchar(10) references district,
-  
-  primary key (zip, district)
+CREATE TABLE zip4 (
+  zip varchar(5), --references zip, (seems some ZIP+4s aren't in ctyst?)
+  plus4 varchar(4),
+  district varchar(10) --references district,
+  --primary key (zip, plus4)  
 );
+
+--COPY zip4 FROM  '/home/watchdog/web/data/load/zip4.tsv';
+alter table zip4 add primary key (zip, plus4);
+--alter table zip4 add constraint "zip4_district_fkey" FOREIGN KEY (district) REFERENCES district(name) #@@
+
 
 CREATE TABLE politician (
   -- index.json
