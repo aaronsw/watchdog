@@ -15,21 +15,17 @@ def districtp(district):
     if not _districtcache:
         reps = simplejson.load(file('../data/load/politicians/index.json'))
         for repid, rep in reps.iteritems():
-            if _districtcache.has_key(rep['district']):
+            if rep['district'] in _districtcache:
                 _districtcache[rep['district']].append(repid)
             else:
                 _districtcache[rep['district']] = [repid]
     
     return _districtcache.get(district) or []
 
-def getWatchdogID(repid,lastname):
-    watchdog_ids = districtp(repid)
-    for watchdog_id in watchdog_ids:
-       if watchdog_id and \
-         lastname.lower().replace(' ', '_') in watchdog_id: # sanity check
-            return watchdog_id
-       else:
-           continue
+def getWatchdogID(district, lastname):
+    watchdog_ids = filter(lambda x: lastname.lower().replace(' ', '_') in x, districtp(district))
+    if len(watchdog_ids) == 1:
+        return watchdog_ids[0]
     return None
 
 
