@@ -49,7 +49,7 @@ database: .schema .json .bills .interests .votesmart .photos .fec
 	touch $@
 
 .schema: ../schema.sql
-	$(DBCLIENT) $(WATCHDOG_TABLE) < $< 2>&1
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $<
 	touch $@
 
 $(LOAD)/states/index.json: load/manual/states.json
