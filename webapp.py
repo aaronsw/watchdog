@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import re
-import markdown
 import web
+web.config.debug = True
+
 from utils import zip2rep, simplegraphs, apipublish, helpers, forms, writerep
 import blog
 import petition
@@ -11,16 +12,6 @@ from settings import db, render
 #@@@ utils.auth.login doesn't work in urls as webpy tries to import auth from its own utils
 from utils.auth import login, logout, forgot_password, set_password
 
-web.config.debug = True
-web.template.Template.globals['commify'] = web.commify
-web.template.Template.globals['int'] = int
-web.template.Template.globals['abs'] = abs
-web.template.Template.globals['len'] = len
-web.template.Template.globals['query_param'] = helpers.query_param
-web.template.Template.globals['changequery'] = web.changequery
-web.template.Template.globals['enumerate'] = enumerate
-web.template.Template.globals['format'] = markdown.markdown
-web.template.Template.globals['is_logged_in'] = lambda : bool(helpers.get_loggedin_email())
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (

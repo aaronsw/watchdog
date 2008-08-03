@@ -2,7 +2,7 @@ import os
 import tempfile
 import web
 
-render = web.template.render('templates/', base='base', cache=False)
+render = web.template.render('templates/', base='base')
 db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'),
                   db=os.environ.get('WATCHDOG_TABLE', 'watchdog_dev'))
                   
@@ -12,4 +12,3 @@ session = web.session.Session(None, web.session.DiskStore(sess_store))
 
 def setup_session(app):
     app.add_processor(session._processor)
-

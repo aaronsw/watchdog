@@ -64,3 +64,27 @@ def query_param(param, default_value):
     d = {param:default_value}
     i = web.input(**d)
     return i.get(param)
+
+g = web.template.Template.globals
+g['slice'] = slice
+g['commify'] = web.commify
+g['int'] = int
+g['abs'] = abs
+g['len'] = len
+g['changequery'] = web.changequery
+g['enumerate'] = enumerate
+
+g['query_param'] = query_param
+g['is_logged_in'] = lambda: bool(get_loggedin_email())
+
+import markdown
+g['format'] = markdown.markdown
+
+import blog
+g['blog_content'] = blog.content
+
+import re
+r_html = re.compile(r'<[^>]+?>')
+def striphtml(x):
+    return r_html.sub('', x).replace('\n', ' ')
+g['striphtml'] = striphtml

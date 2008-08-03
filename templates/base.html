@@ -25,9 +25,9 @@ $if page.get('front'):
         $if is_logged_in():
             <a href="#" onclick="document.forms['logout'].submit()">logout</a
         $else:
-            <a href="/login" class="footer">login</a
-          ><a href="/about/" class="footer">about</a
-          ><a href="/blog/" class="footer">blog</a
+            <a href="/login" class="$page.get('login_class', 'footer')">login</a
+          ><a href="/about/" class="$page.get('about_class', 'footer')">about</a
+          ><a href="/blog/" class="$page.get('blog_class', 'footer')">blog</a
           ><a href="/about/#feedback" class="footer">feedback</a>
       </div>
   </div>
@@ -37,22 +37,31 @@ $if not page.get('front'): -leaf\
 <!-- /header -->
 <div id="main">
   <div id="sidebar" style="clear: right">
-    <!--
-      <h2>Site News</h2>
-      @@blog
-    -->
-    <div class="postit">
-      <p><strong>Pardon the mess</strong> &mdash;<br />
-      we're building this site right before your eyes.
-      So expect things to break, fix, appear, and disappear before your very eyes.
-      We'd love your <a href="/about/#feedback">feedback</a> and your <a href="/about/#help">help</a>.</p>
-      
-      <p><a href="/about/#hiring" class="highlight">We're hiring!</a></p>
-    </div>
-  </div>
-  <div id="text"\
-  $if page.get('front'): style="margin-top: -10px;"\
-  >
+$if page.get('sidebar'):
+    $:page.sidebar
+$else:
+    <h2>The Latest</h2>
+    <ul>
+    $ li_class = "top"
+    $for post in blog_content[slice(None, 4)]:
+        <li class="$li_class">
+        <a href="/blog/$post.slug" class="sidebarlink">$post.title</a> <span class="attribution"> by $post.author.split()[0]</span>
+        <div class="blurb">$striphtml(post.body).split('. ')[0]. <strong><a href="/blog/$post.slug">...</a></strong></div>
+        </li>
+        $ li_class = ""
+
+<div class="postit">
+  <p><strong>Pardon the mess</strong> &mdash;<br />
+  we're building this site right before your eyes.
+  So expect things to break, fix, appear, and disappear before your very eyes.
+  We'd love your <a href="/about/#feedback">feedback</a> and your <a href="/about/#help">help</a>.</p>
+  
+  <p><a href="/about/#hiring" class="highlight">We're hiring!</a></p>
+</div>
+</div>
+<div id="text"\
+$if page.get('front'): style="margin-top: -10px;"\
+>
 
 $:page.get('pretitle')
 

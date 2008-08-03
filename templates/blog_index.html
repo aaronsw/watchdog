@@ -1,16 +1,21 @@
 $def with (posts)
 
 $var title: Blog
+$var blog_class: select\
 
 $var head:
 	  <link rel="alternate" type="application/rss+xml" title="RSS" href="feed" />
 
-<p class="bigintro">Welcome to the blog. This is where we post about site changes, relevant news, and other interesting bits of gossip. (Want to stay up-to-date? Subscribe to our <a href="feed">feed</a> or our <a href="http://groups.google.com/group/watchdog-announce/subscribe">very low-volume announcement list</a>.)</p>
+$var sidebar:
+    <p class="bigintro"><strong>Welcome to the Watchdog blog.</strong> We post about site changes, relevant news, and other interesting bits of gossip. (Want to stay up-to-date? Subscribe to our <a href="feed">feed</a> or our <a href="http://groups.google.com/group/watchdog-announce/subscribe">very low-volume announcement list</a>.)</p>
+    
+    <p><a href="feed"><img src="/static/images/feed-icon-28x28.png" alt="RSS" height="28" width="28" /></a> <a href="http://groups.google.com/group/watchdog-announce/subscribe"><img src="/static/images/mail-icon-32x32.png" height="28" width="28" /></a></p>
+
 
 $for post in posts:
-    <h2>$post.title</h2>
+    <h2><a href="$post.slug">$post.title</a></h2>
     
     $:post.body
     
-    <p class="strapline">posted by $post.author on $post.updated</em> <a href="$post.slug">#</a></p>
+    <div class="attribution strapline">posted by $post.author on $post.updated</em> <a href="$post.slug">#</a></div>
 
