@@ -60,10 +60,11 @@ CREATE TABLE zip4 (
   --primary key (zip, plus4)  
 );
 
+--alter table zip4 drop constraint zip4_pkey;
 --COPY zip4 FROM  '/home/watchdog/web/data/load/zip4.tsv';
 alter table zip4 add primary key (zip, plus4);
 --alter table zip4 add constraint "zip4_district_fkey" FOREIGN KEY (district) REFERENCES district(name) #@@
-
+--GRANT ALL ON zip4 TO watchdog;
 
 CREATE TABLE politician (
   -- index.json
@@ -202,6 +203,8 @@ CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || 
 -- Permissions
 GRANT ALL on state TO watchdog;
 GRANT ALL on district TO watchdog;
+GRANT ALL ON zip TO watchdog;
+GRANT ALL ON zip4 TO watchdog;
 GRANT ALL on politician TO watchdog;
 GRANT ALL on interest_group_rating TO watchdog;
 GRANT ALL on interest_group TO watchdog;
