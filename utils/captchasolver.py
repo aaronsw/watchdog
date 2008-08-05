@@ -17,7 +17,7 @@ def toint(num):
     >>> toint('Two')
     2
     '''
-    nums = ['zero','one', 'two', 'three', 'four','five', 'six', 'seven', 'eight', 'nine']
+    nums = ['zero','one', 'two', 'three', 'four','five', 'six', 'seven', 'eight', 'nine', 'ten']
     try:
         return int(num)
     except:
@@ -59,7 +59,10 @@ def mathprob(captcha):
     2
     >>> mathprob("Please solve the following math problem : two + three")
     5
-    '''    
+    >>> mathprob("Please solve the following math problem: three x one?")
+    3
+    ''' 
+    captcha = captcha.rstrip('?')
     vars = captcha.split(':')[1].split(' ')
     vars = [v for v in vars if v]
     op = [v for v in vars if v in('+','-','/', 'X','x', '*')][0]
@@ -107,6 +110,8 @@ def minus(captcha):
     '''
     >>> minus ("what is 1 minus 1?")
     0
+    >>> solve("what is ten minus one?")
+    9
     '''
     captcha = captcha.rstrip('?')
     pos = captcha.find('what is')
@@ -124,6 +129,11 @@ def solve(captcha):
     19
     >>> sumof('What is the sum of 21 plus 23')
     44
+    >>> solve("What is ten minus one?")
+    9
+    >>> solve("Please solve the following math problem: three x one?")
+    3
+    
     '''
     captcha = captcha.lower()
     result = None
