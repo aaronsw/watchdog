@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS vote CASCADE;
 DROP TABLE IF EXISTS interest_group_bill_support CASCADE;
 DROP TABLE IF EXISTS group_politician_similarity CASCADE;
 DROP TABLE IF EXISTS category CASCADE;
+DROP TABLE IF EXISTS wyr CASCADE;
 
 CREATE TABLE state (
   -- index.json
@@ -197,6 +198,15 @@ CREATE TABLE category(
   sector varchar(256) 
 );
 
+CREATE TABLE wyr(
+    district varchar(6) references district,
+    captcha boolean,
+    contactform varchar(255),
+    imaissue boolean, 
+    wyrform boolean,
+    zipauth boolean
+);
+
 -- Views
 CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician);
 
@@ -213,5 +223,6 @@ GRANT ALL on vote TO watchdog;
 GRANT ALL on interest_group_bill_support TO watchdog;
 GRANT ALL on group_politician_similarity TO watchdog;
 GRANT ALL on category TO watchdog;
+GRANT ALL on wyr TO watchdog;
 GRANT ALL on v_politician_name to watchdog;
 GRANT ALL on politician_fec_ids to watchdog;
