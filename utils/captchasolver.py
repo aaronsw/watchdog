@@ -131,11 +131,10 @@ def solve(captcha):
     44
     >>> solve("What is ten minus one?")
     9
-    >>> solve("Please solve the following math problem: three x one?")
+    >>> solve("Please solve the following math problem: three x one?    ")
     3
-    
     '''
-    captcha = captcha.lower()
+    captcha = captcha.strip().lower()
     result = None
 
     for s,f in [('sum of', sumof), ('math problem', mathprob),\

@@ -19,7 +19,7 @@ name_options = dict(prefix=['pre', 'salutation'],
                     lname=['lname', 'last'],
                     fname=['fname', 'first', 'name'],
                     zipcode=['zip', 'zipcode'],
-                    zip4=['zip4'],
+                    zip4=['zip4', 'four', 'plus'],
                     address=['addr1', 'address'],
                     addr2=['addr2', 'address2'],
                     addr3=['addr3'],
@@ -73,7 +73,10 @@ class Form(object):
         return True
     
     def click(self):
-        return self.f.click()
+        try:
+            return self.f.click()
+        except Exception, detail:
+            print detail,
                     
     def select_value(self, control, options):
         if not isinstance(options, list): options = [options]
@@ -106,8 +109,12 @@ class Form(object):
     def fill(self, value, name=None, type=None):
         c = self.find_control(name=name, type=type)
         if c and not c.readonly:
-            if c.type in ['select', 'radio']: value = self.select_value(c, value)
-            self.f.set_value(value, name=c.name)
+
+            if c.type in ['select', 'radio', 'checkbox']: 
+                value = self.select_value(c, value)
+            elif isinstance(value, list):
+                value = value[0]
+            self.f.set_value(value, name=c.name, type=c.type)
             return True 
         return False
     
@@ -143,8 +150,8 @@ class Form(object):
             return None
                     
             
-def has_message(soup, msg):
-    bs = soup.findAll('b')
+def has_message(soup, msg, tags='b'):
+    bs = soup.findAll(tags)
     msg = msg.lower()
     for b in bs:
         errmsg = str(b.string).lower()
@@ -153,13 +160,14 @@ def has_message(soup, msg):
     return False
 
 def get_forms(url, data=None):    
-    response = urlopen(url, data).read()
+    response = urlopen(url, data)
+    if response: response = response.read()
     try:
         forms = ParseFile(StringIO(response), url, backwards_compat=False)
     except:
         forms = []
     
-    return [Form(f) for f in forms], response
+    return [Form(f) for f in forms], response or ''
 
 class ZipShared(Exception): pass
 class ZipIncorrect(Exception): pass
@@ -187,6 +195,7 @@ def writerep_wyr(district, zipcode, state, prefix, fname, lname,
           else: return None        
             
     def get_wyr_form2(request):
+        if not request: return
         url, data = request.get_full_url(), request.get_data() 
         forms, response = get_forms(url, data)
         soup = BeautifulSoup(response)    
@@ -205,7 +214,7 @@ def writerep_wyr(district, zipcode, state, prefix, fname, lname,
                     solution = captchasolver.solve(challenge)
                 except Exception, detail:
                     print >> sys.stderr, 'Exception in CaptchaSolve', detail
-                    print 'Could not solve:', challenge,
+                    print 'Could not solve:"%s"' % challenge,
                 else:        
                     form.f['HIP_response'] = str(solution)
                     request = form.click()
@@ -227,7 +236,7 @@ def writerep_wyr(district, zipcode, state, prefix, fname, lname,
             return request
             
     def wyr_step3(request):
-        if not request: return None
+        if not request: return
         forms, response = get_forms(request.get_full_url(), request.get_data())
         forms = filter(lambda f: f.has(type='textarea'), forms)
         if forms:
@@ -279,27 +288,6 @@ def get_zipauth_link(district):
     if contactforms: return contactforms[0].contactform
     return None
 
-def find_form(forms, names):
-    names = [name.upper() for name in names]
-    fform = None
-    for form in forms:
-        for c in form.controls:
-            for name in names:
-                if c.name and (name in c.name.upper()):
-                    fform = form
-    return fform         
-            
-def fill(form, names, value):
-    """ fills the matching `form` field with `value`"""
-    if not isinstance(names, list): names = [names]
-    control = matching_control(form, names)
-    if control:
-        if control.type in ['select', 'radio']: 
-            value = select_value(control, value)
-        form[control.name] = value
-        return True    
-    return False
-    
 def writerep_zipauth(zipauth_link, district, zipcode, state, prefix, fname, 
                      lname, addr1, city, phone, email, msg, 
                      addr2='', addr3='', zip4=''):
@@ -311,6 +299,7 @@ def writerep_zipauth(zipauth_link, district, zipcode, state, prefix, fname,
         return f.click()
         
     def zipauth_step2(request):   
+        if not request: return
         forms, response = get_forms(request.get_full_url(), request.get_data())
         forms = filter(lambda f: f.has(type='textarea'), forms)
         if forms:
@@ -323,7 +312,8 @@ def writerep_zipauth(zipauth_link, district, zipcode, state, prefix, fname,
             return f.production_click()
         else:
             soup = BeautifulSoup(response)
-            if has_message(soup, 'zip code is split between more than one'): raise ZipShared
+            if has_message(soup, 'zip code is split between more than one', 'p'): raise ZipShared
+            if has_message(soup, 'Access to the requested form is denied', 'p'): raise ZipIncorrect
             
     forms, response = get_forms(zipauth_link)
     forms = filter(lambda f: f.has(name='zip'), forms)
@@ -381,7 +371,7 @@ except:
 
 def getzip(dist):
     return dist_zip_dict[dist]
-    
+
 def test(formtype=None):
     query = "select district from wyr " 
     if formtype == 'wyr':  query += "where wyr_form='t'"
