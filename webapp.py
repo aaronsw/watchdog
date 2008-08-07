@@ -491,29 +491,45 @@ def add_zip4(form):
     form.inputs = tuple(inputs)
     return form
     
+
+def add_captcha(form, img_src):
+    inputs = list(form.inputs)
+    captcha = forms.captcha
+    captcha.pre = '<img src="%s" border="0" />&nbsp;&nbsp;' % img_src
+    inputs.append(captcha)
+    form.inputs = tuple(inputs)
+    return form
+  
 class write_your_rep:
     def GET(self, form=None):
-        form = forms.writerep
+        form = form or forms.writerep()
         msg = helpers.get_delete_msg()
         return render.writerep(form, msg=msg)
         
     def POST(self):
         i = web.input()
-        form = forms.writerep
+        form = forms.writerep()
         if form.validates(i):
+            print i
             try:
                 dists = zip2rep.zip2dist(i.zipcode, i.addr1+i.addr2)
             except zip2rep.BadAddress:
                 dists = []
-            print dists    
+            #print dists
+            
             if len(dists) != 1:
                 form = add_zip4(form)
                 return self.GET(form)
-            else:
-                msg_sent = writerep.writerep(district=dists[0], **i)
-                print 'after writerep'
-                if msg_sent: helpers.set_msg('Your message has been sent.')
-                raise web.seeother('/writerep')
+            
+            dist = dists[0]    
+            captcha = ('captcha' not in i) and writerep.get_captcha_src(dist)
+            if captcha: 
+                form = add_captcha(form, captcha)
+                return self.GET(form) 
+                
+            msg_sent = writerep.writerep(district=dist, **i)
+            if msg_sent: helpers.set_msg('Your message has been sent.')
+            raise web.seeother('/writerep')
         else:
             return self.GET(form)        
             

@@ -94,18 +94,19 @@ forgot_password = form.Form(
             )
     )
 
+#@@@ args of writerep function in utils/writerep.py have to be same as names of the inputs below.
 writerep = form.Form(
-    form.Dropdown('prefix_name', 
+    form.Dropdown('prefix', 
         ['Mr.', 'Mrs.', 'Dr.', 'Ms.', 'Miss'], 
         description='Prefix',
         post='*'
         ),
-    form.Textbox('last_name',
+    form.Textbox('lname',
         form.notnull,
         description='Last Name',
         post='*'
         ),
-    form.Textbox('first_name',
+    form.Textbox('fname',
         form.notnull,
         description='First Name',
         post='*'
@@ -162,3 +163,9 @@ zip4_textbox = form.Textbox('zip4',
         maxlength='4',
         description='Zip4'
     )   
+
+captcha = form.Textbox('captcha',
+        form.notnull,
+        size='10',
+        description='Validation'
+)    

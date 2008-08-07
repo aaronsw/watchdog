@@ -28,16 +28,16 @@ def find_all():
         d[dist] = dict(wyrform=None, ima=None, zipauth=None, captcha=None, contactform=None)
         if home:
             if has_wyr(dist): 
-                d[dist] = dict(wyrform=True, ima=None, zipauth=None, captcha=None, contactform=None)
+                d[dist]['wyrform'] = True
             else:    
-                formtype, link, captcha = get_contactform_link(home)
+                formtype, link = get_contactform_link(home)
                 if not formtype:
                     contact_page = get_contact_page(home)
-                    formtype, link, captcha = get_contactform_link(contact_page)
+                    formtype, link = get_contactform_link(contact_page)
                 
                 isima, iszipauth = formtype=='ima', formtype == 'zipauth'
                 if isima or iszipauth: 
-                    d[dist] = dict(wyrform=None, ima=isima, zipauth=iszipauth, captcha=captcha, contactform=link)
+                    d[dist] = dict(wyrform=None, ima=isima, zipauth=iszipauth, captcha=has_captcha(link), contactform=link)
             print >> sys.stderr, d[dist]        
     return d            
             
@@ -100,45 +100,46 @@ def has(f, s):
 def has_zipauth(f):
     return has(f, 'zip')
     
-def has_captcha(f):
-    return has(f, 'captcha')
-                
+def has_captcha(url):
+    import re
+    response = urlopen(url)
+    if response: 
+        soup = BeautifulSoup(response)
+        return bool(soup.findAll('img', attrs={"src": re.compile(".*[Cc]aptcha.*")}))
+    return False
+    
 def has_ima_or_zipauth(url, data=None):
-    if not url: return None, None, None
+    if not url: return None, None
     try:
         response = urlopen(url, data)
         forms = ParseResponse(response, backwards_compat=False)
     except:
-        return None, None, None
+        return None, None
     else:
-        f = filter(has_textarea, forms)
-        if f:
-            return 'ima', url, bool(filter(has_captcha, f))
-        f = filter(has_zipauth, forms) 
-        if f:
-            return 'zipauth', url, bool(filter(has_captcha, f))
-    return None, None, None    
+        if filter(has_textarea, forms): return 'ima', url
+        if filter(has_zipauth, forms): return 'zipauth', url
+    return None, None    
 
 def get_contactform_link(url):
-    formtype, _url, captcha = has_ima_or_zipauth(url)
-    if formtype: return formtype, _url, captcha
+    formtype, _url = has_ima_or_zipauth(url)
+    if formtype: return formtype, _url
     
     response = urlopen(url)
     try:    
         soup = BeautifulSoup(response)
     except:
-        return None, None, None
+        return None, None
             
     links = soup.findAll({'a': True})
     ima_link = get_link_with(links, ['ima/', 'issues_subscribe'])
-    formtype, url, captcha = has_ima_or_zipauth(urljoin(response.geturl(), ima_link))
-    if formtype: return formtype, url, captcha
+    formtype, url = has_ima_or_zipauth(urljoin(response.geturl(), ima_link))
+    if formtype: return formtype, url
 
     zipauth_link = get_link_with(links, ['zipauth', 'zip_auth'])    
-    formtype, url, captcha = has_ima_or_zipauth(urljoin(response.geturl(), zipauth_link))
-    if formtype: return formtype, url, captcha
+    formtype, url = has_ima_or_zipauth(urljoin(response.geturl(), zipauth_link))
+    if formtype: return formtype, url
     
-    return None, None, None
+    return None, None
     
 #--------------------------------------------
     
@@ -180,7 +181,7 @@ def has_wyr(dist):
     except:
         return False
     return len(soup.findAll('form')) == 2       
-    
+
 
 if __name__ == "__main__":
     #import doctest

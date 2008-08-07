@@ -10,6 +10,8 @@ import urllib2
 from ClientForm import ParseFile, ParseError, ControlNotFoundError
 from BeautifulSoup import BeautifulSoup
 from StringIO import StringIO
+import re
+from urlparse import urljoin
 
 import web
 import captchasolver
@@ -28,7 +30,8 @@ name_options = dict(prefix=['pre', 'salutation'],
                     email=['email'],
                     phone=['phone'],
                     issue=['issue', 'subject', 'topic'],
-                    message=['message', 'msg', 'comment', 'text']
+                    message=['message', 'msg', 'comment', 'text'],
+                    captcha=['captcha', 'validat']
                 )
 
 def safe(f):
@@ -252,7 +255,7 @@ def writerep_wyr(district, zipcode, state, prefix, fname, lname,
 
 def writerep_ima(ima_link, district, zipcode, state, prefix, fname, 
                  lname, addr1, city, phone, email, msg, 
-                 addr2='', addr3='', zip4=''):
+                 addr2='', addr3='', zip4='', captcha=''):
 
     forms, response = get_forms(ima_link)
     forms = filter(lambda f: f.has(type='textarea') , forms)
@@ -263,6 +266,7 @@ def writerep_ima(ima_link, district, zipcode, state, prefix, fname,
         f.fill_address(addr1, addr2, addr3)
         f.fill_all(city=city, state=state.upper(), zipcode=zipcode, zip4=zip4, email=email, phone=phone, issue=['GEN', 'OTH'])
         f.fill(type='textarea', value=msg)
+        f.fill_all(captcha=captcha)
         return f.production_click()
     else:
         print 'Error: No IMA form in', ima_link,
@@ -324,7 +328,7 @@ def writerep_zipauth(zipauth_link, district, zipcode, state, prefix, fname,
         return        
     
 def writerep(district, zipcode, prefix, fname, lname, 
-             addr1, city, phone, email, msg, addr2='', addr3='', zip4=''):
+             addr1, city, phone, email, msg, addr2='', addr3='', zip4='', captcha=''):
     '''
     Note: zip4 is required for contactforms with `zipauth` flag
     as well as those with multiple representatives for the district
@@ -340,6 +344,7 @@ def writerep(district, zipcode, prefix, fname, lname,
 
     if wyr:
         print 'wyr_form',
+        args.pop('captcha')
         msg_sent = writerep_wyr(**args)
 
     if ima_link and not msg_sent:
@@ -349,10 +354,24 @@ def writerep(district, zipcode, prefix, fname, lname,
         
     if zipauth_link and not msg_sent:
         print 'zip auth',
+        args.pop('captcha')
         args['zipauth_link'] = zipauth_link
         msg_sent = writerep_zipauth(**args)
     
     return msg_sent
+    
+def get_captcha_src(dist):
+    r = db.select('wyr', what='contactform', where='district=$dist and imaissue=True', vars=locals())
+    if r:
+        url = r[0].contactform
+        response = urlopen(url)
+        if response: 
+            soup = BeautifulSoup(response)
+            imgs = soup.findAll('img', attrs={'src': re.compile('.*[Cc]aptcha.*')})
+            if imgs: 
+                img_src = imgs[0].get('src', '') 
+                return urljoin(url, img_src)
+    return ''
 
 def getdistzipdict(zipdump):
     """returns a dict with district names as keys zipcodes falling in it as values"""
