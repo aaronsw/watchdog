@@ -79,7 +79,7 @@ class Form(object):
         try:
             return self.f.click()
         except Exception, detail:
-            print detail,
+            print >> sys.stderr, detail
                     
     def select_value(self, control, options):
         if not isinstance(options, list): options = [options]
@@ -178,7 +178,17 @@ class ZipNotFound(Exception): pass
 class WyrError(Exception): pass
 class NoForm(Exception): pass
 
-def writerep_wyr(district, zipcode, state, prefix, fname, lname,
+def writerep_email(rep_email, district, zipcode, state, prefix, fname, lname,
+            addr1, city, phone, email, msg, addr2='', addr3='', zip4=''):
+            
+    name = '%s. %s %s' % (prefix, fname, lname)
+    from_addr = '%s <%s>' % (name, email)
+    #@@@@ msg has to be composed
+    if PRODUCTION_MODE:
+        web.sendmail(from_addr, rep_email, subject='', msg=msg)
+    return True        
+
+def writerep_wyr(wyr_link, district, zipcode, state, prefix, fname, lname,
             addr1, city, phone, email, msg, addr2='', addr3='', zip4=''):
           
     def wyr_step1(url):
@@ -250,8 +260,7 @@ def writerep_wyr(district, zipcode, state, prefix, fname, lname,
         else:
             print >> sys.stderr, response
 
-    wyr_url = 'https://forms.house.gov/wyr/welcome.shtml'
-    return wyr_step3(wyr_step2(wyr_step1(wyr_url)))
+    return wyr_step3(wyr_step2(wyr_step1(wyr_link)))
 
 def writerep_ima(ima_link, district, zipcode, state, prefix, fname, 
                  lname, addr1, city, phone, email, msg, 
@@ -270,27 +279,6 @@ def writerep_ima(ima_link, district, zipcode, state, prefix, fname,
         return f.production_click()
     else:
         print 'Error: No IMA form in', ima_link,
-                     
-def has_wyr_form(district):
-    wyr_forms = db.select('wyr', what='wyr_form', 
-                          where='district = $district and wyr_form IS NOT NULL', 
-                          vars=locals())
-    if wyr_forms: return True
-    return False
-
-def get_ima_link(district):
-    contactforms = db.select('wyr', what='contactform', 
-                             where='district = $district and imaissue = true', 
-                             vars=locals())
-    if contactforms: return contactforms[0].contactform
-    return None
-
-def get_zipauth_link(district):
-    contactforms = db.select('wyr', what='contactform', 
-                             where='district = $district and zipauth = true', 
-                             vars=locals())
-    if contactforms: return contactforms[0].contactform
-    return None
 
 def writerep_zipauth(zipauth_link, district, zipcode, state, prefix, fname, 
                      lname, addr1, city, phone, email, msg, 
@@ -327,6 +315,11 @@ def writerep_zipauth(zipauth_link, district, zipcode, state, prefix, fname,
         print 'Error: No zipauth form in', zipauth_link
         return        
     
+def getcontact(dist):
+    r = db.select('wyr', what='contact, contacttype', 
+                    where='district=$dist', vars=locals())[0]
+    return r.contact, r.contacttype                
+        
 def writerep(district, zipcode, prefix, fname, lname, 
              addr1, city, phone, email, msg, addr2='', addr3='', zip4='', captcha=''):
     '''
@@ -334,31 +327,21 @@ def writerep(district, zipcode, prefix, fname, lname,
     as well as those with multiple representatives for the district
     '''
     state = district[:2]
-    prefix = prefix.rstrip('.')
+    prefix = prefix.rstrip('.') #few forms take only Mr, Ms etc.
+    
+    href, contacttype = getcontact(district)
+    if contacttype not in ['E', 'W', 'I', 'Z']: return False
+    
     args = locals();
     
-    wyr = has_wyr_form(district)
-    ima_link = get_ima_link(district)
-    zipauth_link = get_zipauth_link(district)
-    msg_sent = False
-
-    if wyr:
-        print 'wyr_form',
-        args.pop('captcha')
-        msg_sent = writerep_wyr(**args)
-
-    if ima_link and not msg_sent:
-        print 'ima_link',
-        args['ima_link'] = ima_link
-        msg_sent = writerep_ima(**args)
-        
-    if zipauth_link and not msg_sent:
-        print 'zip auth',
-        args.pop('captcha')
-        args['zipauth_link'] = zipauth_link
-        msg_sent = writerep_zipauth(**args)
-    
-    return msg_sent
+    d = dict(E='rep_email', W='wyr_link', I='ima_link', Z='zipauth_link')
+    args[d[contacttype]] = href
+    args.pop('href'); args.pop('contacttype')
+    if contacttype != 'I': args.pop('captcha')
+         
+    handlers = dict(E=writerep_email, W=writerep_wyr, I=writerep_ima, Z=writerep_zipauth)
+    print handlers[contacttype].__name__,
+    return handlers[contacttype](**args)
     
 def get_captcha_src(dist):
     r = db.select('wyr', what='contactform', where='district=$dist and imaissue=True', vars=locals())
@@ -373,29 +356,30 @@ def get_captcha_src(dist):
                 return urljoin(url, img_src)
     return ''
 
-def getdistzipdict(zipdump):
-    """returns a dict with district names as keys zipcodes falling in it as values"""
-    d = {}
-    for line in zipdump.strip().split('\n'):
-        zip5, zip4, dist = line.split('\t')
-        d[dist] = (zip5, zip4)
-    return d
-
-try:        
-   dist_zip_dict =  getdistzipdict(file('zip_per_dist.tsv').read())
-except:
-   import os, sys
-   path = os.path.dirname(sys.modules[__name__].__file__)
-   dist_zip_dict =  getdistzipdict(file(path + '/zip_per_dist.tsv').read())
-
-def getzip(dist):
-    return dist_zip_dict[dist]
-
 def test(formtype=None):
+    def getdistzipdict(zipdump):
+        """returns a dict with district names as keys zipcodes falling in it as values"""
+        d = {}
+        for line in zipdump.strip().split('\n'):
+            zip5, zip4, dist = line.split('\t')
+            d[dist] = (zip5, zip4)
+        return d
+
+    try:        
+       dist_zip_dict =  getdistzipdict(file('zip_per_dist.tsv').read())
+    except:
+       import os, sys
+       path = os.path.dirname(sys.modules[__name__].__file__)
+       dist_zip_dict =  getdistzipdict(file(path + '/zip_per_dist.tsv').read())
+
+    def getzip(dist):
+        return dist_zip_dict[dist]
+        
     query = "select district from wyr " 
-    if formtype == 'wyr':  query += "where wyr_form='t'"
-    elif formtype == 'ima': query += "where imaissue='t'"
-    elif formtype == 'zipauth': query += "where zipauth='t'"
+    if formtype == 'wyr':  query += "where contacttype='W'"
+    elif formtype == 'ima': query += "where contacttype='I'"
+    elif formtype == 'zipauth': query += "where contacttype='Z'"
+    elif formtype =='email': query += "where contacttype='E'"
     
     dists = [r.district for r in db.query(query)]
     for dist in dists:
@@ -407,6 +391,7 @@ def test(formtype=None):
         print msg_sent and 'Success' or 'Failure'
     
 if __name__ == '__main__':
+    test('email')
     test('wyr')
     test('ima')
     test('zipauth')

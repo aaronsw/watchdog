@@ -200,12 +200,11 @@ CREATE TABLE category(
 
 CREATE TABLE wyr(
     district varchar(6) references district,
-    captcha boolean,
-    contactform varchar(255),
-    imaissue boolean, 
-    wyrform boolean,
-    zipauth boolean
+    contact varchar(255),
+    contacttype varchar(1),    -- E=email, W=wyr, I=ima, Z=zipauth
+    captcha boolean
 );
+    
 
 -- Views
 CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician);
