@@ -1,17 +1,19 @@
 import sys
 import simplejson
 from urllib2 import urlopen
-from ClientForm import ParseResponse, ParseFile
+from ClientForm import ParseResponse, ControlNotFoundError, AmbiguityError
 from settings import db
 from BeautifulSoup import BeautifulSoup
 
 def has_textarea(f):
     try:
         c = f.find_control(type='textarea')
-    except:
+    except ControlNotFoundError:
         return False
-    else:
+    except AmbiguityError:  #more than 1 textarea
         return True
+    else:
+        return True    
 
 def has(f, s):
     for c in f.controls:

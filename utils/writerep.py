@@ -7,7 +7,7 @@ Created by Pradeep Gowda on 2008-04-24.
 """
 import sys
 import urllib2
-from ClientForm import ParseFile, ParseError, ControlNotFoundError
+from ClientForm import ParseFile, ParseError, ControlNotFoundError, AmbiguityError
 from BeautifulSoup import BeautifulSoup
 from StringIO import StringIO
 import re
@@ -66,6 +66,9 @@ class Form(object):
     def __str__(self):
         return str(self.f)
                     
+    def  __getattr__(self, x): 
+        return getattr(self.f, x)
+                        
     def production_click(self):
         if PRODUCTION_MODE:
             request = self.f.click()
@@ -151,7 +154,9 @@ class Form(object):
             return self.f.find_control(type=type)
         except ControlNotFoundError:
             return None
-                    
+        except AmbiguityError:  #@@  TO BE FIXED
+            return self.f.find_control(type=type, nr=1)
+            
             
 def has_message(soup, msg, tags='b'):
     bs = soup.findAll(tags)
@@ -217,7 +222,7 @@ def writerep_wyr(wyr_link, district, zipcode, state, prefix, fname, lname,
             elif has_message(soup, "not correct for the selected State"): raise ZipIncorrect
             elif has_message(soup, "was not found in our database."): raise ZipNotFound
             elif has_message(soup, "Use your web browser's <b>BACK</b> capability "): raise WyrError
-            elif forms: return forms[0]   
+            elif forms and 'search' not in forms[0].action.lower(): return forms[0]  
             else: raise NoForm
         else:
             challenge = get_challenge(soup)
@@ -305,7 +310,8 @@ def writerep_zipauth(zipauth_link, district, zipcode, state, prefix, fname,
         else:
             soup = BeautifulSoup(response)
             if has_message(soup, 'zip code is split between more than one', 'p'): raise ZipShared
-            if has_message(soup, 'Access to the requested form is denied', 'p'): raise ZipIncorrect
+            if has_message(soup, 'Access to the requested form is denied', ['p', 'font']): raise ZipIncorrect
+            if has_message(soup, 'you are outside', 'p'): raise ZipIncorrect 
             
     forms, response = get_forms(zipauth_link)
     forms = filter(lambda f: f.has(name='zip'), forms)
@@ -331,7 +337,6 @@ def writerep(district, zipcode, prefix, fname, lname,
     
     href, contacttype = getcontact(district)
     if contacttype not in ['E', 'W', 'I', 'Z']: return False
-    
     args = locals();
     
     d = dict(E='rep_email', W='wyr_link', I='ima_link', Z='zipauth_link')
@@ -374,7 +379,7 @@ def test(formtype=None):
 
     def getzip(dist):
         return dist_zip_dict[dist]
-        
+          
     query = "select district from wyr " 
     if formtype == 'wyr':  query += "where contacttype='W'"
     elif formtype == 'ima': query += "where contacttype='I'"
