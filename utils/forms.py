@@ -17,14 +17,14 @@ petitionform = form.Form(
             form.regexp(email_regex, 'Please enter a valid email'),
             description="Your email:",
             size='30'),
-      form.Textbox('title', description="Title:", size='80'),         
-      form.Textbox('id', 
+      form.Textbox('ptitle', description="Title:", size='80'),         
+      form.Textbox('pid', 
             form.notnull,
             form.Validator('ID already exists, Choose a different one.', doesnotexist),
             pre='http://watchdog.net/c/',
             description='URL:',
             size='30'),
-      form.Textarea('description', form.notnull, description="Description:", rows='20', cols='80')
+      form.Textarea('pdescription', form.notnull, description="Description:", rows='20', cols='80')
       )
       
 signform = form.Form(

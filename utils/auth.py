@@ -34,7 +34,7 @@ class login:
         i = web.input(redirect=referer)
         form = forms.loginform()
         form['redirect'].value = i.redirect
-        msg = helpers.get_delete_msg()
+        msg, msg_type = helpers.get_delete_msg()
         return render.login(form, msg)
     
     def POST(self):
@@ -75,7 +75,7 @@ def set_password_url(email, token):
 class forgot_password:
     def GET(self, form=None):
         form = form or forms.forgot_password()
-        msg = helpers.get_delete_msg()
+        msg, msg_type = helpers.get_delete_msg()
         return render.forgot_password(form, msg)
     
     def POST(self):
@@ -109,7 +109,7 @@ class set_password:
             form = form or forms.passwordform()
             return render.set_password(form, i.email)
         else:
-            helpers.set_msg('Invalid token')
+            helpers.set_msg('Invalid token', msg_type='error')
             raise web.seeother('/forgot_password')
     
     def POST(self):

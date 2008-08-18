@@ -23,7 +23,7 @@ def load_wyr():
                     'captcha': data['captcha']
                    }
                    
-            db.insert('wyr3', seqname=False, **d)
+            db.insert('wyr', seqname=False, **d)
            
 if __name__ == "__main__": 
     load_wyr()

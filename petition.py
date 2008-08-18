@@ -38,7 +38,7 @@ class index:
         return render.petition_list(petitions)
         
 def save_petition(p):
-    p.id = p.id.replace(' ', '_')
+    p.pid = p.pid.replace(' ', '_')
     with db.transaction():
         try:
             owner = db.select('users', where='email=$p.email', vars=locals())[0]
@@ -48,10 +48,10 @@ def save_petition(p):
             if not owner.verified: db.update('users', where='email=$p.email', verified=True, vars=locals())
             owner_id = owner.id
             
-        db.insert('petition', seqname=False, id=p.id, title=p.title, description=p.description,
+        db.insert('petition', seqname=False, id=p.pid, title=p.ptitle, description=p.pdescription,
                     owner_id=owner_id)
         #make the owner of the petition sign for it (??)             
-        db.insert('signatory', seqname=False, user_id=owner_id, share_with='E', petition_id=p.id)      
+        db.insert('signatory', seqname=False, user_id=owner_id, share_with='E', petition_id=p.pid)      
         
 def fill_user_details(form, fillings):
     details = {}
@@ -86,7 +86,7 @@ class new:
             msg = """Congratulations, you've created your petition. 
                     Now sign and share it with all your friends."""
             helpers.set_msg(msg)
-            return web.seeother('/%s' % p.id)
+            return web.seeother('/%s' % p.pid)
         else:
             return render.petitionform(pform)
     
@@ -124,7 +124,8 @@ def save_signature(forminput, pid):
 def sendmail_to_signatory(user, pid):
     p = db.select('petition', where='id=$pid', vars=locals())[0]
     p.url = 'http//watchdog.net/c/%s' % (pid) 
-    msg = render_plain.signatory_mailer(user.name, p)
+    token = auth.get_secret_token(user.email)
+    msg = render_plain.signatory_mailer(user, p, token)
     #@@@ shouldn't this web.utf8 stuff taken care by in web.py?
     web.sendmail(web.utf8(config.from_address), web.utf8(user.email), web.utf8(msg.subject.strip()), web.utf8(msg))
     
@@ -142,10 +143,12 @@ def is_author(email, pid):
 class petition:
     def GET(self, pid, signform=None, passwordform=None):
         i = web.input()
-        if ('m' in i):
-            if i.m == 'edit':  return self.GET_edit(pid)
-            elif i.m == 'signatories': return self.GET_signatories(pid)
         
+        options = ['signatories', 'unsign', 'edit', 'delete']
+        if i.get('m', None) in options:
+            handler = getattr(self, 'GET_'+i.m)
+            return handler(pid)
+
         try:
             p = db.select('petition', where='id=$pid', vars=locals())[0]
         except:
@@ -159,24 +162,42 @@ class petition:
             fill_user_details(signform, ['name', 'email'])
                                               
         if askforpasswd(p.owner_id) and not passwordform: passwordform = forms.passwordform()
-        msg = helpers.get_delete_msg()   
+        msg, msg_type = helpers.get_delete_msg()   
         return render.petition(p, signform, passwordform, msg)
     
     def GET_edit(self, pid):
         user_email = helpers.get_loggedin_email()
         if is_author(user_email, pid):
             p = db.select('petition', where='id=$pid', vars=locals())[0]
-            p.email = user_email
             pform = forms.petitionform()            
-            pform.fill(**p)
+            pform.fill(email=user_email, pid=p.id, ptitle=p.title, pdescription=p.description)
             for i in pform.inputs:
-                if i.id in ['id', 'email']: i.attrs['readonly'] = 'true'
+                if i.id in ['pid', 'email']: i.attrs['readonly'] = 'true'
             title = "Edit petition"    
             return render.petitionform(pform, title, target='/c/%s?m=edit' % (pid))     
         else:
-            helpers.set_msg('Only author of this petition can edit it.')
+            login_link = '<a href="/login">Login</a>'
+            helpers.set_msg('Only author of this petition can edit it. %s if you are.' % login_link, msg_type='error')
             raise web.seeother('/%s' % pid)
+                    
+    
+    def GET_unsign(self, pid):
+        i = web.input()
+        user = helpers.get_user_by_email(i.email)
+        
+        if user:
+            signatory = db.select('signatory', where='petition_id=$pid and user_id=$user.id', vars=locals())
+        
+        if not (user and signatory and auth.check_secret_token(i.email, i.token)):
+            msg = "Invalid token or there is no signature for this petition with this email."
+            msg_type = 'error'
+        else:
+            msg = render_plain.confirm_unsign(pid, user.id)
+            msg_type = ''
             
+        helpers.set_msg(msg, msg_type)
+        raise web.seeother('/%s' % pid)
+                        
     def GET_signatories(self, pid):
         user_email = helpers.get_loggedin_email()
         ptitle = db.select('petition', what='title', where='id=$pid', vars=locals())[0].title
@@ -188,10 +209,20 @@ class petition:
                         vars=locals()).list()
         return render.signature_list(pid, ptitle, signs, is_author(user_email, pid))
             
+    def GET_delete(self, pid):
+        user_email = helpers.get_loggedin_email()
+        if is_author(user_email, pid):
+            msg = render_plain.confirm_deletion(pid)
+            helpers.set_msg(msg)
+        else:
+            login_link = '<a href="/login">Login</a>'
+            helpers.set_msg('Only author of this petition can delete it. %s if you are.' % login_link, msg_type='error')
+        
+        raise web.seeother('/%s' % pid)    
         
     def POST(self, pid):
         i = web.input('m', _method='GET')
-        options = ['sign', 'unisign', 'edit', 'password']
+        options = ['sign', 'unsign', 'edit', 'password', 'delete']
         if i.m in options:
             handler = getattr(self, 'POST_'+i.m)
             return handler(pid)
@@ -219,11 +250,23 @@ class petition:
     
     def POST_edit(self, pid):
         i = web.input()
-        db.update('petition', where='id=$pid', title=i.title, description=i.description, vars=locals())
-        raise web.seeother('/%s' % (pid))
+        db.update('petition', where='id=$pid', title=i.ptitle, description=i.pdescription, vars=locals())
+        raise web.seeother('/%s' % pid)
     
     def POST_unsign(self, pid):
-        pass #@@@for now                               
+        i = web.input()
+        db.delete('signatory', where='petition_id=$pid and user_id=$i.user_id', vars=locals())
+        msg = 'Your signature has been removed for this petition.'
+        helpers.set_msg(msg)
+        raise web.seeother('/%s' % pid)
+
+    def POST_delete(self, pid):
+        with db.transaction():
+            title = db.select('petition', what='title', where='id=$pid', vars=locals())[0].title
+            db.delete('signatory', where='petition_id=$pid', vars=locals())
+            db.delete('petition', where='id=$pid', vars=locals())
+        helpers.set_msg('Petition "%s" deleted' % (title))
+        raise web.seeother('/')
     
 def get_contacts(user_id):    
     contacts = db.select('contacts', 

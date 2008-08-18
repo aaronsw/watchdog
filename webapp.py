@@ -503,7 +503,7 @@ def add_captcha(form, img_src):
 class write_your_rep:
     def GET(self, form=None):
         form = form or forms.writerep()
-        msg = helpers.get_delete_msg()
+        msg, msg_type = helpers.get_delete_msg()
         return render.writerep(form, msg=msg)
         
     def POST(self):

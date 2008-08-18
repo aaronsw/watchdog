@@ -35,7 +35,7 @@ def gmailLoginURL(email):
 class importcontacts:
 
     def GET(self):
-        msg = helpers.get_delete_msg()
+        msg, msg_type = helpers.get_delete_msg()
         return render.import_contacts(msg)
 
     def POST(self):

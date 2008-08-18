@@ -1,12 +1,12 @@
-$def with (user_name, petition)
+$def with (user, petition, token)
 
 $var title:
 $var subject: Thanks for signing petition
 
-Hi $user_name,
+Hi $user.name,
 
    Thanks for signing the petition $:petition.title! (If you didn't
-mean to sign this petition, visit $:petition.url?m=unsign .)
+mean to sign this petition, visit $:petition.url?m=unsign&token=$token&email=$user.email .)
 
    It would help even more if you could encourage your friends to
 sign as well. Here's a message you can copy-and-paste:

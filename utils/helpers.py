@@ -22,13 +22,20 @@ def getcookie(name):
 def deletecookie(name):
     web.setcookie(name, expires=-1)           
        
-def set_msg(msg):       
+def set_msg(msg, msg_type=None):       
+    if msg_type == 'error':
+        msg += '$ERR$'
     web.setcookie('wd_msg', msg)
     
 def get_delete_msg():
     msg = web.cookies().get('wd_msg', None)
     web.setcookie('wd_msg', '', expires=-1)
-    return msg
+    
+    msg_type = None
+    if msg and msg.endswith('$ERR$'):
+        msg_type = 'error'
+        msg = msg[:-5]
+    return msg, msg_type
 
 def get_loggedin_email():
     return getcookie('wd_login') 

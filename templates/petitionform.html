@@ -2,43 +2,7 @@ $def with (form, title="New Petition", target="/c/new")
 
 $var title: $title
 
-<script type="text/javascript" src="/static/js/jquery.js"></script>
-<script>
-
-\$(document).ready( function(){
-
-strip = function(s) { return s.replace(/^\s+/, '').replace(/\s+$/, ''); }
-remove_punctuation = function(s) { return s.replace(/[,.;]/g,''); }
-petition_id = $('id'); 
-note_id = $('note_id');
-title_field = $('title')
-\$(title_field).change(function fillURL(){
-    if(! \$(petition_id).attr('readonly')){
-        url = strip(this.value).toLowerCase().replace(/\s+/g, '-');
-        url = remove_punctuation(url);
-        \$(petition_id).val(url);
-    }    
-    return;
-});
-
-\$(petition_id).change( function checkID(){
-    \$.post("/c/checkID", {pid: strip(this.value)},
-         function(available){
-            if (available == 'False'){
-                msg = 'ID already exists, Choose a different one';
-                \$(note_id).html('<strong style="color:red">' + msg + '</strong>');
-                \$(petition_id).focus();
-                return false;
-            }
-            else { 
-                \$(note_id).html('');
-                return true;
-            }
-        });
-    });
-});
-</script>
-
+<script type="text/javascript" src="/static/js/petition.js"></script>
 
 <form name="petition" method="POST" action="$target"> 
     $if not form.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>

@@ -1,0 +1,8 @@
+$def with (pid, user_id)
+
+Do you really want to take off your signature for this petition?
+<form name="unsgin" method="POST" action="/c/$pid?m=unsign">
+    <input id="unsign_p" type="submit" value="Unsign"/>
+    <input name="user_id" type="hidden" value="$user_id" />
+    <input id="cancel" type="button" value="Cancel" onclick="window.location='/c/$pid'" />
+</form>
