@@ -9,6 +9,8 @@ DROP TABLE IF EXISTS vote CASCADE;
 DROP TABLE IF EXISTS interest_group_bill_support CASCADE;
 DROP TABLE IF EXISTS group_politician_similarity CASCADE;
 DROP TABLE IF EXISTS category CASCADE;
+DROP TABLE IF EXISTS contribution CASCADE;
+DROP TABLE IF EXISTS expenditure CASCADE;
 DROP TABLE IF EXISTS wyr CASCADE;
 
 CREATE TABLE state (
@@ -198,6 +200,32 @@ CREATE TABLE category(
   sector varchar(256) 
 );
 
+CREATE TABLE contribution(
+  id serial primary key,
+  politician_id varchar(256) references politician,
+  committee varchar(256),
+  contrib_date date, 
+  contributor_org varchar(256), 
+  contributor varchar(256), 
+  occupation varchar(256), 
+  employer varchar(256), 
+  candidate_name varchar(256),
+  filer_id varchar(10), 
+  report_id int, 
+  amount varchar(20)
+);
+
+CREATE TABLE expenditure(
+  id serial primary key,
+  committee varchar(256),
+  expenditure_date date, 
+  recipient varchar(256), 
+  filer_id varchar(10), 
+  report_id int, 
+  candidate_name varchar(256),
+  amount varchar(20)
+);
+
 CREATE TABLE wyr(
     district varchar(6) references district,
     contact varchar(255),
@@ -225,3 +253,5 @@ GRANT ALL on category TO watchdog;
 GRANT ALL on wyr TO watchdog;
 GRANT ALL on v_politician_name to watchdog;
 GRANT ALL on politician_fec_ids to watchdog;
+GRANT ALL on contribution to watchdog;
+GRANT ALL on expenditure to watchdog;
