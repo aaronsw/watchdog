@@ -180,7 +180,9 @@ def test_politician():
 
     reqtime, listing = time_thunk(lambda: json('/p/index'))
     print "took %.3f sec to get /p/index.json" % reqtime
-    ok_items(listing[0], dict(
+    young = [x for x in listing if 
+      x['uri'] == 'http://watchdog.net/p/don_young'][0]
+    ok_items(young, dict(
         district = 'http://watchdog.net/us/ak-00',
         type = 'Politician',
         uri = 'http://watchdog.net/p/don_young',
@@ -209,11 +211,10 @@ def test_politician():
 
 def test_dproperty():
     page = html('/us/by/est_population')
-    montana = re.search('(?s)<li(.*?)</li>', page)
+    montana = re.search('(?s)<li id="dMT-00">(.*)</li>', page)
     assert montana is not None, page
     montana = montana.group(1)
     ok_re(montana, 'href="/us/mt-00">')
-    ok_re(montana, 'width: 100%')
 
 def test_blog():
     html('/blog/')
