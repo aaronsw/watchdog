@@ -1,6 +1,6 @@
 $def with (petition, emailform, contacts, providers, loadcontactsform=None)
 
-$var title: Share petition <a href='$petition.url'>$petition.title</a> 
+$var title: Share petition
 
 <script>
 function checkAll(){
@@ -23,34 +23,32 @@ function fillTo(){
 }
 </script>
 
+<h2>Share: <a href='$petition.url'>$petition.title</a></h2>
 
-<table><tr>
-    <form name='contactform' method='POST' action='/c/share'>
-    <td style="border-right: solid #ddd 1pt">
-        $:emailform.render()
-        <input type="hidden" name="pid" value="$petition.id">
-        <input type="submit" name="submit" value="Send">
-    </td>
-    </form>
-    <td style="margin-left:10px;">
-        $if loadcontactsform:
-            <form name="loadcontacts" method="POST" action='/importcontacts' >
-                <p>Enter your $providers email address to load contacts.</p>
-                $:loadcontactsform.render()
-                <input type="hidden" name="pid" value="$petition.id">
-                <input type="submit" value="Load Contacts">
-            </form>
-        $if contacts:
-            <p class='select-all'>
-                <input type="checkbox" name="selectall" value='all' onclick='checkAll();fillTo()' />Select all ($len(contacts) contacts)</p>
-            <div class='contacts-listing'>
-                <ul>
-                $for c in contacts:
-                    <li><input type='checkbox' name='contacts' value='$c.email' onclick='fillTo()'/><b>$c.name</b></br> $c.email</li>
-                </ul>    
-            </div>
-            
-    </td>
-</tr></table>
+<form name='contactform' method='POST' action='/c/share'>
+  <td style="border-right: solid #ddd 1pt">
+      $:emailform.render()
+      <input type="hidden" name="pid" value="$petition.id">
+      <input type="submit" name="submit" value="Send">
+  </td>
+</form>
+
+$var sidebar:
+    $if loadcontactsform:
+        <form name="loadcontacts" method="POST" action='/importcontacts' >
+            <p>Enter your $providers email address to load contacts.</p>
+            $:loadcontactsform.render()
+            <input type="hidden" name="pid" value="$petition.id">
+            <input type="submit" value="Load Contacts">
+        </form>
+    $if contacts:
+        <p class='select-all'>
+            <input type="checkbox" name="selectall" value='all' onclick='checkAll();fillTo()' />Select all ($len(contacts) contacts)</p>
+        <div class='contacts-listing'>
+            <ul>
+            $for c in contacts:
+                <li><input type='checkbox' name='contacts' value='$c.email' onclick='fillTo()'/><b>$c.name</b></br> $c.email</li>
+            </ul>    
+        </div>
 
 </div>

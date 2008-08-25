@@ -66,7 +66,7 @@ h1 {margin:20px 0 20px 0; font-weight: normal; color:#EE4400; font-family:"Georg
 button {border: 1px solid #0f5b89; background-color: #0f5b89; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px;}
 
 .postit {border: 4px solid #fff; background-color: #FFF399; padding: 1em; margin-right: auto; margin-top: 20px; line-height: 16px; margin-bottom: 30px; }
-.slickform {border: 1px solid #D8D600; background-color: #FFF399; padding: 1em; margin-right: auto; margin-top: 20px; line-height: 16px; }
+.signatories { text-align: center; border: 1px solid #ccc; padding: 1em; font-size: larger; width: 20em; background-color: #eee; margin-top: 80px;  }.slickform {border: 1px solid #D8D600; background-color: #FFF399; padding: 1em; margin-right: auto; margin-top: 20px; line-height: 16px; }
 .blurb { font-size: 11px; line-height: 13px; padding-top: 3px; }
 
 .attribution { font-size: 11px; padding-bottom: 3px; padding-top: 10px; color: #999;  }
@@ -79,6 +79,10 @@ a.watchdog {border: 1px solid #0f5b89; background-color: #0f5b89; color: #fff; f
 a.watchdog:hover {border: 1px solid #002233; background-color: #002233; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px;}
 a.footer {border: 1px solid #EE4400; background-color: #EE4400; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 1px;}
 a.footer:hover {border: 1px solid #D8D600; background-color: #FFF399; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px;}
+a.action {background-color: #d9eefa; border: 1px solid #83b3d0; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px; }
+a.action:hover {background-color: #d9eefa; border: 1px solid #83b3d0; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px;}
+a.task {border: 1px solid #50aa50; background-color: #50aa50; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 1px;}
+a.task:hover {border: 1px solid #50aa50; background-color: #50aa50; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px;}
 
 .strapline { border-bottom: 1px solid #ccc; margin-top: -12px; margin-bottom: 44px;  }
 

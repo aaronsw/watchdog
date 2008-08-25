@@ -5,11 +5,12 @@ $var title: $p.title
 $if msg:
     $var msg: $:msg
 
-<p style="float:right">
-    <a href="#sign">Sign</a>&nbsp;
-    <a href="/c/share?pid=$p.id">Share</a>&nbsp;
-    <a href="?m=edit">Edit</a>
-    <a href="?m=delete">Delete</a></p>
+<p>
+  <a href="#sign" class="action">Sign</a>&nbsp;
+  <a href="/c/share?pid=$p.id" class="action">Share</a>&nbsp;
+  <a href="?m=edit" class="action">Edit</a>
+  <a href="?m=delete" class="action">Delete</a>
+</p>
 
 $if passwordform:
     <div class="passbox">
@@ -24,13 +25,13 @@ $if passwordform:
 <p>$:format(p.description) </p>
 
 $if p.signatory_count == 0:
-	<div class="signatories"> Be the first to sign this petition! </div>
+	<p class="signatories">Be the first to sign this petition!</p>
 $else:
 	$if p.signatory_count == 1:
 		$ ppl = 'person</a></strong> has'
 	$else:
 		$ ppl = 'people</a></strong> have'
-	<div class="signatories"> <strong><a href='/c/$p.id?m=signatories'>$p.signatory_count $:ppl signed this petition so far. </div>
+	<p class="signatories"> <strong><a href='/c/$p.id?m=signatories'>$p.signatory_count $:ppl signed this petition so far. </p>
 
 
 <a name="sign"><h2>Sign</h2></a>

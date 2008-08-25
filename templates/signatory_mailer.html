@@ -1,30 +1,32 @@
 $def with (user, petition, token)
 
 $var title:
-$var subject: Thanks for signing petition
+$var subject: Thanks for signing the petition
 
 Hi $user.name,
 
-   Thanks for signing the petition $:petition.title! (If you didn't
-mean to sign this petition, visit $:petition.url?m=unsign&token=$token&email=$user.email .)
+Thanks for signing the petition "$:petition.title",
 
-   It would help even more if you could encourage your friends to
+(If you didn't mean to sign this petition, please visit:
+$:petition.url?m=unsign&token=$token&email=$user.email )
+
+It would help even more if you could encourage your friends to
 sign as well. Here's a message you can copy-and-paste:
 
-   ------------------------------------------------------------
+------------------------------------------------------------
 
-   Dear Friend,
+Dear Friend,
 
-   I hope you'll join me in signing the petition "$:petition.title". You
-can do so right now at:
+I hope you'll join me in signing the petition "$:petition.title". 
+You can do so right now at:
 
-   $:petition.url
+$:petition.url
 
-   $:petition.description
+$:petition.description
 
-   $:petition.url
+$:petition.url
 
-   Thanks!
+Thanks!
 
-   ------------------------------------------------------------
-   [this message was sent by http://watchdog.net]
+-------------------------------------------------
+[ this message was sent by http://watchdog.net/ ]

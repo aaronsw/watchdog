@@ -23,7 +23,7 @@ $if page.get('front'):
   $if not page.get('front'):
       <div style="float: right; padding-right: 32px; padding-top: 15px;">
         $if is_logged_in():
-            <a href="#" onclick="document.forms['logout'].submit()">logout</a
+            <a href="#" onclick="document.forms['logout'].submit()" class="$page.get('login_class', 'footer')">logout</a
         $else:
             <a href="/login" class="$page.get('login_class', 'footer')">login</a
           ><a href="/about/" class="$page.get('about_class', 'footer')">about</a
@@ -78,7 +78,7 @@ $:page
 
 	<a href="/" class="watchdog">watchdog.net</a>\
 $if is_logged_in():
-    <a href="#" onclick="document.forms['logout'].submit()">logout</a
+    <a href="/logout" onclick="document.forms['logout'].submit()" class="footer">logout</a
 $else:
     <a href="/login" class="footer">login</a
   ><a href="/about/" class="footer">about</a

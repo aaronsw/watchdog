@@ -71,7 +71,7 @@ loadcontactsform = form.Form(
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
             description='Email:',
-            size='30'),
+            size='15'),
     form.Radio('provider', 
             ['Google', 'Yahoo'],
             value='Google', 
