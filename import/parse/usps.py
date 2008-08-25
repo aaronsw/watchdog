@@ -15,7 +15,13 @@ def string(s):
 
 def boolean(s):
     return {'Y': True, 'N': False, ' ': None}[s]
-    
+
+def halfbool1(s):
+    return dict(A=True, B=True, C=False, D=False)
+
+def halfbool2(s):
+    return dict(A=True, B=False, C=True, D=False)
+
 filler = string
 
 def enum(s=None, **db):
@@ -24,6 +30,8 @@ def enum(s=None, **db):
     else:
         if ' ' not in db: db[' '] = None
         return lambda s: db[s]
+
+oddeven = enum(O='ODD', E='EVEN', B='BOTH')
 
 def integer(s):
     s = s.strip()
@@ -86,11 +94,7 @@ def_ctystate = {
     ('alias_date', 8, date),
     ('delivery_low', 10, string),
     ('delivery_high', 10, string),
-    ('odd_even', 1, enum(
-      O='ODD',
-      E='EVEN',
-      B='BOTH'
-    )),
+    ('odd_even', 1, oddeven),
     (None, 21, filler)
   ],
   'Z': [
@@ -106,15 +110,28 @@ def_ctystate = {
     ('_type', 1, lambda s: 'ZIP City State'),
     ('zip', 5, string),
     ('city_state_key', 6, string),
-    ('zip_class_code', 1, enum),
+    ('zip_class_code', 1, enum(**{
+      ' ': 'NON-UNIQUE',
+      'M': 'AFO/FPO/DPO MILITARY',
+      'P': 'PO BOX ZIP',
+      'U': 'UNIQUE ZIP'
+    })),
     ('city_state_name', 28, string),
     ('city_state_abbrev', 13, string),
-    ('facility_code', 1, enum),
+    ('facility_code', 1, enum(
+      B='BRANCH',
+      C='COMMUNITY POST OFFICE',
+      N='NON-POSTAL COMMUNITY NAME, FORMER POSTAL FACILITY, OR PLACE NAME',
+      P='POST OFFICE',
+      S='STATION',
+      U='URBANIZATION'
+    )),
     ('mailing_name', 1, boolean),
     ('preferred_last_line_key', 6, string),
     ('preferred_last_line_name', 28, string),
     ('city_delivery', 1, boolean),
-    ('carrier_route_rate_sort', 1, enum),
+    ('carrier_route_sort_rate', 1, halfbool1),
+    ('merging_permitted', -1, halfbool2),
     ('unique_zip_name', 1, boolean),
     ('finance_no', 6, string),
     ('state_abbrev', 2, string),
@@ -140,42 +157,6 @@ def_ctystate = {
   ]
 }
 
-def_zip4 = {
-  'C': def_copyright(149),
-  'D': [
-    ('_type', 1, lambda s: "ZIP+4 Detail"),
-    ('zip', 5, string),
-    ('update_key', 10, integer), #?
-    ('action', 1, enum(A='ADD', D='DELETE')),
-    ('record_type', 1, enum),
-    ('carrier_route_id', 4, string),
-    ('street_pre_dir', 2, string),
-    ('street_name', 28, string),
-    ('street_suffix', 4, string),
-    ('street_post_dir', 2, string),
-    ('addr_primary_lo', 10, string),
-    ('addr_primary_hi', 10, string),
-    ('addr_primary_odd_even', 1, enum),
-    ('building_or_firm_name', 40, string),
-    ('addr_secondary_abbrev', 4, string),
-    ('addr_secondary_low', 8, string),
-    ('addr_secondary_high', 8, string),
-    ('addr_secondary_odd_even', 1, enum),
-    ('zip4_lo', 4, string),
-    ('zip4_hi', 4, string),
-    ('base_alt', 1, enum(B='BASE', A='ALTERNATIVE')),
-    ('lacs_status', 1, enum),
-    ('govt_bldg', 1, enum),
-    ('finance_no', 6, string),
-    ('state_abbrev', 2, string),
-    ('county_no', 3, string),
-    ('congress_dist', 2, string),
-    ('municipality_ctyst_key', 6, string),
-    ('urbanization_ctyst_key', 6, string),
-    ('prefd_lastline_ctyst_key', 6, string)
-  ]
-}
-
 def_5digit = {
   'C': def_copyright(62),
   'D': [
@@ -183,16 +164,72 @@ def_5digit = {
     ('zip', 5, string),
     ('update_key', 10, string),
     ('action_code', 1, enum(A="ADD", D="DELETE")),
-    ('record_type', 1, enum),
+    ('record_type', 1, enum(
+      G='GENERAL DELIVERY',
+      P='PO BOX',
+      R='RURAL ROUTE/HIGHWAY CONTRACT',
+      S='STREET'
+    )),
     ('street_pre_dir', 2, string),
     ('street_name', 28, string),
     ('street_suffix', 4, string),
     ('street_post_dir', 2, string),
     ('addr_primary_lo', 10, string),
     ('addr_primary_hi', 10, string),
-    ('addr_primary_odd_even', 1, enum),
+    ('addr_primary_odd_even', 1, oddeven),
     ('finance_no', 6, string),
     ('state_abbrev', 2, string),
+    ('urbanization_ctyst_key', 6, string),
+    ('prefd_lastline_ctyst_key', 6, string)
+  ]
+}
+
+def_zip4 = {
+  'C': def_copyright(149),
+  'D': [
+    ('_type', 1, lambda s: "ZIP+4 Detail"),
+    ('zip', 5, string),
+    ('update_key', 10, integer), #?
+    ('action', 1, enum(A='ADD', D='DELETE')),
+    ('record_type', 1, enum(
+      F='FIRM',
+      G='GENERAL DELIVERY',
+      H='HIGH-RISE',
+      P='PO BOX',
+      R='RURAL ROUTE/HIGHWAY CONTRACT',
+      S='STREET'
+    )),
+    ('carrier_route_id', 4, string),
+    ('street_pre_dir', 2, string),
+    ('street_name', 28, string),
+    ('street_suffix', 4, string),
+    ('street_post_dir', 2, string),
+    ('addr_primary_lo', 10, string),
+    ('addr_primary_hi', 10, string),
+    ('addr_primary_odd_even', 1, oddeven),
+    ('building_or_firm_name', 40, string),
+    ('addr_secondary_abbrev', 4, string),
+    ('addr_secondary_low', 8, string),
+    ('addr_secondary_high', 8, string),
+    ('addr_secondary_odd_even', 1, oddeven),
+    ('zip4_lo', 4, string),
+    ('zip4_hi', 4, string),
+    ('base_alt', 1, enum(B='BASE', A='ALTERNATIVE')),
+    ('lacs_status', 1, enum(L='LACS CONVERTED')),
+    ('govt_bldg', 1, enum(
+      A='CITY GOV BLDG',
+      B='FEDERAL GOV BLDG',
+      C='STATE GOV BLDG',
+      D='FIRM ONLY',
+      E='CITY GOV BLDG AND FIRM ONLY',
+      F='FED GOV BLDG',
+      G='STATE GOV BLDG AND FIRM ONLY'
+    )),
+    ('finance_no', 6, string),
+    ('state_abbrev', 2, string),
+    ('county_no', 3, string),
+    ('congress_dist', 2, string),
+    ('municipality_ctyst_key', 6, string),
     ('urbanization_ctyst_key', 6, string),
     ('prefd_lastline_ctyst_key', 6, string)
   ]
@@ -225,7 +262,7 @@ def_tigerzip = {
     ('carrier_route', 4, string),
     ('state_code', 2, string),
     ('county_code', 3, string),
-    ('right_left', 1, enum),
+    ('right_left', 1, enum(R='RIGHT', L='LEFT', B='BOTH')),
     ('census_tract', 6, string),
     ('census_block', 4, string),
     ('from_lat', 9, string),
@@ -243,14 +280,16 @@ def parse_line(linedef, line):
     out = {}
     n = 0
     for (k, l, t) in linedef:
-        if k is not None:
+        if l < 0 : # go back
+            out[k] = t(line[n+l:n])
+        elif k is not None:
             out[k] = t(line[n:n+l])
-        n += l
+        if l > 0: n += l
     return out
 
 def get_len(filedef):
-    linelen = set(sum(line[FIELD_LEN] for line in kind) for kind in filedef.itervalues())
-    assert len(linelen) == 1, [(kind_name, sum(line[FIELD_LEN] for line in kind)) for kind_name, kind in filedef.iteritems()]
+    linelen = set(sum(line[FIELD_LEN] for line in kind if line[FIELD_LEN] > 0) for kind in filedef.itervalues())
+    assert len(linelen) == 1, [(kind_name, sum(line[FIELD_LEN] for line in kind if line[FIELD_LEN] > 0)) for kind_name, kind in filedef.iteritems()]
     linelen = list(linelen)[0]
     return linelen
 
@@ -271,6 +310,10 @@ def parse_tigerzip(fh):
 
         yield parse_line(def_tigerzip[t], line)
 
+def parse_tigerdat(fh):
+    for line in fh:
+        yield parse_line(def_tigerdat, line)
+
 def parse_zip2dist(fh):
     for row in parse_file(def_zip4, fh):
         if row['_type'] != 'ZIP+4 Detail': continue
@@ -284,4 +327,16 @@ def parse_zip2dist(fh):
             yield row['zip'] + '-' + zip4, row['state_abbrev'] + '-' + row['congress_dist']
 
 if __name__ == "__main__":
-    pass
+    import sys, glob, tools
+    
+    def_map = {'--ctystate': def_ctystate, '--5digit': def_5digit, '--zip4': def_zip4}
+    
+    if sys.argv[1] in def_map:
+        for fn in glob.glob(sys.argv[2] + '*.txt'):
+            tools.export(parse_file(def_map[sys.argv[1]], file(fn)))
+    elif sys.argv[1] == '--tiger':
+        for fn in glob.glob(sys.argv[2] + '*/*.txt'):
+            tools.export(parse_tigerzip(file(fn)))
+    elif sys.argv[1] == '--tigerdat':
+        for fn in glob.glob(sys.argv[2] + '*/TIGER.DAT'):
+            tools.export(parse_tigerdat(file(fn)))
