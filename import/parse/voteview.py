@@ -20,7 +20,7 @@ import web
 import tools
 
 def parse():
-   for fn in [HOUSE_DAT,SENATE_DAT]:
+   for fn in [HOUSE_DAT, SENATE_DAT]:
        for line in file(fn):
            out = web.storage()
            out.congress = int(line[0:4])
