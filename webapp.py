@@ -82,7 +82,7 @@ class find:
         
         dist_struct = {
           'uri': apipublish.generic(lambda x: 'http://watchdog.net/us/' +
-                                    x.name.lower()),
+                                    x.name.lower() + '#it'),
           'type': 'District',
           'name state district voting': apipublish.identity,
           'wikipedia': apipublish.URI,
@@ -160,7 +160,7 @@ class state:
             raise web.notfound
         
         out = apipublish.publish({
-          'uri': 'http://watchdog.net/us/' + state.code.lower(),
+          'uri': 'http://watchdog.net/us/' + state.code.lower() + '#it',
           'type': 'State',
           'wikipedia': apipublish.URI,
           'code fipscode name status': apipublish.identity,
@@ -199,9 +199,9 @@ class district:
             raise web.notfound
         
         out = apipublish.publish({
-          'uri': 'http://watchdog.net/us/' + district.lower(),
+          'uri': 'http://watchdog.net/us/' + district.lower() + '#it',
           'type': 'District',
-          'state': apipublish.URI('http://watchdog.net/us/' + d.state.lower()),
+          'state': apipublish.URI('http://watchdog.net/us/' + d.state.lower() + '#it'),
           'wikipedia almanac': apipublish.URI,
           'name voting area_sqmi cook_index poverty_pct median_income '
           'est_population est_population_year outline center_lat '
@@ -300,7 +300,7 @@ def polname_by_id(pol_id):
 def bill_list(format, page=0, limit=50):
     bills = db.select('bill', limit=limit, offset=page*limit, order='session desc').list()
     out = apipublish.publish({
-          'uri': apipublish.generic(lambda x: 'http://watchdog.net/b/' + x.id),
+          'uri': apipublish.generic(lambda x: 'http://watchdog.net/b/' + x.id + '#it'),
           'type': 'Bill',
           'title': apipublish.identity,
          }, bills, format)
@@ -324,7 +324,7 @@ class bill:
         b.votes_by_party = votes_by_party(bill_id)
         
         out = apipublish.publish({
-          'uri': 'http://watchdog.net/b/' + bill_id,
+          'uri': 'http://watchdog.net/b/' + bill_id + '#it',
           'type': 'Bill',
           'session title summary sponsor' : apipublish.identity,
           'interest_group_support': apipublish.table({
@@ -344,10 +344,10 @@ class politician:
             
             out = apipublish.publish({
               'uri': apipublish.generic(lambda x: 'http://watchdog.net/p/' +
-                                        x.id),
+                                        x.id + '#it'),
               'type': 'Politician',
               'district': lambda x: apipublish.URI('http://watchdog.net/us/' +
-                                                   x.lower()),
+                                                   x.lower() + '#it'),
               'wikipedia': apipublish.URI,
              }, p, format)
             if out is not False:
@@ -376,9 +376,9 @@ class politician:
         p.sponsored_bills = bills_sponsored(polid)                           
             
         out = apipublish.publish({
-          'uri': 'http://watchdog.net/p/' + polid,
+          'uri': 'http://watchdog.net/p/' + polid + '#it',
           'type': 'Politician',
-          'district': apipublish.URI('http://watchdog.net/us/' + p.district.lower()),
+          'district': apipublish.URI('http://watchdog.net/us/' + p.district.lower() + '#it'),
           'wikipedia photo_credit_url officeurl': apipublish.URI,
           'interest_group_rating': apipublish.table({
                 'year groupname longname rating': apipublish.identity}),
