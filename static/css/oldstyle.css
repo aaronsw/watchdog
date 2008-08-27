@@ -73,3 +73,9 @@ td.support, td.oppose { padding-left: .5em; } /* for compatibility with everythi
 .contacts-listing { width: 30em; height: 300px; overflow: auto; border: 1px solid #ddd;}
 .contacts-listing li{ display: block; border-bottom: 0.1em solid #ddd; padding:2px 2px 2px 2px; }
 .select-all {width: 28em; background-color:#ddd; display:block; padding-left:2em; margin-bottom:0px;}
+
+/* about */
+table.imgbox { clear: left; margin-bottom: 2em; }
+table.imgbox td.left { text-align: center; width: 112px; }
+table.imgbox td.left img { width: 112px;}
+table.imgbox td.right { padding-left: 15px; vertical-align: top; padding-top: 1em;}
