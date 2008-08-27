@@ -39,7 +39,7 @@ function distmap(element_id, multipolygon) {
     })
 }
 
-function distcenter(element_id, districtid, center) {
+function distcenter(element_id, districtid, center, mapinfo) {
   addLoadEvent(function() {
     var map = new GMap2(document.getElementById(element_id));
     map.addControl(new GSmallZoomControl());
@@ -52,5 +52,15 @@ function distcenter(element_id, districtid, center) {
     map.addMapType(G_MAP_OVERLAY);
     map.setCenter(new GLatLng(center[0], center[1]), center[2]);
     map.setMapType(G_MAP_OVERLAY);
+    
+    if (mapinfo !== undefined) {
+        document.getElementById(mapinfo).style.display = 'none';
+        var marker = new GMarker(new GLatLng(center[0], center[1]));
+       	map.addOverlay(marker);
+        GEvent.addListener(marker, "click", function() {
+            marker.openInfoWindowHtml(document.getElementById(mapinfo).innerHTML);
+        });
+       	marker.openInfoWindowHtml(document.getElementById(mapinfo).innerHTML);
+    }
   });
 }
