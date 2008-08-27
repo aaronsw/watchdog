@@ -119,7 +119,7 @@ class set_password:
             password = encrypt_password(i.password)        
             db.update('users', password=password, verified=True, where='email=$i.email', vars=locals())
             helpers.set_msg('Login with your new password.')
-            raise web.seeother('/login')
+            raise web.seeother(web.ctx.homedomain + '/login')
         else:
             return self.GET(form)
         
@@ -152,5 +152,5 @@ def assert_verified(email):
         send_mail_to_set_password(email)
     else:
         query = urllib.urlencode(dict(redirect=web.ctx.fullpath))
-        raise web.seeother("/login?%s" % query)
+        raise web.seeother("%s/login?%s" % (web.ctx.homedomain, query))
             
