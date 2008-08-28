@@ -36,7 +36,7 @@ $if not page.get('front'): -leaf\
 "></div>
 <!-- /header -->
 <div id="main">
-$if page.get('sidebar').strip() != "None":
+$if page.get('sidebar', '').strip() != "None":
     <div id="sidebar" style="clear: right">
     $if page.get('sidebar'):
         $:page.sidebar
