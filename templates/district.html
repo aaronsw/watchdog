@@ -1,21 +1,47 @@
 $def with (d)
 
-$var title: $d.name: $d.state_name’s $d.districtth congressional district
+$var title: $d.name: $d.state_name’s $d.districtth
 
 $var head:
+    <link rel="alternate" href="${d.name}.xml" type="application/rdf+xml" />
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script>
     <script src="http://www.govtrack.us/scripts/gmap-wms.js"></script>
     <script src="/static/js/distmap.js"></script>
-
+    
     <script type="text/javascript">
     distcenter('googlemap',
                '$d.name.replace('-0', '').replace('-', '')',
-               [$d.center_lat, $d.center_lng, $d.zoom_level - 1])
+               [$d.center_lat, $d.center_lng, $d.zoom_level - 1],
+               'mapinfo')
     </script>
+    <style>
+    #main { width: 100%;}
+    .bigmap { width: 100%; height: 800px; margin-bottom: 2em; background-color: rgb(229, 227, 223);}
+    </style>
 
-<div id="googlemap" class="bigmap"></div>
+$var sidebar: None
+$var maxi: True
 
-<table class="charted">
+<div id="googlemap" class="bigmap">
+</div>
+
+<div id="mapinfo">
+<h2>$d.state_name’s $d.districtth congressional district.</h2>
+
+$if d.pol_id and d.pol_firstname:
+    $if d.pol_photo_path:
+        <a href="/p/$d.pol_id"><img src="$d.pol_photo_path" 
+          alt="Headshot" class="smallheadshot" /></a>
+    
+    <p>Represented by <a href="/p/$d.pol_id">$d.pol_firstname 
+       $d.pol_lastname</a>.<br />
+$else:
+    <p>
+
+<a href="/us/${d.state.lower()}">More about $d.state_name...</a>
+</p>
+
+<table class="charted" style="clear: both">
 $if d.cook_index:
     <tr>
       <th>Cook <acronym title="Partisan Voting Index">PVI</acronym>:</th>
@@ -49,16 +75,7 @@ $if d.cook_index:
                class="sparkline" /></a></td>
   </tr>
 </table>
-
-$if d.pol_id and d.pol_firstname:
-    $if d.pol_photo_path:
-        <a href="/p/$d.pol_id"><img src="$d.pol_photo_path" 
-          alt="Headshot" class="smallheadshot" /></a>
-    
-    <p>Represented by <a href="/p/$d.pol_id">$d.pol_firstname 
-       $d.pol_lastname</a>.</p>
-
-<p><a href="/us/${d.state.lower()}">More about $d.state_name...</a></p>    
+</div>
 
 <div class="sources">
   District information from 
