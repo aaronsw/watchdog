@@ -1,0 +1,20 @@
+$def with (uid, info_form, password_form, msg=None)
+
+$var title: User information
+
+$if msg:
+    $var msg: $msg
+
+<form name="userinfo" method="POST" action="/user/$uid"> 
+    $if not info_form.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
+    $:info_form.render()
+    <input type="submit" name="submit" value="Save"/>    
+    <input id="reset" type="button" value="Reset" onclick="window.location='/user/$uid'" />
+</form>
+
+<br/><br/>
+
+<form name="passwd" method="POST" action="/user/$uid?m=password"> 
+    $:password_form.render()
+    <input type="submit" name="submit" value="Save"/>
+</form>
