@@ -322,9 +322,12 @@ def writerep_zipauth(zipauth_link, district, zipcode, state, prefix, fname,
         return        
     
 def getcontact(dist):
-    r = db.select('wyr', what='contact, contacttype', 
-                    where='district=$dist', vars=locals())[0]
-    return r.contact, r.contacttype                
+    r = db.select('wyr', what='contact, contacttype', where='district=$dist', vars=locals())
+    if r: 
+        r = r[0]                
+        return r.contact, r.contacttype
+    else:
+        return None, None    
         
 def writerep(district, zipcode, prefix, fname, lname, 
              addr1, city, phone, email, msg, addr2='', addr3='', zip4='', captcha=''):
@@ -349,9 +352,9 @@ def writerep(district, zipcode, prefix, fname, lname,
     return handlers[contacttype](**args)
     
 def get_captcha_src(dist):
-    r = db.select('wyr', what='contactform', where='district=$dist and imaissue=True', vars=locals())
+    r = db.select('wyr', what='contact', where="district=$dist and contacttype='I'", vars=locals())
     if r:
-        url = r[0].contactform
+        url = r[0].contact
         response = urlopen(url)
         if response: 
             soup = BeautifulSoup(response)
