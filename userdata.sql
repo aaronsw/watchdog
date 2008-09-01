@@ -1,5 +1,11 @@
 -- All the tables for user data 
 
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS petition CASCADE;
+DROP TABLE IF EXISTS signatory CASCADE;
+DROP TABLE IF EXISTS petition_responses CASCADE;
+DROP TABLE IF EXISTS contacts CASCADE;
+
 CREATE TABLE users(
     id serial primary key,
     password varchar(256),
@@ -15,7 +21,7 @@ CREATE TABLE users(
     zip4 varchar(4),
     phone varchar(10),
     
-    verified boolean default false, -- done verified activity at least once
+    verified boolean default false -- done verified activity at least once
 );
 
 CREATE TABLE petition(
