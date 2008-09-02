@@ -6,7 +6,7 @@ def sparkline(points, point=None, height=15*2, width=40*2, bubble=2*2, linewidth
     width *= scalefactor
     bubble *= scalefactor
     
-    im = Image.new("RGB", (width, height), 'white')
+    im = Image.new("RGBA", (width, height), (0,0,0,0))
     draw = ImageDraw.Draw(im)
     height -= margin
     width -= margin

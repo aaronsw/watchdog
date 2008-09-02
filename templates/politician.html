@@ -8,39 +8,48 @@ $var head:
 
 $var title: $pol.firstname $pol.middlename $pol.lastname
 
-$var pretitle:
-    <div id="googlemap" class="pretitle sidemap"></div>
+$var sidebar: None
+
+$var pretext:
+    <div id="sidebarmap" style="clear: right;">
+      <div id="googlemap" class="sidemap"></div>
+      <!--<input type="text" name="zip" class="zipcode" value="Enter your zip" />-->
+    </div>
     
-    $if pol.photo_path:
-        <a href="$pol.photo_path"><img src="$pol.photo_path" alt="Headshot" class="headshot pretitle" /></a>
+<div class="rep-info">
+$if pol.photo_path:
+    <a href="$pol.photo_path"><img src="$pol.photo_path" alt="Headshot" class="headshot" /></a>
+
+<h2>$pol.firstname $pol.middlename $pol.lastname</h2>
 
 <p>
   $if pol.nickname: known as "$pol.nickname"<br />
-  represents <a href="/us/$pol.district">$pol.district</a><br />
-  $pol.party, $pol.religion<br />
   $if pol.birthday:
       b. $pol.birthday\
       $if pol.birthplace: , $pol.birthplace\
       <br />
+  represents <a href="/us/$pol.district">$pol.district</a><br />
+  $pol.party, $pol.religion<br />
   <a href="$pol.officeurl">Official website</a>
 </p>
 
 $if pol.education:
     <p>Education: $pol.education</p>
 
-<table class="structure" style="clear: both">
-<tr><td>
-<h2>Money</h2>
+</div>
+<table class="structure">
+<tr><td width="50%">
+<h2 class="rep">Money</h2>
 
-<table class="charted">
+<table class="structure charted">
 $if pol.money_raised:
-    <tr>
+    <tr class="even">
       <th>Raised</th>
       <td>\$$commify(pol.money_raised)</a></td>
       <td><a href="/p/by/money_raised#$pol.id"
            ><img src="/p/by/money_raised/distribution.png?point=$pol.money_raised"
                  class="sparkline" /></a></td>
-    </tr><tr>
+    </tr><tr class="odd">
       <th>Spent</th>
       <td>${int(pol.pct_spent * 100)}%</td>
       <td><a href="/p/by/pct_spent#$pol.id"
@@ -48,21 +57,21 @@ $if pol.money_raised:
              src="/p/by/pct_spent/distribution.png?point=$pol.pct_spent"
              class="sparkline" /></a></td>
     
-    </tr><tr>
+    </tr><tr class="even">
       <th>From self</th>
       <td>${int(pol.pct_self * 100)}%</td>
       <td><a href="/p/by/pct_self#$pol.id"
            ><img 
              src="/p/by/pct_self/distribution.png?point=$pol.pct_self"
              class="sparkline" /></a></td>
-    </tr><tr>
+    </tr><tr class="odd">
       <th>From individuals</th>
       <td>${int(pol.pct_indiv * 100)}%</td>
       <td><a href="/p/by/pct_indiv#$pol.id"
            ><img 
              src="/p/by/pct_indiv/distribution.png?point=$pol.pct_indiv"
              class="sparkline" /></a></td>
-    </tr><tr>
+    </tr><tr class="even">
       <th>From <acronym title="Political Action Committees">PAC</acronym>s</th>
       <td>${int(pol.pct_pac * 100)}%</td>
       <td><a href="/p/by/pct_pac#$pol.id"
@@ -73,32 +82,32 @@ $if pol.money_raised:
 $else:
     <tr><th>No information available.</th></tr>
 </table>
-</td><td>
-<h2>Earmarks</h2>
+</td><td class="width: 50%">
+<h2 class="rep">Earmarks</h2>
 
-<table class="charted">
-  <tr>
+<table class="charted structure">
+  <tr class="even">
     <th>Requested</th>
     <td>$commify(pol.n_earmark_requested)</td>
     <td><a href="/p/by/n_earmark_requested#$pol.id"
          ><img 
            src="/p/by/n_earmark_requested/distribution.png?point=$pol.n_earmark_requested"
            class="sparkline" /></a></td>
-  </tr><tr>
+  </tr><tr class="odd">
     <th>Total cost</th>
     <td>\$$commify(pol.amt_earmark_requested)</td>
     <td><a href="/p/by/amt_earmark_requested#$pol.id"
         ><img 
             src="/p/by/amt_earmark_requested/distribution.png?point=$pol.amt_earmark_requested"
             class="sparkline" /></a></td>
-  </tr><tr>
+  </tr><tr class="even">
     <th>Received</th>
     <td>$commify(pol.n_earmark_received)</td>
     <td><a href="/p/by/n_earmark_received#$pol.id"
          ><img 
            src="/p/by/n_earmark_received/distribution.png?point=$pol.n_earmark_received"
            class="sparkline" /></a></td>
-  </tr><tr>
+  </tr><tr class="odd">
     <th>Total cost</th>
     <td>\$$commify(pol.amt_earmark_received)</td>
     <td><a href="/p/by/amt_earmark_received#$pol.id"
@@ -108,11 +117,11 @@ $else:
   </tr>
   <tr><th colspan="2">Data for fiscal year 2008</th></tr>
 </table>
-</td></tr><tr><td>
-<h2>Bills</h2>
+</td></tr><tr><td width="50%" class="rule">
+<h2 class="rep">Bills</h2>
 
-<table class="charted">
-  <tr>
+<table class="charted structure">
+  <tr class="even">
     <th>Co-sponsored</th>
     <td>$commify(pol.n_bills_cosponsored)</td>
     <td><a href="/p/by/n_bills_cosponsored#$pol.id"
@@ -120,7 +129,7 @@ $else:
            src="/p/by/n_bills_cosponsored/distribution.png?point=$pol.n_bills_cosponsored"
            class="sparkline" /></a></td>
   </tr>
-  <tr>
+  <tr class="odd">
     <th>Introduced</th>
     <td><a href="/p/$pol.id/introduced">$commify(pol.n_bills_introduced)</a></td>
     <td><a href="/p/by/n_bills_introduced#$pol.id"
@@ -128,7 +137,7 @@ $else:
            src="/p/by/n_bills_introduced/distribution.png?point=$pol.n_bills_introduced"
            class="sparkline" /></a></td>
   </tr>
-  <tr>
+  <tr class="even">
     <th>Debated</th>
     <td>$commify(pol.n_bills_debated)</td>
     <td><a href="/p/by/n_bills_debated#$pol.id"
@@ -136,7 +145,7 @@ $else:
            src="/p/by/n_bills_debated/distribution.png?point=$pol.n_bills_debated"
            class="sparkline" /></a></td>
   </tr>
-  <tr>
+  <tr class="odd">
     <th>Enacted</th>
     <td>$commify(pol.n_bills_enacted)</td>
     <td><a href="/p/by/n_bills_enacted#$pol.id"
@@ -145,17 +154,17 @@ $else:
            class="sparkline" /></a></td>
   </tr>
 </table>
-</td><td>
-<h2>Speeches</h2>
+</td><td width="50%" class="rule">
+<h2 class="rep">Speeches</h2>
 
-<table class="charted">
-  <tr>
+<table class="charted structure">
+  <tr class="even">
     <th>Spoke</th>
     <td><a href="http://www.govtrack.us/congress/person.xpd?tab=speeches&amp;id=$pol.govtrackid">$commify(pol.n_speeches) times</a></td>
     <td><a href="/p/by/n_speeches#$pol.id"
          ><img src="/p/by/n_speeches/distribution.png?point=$pol.n_speeches"
                class="sparkline" /></a></td>
-  </tr><tr>
+  </tr><tr class="odd">
     <th>Avg. length</th>
     <td>$commify(pol.words_per_speech) words</td>
     <td><a href="/p/by/words_per_speech#$pol.id"
@@ -166,11 +175,11 @@ $else:
   <tr><th colspan="2">Data for 110th Congress</th></tr>
 </table>
 </td></tr></table>
-<h2>Voting Analysis</h2>
+<h2 class="rep">Voting Analysis</h2>
 
 <table class="charted">
 $if pol.nominate:
-    <tr>
+    <tr class="even">
       <th>Ideology</th>
       <td>
       $if pol.nominate >= 0:
@@ -184,7 +193,7 @@ $if pol.nominate:
              class="sparkline" /></a></td>
     </tr>
 $if pol.predictability:
-    <tr>
+    <tr class="odd">
       <th>Predictability</th>
       <td>$int(pol.predictability * 100)%</td>
       <td><a href="/p/by/predictability#$pol.id"
@@ -194,7 +203,7 @@ $if pol.predictability:
     </tr>
 </table>
 
-<h2>Interest Group Alignment</h2>
+<h2 class="rep">Interest Group Alignment</h2>
 
 <table class="interest_group_ratings">
 <tr><td></td>
@@ -238,14 +247,9 @@ $for group in pol.related_groups:
   <a href="http://voteview.com/">VoteView</a>.
   $if pol.photo_credit_text:
       Photo from <a href="$pol.photo_credit_url">$pol.photo_credit_text</a>.
-  
-  <br /><br /><strong>More:</strong>
-  Campaign finance information from <a 
+  Some campaign finance information from <a 
     href="http://opensecrets.org/politicians/summary.asp?CID=$pol.opensecretsid"
   >Open Secrets</a>. 
-  Voting record from the <a 
-    href="http://projects.washingtonpost.com/congress/members/$pol.bioguideid.lower()"
-  >Washington Post</a>.
 </div>
 
 <p><strong>Developers:</strong> Get this page in <a href="${pol.id.lower()}.n3">N3</a>, <a href="${pol.id.lower()}.xml">XML</a>, or <a href="${pol.id.lower()}.json">JSON</a>.</p>
