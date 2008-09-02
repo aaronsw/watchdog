@@ -43,37 +43,61 @@ def save_petition(p):
         try:
             owner = db.select('users', where='email=$p.email', vars=locals())[0]
         except:
-            owner_id = db.insert('users', email=p.email, verified=True) 
+            owner_id = db.insert('users', email=p.email, 
+                                prefix=p.prefix, lname=p.lname, fname=p.fname, 
+                                addr1=p.addr1, addr2=p.addr2, phone=p.phone,
+                                city=p.city, zip5=p.zipcode, 
+                                verified=True) 
         else:
             if not owner.verified: db.update('users', where='email=$p.email', verified=True, vars=locals())
             owner_id = owner.id
             
-        db.insert('petition', seqname=False, id=p.pid, title=p.ptitle, description=p.pdescription,
+        db.insert('petition', seqname=False, id=p.pid, title=p.ptitle, description=p.msg,
                     owner_id=owner_id)
         #make the owner of the petition sign for it (??)             
-        db.insert('signatory', seqname=False, user_id=owner_id, share_with='E', petition_id=p.pid)      
+        db.insert('signatory', user_id=owner_id, share_with='E', petition_id=p.pid)      
         
-def fill_user_details(form, fillings):
+def fill_user_details(form, fillings=['email', 'name', 'contact']):
     details = {}
-    if 'email' in fillings:
-        email = helpers.get_loggedin_email() or helpers.get_unverified_email()
-        if email: details['email'] = email
-
-    if email and 'name' in fillings: 
-        name = db.select('users', what='name', where='email=$email', vars=locals())[0].name
-        if name: details['name'] = name
-    
+    email = helpers.get_loggedin_email() or helpers.get_unverified_email()
+    if email:
+        if 'email' in fillings: 
+            details['email'] = email
+        
+        user = db.select('users', where='email=$email', vars=locals())
+        if user:
+            user = user[0]
+            if 'name' in fillings: 
+                details['prefix'] = user.prefix
+                details['fname'] = user.fname
+                details['lname'] = user.lname    
+            if 'contact' in fillings:
+                details['prefix'] = user.prefix
+                details['addr1'] = user.addr1
+                details['addr2'] = user.addr2
+                details['city'] = user.city
+                details['zipcode'] = user.zip5
+                details['phone'] = user.phone    
+                if filter(lambda i: i.name == 'zip4', form.inputs):
+                    details['zip4'] = user.zip4   
     form.fill(**details)
+
     
     if helpers.get_loggedin_email():
         for i in form.inputs:
-            if i.name in details.keys():
+            if i.name == 'email':
                 i.attrs['readonly'] = 'true'
+                break
+    
+def send_to_congress(p):
+    from webapp import write_your_rep
+    wyr = write_your_rep()
+    return wyr.POST()   
         
 class new:
     def GET(self):
         pform = forms.petitionform()
-        fill_user_details(pform, 'email')
+        fill_user_details(pform)
         return render.petitionform(pform)
 
     def POST(self):
@@ -81,6 +105,11 @@ class new:
         pform = forms.petitionform()
         auth.assert_verified(p.email)
         if pform.validates(p):
+            if p.get('tocongress', 'off') == 'on': 
+                sent_status = send_to_congress(p)
+                if not isinstance(sent_status, bool):
+                    return sent_status
+                    
             save_petition(p)
             helpers.set_login_cookie(p.email)
             msg = """Congratulations, you've created your petition. 
@@ -105,18 +134,14 @@ def save_signature(forminput, pid):
     try:
         user = db.select('users', where='email=$forminput.email', vars=locals())[0]
     except:
-        user_id = db.insert('users', name=forminput.name, email=forminput.email)
-    else:
-        user_id = user.id
-        if user.name != forminput.name:
-            db.update('users', where='id=$user_id', name=forminput.name, vars=locals())    
+        user_id = db.insert('users', lname=forminput.lname, fname=forminput.fname, email=forminput.email)
+        user = web.storage(id=user_id, lname=forminput.lname, fname=forminput.fname, email=forminput.email)
         
-    user = web.storage(id=user_id, name=forminput.name, email=forminput.email)
     signed = db.select('signatory', where='petition_id=$pid AND user_id=$user.id', vars=locals())
     if not signed:
-        signature = dict(petition_id=pid, user_id=user_id, 
+        signature = dict(petition_id=pid, user_id=user.id, 
                         share_with=forminput.share_with, comment=forminput.comment)
-        db.insert('signatory', seqname=False, **signature)
+        db.insert('signatory', **signature)
         helpers.set_msg('Your signature has been taken for this petition.')
         helpers.unverified_login(user.email)
     return user    
@@ -170,7 +195,7 @@ class petition:
         if is_author(user_email, pid):
             p = db.select('petition', where='id=$pid', vars=locals())[0]
             pform = forms.petitionform()            
-            pform.fill(email=user_email, pid=p.id, ptitle=p.title, pdescription=p.description)
+            pform.fill(email=user_email, pid=p.id, ptitle=p.title, msg=p.description)
             for i in pform.inputs:
                 if i.id in ['pid', 'email']: i.attrs['readonly'] = 'true'
             title = "Edit petition"    
@@ -202,7 +227,7 @@ class petition:
         user_email = helpers.get_loggedin_email()
         ptitle = db.select('petition', what='title', where='id=$pid', vars=locals())[0].title
         signs = db.select(['signatory', 'users'], 
-                        what='users.name, users.email, '
+                        what='users.fname, users.lname, users.email, '
                              'signatory.share_with, signatory.comment',
                         where='petition_id=$pid AND user_id=users.id',
                         order='signtime desc',
@@ -250,7 +275,7 @@ class petition:
     
     def POST_edit(self, pid):
         i = web.input()
-        db.update('petition', where='id=$pid', title=i.ptitle, description=i.pdescription, vars=locals())
+        db.update('petition', where='id=$pid', title=i.ptitle, description=i.msg, vars=locals())
         raise web.seeother('/%s' % pid)
     
     def POST_unsign(self, pid):
@@ -323,6 +348,7 @@ class share:
         else:
             return self.GET(emailform=emailform)    
         
+
 app = web.application(urls, globals())
 
 if __name__ == '__main__':

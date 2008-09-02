@@ -5,7 +5,7 @@ $var title: Write your representative
 $if msg:
     $var msg: $:msg
 
-<form name="writerepform" method="POST" action="/writerep">
+<form name="writerepform" method="POST">
     $if not form.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
 	$:form.render() 
   	<p><input type="submit" value="Send message" /></p>

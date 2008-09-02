@@ -3,7 +3,7 @@ import re
 import web
 web.config.debug = True
 
-from utils import zip2rep, simplegraphs, apipublish, helpers, forms, writerep
+from utils import zip2rep, simplegraphs, apipublish, helpers, forms, writerep, userinfo
 import blog
 import petition
 import settings
@@ -29,6 +29,7 @@ urls = (
   r'/p/(.*?)%s?' % options, 'politician',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/c', petition.app,
+  r'/user', userinfo.app,
   r'/writerep', 'write_your_rep', 
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
@@ -499,23 +500,36 @@ def add_captcha(form, img_src):
     inputs.append(captcha)
     form.inputs = tuple(inputs)
     return form
+ 
+def get_writerep_form(from_petition_page=False):
+    form = forms.petitionform()
+    if not from_petition_page:
+        inputs = list(form.inputs)
+        inputs = filter(lambda i: i.name not in ('tocongress', 'pid'), inputs)
+        filter(lambda i: i.name == 'msg', inputs)[0].description = 'Message'
+        filter(lambda i: i.name == 'ptitle', inputs)[0].description = 'Subject'
+        form.inputs = tuple(inputs)
+        
+    return form        
   
 class write_your_rep:
     def GET(self, form=None):
-        form = form or forms.writerep()
+        if not form:
+            form = get_writerep_form()
+            petition.fill_user_details(form)
         msg, msg_type = helpers.get_delete_msg()
         return render.writerep(form, msg=msg)
         
     def POST(self):
         i = web.input()
-        form = forms.writerep()
+        from_petition_page = i.has_key('pid')
+        form = get_writerep_form(from_petition_page)
         if form.validates(i):
-            print i
             try:
                 dists = zip2rep.zip2dist(i.zipcode, i.addr1+i.addr2)
             except zip2rep.BadAddress:
                 dists = []
-            #print dists
+            print dists
             
             if len(dists) != 1:
                 form = add_zip4(form)
@@ -527,13 +541,20 @@ class write_your_rep:
                 form = add_captcha(form, captcha)
                 return self.GET(form) 
                 
-            msg_sent = writerep.writerep(district=dist, **i)
+            msg_sent = writerep.writerep(district=dist, 
+                            prefix=i.prefix, lname=i.lname, fname=i.fname,
+                            addr1=i.addr1, addr2=i.addr2, city=i.city, 
+                            zipcode=i.zipcode, zip4=i.get('zip4', ''),
+                            phone=i.phone, email=i.email, msg=i.msg)
+            
+            if from_petition_page: return msg_sent
+            
             if msg_sent: helpers.set_msg('Your message has been sent.')
             raise web.seeother('/writerep')
         else:
             return self.GET(form)        
             
-
+            
 class staticdata:
     def GET(self, path):
         if not web.config.debug:
