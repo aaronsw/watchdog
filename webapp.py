@@ -8,6 +8,7 @@ import blog
 import petition
 import settings
 from settings import db, render
+import schema
 
 #@@@ utils.auth.login doesn't work in urls as webpy tries to import auth from its own utils
 from utils.auth import login, logout, forgot_password, set_password
@@ -183,37 +184,21 @@ class redistrict:
 class district:
     def GET(self, district, format=None):
         try:
-            district = district.upper()
-            d = db.select(['district', 'state', 'politician'],
-                          what=('district.*, '
-                                'state.name as state_name, '
-                                'politician.firstname as pol_firstname, '
-                                'politician.lastname as pol_lastname, '
-                                'politician.id as pol_id, '
-                                'politician.photo_path as pol_photo_path'),
-                          where=('district.name = $district AND '
-                                 'district.state = state.code AND '
-                                 'politician.district = district.name'),
-                          vars=locals())[0]
+            d = schema.District.select(where='name = $district.upper()', vars=locals())[0]
         except IndexError:
             raise web.notfound
         
-        out = apipublish.publish({
-          'uri': 'http://watchdog.net/us/' + district.lower() + '#it',
-          'type': 'District',
-          'state': apipublish.URI('http://watchdog.net/us/' + d.state.lower() + '#it'),
-          'wikipedia almanac': apipublish.URI,
-          'name voting area_sqmi cook_index poverty_pct median_income '
-          'est_population est_population_year outline center_lat '
-          'center_lng zoom_level': apipublish.identity,
-        }, [d], format)
-        if out is not False:
-            return out
-        
-        if d.district == 0:
-            d.districtth = 'at-large'
-        else:
-            d.districtth = web.nthstr(d.district)
+        # out = apipublish.publish({
+        #   'uri': 'http://watchdog.net/us/' + district.lower() + '#it',
+        #   'type': 'District',
+        #   'state': apipublish.URI('http://watchdog.net/us/' + d.state.code.lower() + '#it'),
+        #   'wikipedia almanac': apipublish.URI,
+        #   'name voting area_sqmi cook_index poverty_pct median_income '
+        #   'est_population est_population_year outline center_lat '
+        #   'center_lng zoom_level': apipublish.identity,
+        # }, [d], format)
+        # if out is not False:
+        #     return out
         
         return render.district(d)
 
