@@ -16,7 +16,7 @@ class District(sql.Table):
     # districts.json
     name = sql.String(10, primary=True)
     district = sql.Integer()
-    state = sql.Reference(State) #@@renaming to state_id
+    state = sql.Reference(State) #@@renames to state_id
     voting = sql.Boolean()
     wikipedia = sql.URL()
     
@@ -67,7 +67,7 @@ class Zip4(sql.Table):
 class Politician(sql.Table):
     # politicians.json
     id = sql.String(256, primary=True)
-    district = sql.Reference(District) #@@ now district_id
+    district = sql.Reference(District) #@@ renames to district_id
     wikipedia = sql.URL()
   
     # govtrack.json --@@get from votesmart?
