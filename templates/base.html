@@ -60,6 +60,9 @@ $if page.get('sidebar', '').strip() != "None":
       <p><a href="/about/#hiring" class="highlight">We're hiring!</a></p>
     </div>
     </div>
+
+$:page.get('pretext')
+
 $if not page.get('maxi'):
     <div id="text"\
     $if page.get('front'): style="margin-top: -10px;"\
