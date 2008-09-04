@@ -16,7 +16,7 @@ $('#ptitle').change(ptitle_event);
 $('#ptitle').blur(ptitle_event);
 
 $('#pid').change( function checkID(){
-    $.post('/c/checkID', {pid: strip(this.value)},
+    $.post('/c/verify', {pid: strip(this.value)},
          function(available){
             if (available == 'False'){
                 msg = 'Address already exists, please choose a different one';
@@ -30,4 +30,6 @@ $('#pid').change( function checkID(){
             }
         });
     });
-});
+
+}); // end of document.ready
+

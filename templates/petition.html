@@ -7,7 +7,7 @@ $if msg:
 
 <p>
   <a href="#sign" class="action">Sign</a>&nbsp;
-  <a href="/c/share?pid=$p.id" class="action">Share</a>&nbsp;
+  <a href="/c/$p.id/share" class="action">Share</a>&nbsp;
   <a href="?m=edit" class="action">Edit</a>
   <a href="?m=delete" class="action">Delete</a>
 </p>
@@ -31,7 +31,7 @@ $else:
 		$ ppl = 'person</a></strong> has'
 	$else:
 		$ ppl = 'people</a></strong> have'
-	<p class="signatories"> <strong><a href='/c/$p.id?m=signatories'>$p.signatory_count $:ppl signed this petition so far. </p>
+	<p class="signatories"> <strong><a href='/c/$p.id/signatories'>$p.signatory_count $:ppl signed this petition so far. </p>
 
 
 <a name="sign"><h2>Sign</h2></a>

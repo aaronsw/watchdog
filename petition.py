@@ -6,12 +6,15 @@ from utils import forms, helpers, auth
 from settings import db, render
 import config
 
+from datetime import datetime
+
 urls = (
   '', 'redir',
   '/', 'index',
   '/new', 'new', 
-  '/checkID', 'checkID',
-  '/share', 'share',
+  '/verify', 'checkID',
+  '/(.*)/share', 'share',
+  '/(.*)/signatories', 'signatories',
   '/(.*)', 'petition'
 )
 
@@ -31,7 +34,7 @@ class index:
     def GET(self):
         petitions = db.select(['petition', 'signatory'], 
                     what='petition.id, petition.title, count(signatory.user_id) as signature_count',
-                    where='petition.id = signatory.petition_id',
+                    where='petition.id = signatory.petition_id and petition.deleted is null',
                     group='petition.id, petition.title',
                     order='count(signatory.user_id) desc'
                     )
@@ -165,11 +168,23 @@ def is_author(email, pid):
     else:
         return user_id == owner_id
                 
+class signatories:
+    def GET(self, pid):
+        user_email = helpers.get_loggedin_email()
+        ptitle = db.select('petition', what='title', where='id=$pid', vars=locals())[0].title
+        signs = db.select(['signatory', 'users'], 
+                            what='users.fname, users.lname, users.email, '
+                                 'signatory.share_with, signatory.comment',
+                            where='petition_id=$pid AND user_id=users.id',
+                            order='signtime desc',
+                            vars=locals()).list()
+        return render.signature_list(pid, ptitle, signs, is_author(user_email, pid))
+                    
 class petition:
     def GET(self, pid, signform=None, passwordform=None):
         i = web.input()
         
-        options = ['signatories', 'unsign', 'edit', 'delete']
+        options = ['unsign', 'edit', 'delete']
         if i.get('m', None) in options:
             handler = getattr(self, 'GET_'+i.m)
             return handler(pid)
@@ -221,18 +236,7 @@ class petition:
             msg_type = ''
             
         helpers.set_msg(msg, msg_type)
-        raise web.seeother('/%s' % pid)
-                        
-    def GET_signatories(self, pid):
-        user_email = helpers.get_loggedin_email()
-        ptitle = db.select('petition', what='title', where='id=$pid', vars=locals())[0].title
-        signs = db.select(['signatory', 'users'], 
-                        what='users.fname, users.lname, users.email, '
-                             'signatory.share_with, signatory.comment',
-                        where='petition_id=$pid AND user_id=users.id',
-                        order='signtime desc',
-                        vars=locals()).list()
-        return render.signature_list(pid, ptitle, signs, is_author(user_email, pid))
+        raise web.seeother('/%s' % pid)       
             
     def GET_delete(self, pid):
         user_email = helpers.get_loggedin_email()
@@ -280,16 +284,19 @@ class petition:
     
     def POST_unsign(self, pid):
         i = web.input()
-        db.delete('signatory', where='petition_id=$pid and user_id=$i.user_id', vars=locals())
+        now = datetime.now()
+        db.update('signatory',
+                        deleted=now,
+                        where='petition_id=$pid and user_id=$i.user_id', 
+                        vars=locals())
         msg = 'Your signature has been removed for this petition.'
         helpers.set_msg(msg)
         raise web.seeother('/%s' % pid)
 
     def POST_delete(self, pid):
-        with db.transaction():
-            title = db.select('petition', what='title', where='id=$pid', vars=locals())[0].title
-            db.delete('signatory', where='petition_id=$pid', vars=locals())
-            db.delete('petition', where='id=$pid', vars=locals())
+        now = datetime.now()
+        title = db.select('petition', what='title', where='id=$pid', vars=locals())[0].title
+        db.update('petition', where='id=$pid', deleted=now, vars=locals())
         helpers.set_msg('Petition "%s" deleted' % (title))
         raise web.seeother('/')
     
@@ -311,14 +318,25 @@ def get_contacts(user_id):
                     
     contacts.sort(key=lambda x: x.name.lower())
     return contacts
+
+def not_signed(contact, pid):
+    email = contact.email
+    try:
+        user_id = db.select('users', what='id', where='email=$email', vars=locals())[0].id
+    except IndexError:
+        return True
+    else:
+        is_signatory = db.select('signatory', where='user_id=$user_id and petition_id=$pid', vars=locals())
+        return not bool(is_signatory)
     
 class share:
-    def GET(self, emailform=None, loadcontactsform=None):
+    def GET(self, pid, emailform=None, loadcontactsform=None):
         i = web.input()
         user_id = helpers.get_loggedin_userid()
         contacts = get_contacts(user_id)
-        petition = db.select('petition', where='id=$i.pid', vars=locals())[0]
-        petition.url = 'http://watchdog.net/c/%s' %(i.pid)
+        contacts = filter(lambda c: not_signed(c, pid), contacts)
+        petition = db.select('petition', where='id=$pid', vars=locals())[0]
+        petition.url = 'http://watchdog.net/c/%s' %(pid)
         
         if not emailform: 
             emailform = forms.emailform
