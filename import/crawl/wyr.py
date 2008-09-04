@@ -41,9 +41,6 @@ def any_zipauth(forms):
 def any_ima(forms):
     return any(has_textarea(f) for f in forms)                   
     
-def is_email(s):
-    return '@' in s
-    
 def is_wyr(s):
     return ('www.house.gov/writerep' in s) or ('https://forms.house.gov/wyr/welcome.shtml' == s)
 
@@ -95,8 +92,7 @@ def get_wyr_forms(dists):
     return d    
             
 def typeof(url):
-    ctype = (is_email(url) and 'email') 
-    if not ctype and not is_wyr(url):
+    if not is_wyr(url):
         try:
             response = urlopen(url)
             forms = ParseResponse(response, backwards_compat=False)
@@ -105,7 +101,7 @@ def typeof(url):
             pass
         else:
             ctype = (any_ima(forms) and 'ima') or (any_zipauth(forms) and 'zipauth')
-    return ctype
+            return ctype
         
 def get_votesmart_contacts(dists):
     d = {}
@@ -120,12 +116,15 @@ def get_votesmart_contacts(dists):
         if 'office' in contact.keys():
             for addr in contact['office']:
                 if addr['webAddressType'] == 'Email':
-                    url = addr['webAddress']
+                    email = addr['webAddress']
+                    if email.endswith('mail.house.gov') or email.endswith('mail.senate.gov'):
+                        url, contacttype = 'mailto:' + email, 'email'
                 if not url and addr['webAddressType'] == 'Webmail':
                     url = addr['webAddress']
-            contacttype = url and typeof(url)
+                    contacttype = typeof(url)
+						
             if contacttype:
-                captcha = (type == 'ima') and has_captcha(url)
+                captcha = (contacttype == 'ima') and has_captcha(url)
                 d[r.district] = dict(contact=url, contacttype=contacttype, captcha=captcha)    
     return d
         
