@@ -41,9 +41,6 @@ def any_zipauth(forms):
 def any_ima(forms):
     return any(has_textarea(f) for f in forms)                   
     
-def is_email(s):
-    return ('@' in s) and not s.startswith('http')
-    
 def is_wyr(s):
     return ('www.house.gov/writerep' in s) or ('https://forms.house.gov/wyr/welcome.shtml' == s)
 
@@ -120,8 +117,8 @@ def get_votesmart_contacts(dists):
             for addr in contact['office']:
                 if addr['webAddressType'] == 'Email':
                     email = addr['webAddress']
-                    if email.endswith('house.gov') or email.endswith('senate.gov'):
-                        url, contacttype = email, 'email'
+                    if email.endswith('mail.house.gov') or email.endswith('mail.senate.gov'):
+                        url, contacttype = 'mailto:' + email, 'email'
                 if not url and addr['webAddressType'] == 'Webmail':
                     url = addr['webAddress']
                     contacttype = typeof(url)
