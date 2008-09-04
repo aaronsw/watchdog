@@ -7,7 +7,7 @@ else
 endif
 
 ifeq ($(WATCHDOG_TABLE),)
-	WATCHDOG_TABLE=watchdog_dev
+    WATCHDOG_TABLE=watchdog_dev
 endif
 
 export PYTHONPATH := ../:.:$(PWD)/../vendor:$(PYTHONPATH)
@@ -28,6 +28,8 @@ JSONS=$(LOAD)/states/index.json \
       $(LOAD)/politicians/earmarks.json \
       $(LOAD)/districts/centers.json
 
+TSVS=$(LOAD)/bill.tsv 
+	 
 NJS=$(PARSE)/almanac.njs \
     $(PARSE)/earmarks.njs \
     $(PARSE)/fec.njs \
@@ -91,8 +93,11 @@ $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack
 	$(PYTHON) load/earmarks.py > $@.tmp
 	mv $@.tmp $@
 
-.bills: .schema load/bills.py .json
+$(LOAD)/bill.tsv: .schema load/bills.py .json
 	$(PYTHON) load/bills.py
+
+.bills: $(LOAD)/bill.tsv $(LOAD)/vote.tsv
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/bill.tsv $(LOAD)/vote.tsv
 	touch $@
 
 .interests: load/maplight.py .bills
