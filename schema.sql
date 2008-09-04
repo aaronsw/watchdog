@@ -69,6 +69,32 @@ alter table zip4 add primary key (zip, plus4);
 --alter table zip4 add constraint "zip4_district_fkey" FOREIGN KEY (district) REFERENCES district(name) #@@
 --GRANT ALL ON zip4 TO watchdog;
 
+CREATE TABLE soi (
+  location varchar(10),
+  -- irs/soi
+  bracket_low int,
+
+  agi numeric,
+  n_dependents numeric,
+  n_eitc numeric,
+  n_filers numeric,
+  n_prepared numeric,
+
+  tot_charity numeric,
+  tot_eitc numeric,
+  tot_tax numeric,
+
+  avg_dependents numeric,
+  avg_eitc numeric,
+  avg_income numeric,
+  avg_taxburden numeric,
+
+  pct_charity numeric,
+  pct_eitc numeric,
+  pct_prepared numeric
+);
+alter table soi add primary key (location, bracket_low);
+
 CREATE TABLE politician (
   -- index.json
   id varchar(256) primary key,
