@@ -63,10 +63,10 @@ h1 {margin:20px 0 20px 0; font-weight: normal; color:#EE4400; font-family:"Georg
 
 .frontbox h1 {margin:0px 0 0 0; font-weight: normal; color:#EE4400; font-family:"Georgia"; font-size:22px; }
 
-textarea { background-color: #d9eefa; border: 1px solid #83b3d0; color: #999; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin: 10px 4px 0px 0px; }
+/*textarea { background-color: #d9eefa; border: 1px solid #83b3d0; color: #999; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin: 10px 4px 0px 0px; }
 textarea:focus { background-color: #f0faff; border: 1px solid #83b3d0; color: #EE4400; }
-input { background-color: #d9eefa; border: 1px solid #83b3d0; color: #999; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px; }
-input:focus { color: #EE4400; background-color: #f0faff;  }
+input {  border: 1px solid #83b3d0; color: #999; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px; }
+input:focus { color: #EE4400; background-color: #f0faff;  }*/
 input.personalize { background-color: #002233; border: 1px solid #0f5b89; color: #FFF399; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px; width: 152px; font-size:12px; line-height:20px; font-family:Arial, Helvetica, sans-serif; }
 input.personalize:focus { background-color: #0f5b89; border: 1px solid #EE4400;  }
 input.zipcode { background-color: #FFF399; border: 1px solid #0f5b89; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px; width: 152px; font-size:12px; line-height:20px; font-family:Arial, Helvetica, sans-serif; margin-top: -15px; margin-bottom: 8px; margin-left: -7px; width: 100%; }
@@ -114,3 +114,10 @@ img { border:none }
 
 .rep-info { border-bottom: 1px solid #ccc; height: 160px; }
 .rep-info-item {}
+
+fieldset { width: 510px; border: 1px solid #ccc; background: #F5F5FD; padding: 1em 2em; margin: 0 0 2em 0; }
+legend { font-weight: bold; font-size: 1.2em; padding: 0 0.5em; }
+fieldset textarea { font-size: 1.1em; width: 505px; padding: 0.2em; height: 200px; }
+fieldset label { display: block; font-size: 0.95em; margin-top: 1em; }
+fieldset input { padding: 0.2em; font-weight: bold; font-size: 1.2em; max-width: 500px; }
+fieldset th { vertical-align: middle; }

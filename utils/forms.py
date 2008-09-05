@@ -5,57 +5,66 @@ from settings import db
 
 email_regex = r'[\w\.-]+@[\w\.-]+\.[a-zA-Z]{1,4}'
 email_list_regex = r'^%s$|^(%s *, *)*(%s)?$' % (email_regex, email_regex, email_regex)
-                 
-def doesnotexist(pid):
+
+def petitionnotexists(pid):
     "Return True if petition with id `pid` does not exist"
     exists = bool(db.select('petition', where='id=$pid', vars=locals()))
     return pid != 'new' and not(exists)
-                
+
+
+def emailnotexists(email):
+    "Return True if account with email `email` does not exist"
+    exists = bool(db.select('users', where='email=$email', vars=locals()))
+    return not(exists)
+
 petitionform = form.Form(
-      form.Dropdown('prefix', ['Mr.', 'Mrs.', 'Dr.', 'Ms.', 'Miss'],  description='Prefix', post='*'),
-      form.Textbox('lname', form.notnull, description='Last Name', post='*'),
-      form.Textbox('fname', form.notnull, description='First Name', post='*'),    
-      form.Textbox('addr1', form.notnull, description='Address', size='20', post='*'),
-      form.Textbox('addr2', description='Address', size='20'),    
-      form.Textbox('city', form.notnull, description='City', post='*'),
-      form.Textbox('zipcode', form.notnull, form.regexp(r'[0-9]{5}', 'Please enter a valid zip'), 
-                    size='5', maxlength='5', description='Zip', post='*'),
-      form.Textbox('phone', form.notnull, form.regexp(r'[0-9-.]*', 'Please enter a valid phone number'),
-                    description='Phone', post='*'),    
-      form.Textbox('email', form.notnull, form.regexp(email_regex, 'Please enter a valid email'),
-                    description='Email', size='20', post='*'),
-      form.Textbox('ptitle', description="Title:", size='80'),
-      form.Textbox('pid', form.notnull, form.Validator('ID already exists, Choose a different one.', doesnotexist),
+      form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
+      form.Textbox('pid', form.Validator("Address can't be blank", bool), form.Validator('ID already exists, Choose a different one.', petitionnotexists),
                     pre='http://watchdog.net/c/', description='URL:', size='30'),
-      form.Textarea('msg', form.notnull, description="Description:", rows='20', cols='80'),
+      form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='20', cols='80'),
       form.Checkbox('tocongress', value='off', description="Petition to Congress?")
       )
-      
+
+wyrform = form.Form(
+      form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
+      form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='20', cols='80'),
+      form.Dropdown('prefix', ['Mr.', 'Mrs.', 'Dr.', 'Ms.', 'Miss'],  description='Prefix'),
+      form.Textbox('lname', form.Validator("Last name can't be blank", bool), description='Last Name'),
+      form.Textbox('fname', form.Validator("First name can't be blank", bool), description='First Name'),
+      form.Textbox('addr1', form.Validator("Address can't be blank", bool), description='Address', size='20'),
+      form.Textbox('addr2', description='Address', size='20'),
+      form.Textbox('city', form.Validator("City can't be blank", bool), description='City'),
+      form.Textbox('zipcode', form.Validator("Zip code can't be blank", bool), form.regexp(r'[0-9]{5}', 'Please enter a valid zip'),
+                    size='5', maxlength='5', description='Zip'),
+      form.Textbox('phone', form.Validator("Phone can't be blank", bool), form.regexp(r'[0-9-.]*', 'Please enter a valid phone number'),
+                    description='Phone'),
+      )
+
 zip4_textbox = form.Textbox('zip4',
     form.notnull,
     form.regexp(r'[0-9]{4}', 'Please Enter a valid zip'),
     size='4',
     maxlength='4',
     description='Zip4'
-    )   
+    )
 
 captcha = form.Textbox('captcha',
     form.notnull,
     size='10',
     description='Validation'
-    )      
-      
+    )
+
 signform = form.Form(
     form.Textbox('fname', form.notnull, description='First Name:', post=' *', size='30'),
     form.Textbox('lname', form.notnull, description='Last Name:', post=' *', size='30'),
-    form.Textbox('email', 
+    form.Textbox('email',
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
             description='Email:',
             post=' *',
             size='30'),
-    form.Dropdown('share_with', 
-            [('N', 'Nobody'), 
+    form.Dropdown('share_with',
+            [('N', 'Nobody'),
              ('A', 'Author of this petition'),
              ('E', 'Everybody')
              ],
@@ -64,40 +73,52 @@ signform = form.Form(
             description='Comments:',
             cols=70,
             rows=5
-            )         
+            )
     )
 
 passwordform = form.Form(
     form.Password('password', form.notnull, description="Password:", size='10'),
     form.Password('password_again', form.notnull, description="Repeat:", size='10'),
-    validators = [form.Validator("Passwords do not match.", 
+    validators = [form.Validator("Passwords do not match.",
                     lambda i: i.password == i.password_again)]
     )
 
 emailform = form.Form(
-    form.Textarea('emails', 
-                form.notnull, 
+    form.Textarea('emails',
+                form.notnull,
                 form.regexp(email_list_regex, 'One or more emails are not valid'),
-                description="To:", 
+                description="To:",
                 cols=70,
                 rows=3),
     form.Textbox('subject', form.notnull, description="Subject:", size='50'),
     form.Textarea('body', form.notnull, description="", cols=70, rows=12)
     )
-    
+
 loadcontactsform = form.Form(
-    form.Textbox('email', 
+    form.Textbox('email',
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
             description='Email:',
             size='15'),
-    form.Radio('provider', 
+    form.Radio('provider',
             ['Google', 'Yahoo'],
-            value='Google', 
+            value='Google',
             description='')
     )
+
+signupform = form.Form(
+    form.Textbox('email',
+            form.notnull,
+            form.regexp(email_regex, 'Please enter a valid email'),
+            form.Validator('An account with that email already exists', emailnotexists),
+            description='Email:'),
+    form.Password('password', form.notnull, description='Password:'),
+    form.Password('password_again', form.notnull, description='Password again:'),
+    form.Hidden('redirect')
+    )
+
 loginform = form.Form(
-    form.Textbox('useremail', 
+    form.Textbox('useremail',
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
             description='Email:'),
@@ -116,11 +137,11 @@ forgot_password = form.Form(
 userinfo = form.Form(
         form.Dropdown('prefix', ['Mr.', 'Mrs.', 'Dr.', 'Ms.', 'Miss'], description='Prefix', post='*'),
         form.Textbox('lname', form.notnull, description='Last Name', post='*'),
-        form.Textbox('fname', form.notnull, description='First Name', post='*'),    
+        form.Textbox('fname', form.notnull, description='First Name', post='*'),
         form.Textbox('email', form.notnull, form.regexp(email_regex, 'Please enter a valid email'),
-                            description='Email', size='20', post='*'),   
+                            description='Email', size='20', post='*'),
         form.Textbox('addr1', form.notnull, description='Address Line1', size='20', post='*'),
-        form.Textbox('addr2', description='Address Line2', size='20'),    
+        form.Textbox('addr2', description='Address Line2', size='20'),
         form.Textbox('city', form.notnull, description='City', post='*'),
         form.Textbox('zip5', form.notnull, form.regexp(r'[0-9]{5}', 'Please enter a valid zip'),
                          size='5', maxlength='5', description='Zip', post='*'),
@@ -129,7 +150,7 @@ userinfo = form.Form(
         form.Textbox('phone', form.notnull, form.regexp(r'[0-9-.]*', 'Please enter a valid phone number'),
                    description='Phone', post='*')
         )
-           
+
 change_password = form.Form(
         form.Password('password', form.notnull, description="New Password:", size='10'),
         form.Password('password_again', form.notnull, description="Confirm Password:", size='10'),

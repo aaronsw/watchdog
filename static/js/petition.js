@@ -4,11 +4,9 @@ strip = function(s) { return s.replace(/^\s+/, '').replace(/\s+$/, ''); }
 remove_punctuation = function(s) { return s.replace(/[^a-z0-9-]/g,''); }
 
 var ptitle_event = function fillURL(){
-    if(! $('#pid').attr('readonly')){
-        url = strip(this.value).toLowerCase().replace(/\s+/g, '-');
-        url = remove_punctuation(url);
-        $('#pid').val(url);
-    }    
+    url = strip(this.value).toLowerCase().replace(/\s+/g, '-');
+    url = remove_punctuation(url);
+    $('#pid').val(url);
     return;
 }
 
@@ -31,5 +29,21 @@ $('#pid').change( function checkID(){
         });
     });
 
-}); // end of document.ready
+$('#tocongress').click(function() {
+    if ($('#tocongress:checked').val()) {
+        $('#tocongressform').show();
+        $('#prefix').focus();
+        $('#tocongresscheck').css('background-color', '#ccebff');
+    } else {
+        $('#tocongressform').hide()
+        $('#tocongresscheck').css('background-color', '#ffc');
+    }
+});
 
+$('#ptitle').focus();
+if ($('#tocongress:checked').val()) {
+    $('#tocongressform').show();
+    $('#tocongresscheck').css('background-color', '#ccebff');
+}
+
+}); // end of document.ready
