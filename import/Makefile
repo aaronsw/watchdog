@@ -28,7 +28,8 @@ JSONS=$(LOAD)/states/index.json \
       $(LOAD)/politicians/earmarks.json \
       $(LOAD)/districts/centers.json
 
-TSVS=$(LOAD)/bill.tsv 
+TSVS=$(LOAD)/bill.tsv \
+	 $(LOAD)/vote.tsv 
 	 
 NJS=$(PARSE)/almanac.njs \
     $(PARSE)/earmarks.njs \
@@ -93,11 +94,12 @@ $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack
 	$(PYTHON) load/earmarks.py > $@.tmp
 	mv $@.tmp $@
 
-$(LOAD)/bill.tsv: .schema load/bills.py .json
+$(LOAD)/bill.tsv $(LOAD)/vote.tsv: load/bills.py
 	$(PYTHON) load/bills.py
 
-.bills: $(LOAD)/bill.tsv $(LOAD)/vote.tsv
-	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/bill.tsv $(LOAD)/vote.tsv
+.bills: $(LOAD)/bill.tsv $(LOAD)/vote.tsv .schema
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/bill.tsv
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/vote.tsv
 	touch $@
 
 .interests: load/maplight.py .bills
