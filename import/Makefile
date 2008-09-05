@@ -29,8 +29,10 @@ JSONS=$(LOAD)/states/index.json \
       $(LOAD)/districts/centers.json
 
 TSVS=$(LOAD)/bill.tsv \
-	 $(LOAD)/vote.tsv 
-	 
+	 $(LOAD)/vote.tsv \
+	 $(LOAD)/census_meta.tsv \
+	 $(LOAD)/census_data.tsv
+
 NJS=$(PARSE)/almanac.njs \
     $(PARSE)/earmarks.njs \
     $(PARSE)/fec.njs \
@@ -45,7 +47,7 @@ clean:
 cleanparse:
 	rm $(NJS)
 
-database: .schema .json .bills .interests .votesmart .photos .fec
+database: .schema .json .bills .interests .votesmart .photos .fec .census
 
 .json: .schema load/json.py $(JSONS)
 	python load/json.py
@@ -145,3 +147,12 @@ $(PARSE)/soi.njs: parse/soi.py $(CRAWL)/irs/soi/
 $(PARSE)/voteview.njs: parse/voteview.py
 	$(PYTHON) parse/voteview.py > $@.tmp
 	mv $@.tmp $@
+
+$(LOAD)/census_meta.tsv $(LOAD)/census_data.tsv: load/census.py parse/census.py
+	python load/census.py
+
+.census: $(LOAD)/census_meta.tsv $(LOAD)/census_data.tsv .schema
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/census_meta.tsv 
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/census_data.tsv 
+	touch $@
+
