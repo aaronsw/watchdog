@@ -28,6 +28,8 @@ JSONS=$(LOAD)/states/index.json \
       $(LOAD)/politicians/earmarks.json \
       $(LOAD)/districts/centers.json
 
+TSVS=$(LOAD)/zip4.tsv
+
 NJS=$(PARSE)/almanac.njs \
     $(PARSE)/earmarks.njs \
     $(PARSE)/fec.njs \
@@ -42,7 +44,7 @@ clean:
 cleanparse:
 	rm $(NJS)
 
-database: .schema .json .bills .interests .votesmart .photos .fec
+database: .schema .json .bills .interests .votesmart .photos .fec .soi
 
 .json: .schema load/json.py $(JSONS)
 	python load/json.py
@@ -109,6 +111,14 @@ $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack
 
 .fec: .json
 	$(PYTHON) load/fec.py
+	touch $@
+
+.zip4: $(LOAD)/zip4.tsv
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/zip4.tsv
+	touch $@
+
+.soi: .schema .json .zip4
+	$(PYTHON) load/soi.py
 	touch $@
 
 # new way of doing things: parse to .njs files
