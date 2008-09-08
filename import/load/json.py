@@ -37,7 +37,7 @@ def load_all():
     district_to_pol = {}
     for polid, pol in items('politicians/index'):
         db.insert('politician', seqname=False, id=polid, **unidecode(pol))
-        district_to_pol[pol['district']] = polid
+        district_to_pol[pol['district_id']] = polid
     
     for fn in ['govtrack', 'voteview', 'earmarks']:
         for polid, pol in items('politicians/' + fn):
@@ -62,6 +62,7 @@ def load_all():
                         group_id = db.insert('interest_group', groupname=groupname)
                           
                     db.insert('interest_group_rating',
+                              seqname=False,
                               politician_id=district_to_pol[name],
                               year=year,
                               group_id=groupname_to_id[groupname],

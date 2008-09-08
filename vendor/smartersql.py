@@ -114,13 +114,14 @@ class Table(object):
         return x
     
     @classmethod
-    def _dropSQL(cls):
-        return 'DROP TABLE IF EXISTS %s' % cls.sql_name
+    def _dropSQL(cls, cascade=False):
+        cascade = " CASCADE" if cascade else ""
+        return 'DROP TABLE IF EXISTS %s%s' % (cls.sql_name, cascade)
     
     @classmethod
     def create(cls): cls.db.query(cls._createSQL())
     @classmethod
-    def drop(cls): cls.db.query(cls._dropSQL())
+    def drop(cls, cascade=False): cls.db.query(cls._dropSQL(cascade))
     @classmethod
     def insert(cls, *a, **kw):
         #@@ deal with seqname
@@ -260,7 +261,7 @@ def drop():
     x = list(_all_tables)
     x.reverse()
     for table in x:
-        table.drop()
+        table.drop(cascade=True)
 
 def recreate():
     drop()

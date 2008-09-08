@@ -19,7 +19,7 @@ mapping = {
   'osid': 'opensecretsid',
   'party': 'party',
   'religion': 'religion',
-  'represents': 'district',
+  'represents': 'district_id',
   'url': 'officeurl'
 }
 
