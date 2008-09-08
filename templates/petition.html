@@ -1,44 +1,54 @@
-$def with (p, signform, passwordform=None, msg=None)
+$def with (p, signform, useremail, isauthor, msg=None)
 
 $var title: $p.title
+
+<style>
+fieldset#signpetition input {
+    width: 500px;
+}
+fieldset#signpetition {
+    margin-top: 2em;
+}
+</style>
 
 $if msg:
     $var msg: $:msg
 
-<p>
-  <a href="#sign" class="action">Sign</a>&nbsp;
-  <a href="/c/$p.id/share" class="action">Share</a>&nbsp;
-  <a href="?m=edit" class="action">Edit</a>
-  <a href="?m=delete" class="action">Delete</a>
-</p>
-
-$if passwordform:
-    <div class="passbox">
-  	<h2>Set a password</h2>
-  	<form name="passwdform" method="POST" action="/c/$p.id?m=password">
-  		$:passwordform.render() 
-  		<input type="hidden" name="user_id" value="$p.owner_id" />
-  	  	<p><input type="submit" value="Set Password" /></p>
-  	</form>	
-  	</div>
-
-<p>$:format(p.description) </p>
-
+<div id="upperbar">
 $if p.signatory_count == 0:
-	<p class="signatories">Be the first to sign this petition!</p>
+        <h2>Be the first to sign this petition!</h2>
 $else:
 	$if p.signatory_count == 1:
 		$ ppl = 'person</a></strong> has'
 	$else:
 		$ ppl = 'people</a></strong> have'
-	<p class="signatories"> <strong><a href='/c/$p.id/signatories'>$p.signatory_count $:ppl signed this petition so far. </p>
+	<h2> <strong><a href='/c/$p.id/signatories'>$p.signatory_count $:ppl signed this petition. </h2>
 
+<div id="uppermenu">
+  <a href="/c/$p.id/share">Share</a>&nbsp;
+$if isauthor:
+    | <a href="?m=edit">Edit</a>
+    | <a href="?m=delete">Delete</a>
+</div>
+</div>
 
-<a name="sign"><h2>Sign</h2></a>
+<p>$:format(p.description)</p>
+
 <form name="sign" method="POST" action="/c/$p.id?m=sign">
-	$if not signform.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
-	$:signform.render() 
-    <p><input type="submit" value="Sign" /></p>
+        $if not signform.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
+        <fieldset id="signpetition">
+            <legend>Sign this petition</legend>
+            <label for="fname">First name</label>
+            $:signform.fname.render()
+            <label for="lname">Last name</label>
+            $:signform.lname.render()
+            $if not useremail: 
+                <label for="email">Email</label>
+                $:signform.email.render()
+            <label for="comment">Comment</label>
+            $:signform.comment.render()
+        </fieldset>
+    <p><input type="submit" value="Sign this petition" /></p>
 </form>
 
 
