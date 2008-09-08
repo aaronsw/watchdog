@@ -1,11 +1,65 @@
-$def with (form, title="New petition", target="/c/new")
+$def with (pform, cform, title="Create a new petition", target="/c/new")
 
 $var title: $title
 
 <script type="text/javascript" src="/static/js/petition.js"></script>
 
+<style>
+fieldset #tocongresscheck {
+    background-color: #ffc;
+    width: 16.8em;
+}
+
+fieldset #tocongresscheck input,
+fieldset #tocongresscheck label {
+    display: inline;
+}
+
+fieldset #pid {
+    margin-right: 0.3em;
+    font-size: 0.9em;
+}
+</style>
+
 <form name="petition" method="POST" action="$target"> 
-    $if not form.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
-    $:form.render()
-    <input type="submit" name="submit" value="Submit"/>    
+    $if not pform.valid: <p class="error">Please try again after fixing the problems highlighted below:</p>
+
+<fieldset id="petition">
+    <legend>Create your petition</legend>
+    <label for="ptitle">Name your petition</label>
+    $:pform.ptitle.render()
+    <label for="msg">Give it a description</label>
+    $:pform.msg.render()
+</fieldset>
+
+<fieldset id="address">
+    <legend>Your petition site address</legend>
+    <p>Letters, numbers and dashes only — no spaces.</p>
+    <strong>http://watchdog.net/c/</strong> $:pform.pid.render()
+</fieldset>
+
+<fieldset id="maketocongress">
+    <legend>Want to make this a petition to Congress?</legend>
+    <p>Everytime someone signs your petition, we'll send it to their Representative.</p>
+    <div id="tocongresscheck">
+        $:pform.tocongress.render() 
+        <label for="tocongress">Make this is a petition to Congress</label>
+    </div>
+
+    <div id="tocongressform" style="display: none;">
+    <h3>We'll need some more information then...</h3>
+    <table>
+    <tr><th>Prefix</th><td>$:cform.prefix.render()</td></tr>
+    <tr><th>First name</th><td>$:cform.fname.render()</td></tr>
+    <tr><th>Last name</th><td>$:cform.lname.render()</td></tr>
+    <tr><th>Address</th><td>$:cform.addr1.render()</td></tr>
+    <tr><th></th><td>$:cform.addr2.render()</td></tr>
+    <tr><th>City</th><td>$:cform.city.render()</td></tr>
+    <tr><th>Zip code</th><td>$:cform.zipcode.render()</td></tr>
+    <tr><th>Phone</th><td>$:cform.phone.render()</td></tr>
+    </table>
+    </div>
+</fieldset>
+
+<input type="submit" value="Create my petition" style="font-size: 1.2em">
 </form>

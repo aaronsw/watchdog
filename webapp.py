@@ -3,7 +3,7 @@ import re
 import web
 web.config.debug = True
 
-from utils import zip2rep, simplegraphs, apipublish, helpers, forms, writerep
+from utils import zip2rep, simplegraphs, apipublish, helpers, forms, writerep, userinfo
 import blog
 import petition
 import settings
@@ -11,7 +11,7 @@ from settings import db, render
 import schema
 
 #@@@ utils.auth.login doesn't work in urls as webpy tries to import auth from its own utils
-from utils.auth import login, logout, forgot_password, set_password
+from utils.auth import login, signup, logout, forgot_password, set_password
 
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
@@ -30,13 +30,15 @@ urls = (
   r'/p/(.*?)%s?' % options, 'politician',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/c', petition.app,
-  r'/writerep', 'write_your_rep', 
+  r'/user', userinfo.app,
+  r'/writerep', 'write_your_rep',
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
   r'/blog', blog.app,
   r'/data/(.*)', 'staticdata',
   r'/login', 'login',
+  r'/signup', 'signup',
   r'/logout', 'logout',
   r'/forgot_password', 'forgot_password',
   r'/set_password', 'set_password',
@@ -62,13 +64,13 @@ class aboutapi:
 class feedback:
     def GET(self):
         raise web.seeother('/about')
-    
+
     def POST(self):
         i = web.input(email='info@watchdog.net')
         web.sendmail('Feedback <%s>' % i.email, 'Watchdog <info@watchdog.net>',
-          'watchdog.net feedback', 
+          'watchdog.net feedback',
           i.content +'\n\n' + web.ctx.ip)
-        
+
         return render.feedback_thanks()
 
 class find:
@@ -80,7 +82,7 @@ class find:
         pzip4 = re.compile(r'\d{5}-\d{4}')
         pname = re.compile(r'[a-zA-Z\.]+')
         pdist = re.compile(r'[a-zA-Z]{2}\-\d{2}')
-        
+
         dist_struct = {
           'uri': apipublish.generic(lambda x: 'http://watchdog.net/us/' +
                                     x.name.lower() + '#it'),
@@ -92,30 +94,30 @@ class find:
         if i.get('zip'):
             if pzip4.match(i.zip):
                 zip, plus4 = i.zip.split('-')
-                dists = [x.district for x in 
+                dists = [x.district for x in
                   db.select('zip4', where='zip=$zip and plus4=$plus4', vars=locals())]
                 d_dists = db.select('district', where=web.sqlors('name=', dists))
-                
+
                 out = apipublish.publish(dist_struct, d_dists, format)
                 if out is not False:
                     return out
-                
+
                 if len(dists) == 0:
                     return render.find_none(i.zip)
                 else: #@@ verify there aren't dupe districts
                     raise web.seeother('/us/%s' % dists[0].lower())
-            
+
             if pzip5.match(i.zip):
                 try:
                     dists = zip2rep.zip2dist(i.zip, i.address)
                 except zip2rep.BadAddress:
                     return render.find_badaddr(i.zip, i.address)
-                
+
                 d_dists = db.select('district', where=web.sqlors('name=', dists))
                 out = apipublish.publish(dist_struct, d_dists, format)
                 if out is not False:
                     return out
-            
+
                 if len(dists) == 1:
                     raise web.seeother('/us/%s' % dists[0].lower())
                 elif len(dists) == 0:
@@ -148,7 +150,7 @@ class find:
             out = apipublish.publish(dist_struct, db.select('district'), format)
             if out is not False:
                 return out
-            
+
             dists = db.select(join, order='name asc')
             return render.districtlist(dists)
 
@@ -159,7 +161,7 @@ class state:
             state = db.select('state', where='code=$state', vars=locals())[0]
         except IndexError:
             raise web.notfound
-        
+
         out = apipublish.publish({
           'uri': 'http://watchdog.net/us/' + state.code.lower() + '#it',
           'type': 'State',
@@ -168,13 +170,13 @@ class state:
         }, [state], format)
         if out is not False:
             return out
-        
+
         districts = db.select('district',
                               where='state=$state.code',
                               order='district asc',
                               vars=locals())
         senators = db.select('politician',where='district=$state.code',vars=locals())
-        
+
         return render.state(state, districts.list(),senators.list())
 
 class redistrict:
@@ -187,11 +189,11 @@ class district:
             d = schema.District.select(where='name = $district.upper()', vars=locals())[0]
         except IndexError:
             raise web.notfound
-        
+
         # out = apipublish.publish({
         #   'uri': 'http://watchdog.net/us/' + district.lower() + '#it',
         #   'type': 'District',
-        #   'state': apipublish.URI('http://watchdog.net/us/' + d.state.code.lower() + '#it'),
+        #   'state': apipublish.URI('http://watchdog.net/us/' + d.state.lower() + '#it'),
         #   'wikipedia almanac': apipublish.URI,
         #   'name voting area_sqmi cook_index poverty_pct median_income '
         #   'est_population est_population_year outline center_lat '
@@ -199,7 +201,7 @@ class district:
         # }, [d], format)
         # if out is not False:
         #     return out
-        
+
         return render.district(d)
 
 def bills_sponsored(polid):
@@ -233,11 +235,11 @@ def group_politician_similarity(politician_id, qmin=None):
     """Find the interest groups that vote most like a politician."""
     query_min = lambda mintotal, politician_id=politician_id: db.select(
       'group_politician_similarity'
-      ' JOIN interest_group ON (interest_group.id = group_id)', 
+      ' JOIN interest_group ON (interest_group.id = group_id)',
       what='*, cast(agreed as float)/total as agreement',
-      where='total >= $mintotal AND politician_id=$politician_id ', 
+      where='total >= $mintotal AND politician_id=$politician_id ',
       vars=locals()).list()
-    
+
     if qmin:
         q = query_min(qmin)
     else:
@@ -246,9 +248,9 @@ def group_politician_similarity(politician_id, qmin=None):
             q = query_min(3)
             if not q:
                 q = query_min(1)
-    
+
     q.sort(lambda x, y: cmp(x.agreement, y.agreement), reverse=True)
-    return q 
+    return q
 
 def interest_group_support(bill_id):
     "Get the support of interest groups for a bill."
@@ -267,7 +269,7 @@ def votes_by_party(bill_id):
             group="p.party, v.vote",
             vars = locals()
             ).list()
-    
+
     d = {}
     for r in result:
         d.setdefault(r.party, {})
@@ -281,7 +283,7 @@ def polname_by_id(pol_id):
         return None
     else:
         return "%s %s %s" %(p.firstname or '', p.middlename or '', p.lastname or '')
-        
+
 def bill_list(format, page=0, limit=50):
     bills = db.select('bill', limit=limit, offset=page*limit, order='session desc').list()
     out = apipublish.publish({
@@ -298,7 +300,7 @@ class bill:
         if bill_id == "" or bill_id == "index":
             i = web.input(page=0)
             return bill_list(format, int(i.page))
-            
+
         try:
             b = db.select('bill', where='id=$bill_id', vars=locals())[0]
         except IndexError:
@@ -307,7 +309,7 @@ class bill:
         b.sponsorname = polname_by_id(b.sponsor)
         b.interest_group_support = interest_group_support(bill_id)
         b.votes_by_party = votes_by_party(bill_id)
-        
+
         out = apipublish.publish({
           'uri': 'http://watchdog.net/b/' + bill_id + '#it',
           'type': 'Bill',
@@ -323,10 +325,10 @@ class politician:
     def GET(self, polid, format=None):
         if polid != polid.lower():
             raise web.seeother('/p/' + polid.lower())
-        
+
         if polid == "" or polid == "index":
             p = db.select(['politician'], order='district asc').list()
-            
+
             out = apipublish.publish({
               'uri': apipublish.generic(lambda x: 'http://watchdog.net/p/' +
                                         x.id + '#it'),
@@ -337,9 +339,9 @@ class politician:
              }, p, format)
             if out is not False:
                 return out
-            
+
             return render.pollist(p)
-        
+
         try:
             p = db.select(['politician', 'district'],
                           what=("politician.*, "
@@ -351,15 +353,15 @@ class politician:
                           vars=locals())[0]
         except IndexError:
             raise web.notfound
-        
-        p.fec_ids = [x.fec_id for x in db.select('politician_fec_ids', what='fec_id', 
+
+        p.fec_ids = [x.fec_id for x in db.select('politician_fec_ids', what='fec_id',
           where='politician_id=$polid', vars=locals())]
-        
+
         p.interest_group_rating = interest_group_ratings(polid)
         p.interest_group_table = interest_group_table(p.interest_group_rating)
         p.related_groups = group_politician_similarity(polid)
-        p.sponsored_bills = bills_sponsored(polid)                           
-            
+        p.sponsored_bills = bills_sponsored(polid)
+
         out = apipublish.publish({
           'uri': 'http://watchdog.net/p/' + polid + '#it',
           'type': 'Politician',
@@ -372,9 +374,9 @@ class politician:
                 'num_bills_agreed': apipublish.generic(lambda g: g.agreed),
                 'num_bills_voted': apipublish.generic(lambda g: g.total),
                 'agreement_percent': apipublish.generic(lambda g: int(g.agreement * 100)),
-                'group_politician_url': apipublish.generic(lambda g: 
+                'group_politician_url': apipublish.generic(lambda g:
                                         'http://watchdog.net/p/%s/%s' % (polid, g.id))
-            }), 
+            }),
             'sponsored_bills': apipublish.table({
                 'id': apipublish.generic(lambda b: '%s. %s' % (b.type.upper(), b.number)),
                 'session title introduced': apipublish.identity,
@@ -394,7 +396,7 @@ class politician:
          }, [p], format)
         if out:
             return out
-        
+
         return render.politician(p)
 
 class politician_introduced:
@@ -417,7 +419,7 @@ class politician_group:
           vars=locals())
 
         return render.politician_group(votes)
-        
+
 
 r_safeproperty = re.compile('^[a-z0-9_]+$')
 table_map = {'us': 'district', 'p': 'politician'}
@@ -429,7 +431,7 @@ class dproperty:
         except KeyError:
             raise web.notfound
         if not r_safeproperty.match(what): raise web.notfound
-        
+
         #if `what` is not there in the `table` (provide available options rather than 404???)
         try:
             maxnum = float(db.select(table,
@@ -437,7 +439,7 @@ class dproperty:
                                  vars=locals())[0].m)
         except:
             raise web.notfound
-                                     
+
         items = db.select(table,
                           what="*, 100*(%s/$maxnum) as pct" % what,
                           order='%s desc' % what,
@@ -460,11 +462,11 @@ class sparkdist:
         except KeyError:
             raise web.notfound
         if not r_safeproperty.match(what): raise web.notfound
-        
+
         inp = web.input(point=None)
         points = db.select(table, what=what, order=what+' asc', where=what+' is not null')
         points = [x[what] for x in points.list()]
-        
+
         web.header('Content-Type', 'image/png')
         return simplegraphs.sparkline(points, inp.point)
 
@@ -475,7 +477,7 @@ def add_zip4(form):
             inputs.insert(index+1, forms.zip4_textbox)
     form.inputs = tuple(inputs)
     return form
-    
+
 
 def add_captcha(form, img_src):
     inputs = list(form.inputs)
@@ -484,40 +486,60 @@ def add_captcha(form, img_src):
     inputs.append(captcha)
     form.inputs = tuple(inputs)
     return form
-  
+
+def get_writerep_form(from_petition_page=False):
+    form = forms.wyrform()
+    if not from_petition_page:
+        inputs = list(form.inputs)
+        inputs = filter(lambda i: i.name not in ('tocongress', 'pid'), inputs)
+        filter(lambda i: i.name == 'msg', inputs)[0].description = 'Message'
+        filter(lambda i: i.name == 'ptitle', inputs)[0].description = 'Subject'
+        form.inputs = tuple(inputs)
+
+    return form
+
 class write_your_rep:
     def GET(self, form=None):
-        form = form or forms.writerep()
+        if not form:
+            form = get_writerep_form()
+            petition.fill_user_details(form)
         msg, msg_type = helpers.get_delete_msg()
         return render.writerep(form, msg=msg)
-        
+
     def POST(self):
         i = web.input()
-        form = forms.writerep()
+        from_petition_page = i.has_key('pid')
+        form = get_writerep_form(from_petition_page)
         if form.validates(i):
-            print i
             try:
                 dists = zip2rep.zip2dist(i.zipcode, i.addr1+i.addr2)
             except zip2rep.BadAddress:
                 dists = []
-            #print dists
-            
+            print dists
+
             if len(dists) != 1:
                 form = add_zip4(form)
                 return self.GET(form)
-            
-            dist = dists[0]    
+
+            dist = dists[0]
             captcha = ('captcha' not in i) and writerep.get_captcha_src(dist)
-            if captcha: 
+            if captcha:
                 form = add_captcha(form, captcha)
-                return self.GET(form) 
-                
-            msg_sent = writerep.writerep(district=dist, **i)
+                return self.GET(form)
+
+            msg_sent = writerep.writerep(district=dist,
+                            prefix=i.prefix, lname=i.lname, fname=i.fname,
+                            addr1=i.addr1, addr2=i.addr2, city=i.city,
+                            zipcode=i.zipcode, zip4=i.get('zip4', ''),
+                            phone=i.phone, email=i.email, msg=i.msg)
+
+            if from_petition_page: return msg_sent
+
             if msg_sent: helpers.set_msg('Your message has been sent.')
             raise web.seeother('/writerep')
         else:
-            return self.GET(form)        
-            
+            return self.GET(form)
+
 
 class staticdata:
     def GET(self, path):
@@ -526,8 +548,8 @@ class staticdata:
 
         assert '..' not in path, 'security'
         return file('data/' + path).read()
-        
+
 app = web.application(urls, globals())
 settings.setup_session(app)
-            
+
 if __name__ == "__main__": app.run()

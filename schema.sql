@@ -52,7 +52,7 @@ CREATE TABLE zip (
   zip varchar(5) primary key,
   city text,
   state varchar(2), --references states, (@@no AE=Armed Forces Europe)
-  gini float
+  gini real
   -- @@other IRS stuff
 );
 

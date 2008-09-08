@@ -114,7 +114,7 @@ class bbauth:
         response = urllib2.urlopen(req).read()
         contacts = self.get_contacts(response)
         save_contacts(email, contacts, provider='YAHOO')
-        raise web.seeother('/c/share?pid=%s' % (session.pid))
+        raise web.seeother('/c/%s/share' % (session.pid))
 
 class authsub:
     def get_contacts(self, contacts_feed):
@@ -148,7 +148,7 @@ class authsub:
         response = urllib2.urlopen(request)
         contacts = self.get_contacts(response)
         save_contacts(email, contacts, provider='GOOGLE')
-        raise web.seeother('/c/share?pid=%s' % (session.pid))
+        raise web.seeother('/c/%s/share' % (session.pid))
     
 class yauth:
     def GET(self):

@@ -15,7 +15,7 @@ $for i, sign in enumerate(signs):
     $if is_author and (sign.share_with != 'N'):
         <a href='mailto:$sign.email'>$sign.name</a>
     $elif sign.share_with == 'E':
-        $sign.name
+        $sign.fname $sign.lname
     $else:
         Anonymous    
     </td>

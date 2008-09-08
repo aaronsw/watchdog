@@ -1,11 +1,27 @@
 -- All the tables for user data 
 
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS petition CASCADE;
+DROP TABLE IF EXISTS signatory CASCADE;
+DROP TABLE IF EXISTS petition_responses CASCADE;
+DROP TABLE IF EXISTS contacts CASCADE;
+
 CREATE TABLE users(
     id serial primary key,
-    name varchar(256),
     password varchar(256),
-    verified boolean default false, -- done verified activity at least once
-    email varchar(320) UNIQUE -- max allowed email length.
+    
+    prefix varchar(5),
+    lname varchar(30),
+    fname varchar(30),
+    email varchar(320) UNIQUE, -- max allowed email length.
+    addr1 varchar(64),
+    addr2 varchar(64),
+    city varchar(64),
+    zip5 varchar(5),
+    zip4 varchar(4),
+    phone varchar(10),
+    
+    verified boolean default false -- done verified activity at least once
 );
 
 CREATE TABLE petition(
@@ -13,16 +29,27 @@ CREATE TABLE petition(
     title text,
     description text,
     owner_id int references users,
-    created timestamp default now()  
+    created timestamp default now(),
+    deleted timestamp 
 );
 
 CREATE TABLE signatory(
+    id serial primary key, 
     user_id int references users,
     petition_id varchar(256) references petition,
-    share_with varchar(1), -- E=everybody, A=author of petition, N=nobody
+    share_with char(1), -- E=everybody, A=author of petition, N=nobody
     comment text,
-    signtime timestamp default now(),
+    signed timestamp default now(),
+    deleted timestamp,
     UNIQUE (user_id, petition_id)
+);
+
+CREATE TABLE petition_responses(
+    id serial primary key,
+    sign_id int references signatory,
+    response text,
+    category char(1), --S=support, O=oppose, U=undecided, N=No answer
+    received timestamp
 );
 
 -- save contacts imported from yahoo, google etc.,

@@ -5,6 +5,12 @@ from ClientForm import ParseResponse, ControlNotFoundError, AmbiguityError
 from settings import db
 from BeautifulSoup import BeautifulSoup
 
+manual_websites = '../data/crawl/votesmart/websites_manual.json'
+votesmart_websites = '../data/crawl/votesmart/websites.json'
+
+def is_email(s):
+    return ('@' in s) and not s.startswith('http://')
+    
 def has_textarea(f):
     try:
         c = f.find_control(type='textarea')
@@ -40,9 +46,6 @@ def any_zipauth(forms):
     
 def any_ima(forms):
     return any(has_textarea(f) for f in forms)                   
-    
-def is_email(s):
-    return '@' in s
     
 def is_wyr(s):
     return ('www.house.gov/writerep' in s) or ('https://forms.house.gov/wyr/welcome.shtml' == s)
@@ -94,48 +97,93 @@ def get_wyr_forms(dists):
         d[dist] = dict(contact=wyr_url, contacttype='wyr', captcha=False)
     return d    
             
-def typeof(url):
-    ctype = (is_email(url) and 'email') 
-    if not ctype and not is_wyr(url):
-        try:
-            response = urlopen(url)
-            forms = ParseResponse(response, backwards_compat=False)
-        except Exception, details:
-            #print >> sys.stderr, url, details
-            pass
+def getformtype(url):
+    """
+    In the given url, checks for existence of 'ima' or 'zipauth' forms. If neither of them is there,
+    it looks of for a one in frames, if any.
+    Returns the form type, if there is a one.
+    """    
+    if is_wyr(url):
+        return 'https://forms.house.gov/wyr/welcome.shtml', 'wyr'
+    
+    try:
+        response = urlopen(url)
+        forms = ParseResponse(response, backwards_compat=False)
+    except Exception, details:
+        #print >> sys.stderr, url, details
+        pass
+    else:
+        formtype = (any_ima(forms) and 'ima') or (any_zipauth(forms) and 'zipauth')
+        if formtype:
+            return response.geturl(), formtype 
         else:
-            ctype = (any_ima(forms) and 'ima') or (any_zipauth(forms) and 'zipauth')
-    return ctype
+            try:
+                soup = BeautifulSoup(urlopen(url))
+            except:
+                pass
+            else:
+                frame = soup.findAll(['iframe', 'frame'])
+                if frame: 
+                    url = frame[0].get('src')
+                    return getformtype(url)
+            
+    return None, None        
+            
         
 def get_votesmart_contacts(dists):
     d = {}
-    websites = simplejson.load(file('../data/crawl/votesmart/websites.json'))
+    websites = simplejson.load(file(votesmart_websites))
     dists = tuple(dists)
     rs = db.select('politician', what='district, votesmartid',
                 where='district in $dists', vars=locals())
     
     for r in rs:
-        url = None
+        _url = None
         contact = websites.get(r.votesmartid, {})
         if 'office' in contact.keys():
             for addr in contact['office']:
                 if addr['webAddressType'] == 'Email':
+                    email = addr['webAddress']
+                    if email.endswith('mail.house.gov') or email.endswith('mail.senate.gov'):
+                        _url, contacttype = 'mailto:' + email, 'email'
+                if not _url and addr['webAddressType'] == 'Webmail':
                     url = addr['webAddress']
-                if not url and addr['webAddressType'] == 'Webmail':
-                    url = addr['webAddress']
-            contacttype = url and typeof(url)
-            if contacttype:
-                captcha = (type == 'ima') and has_captcha(url)
-                d[r.district] = dict(contact=url, contacttype=contacttype, captcha=captcha)    
+                    _url, contacttype = getformtype(url)
+						
+            if contacttype and contacttype != 'wyr':
+                captcha = (contacttype == 'ima') and has_captcha(url)
+                d[r.district] = dict(contact=_url, contacttype=contacttype, captcha=captcha)    
     return d
+
+def get_manual_contacts(dists):
+    d = {}
+    items = simplejson.load(file(manual_websites))
+    for dist in dists:
+        url = items.get(dist, dict(contact=''))['contact']
+        if url:
+            if is_email(url):
+                _url, contacttype = 'mailto:' + url, 'email'
+            else:
+                _url, contacttype = getformtype(url)
+            if contacttype:
+                captcha = (contacttype == 'ima') and has_captcha(_url)
+                d[dist] = dict(contact=_url, contacttype=contacttype, captcha=captcha)
+    return d        
         
 def main(fname='wyr.json'):
     #@@@ PVS data has few false positives for WYR form. 
-    # So, better get reps having wyr forms in house.gov and then proceed to PVS data.
+    # So, better get reps having wyr forms in house.gov and then proceed to PVS data and then to manually created json
     all_dists = set(r.name for r in db.select('district', what='name'))
+    
     d = get_wyr_forms(all_dists)
     remaining_dists = list(all_dists - set(d.keys()))
+
     d.update(get_votesmart_contacts(remaining_dists))
+    remaining_dists = list(all_dists - set(d.keys()))
+    
+    d.update(get_manual_contacts(remaining_dists))
+    remaining_dists = list(all_dists - set(d.keys()))
+    
     f = file(fname, 'w')
     simplejson.dump(d, f, indent=2, sort_keys=True)                     
     

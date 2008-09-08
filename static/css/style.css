@@ -63,7 +63,27 @@ h1 {margin:20px 0 20px 0; font-weight: normal; color:#EE4400; font-family:"Georg
 
 .frontbox h1 {margin:0px 0 0 0; font-weight: normal; color:#EE4400; font-family:"Georgia"; font-size:22px; }
 
-button {border: 1px solid #0f5b89; background-color: #0f5b89; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px;}
+/*textarea { background-color: #d9eefa; border: 1px solid #83b3d0; color: #999; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin: 10px 4px 0px 0px; }
+textarea:focus { background-color: #f0faff; border: 1px solid #83b3d0; color: #EE4400; }
+input {  border: 1px solid #83b3d0; color: #999; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px; }
+input:focus { color: #EE4400; background-color: #f0faff;  }*/
+input.personalize { background-color: #002233; border: 1px solid #0f5b89; color: #FFF399; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px; width: 152px; font-size:12px; line-height:20px; font-family:Arial, Helvetica, sans-serif; }
+input.personalize:focus { background-color: #0f5b89; border: 1px solid #EE4400;  }
+input.zipcode { background-color: #FFF399; border: 1px solid #0f5b89; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px; width: 152px; font-size:12px; line-height:20px; font-family:Arial, Helvetica, sans-serif; margin-top: -15px; margin-bottom: 8px; margin-left: -7px; width: 100%; }
+input.zipcode:focus { background-color: #c6dcf1; border: 1px solid #EE4400;  }
+input.white { background-color: #fff; border: 1px solid #0f5b89; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px; }
+input.white:focus { background-color: #fff; border: 1px solid #EE4400;  }
+input.password { background-color: #fff; border: 1px solid #50aa50; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px;  width: 90%; }
+input.password:focus { background-color: #fff; border: 1px solid #50aa50;  }
+input.highlight { background-color: #FFF399; border: 1px solid #EE4400; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px;  }
+input.highlight:focus { background-color: #fdf6c5; border: 1px solid #EE4400;  }
+
+button {border: 1px solid #0f5b89; background-color: #0f5b89; color: #fff; font-size:14px; font-family:"Georgia"; padding: 3px 6px 3px 6px; margin-right: 4px;}
+button:hover {border: 1px solid #EE4400; background-color: #EE4400; color: #fff; font-size:14px; font-family:"Georgia"; padding: 3px 6px 3px 6px; margin-right: 4px;}
+button.personalize {border: 1px solid #0f5b89; background-color: #0f5b89; color: #fff; font-size:14px; font-family:"Georgia"; padding: 3px 2px 3px 2px; margin-right: 0px;}
+button.personalize:hover {border: 1px solid #D8D600; background-color: #FFF399; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 3px 2px 3px 2px;}
+button.alert {border: 1px solid #EE4400; background-color: #EE4400; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 1px;}
+button.alert:hover {border: 1px solid #EE4400; background-color: #EE4400; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px;}
 
 .postit {border: 4px solid #fff; background-color: #FFF399; padding: 1em; margin-right: auto; margin-top: 20px; line-height: 16px; margin-bottom: 30px; }
 .signatories { text-align: center; border: 1px solid #ccc; padding: 1em; font-size: larger; width: 20em; background-color: #eee; margin-top: 80px;  }.slickform {border: 1px solid #D8D600; background-color: #FFF399; padding: 1em; margin-right: auto; margin-top: 20px; line-height: 16px; }
@@ -89,3 +109,20 @@ a.task:hover {border: 1px solid #50aa50; background-color: #50aa50; color: #fff;
 img { border:none }
 
 .subhead-blue {margin:0 0 0px 0; font-size:18px; font-weight:bold; color: #6ea9cf; }
+
+.petition { border-top: 1px solid #ccc; padding: 10px;}
+
+.rep-info { border-bottom: 1px solid #ccc; height: 160px; }
+.rep-info-item {}
+
+fieldset { width: 510px; border: 1px solid #ccc; background: #F5F5FD; padding: 1em 2em; margin: 0 0 2em 0; }
+legend { font-weight: bold; font-size: 1.2em; padding: 0 0.5em; }
+fieldset textarea { font-size: 1.1em; width: 505px; padding: 0.2em; height: 200px; }
+fieldset label { display: block; font-size: 0.95em; margin-top: 1em; }
+fieldset input { padding: 0.2em; font-weight: bold; font-size: 1.2em; max-width: 500px; }
+fieldset th { vertical-align: middle; }
+
+table.imgbox { clear: left; margin-bottom: 2em; }
+table.imgbox td.left { text-align: center; width: 112px; }
+table.imgbox td.left img { width: 112px;}
+table.imgbox td.right { padding-left: 15px; vertical-align: top; padding-top: 1em;}

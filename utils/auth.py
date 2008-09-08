@@ -28,6 +28,35 @@ def _login(useremail, password):
     else:
         return None
 
+def new_user(email, password):
+    token = get_secret_token(email)
+    password = encrypt_password(password)
+    exists = db.select('users', where='email=$email', vars=locals())
+    if exists:
+        return None
+
+    user_id = db.insert('users', email=email, password=password, verified=True)
+    user = web.storage(id=user_id, email=email, password=password, verified=True)
+    return user
+
+class signup:
+    def GET(self):
+        referer = web.ctx.env.get('HTTP_REFERER', '/')
+        i = web.input(redirect=referer)
+        form = forms.signupform()
+        form['redirect'].value = i.redirect
+        msg, msg_type = helpers.get_delete_msg()
+        return render.signup(form, msg, i.redirect)
+
+    def POST(self):
+        i = web.input(redirect='/')
+        f = forms.signupform()
+        if not f.validates(i):
+            return render.signup(f)
+        user = new_user(i.email, i.password)
+        helpers.set_login_cookie(i.email)
+        raise web.seeother(i.redirect)
+
 class login:
     def GET(self):
         referer = web.ctx.env.get('HTTP_REFERER', '/')
@@ -35,8 +64,8 @@ class login:
         form = forms.loginform()
         form['redirect'].value = i.redirect
         msg, msg_type = helpers.get_delete_msg()
-        return render.login(form, msg)
-    
+        return render.login(form, msg, i.redirect)
+
     def POST(self):
         i = web.input(redirect='/')
         user = _login(i.useremail, i.password)
@@ -46,9 +75,9 @@ class login:
             f.note = 'Invalid email or password.'
             return render.login(f)
         raise web.seeother(i.redirect)
-        
+
 class logout:
-    def POST(self):
+    def GET(self):
         helpers.del_login_cookie()
         referer = web.ctx.env.get('HTTP_REFERER', '/')
         raise web.seeother(referer)
@@ -66,18 +95,18 @@ def check_secret_token(email, token):
         return today > valid_date
 
     return not(tampered or expired())
-                
+
 def set_password_url(email, token):
     query = urllib.urlencode(dict(email=email, token=token))
     url = 'http://watchdog.net/set_password?%s' % (query)
     return url
-        
+
 class forgot_password:
     def GET(self, form=None):
         form = form or forms.forgot_password()
         msg, msg_type = helpers.get_delete_msg()
         return render.forgot_password(form, msg)
-    
+
     def POST(self):
         i = web.input()
         form = forms.forgot_password()
@@ -111,39 +140,39 @@ class set_password:
         else:
             helpers.set_msg('Invalid token', msg_type='error')
             raise web.seeother('/forgot_password')
-    
+
     def POST(self):
         i = web.input()
         form = forms.passwordform()
         if form.validates(i):
-            password = encrypt_password(i.password)        
+            password = encrypt_password(i.password)
             db.update('users', password=password, verified=True, where='email=$i.email', vars=locals())
             helpers.set_msg('Login with your new password.')
             raise web.seeother(web.ctx.homedomain + '/login')
         else:
             return self.GET(form)
-        
+
 def send_mail_to_set_password(email):
     token = get_secret_token(email, validity=365)
     url = set_password_url(email, token)
     subject = 'Set your watchdog.net password'
     msg = """\
-Thanks for using watchdog.net. We've created an account 
-for you with this email address -- but we don't have 
-a password for it. So that you can log in later, please 
+Thanks for using watchdog.net. We've created an account
+for you with this email address -- but we don't have
+a password for it. So that you can log in later, please
 set your password at:
 
 %s
 
-If you've already set a password, then don't worry about 
-it and sorry for the interruption. If you think you received 
+If you've already set a password, then don't worry about
+it and sorry for the interruption. If you think you received
 this email in error, please hit reply and let us know.
 
 Thanks,
 watchdog.net
 """ % (url)
     web.sendmail(config.from_address, email, subject, msg)
-        
+
 def assert_verified(email):
     if helpers.get_loggedin_email():
         pass
@@ -153,4 +182,11 @@ def assert_verified(email):
     else:
         query = urllib.urlencode(dict(redirect=web.ctx.fullpath))
         raise web.seeother("%s/login?%s" % (web.ctx.homedomain, query))
-            
+
+def require_login(f):
+    def g(*a, **kw):
+        if not helpers.get_loggedin_email():
+            query = urllib.urlencode(dict(redirect=web.ctx.fullpath))
+            raise web.seeother("%s/login?%s" % (web.ctx.homedomain, query))
+        return f(*a, **kw)
+    return g
