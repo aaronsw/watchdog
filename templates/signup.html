@@ -8,11 +8,13 @@ $if not form.valid: <p class="error">Please try again after fixing the problems 
     <form name="signup" method="POST" >
     $:form.redirect.render()
         <table>
+            <tr><td>First name</td><td>$:form.fname.render()</td></tr>
+            <tr><td>Last name</td><td>$:form.lname.render()</td></tr>
             <tr><td>Email</td><td>$:form.email.render()</td></tr>
             <tr><td>Password</td><td>$:form.password.render()</td></tr>
             <tr><td>Password again</td><td>$:form.password_again.render()</td></tr>
         </tr>
         </table>
-        <input type="submit" name="submit" value="Sign up">
+        <button type="submit">Sign up</button>
     </form>
 </div>

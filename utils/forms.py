@@ -107,6 +107,8 @@ loadcontactsform = form.Form(
     )
 
 signupform = form.Form(
+    form.Textbox('lname', form.notnull, description='Last Name'),
+    form.Textbox('fname', form.notnull, description='First Name'),
     form.Textbox('email',
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),

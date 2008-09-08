@@ -87,7 +87,6 @@ def fill_user_details(form, fillings=['email', 'name', 'contact']):
                     details['zip4'] = user.zip4
     form.fill(**details)
 
-
     if helpers.get_loggedin_email():
         for i in form.inputs:
             if i.name == 'email':
@@ -152,9 +151,9 @@ def save_signature(forminput, pid):
     signed = db.select('signatory', where='petition_id=$pid AND user_id=$user.id', vars=locals())
     if not signed:
         signature = dict(petition_id=pid, user_id=user.id,
-                        share_with=forminput.share_with, comment=forminput.comment)
+                        share_with='N', comment=forminput.comment)
         db.insert('signatory', **signature)
-        helpers.set_msg('Your signature has been taken for this petition.')
+        helpers.set_msg('Thanks! Your signature has been taken for this petition.')
         helpers.unverified_login(user.email)
     return user
 
@@ -185,12 +184,12 @@ class signatories:
                             what='users.fname, users.lname, users.email, '
                                  'signatory.share_with, signatory.comment',
                             where='petition_id=$pid AND user_id=users.id',
-                            order='signtime desc',
+                            order='signed desc',
                             vars=locals()).list()
         return render.signature_list(pid, ptitle, signs, is_author(user_email, pid))
 
 class petition:
-    def GET(self, pid, signform=None, passwordform=None):
+    def GET(self, pid, signform=None):
         i = web.input()
 
         options = ['unsign', 'edit', 'delete']
@@ -210,9 +209,10 @@ class petition:
             signform = forms.signform()
             fill_user_details(signform, ['name', 'email'])
 
-        if askforpasswd(p.owner_id) and not passwordform: passwordform = forms.passwordform()
         msg, msg_type = helpers.get_delete_msg()
-        return render.petition(p, signform, passwordform, msg)
+        email = helpers.get_loggedin_email() or helpers.get_unverified_email()
+        isauthor = is_author(email, pid)
+        return render.petition(p, signform, email, isauthor, msg)
 
     def GET_edit(self, pid):
         user_email = helpers.get_loggedin_email()
@@ -328,22 +328,21 @@ def get_contacts(user_id):
     contacts.sort(key=lambda x: x.name.lower())
     return contacts
 
-def not_signed(contact, pid):
-    email = contact.email
+def signed(email, pid):
     try:
         user_id = db.select('users', what='id', where='email=$email', vars=locals())[0].id
     except IndexError:
         return True
     else:
         is_signatory = db.select('signatory', where='user_id=$user_id and petition_id=$pid', vars=locals())
-        return not bool(is_signatory)
+        return bool(is_signatory)
 
 class share:
     def GET(self, pid, emailform=None, loadcontactsform=None):
         i = web.input()
         user_id = helpers.get_loggedin_userid()
         contacts = get_contacts(user_id)
-        contacts = filter(lambda c: not_signed(c, pid), contacts)
+        contacts = filter(lambda c: not signed(c.email, pid), contacts)
         petition = db.select('petition', where='id=$pid', vars=locals())[0]
         petition.url = 'http://watchdog.net/c/%s' %(pid)
 
