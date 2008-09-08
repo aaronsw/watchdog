@@ -5,14 +5,25 @@ from settings import db
 sql.Table.db = db
 
 class State(sql.Table):
+    @property
+    def _uri_(self):
+        return 'http://watchdog.net/us/%s#it' % self.code.lower()
+    
     # states.json
     code = sql.String(2, primary=True)
     name = sql.String(256)
     status = sql.String(256)
     wikipedia = sql.URL()
     fipscode = sql.String(2)
+    
+    senators = sql.Backreference('Politician', 'district')
+    districts = sql.Backreference('District', 'state', order='name asc')
 
 class District(sql.Table):
+    @property
+    def _uri_(self):
+        return 'http://watchdog.net/us/%s#it' % self.name.lower()
+    
     # districts.json
     name = sql.String(10, primary=True)
     district = sql.Integer()
@@ -39,7 +50,7 @@ class District(sql.Table):
     est_population_year = sql.Year()   # year of the estimate
     
     # shapes.json
-    outline = sql.String() #@@geojson
+    outline = sql.String(export=False) #@@geojson
     
     # centers.json
     center_lat = sql.Float() #@@ latlong type
@@ -65,6 +76,9 @@ class Zip4(sql.Table):
 #--GRANT ALL ON zip4 TO watchdog;
 
 class Politician(sql.Table):
+    @property
+    def _uri_(self): return 'http://watchdog.net/p/%s#it' % self.id
+    
     # politicians.json
     id = sql.String(256, primary=True)
     district = sql.Reference(District) #@@ renames to district_id
@@ -82,14 +96,14 @@ class Politician(sql.Table):
     
     @property
     def name(self):
-        if hasattr(self, 'nickname'):
-            return self.nickname + self.lastname
+        if hasattr(self, 'nickname') and self.nickname:
+            return self.nickname + ' ' + self.lastname
         else:
             return self.fullname
     
     @property
     def fullname(self):
-        return self.firstname + self.middlename + self.lastname
+        return (self.firstname or '') + ' ' + (self.middlename or '') + ' ' + (self.lastname or '')
     
     officeurl = sql.URL()
     party = sql.String()
@@ -138,6 +152,8 @@ class Politician(sql.Table):
   
     # opensecrets
     pct_pac_business = sql.Percentage()
+    
+    bills_sponsored = sql.Backreference('Bill', 'sponsor')
 
 class Politician_FEC_IDs(sql.Table):
     politician = sql.Reference(Politician, primary=True)
@@ -160,19 +176,43 @@ class Interest_group_rating(sql.Table):
     rating = sql.Integer() # typically 0-100
 
 class Bill(sql.Table):
+    @property
+    def _uri_(self):
+        return 'http://watchdog.net/b/%s' % self.id
+    
     id = sql.String(primary=True)
     session = sql.Integer()
     type = sql.String(5)
     number = sql.Integer()
     introduced = sql.Date()
     title = sql.String()
-    sponsor = sql.Reference(Politician)
+    sponsor = sql.Reference(Politician) #@@rename to sponsor_id
     summary = sql.String()
     maplightid = sql.String(10)
 
     # computed from vote
     yeas = sql.Number()
     neas = sql.Number()
+    
+    interest_group_support = sql.Backreference('Interest_group_bill_support', 'bill', order='support desc')
+    
+    @property
+    def votes_by_party(self):
+        """Get the votes of the political parties for a bill."""
+        result = db.select(['politician p, vote v'],
+                what="v.vote, count(v.vote), p.party",
+                where="v.politician_id = p.id and v.bill_id = $self.id "
+                        "AND v.vote is not null",
+                group="p.party, v.vote",
+                vars = locals()
+                ).list()
+
+        d = {}
+        for r in result:
+            d.setdefault(r.party, {})
+            d[r.party][r.vote] = r.count
+        return d
+    
 
 class Vote (sql.Table):
     bill = sql.Reference(Bill, primary=True)

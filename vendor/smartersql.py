@@ -20,15 +20,18 @@ def lazylookup(obj, column_name):
             column.target = column._target()
             local_column = column.local_column.sql_name
             target_column = column.target_column
+            order = column.order
             plural = column.plural
 
         else:
             local_column = column.sql_name
             target_column = column.target_column.sql_name
+            order = None
             plural = False
             
         newobjs = {}
         for k in column.target.select(
+          order=order,
           where=web.sqlors(target_column + ' = ', 
           [getattr(x, local_column) for x in objs])):
             val = getattr(k, target_column)
@@ -38,12 +41,13 @@ def lazylookup(obj, column_name):
                 newobjs[val] = k
     
         # Then we need to add it to all of us:
-    
         for xobj in objs:
-            setattr(xobj.__class__, column_name, newobjs[getattr(xobj, local_column)])
+            k = getattr(xobj, local_column)
+            if k in newobjs:
+                setattr(xobj.__class__, column_name, newobjs[k])
     
         # Finally, we need to return it:
-        return newobjs[getattr(obj, local_column)]
+        return newobjs.get(getattr(obj, local_column))
     return inner
     
 ## table generation
@@ -123,8 +127,8 @@ class Table(object):
         #@@ convert objects to the proper identifiers
         cls.db.insert(cls.sql_name, *a, **kw)
     @classmethod
-    def select(cls, where=None, vars=None):
-        rows = cls.db.select(cls.sql_name, what='*', where=where, vars=vars)
+    def select(cls, what='*', **kw):
+        rows = cls.db.select(cls.sql_name, what=what, **kw)
         objs = [cls(x) for x in rows]
         for o in objs:
             #@@ make weakref?
@@ -133,7 +137,11 @@ class Table(object):
         
     @classmethod
     def where(cls, **clauses):
-        raise NotImplementedError #@@
+        out = ""
+        for k, v in clauses.items():
+            out += k + '=' + web.sqlquote(v)
+        
+        return cls.select(where=out)
     
     def __init__(self, row, ids=None):
         if ids: self._ids = ids
@@ -165,6 +173,7 @@ class Column(object):
     notnull = False
 
     display = lambda self, x: str(x)
+    toxml = lambda self, obj: '>' + web.websafe(obj)
 
 class Reference (Column):
     def __init__(self, target, **kw):
@@ -177,12 +186,16 @@ class Reference (Column):
         
         self.sql_type = self.target_column.sql_type + ' REFERENCES ' + target.sql_name
         self._sql_name_ = lambda k: k + '_id'
+    
+    toxml = lambda self, obj: ' rdf:resource="%s">' % web.websafe(obj._uri_)
+    ton3 = lambda self, obj, indent: '<%s>' % obj._uri_
 
 class Backreference (Reference):
-    def __init__(self, target, target_column, plural=True):
+    def __init__(self, target, target_column, plural=True, order=None):
         self._targetk = target
         self.target_column = target_column + '_id'
         self.plural = plural
+        self.order = order
         self.sql_type = None
     
     def _delayed_init(self, cls):
@@ -205,11 +218,19 @@ class String (Column):
 class Boolean(Column):
     sql_type = 'bool'
     display = lambda self, x: {True: 'Yes', False: 'No', None: 'Unknown'}
+    toxml = lambda self, obj: ' rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">%s' % web.websafe(obj).lower()
 
-class Serial(Column): sql_type = 'serial'
-class Integer(Column): sql_type = 'int'
-class Int2(Column): sql_type = 'int2'
-class Float(Column): sql_type = 'real'
+class Integer(Column):
+    sql_type = 'int'
+    toxml = lambda self, obj: ' rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">%s' % web.websafe(obj)
+    
+class Float(Column):
+    sql_type = 'real'
+    toxml = lambda self, obj: ' rdf:datatype="http://www.w3.org/2001/XMLSchema#double">%s' % web.websafe(obj)
+    
+
+class Serial(Integer): sql_type = 'serial'
+class Int2(Integer): sql_type = 'int2'
 class Date(Column): sql_type = 'date'
 
 class Year(Integer): pass
@@ -226,7 +247,8 @@ class Percentage(Float):
     # add one for the decimal point
 
 class URL(String):
-    pass
+    toxml = lambda self, obj: ' rdf:resource="%s">' % web.websafe(obj)
+    ton3 = lambda self, obj, indent: '<%s>' % obj
 
 ## module functions
 
