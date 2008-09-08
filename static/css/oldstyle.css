@@ -68,7 +68,8 @@ td.support, td.oppose { padding-left: .5em; } /* for compatibility with everythi
 .oppose { background-color: #faa;}
 .error { border: 3px solid red; padding: 2px 5px; background-color: red; color: white; }
 .wrong { background-color: red; color: white; font-weight: bold; display: inline; padding: 0.2em 0.4em; }
-.msg {display: block; background-color:#bfb; border:1px solid #ccc; margin: auto; margin-top:10px; width: 50%; text-align: center; color: #070; padding: 1em}
+.msg { font-size: 1.2em; padding: 0.5em 12px; background: #dfd; border: 2px solid #beb; color: #070; margin: 15px 0 15px 0;}
+
 
 .passbox { width: 15em; float: right; border: 1px solid #999; padding: 0 1em; text-align: center; background-color: #ccc; color: #444;}
 .passbox * { color: #444;}

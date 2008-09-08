@@ -128,7 +128,7 @@ table.imgbox td.left { text-align: center; width: 112px; }
 table.imgbox td.left img { width: 112px;}
 table.imgbox td.right { padding-left: 15px; vertical-align: top; padding-top: 1em;}
 
-#upperbar { background-color: #d9eefa; padding: 0.8em 1.5em; }
-#upperbar h2 { display: inline; font-size: 1.2em; }
-#upperbar #uppermenu { float: right; color: #a8dcfa;}
+#upperbar { background-color: #d9eefa; padding: 0.8em 1.5em; position: relative; }
+#upperbar h2 { display: inline; font-size: 1.2em;}
+#upperbar #uppermenu { color: #a8dcfa; position: absolute; top: 0.8em; right: 1.5em;}
 #upperbar #uppermenu a { margin: 0 0.2em; }

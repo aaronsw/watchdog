@@ -153,7 +153,7 @@ def save_signature(forminput, pid):
         signature = dict(petition_id=pid, user_id=user.id,
                         share_with='N', comment=forminput.comment)
         db.insert('signatory', **signature)
-        helpers.set_msg('Your signature has been taken for this petition.')
+        helpers.set_msg('Thanks! Your signature has been taken for this petition.')
         helpers.unverified_login(user.email)
     return user
 
@@ -328,22 +328,21 @@ def get_contacts(user_id):
     contacts.sort(key=lambda x: x.name.lower())
     return contacts
 
-def not_signed(contact, pid):
-    email = contact.email
+def signed(email, pid):
     try:
         user_id = db.select('users', what='id', where='email=$email', vars=locals())[0].id
     except IndexError:
         return True
     else:
         is_signatory = db.select('signatory', where='user_id=$user_id and petition_id=$pid', vars=locals())
-        return not bool(is_signatory)
+        return bool(is_signatory)
 
 class share:
     def GET(self, pid, emailform=None, loadcontactsform=None):
         i = web.input()
         user_id = helpers.get_loggedin_userid()
         contacts = get_contacts(user_id)
-        contacts = filter(lambda c: not_signed(c, pid), contacts)
+        contacts = filter(lambda c: not signed(c.email, pid), contacts)
         petition = db.select('petition', where='id=$pid', vars=locals())[0]
         petition.url = 'http://watchdog.net/c/%s' %(pid)
 
