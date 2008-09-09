@@ -44,6 +44,7 @@ class index:
 def save_petition(p):
     p.pid = p.pid.replace(' ', '_')
     email = helpers.get_loggedin_email()
+    tocongress = p.get('tocongress', 'off') == 'on'
     with db.transaction():
         try:
             owner = db.select('users', where='email=$email', vars=locals())[0]
@@ -58,8 +59,7 @@ def save_petition(p):
             owner_id = owner.id
 
         db.insert('petition', seqname=False, id=p.pid, title=p.ptitle, description=p.msg,
-                    owner_id=owner_id)
-        #make the owner of the petition sign for it (??)
+                    owner_id=owner_id, to_congress=tocongress)
         db.insert('signatory', user_id=owner_id, share_with='E', petition_id=p.pid)
 
 def fill_user_details(form, fillings=['email', 'name', 'contact']):
