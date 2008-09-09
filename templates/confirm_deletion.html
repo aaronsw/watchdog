@@ -2,6 +2,6 @@ $def with (pid)
 
 Deletion of the petition is irreversible. Do you want to continue?
 <form name="delete" method="POST" action="/c/$pid?m=delete">
-    <input id="delete_p" type="submit" value="Delete"/>
-    <input id="cancel" type="button" value="Cancel" onclick="window.location='/c/$pid'" />
+    <button id="delete_p" type="submit">Delete</button>
+    <button id="cancel" onclick="window.location='/c/$pid'">Cancel</button>
 </form>

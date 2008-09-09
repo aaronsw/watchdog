@@ -1,10 +1,14 @@
-$def with (bills)
+$def with (pol)
 
-$var title: Bills Introduced
+$var title: Bills introduced by $pol.name
+
+<p><a href="/p/$pol.id">&laquo; Back to $pol.name</a></p>
 
 <ul>
-$for bill in bills:
+$for bill in pol.bills_sponsored:
     <li><a href="/b/$bill.id">$bill.type.upper(). $bill.number</a>: $bill.title</li>
 $else:
     <li><em>no bills sponsored</em></li>
 </ul>
+
+<p><a href="/p/$pol.id">&laquo; Back to $pol.name</a></p>
