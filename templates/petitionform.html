@@ -22,6 +22,7 @@ fieldset #pid {
 </style>
 
 <form name="petition" method="POST" action="$target"> 
+    $:pform.userid.render()
     $if not pform.valid: <p class="error">Please try again after fixing the problems highlighted below:</p>
 
 <fieldset id="petition">
@@ -34,8 +35,11 @@ fieldset #pid {
 
 <fieldset id="address">
     <legend>Your petition site address</legend>
-    <p>Letters, numbers and dashes only — no spaces.</p>
-    <strong>http://watchdog.net/c/</strong> $:pform.pid.render()
+    $if target == '/c/new':
+            <p>Letters, numbers and dashes only — no spaces.</p>
+            <strong>http://watchdog.net/c/</strong> $:pform.pid.render()
+    $else:
+            <p><strong>http://watchdog.net/c/$:pform.pid.value</strong></p>
 </fieldset>
 
 <fieldset id="maketocongress">

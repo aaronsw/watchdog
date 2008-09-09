@@ -73,6 +73,7 @@ def fill_user_details(form, fillings=['email', 'name', 'contact']):
         if user:
             user = user[0]
             if 'name' in fillings:
+                details['userid'] = user.id
                 details['prefix'] = user.prefix
                 details['fname'] = user.fname
                 details['lname'] = user.lname
@@ -214,16 +215,19 @@ class petition:
         isauthor = is_author(email, pid)
         return render.petition(p, signform, email, isauthor, msg)
 
+    @auth.require_login
     def GET_edit(self, pid):
         user_email = helpers.get_loggedin_email()
         if is_author(user_email, pid):
             p = db.select('petition', where='id=$pid', vars=locals())[0]
+            u = helpers.get_user_by_email(user_email)
             pform = forms.petitionform()
-            pform.fill(email=user_email, pid=p.id, ptitle=p.title, msg=p.description)
-            for i in pform.inputs:
-                if i.id in ['pid', 'email']: i.attrs['readonly'] = 'true'
+            pform.fill(userid=u.id, email=user_email, pid=p.id, ptitle=p.title, msg=p.description)
+            cform = forms.wyrform()
+            cform.fill(prefix=u.prefix, fname=u.fname, lname=u.lname, addr1=u.addr1,
+                        addr2=u.addr2, city=u.city, zipcode=u.zip5, phone=u.phone)
             title = "Edit petition"
-            return render.petitionform(pform, title, target='/c/%s?m=edit' % (pid))
+            return render.petitionform(pform, cform, title, target='/c/%s?m=edit' % (pid))
         else:
             login_link = '<a href="/login">Login</a>'
             helpers.set_msg('Only author of this petition can edit it. %s if you are.' % login_link, msg_type='error')
@@ -286,9 +290,20 @@ class petition:
         else:
             return self.GET(pid, signform=form)
 
+    @auth.require_login
     def POST_edit(self, pid):
         i = web.input()
+        tocongress = i.get('tocongress', 'off') == 'on'
+        pform = forms.petitionform()
+        pform.inputs = filter(lambda i: i.name != 'pid', pform.inputs)
+        wyrform = forms.wyrform()
+        wyr_valid = (not(tocongress) or wyrform.validates(i))
+        if not pform.validates(i) or not wyr_valid:
+            title = "Edit petition"
+            return render.petitionform(pform, wyrform, title, target='/c/%s?m=edit' % (pid))
         db.update('petition', where='id=$pid', title=i.ptitle, description=i.msg, vars=locals())
+        db.update('users', where='id=$i.userid', prefix=i.prefix, fname=i.fname, lname=i.lname,
+                  addr1=i.addr1, addr2=i.addr2, city=i.city, zip5=i.zipcode, phone=i.phone, vars=locals())
         raise web.seeother('/%s' % pid)
 
     def POST_unsign(self, pid):

@@ -22,7 +22,8 @@ petitionform = form.Form(
       form.Textbox('pid', form.Validator("Address can't be blank", bool), form.Validator('ID already exists, Choose a different one.', petitionnotexists),
                     pre='http://watchdog.net/c/', description='URL:', size='30'),
       form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='20', cols='80'),
-      form.Checkbox('tocongress', value='off', description="Petition to Congress?")
+      form.Checkbox('tocongress', value='off', description="Petition to Congress?"),
+      form.Hidden('userid')
       )
 
 wyrform = form.Form(
@@ -37,7 +38,7 @@ wyrform = form.Form(
       form.Textbox('zipcode', form.Validator("Zip code can't be blank", bool), form.regexp(r'[0-9]{5}', 'Please enter a valid zip'),
                     size='5', maxlength='5', description='Zip'),
       form.Textbox('phone', form.Validator("Phone can't be blank", bool), form.regexp(r'[0-9-.]*', 'Please enter a valid phone number'),
-                    description='Phone'),
+                    description='Phone')
       )
 
 zip4_textbox = form.Textbox('zip4',
