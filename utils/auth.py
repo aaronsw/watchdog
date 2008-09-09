@@ -180,13 +180,13 @@ def assert_verified(email):
         helpers.set_login_cookie(email)
         send_mail_to_set_password(email)
     else:
-        query = urllib.urlencode(dict(redirect=web.ctx.fullpath))
+        query = urllib.urlencode(dict(redirect=web.ctx.homepath + web.ctx.fullpath))
         raise web.seeother("%s/login?%s" % (web.ctx.homedomain, query))
 
 def require_login(f):
     def g(*a, **kw):
         if not helpers.get_loggedin_email():
-            query = urllib.urlencode(dict(redirect=web.ctx.fullpath))
+            query = urllib.urlencode(dict(redirect=web.ctx.homepath + web.ctx.fullpath))
             raise web.seeother("%s/login?%s" % (web.ctx.homedomain, query))
         return f(*a, **kw)
     return g
