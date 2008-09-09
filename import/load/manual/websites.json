@@ -1,0 +1,417 @@
+{
+  "VT-00": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/formwelch/issue_subscribe.htm", 
+    "contacttype": "ima"
+  }, 
+  "UT-02": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/matheson/contact_sec.shtml", 
+    "contacttype": "ima"
+  }, 
+  "TN-07": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/wyr/welcome.shtml", 
+    "contacttype": "wyr"
+  }, 
+  "AR-03": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/wyr/welcome.shtml", 
+    "contacttype": "wyr"
+  }, 
+  "VI-00": {
+    "captcha": null, 
+    "contact": null, 
+    "contacttype": null
+  }, 
+  "OR-02": {
+    "captcha": null, 
+    "contact": "http://walden.house.gov/index.cfm?FuseAction=ContactGreg.ContactFormIQ", 
+    "contacttype": "ima"
+  }, 
+  "FL-14": {
+    "captcha": true, 
+    "contact": "http://mack.house.gov/index.cfm?FuseAction=ContactConnie.ContactForm", 
+    "contacttype": null
+  }, 
+  "OK-02": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/boren/emailsignup.shtml", 
+    "contacttype": null
+  }, 
+  "OH-11": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/formtubbsjones/ic_zip_auth.htm", 
+    "contacttype": "zipauth"
+  }, 
+  "LA-04": {
+    "captcha": true, 
+    "contact": "http://mccrery.house.gov/FormCheck.asp", 
+    "contacttype": "ima"
+  }, 
+  "OH-14": {
+    "captcha": null, 
+    "contact": "http://latourette.house.gov/ContactSteve.aspx", 
+    "contacttype": "ima"
+  }, 
+  "TX-02": {
+    "captcha": null, 
+    "contact": "http://poe.house.gov/contact/contactform.htm", 
+    "contacttype": "ima"
+  }, 
+  "OH-16": {
+    "captcha": null, 
+    "contact": "http://regula.house.gov/zipauth.html", 
+    "contacttype": "zipauth"
+  }, 
+  "MS-04": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/genetaylor/webforms/zipauth.htm", 
+    "contacttype": "ima"
+  }, 
+  "PA-04": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/altmire/webforms/issue_subscribe.htm", 
+    "contacttype": "ima"
+  }, 
+  "MS-02": {
+    "captcha": null, 
+    "contact": "http://benniethompson.house.gov/HoR/MS02/Contact+Bennie/", 
+    "contacttype": "ima"
+  }, 
+  "IN-07": {
+    "captcha": null, 
+    "contact": null, 
+    "contacttype": null
+  }, 
+  "TX-12": {
+    "captcha": null, 
+    "contact": "http://kaygranger.house.gov/?sectionid=46&sectiontree=46", 
+    "contacttype": "zipauth"
+  }, 
+  "MN-07": {
+    "captcha": null, 
+    "contact": "http://collinpeterson.house.gov/zipauth.htm", 
+    "contacttype": "zipauth"
+  }, 
+  "VA-04": {
+    "captcha": null, 
+    "contact": "http://forbes.house.gov/zipauth.html", 
+    "contacttype": "zipauth"
+  }, 
+  "IN-01": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/wyr/welcome.shtml", 
+    "contacttype": "wyr"
+  }, 
+  "MN-04": {
+    "captcha": null, 
+    "contact": "http://www.mccollum.house.gov/index.asp?Type=NONE&SEC={AC61FD79-AD5F-440D-A7F0-555B12349E5B}", 
+    "contacttype": "zipauth"
+  }, 
+  "NY-02": {
+    "captcha": null, 
+    "contact": "http://israel.house.gov/?sectionid=89&sectiontree=89", 
+    "contacttype": "zipauth"
+  }, 
+  "TX-19": {
+    "captcha": null, 
+    "contact": "http://randy.house.gov/?sectionid=65&sectiontree=8,65", 
+    "contacttype": "zipauth"
+  }, 
+  "CT-04": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/shays/contact/index.shtml", 
+    "contacttype": "ima"
+  }, 
+  "NY-12": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/velazquez/IMA/issue_subscribe.htm", 
+    "contacttype": "ima"
+  }, 
+  "OR-04": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/formdefazio/contact.html", 
+    "contacttype": "ima"
+  }, 
+  "CA-49": {
+    "captcha": true, 
+    "contact": "http://issa.house.gov/index.cfm?FuseAction=Contact.ContactForm", 
+    "contacttype": "ima"
+  }, 
+  "WI-07": {
+    "captcha": null, 
+    "contact": "http://www.obey.house.gov/index.php?option=com_content&task=view&id=637&Itemid=187",
+    "contacttype": "ima"
+  }, 
+  "NY-17": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/wyr/welcome.shtml", 
+    "contacttype": "wyr"
+  }, 
+  "CA-19": {
+    "captcha": null, 
+    "contact": "http://radanovich.house.gov/Contact/email.htm", 
+    "contacttype": "ima"
+  }, 
+  "NJ-07": {
+    "captcha": null, 
+    "contact": "http://www.ferguson.house.gov/index.cfm?FuseAction=ContactUs.ContactForm", 
+    "contacttype": "ima"
+  }, 
+  "NJ-08": {
+    "captcha": null, 
+    "contact": "http://pascrell.house.gov/contact/ ", 
+    "contacttype": "ima"
+  }, 
+  "NJ-09": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/rothman/webforms/issue_subscribe.htm", 
+    "contacttype": "ima"
+  }, 
+  "CO-01": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/formdegette/zip_auth.htm", 
+    "contacttype": "zipauth"
+  }, 
+  "MI-01": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/stupak/IMA/issue2.htm", 
+    "contacttype": "ima"
+  }, 
+  "CA-10": {
+    "captcha": null, 
+    "contact": "http://www.tauscher.house.gov/index.php?option=com_content&task=view&id=966&Itemid=103", 
+    "contacttype": "ima"
+  }, 
+  "AS-00": {
+    "captcha": null, 
+    "contact": "faleomavaega@mail.house.gov", 
+    "contacttype": "email"
+  }, 
+  "TX-13": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/wyr/welcome.shtml", 
+    "contacttype": "wyr"
+  }, 
+  "MD-03": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/sarbanes/forms/issue_subscribe.shtml", 
+    "contacttype": "ima"
+  }, 
+  "FL-12": {
+    "captcha": null, 
+    "contact": "http://adamputnam.house.gov/contact.shtml", 
+    "contacttype": "ima"
+  }, 
+  "MD-05": {
+    "captcha": null, 
+    "contact": "http://hoyer.house.gov/contact/email.asp", 
+    "contacttype": "zipauth"
+  }, 
+  "MD-04": {
+    "captcha": null, 
+    "contact": null, 
+    "contacttype": null
+  }, 
+  "MD-07": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/wyr/welcome.shtml", 
+    "contacttype": "wyr"
+  }, 
+  "NH-01": {
+    "captcha": null, 
+    "contact": "http://shea-porter.house.gov/?sectionid=84&sectiontree=84", 
+    "contacttype": "ima"
+  }, 
+  "WA-05": {
+    "captcha": null, 
+    "contact": "http://mcmorris.house.gov/IMA/issue_subscribe.htm", 
+    "contacttype": "ima"
+  }, 
+  "WA-06": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/dicks/email.html", 
+    "contacttype": "zipauth"
+  }, 
+  "KY-03": {
+    "captcha": null, 
+    "contact": "http://yarmuth.house.gov/?sectionid=68&sectiontree=6,29,68", 
+    "contacttype": "zipauth"
+  }, 
+  "VA-10": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/formwolf/contact_email/emailzip.shtml", 
+    "contacttype": "zipauth"
+  }, 
+  "WI-04": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/gwenmoore/issue_form.shtml", 
+    "contacttype": "ima"
+  }, 
+  "GU-00": {
+    "captcha": null, 
+    "contact": null, 
+    "contacttype": null
+  }, 
+  "WV-02": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/wyr/welcome.shtml", 
+    "contacttype": "wyr"
+  }, 
+  "CA-16": {
+    "captcha": null, 
+    "contact": "http://lofgren.house.gov/emailform.shtml", 
+    "contacttype": "zipauth"
+  }, 
+  "WY-00": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/cubin/zip_auth.shtml", 
+    "contacttype": "zipauth"
+  }, 
+  "OH-09": {
+    "captcha": null, 
+    "contact": "http://www.kaptur.house.gov/index.php?option=com_content&task=view&id=152", 
+    "contacttype": "ima"
+  }, 
+  "SC-01": {
+    "captcha": null, 
+    "contact": "http://brown.house.gov/Contact/writebrown.html", 
+    "contacttype": "ima"
+  }, 
+  "OH-07": {
+    "captcha": null, 
+    "contact": "http://hobson.house.gov/contact.aspx", 
+    "contacttype": "ima"
+  }, 
+  "PA-09": {
+    "captcha": null, 
+    "contact": null, 
+    "contacttype": null
+  }, 
+  "TX-23": {
+    "captcha": null, 
+    "contact": "http://www.rodriguez.house.gov/index.php?option=com_content&task=view&id=70&Itemid=46", 
+    "contacttype": "ima"
+  }, 
+  "OH-18": {
+    "captcha": null, 
+    "contact": "http://space.house.gov/?sectionid=61&sectiontree=26,61", 
+    "contacttype": "ima"
+  }, 
+  "NY-01": {
+    "captcha": null, 
+    "contact": "http://timbishop.house.gov/?sectionid=96&sectiontree=7,96", 
+    "contacttype": "zipauth"
+  }, 
+  "IL-17": {
+    "captcha": null, 
+    "contact": "http://hare.house.gov/zipform.html", 
+    "contacttype": "zipauth"
+  }, 
+  "IL-14": {
+    "captcha": null, 
+    "contact": null, 
+    "contacttype": null
+  }, 
+  "MT-00": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/wyr/welcome.shtml", 
+    "contacttype": "wyr"
+  }, 
+  "CA-05": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/matsui/webforms/issue_subscribe.htm", 
+    "contacttype": "ima"
+  }, 
+  "CA-44": {
+    "captcha": null, 
+    "contact": "http://calvert.house.gov/8923huibnkasdf90ukljnhalegh.asp", 
+    "contacttype": "zipauth"
+  }, 
+  "CA-09": {
+    "captcha": null, 
+    "contact": "http://lee.house.gov/?sectionid=128&sectiontree=18,128", 
+    "contacttype": "zipauth"
+  }, 
+  "CA-21": {
+    "captcha": true, 
+    "contact": "http://nunes.house.gov/index.cfm?FuseAction=ContactUs.ContactForm", 
+    "contacttype": "ima"
+  }, 
+  "NJ-13": {
+    "captcha": null, 
+    "contact": "http://sires.house.gov/IMA/issue_subscribe.shtml", 
+    "contacttype": "ima"
+  }, 
+  "NY-04": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/wyr/welcome.shtml", 
+    "contacttype": "wyr"
+  }, 
+  "NJ-11": {
+    "captcha": null, 
+    "contact": "http://frelinghuysen.house.gov/contactus/form.cfm", 
+    "contacttype": "ima"
+  }, 
+  "NY-28": {
+    "captcha": null, 
+    "contact": "http://www.louise.house.gov/index.php?option=com_content&task=view&id=506&Itemid=150", 
+    "contacttype": "ima"
+  }, 
+  "AK-00": {
+    "captcha": null, 
+    "contact": "http://donyoung.house.gov/IMA/issue_subscribe.htm", 
+    "contacttype": "ima"
+  }, 
+  "MI-12": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/levin/levin_contact_email.shtml", 
+    "contacttype": "zipauth"
+  }, 
+  "MI-15": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/wyr/welcome.shtml", 
+    "contacttype": "wyr"
+  }, 
+  "TX-18": {
+    "captcha": null, 
+    "contact": "http://www.jacksonlee.house.gov/contact-form.shtml", 
+    "contacttype": "ima"
+  }, 
+  "NY-20": {
+    "captcha": null, 
+    "contact": "http://forms.house.gov/gillibrand/IMA/issue_subscribe.htm", 
+    "contacttype": "ima"
+  },
+  "GU-00": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/bordallo/IMA/issue.htm",
+    "contacttype": "ima"
+  }, 
+  "MN-01": {
+    "captcha": null, 
+    "contact": "http://walz.house.gov/zip_auth.shtm",
+    "contacttype": "zipauth"
+  }, 
+  "VA-05": {
+    "captcha": null, 
+    "contact": "https://forms.house.gov/wyr/welcome.shtml",
+    "contacttype": "wyr"
+  }, 
+  "NE-03": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/formadriansmith/issues_subscribe.htm",
+    "contacttype": "ima"
+  }, 
+  "OK-02": {
+    "captcha": null, 
+    "contact": "http://www.house.gov/boren/emailsignup.shtml",
+    "contacttype": "ima"
+  }, 
+  "CA-14": {
+    "captcha": null, 
+    "contact": "http://eshoo.house.gov/index.php?option=com_content&task=view&id=447&Itemid=",
+    "contacttype": "ima"
+  }
+}
