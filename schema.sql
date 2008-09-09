@@ -15,6 +15,7 @@ DROP TABLE IF EXISTS wyr CASCADE;
 DROP VIEW IF EXISTS census CASCADE;
 DROP TABLE IF EXISTS census_data CASCADE;
 DROP TABLE IF EXISTS census_meta CASCADE;
+DROP TABLE IF EXISTS soi CASCADE;
 
 CREATE TABLE state (
   -- index.json
@@ -86,6 +87,32 @@ CREATE TABLE census_data (
 );
 ALTER TABLE census_data ADD primary key (location, internal_key, census_type);
 CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data;
+
+CREATE TABLE soi (
+  location varchar(10),
+  -- irs/soi
+  bracket_low int,
+
+  agi numeric,
+  n_dependents numeric,
+  n_eitc numeric,
+  n_filers numeric,
+  n_prepared numeric,
+
+  tot_charity numeric,
+  tot_eitc numeric,
+  tot_tax numeric,
+
+  avg_dependents numeric,
+  avg_eitc numeric,
+  avg_income numeric,
+  avg_taxburden numeric,
+
+  pct_charity numeric,
+  pct_eitc numeric,
+  pct_prepared numeric
+);
+alter table soi add primary key (location, bracket_low);
 
 CREATE TABLE politician (
   -- index.json

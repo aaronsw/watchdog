@@ -30,6 +30,7 @@ JSONS=$(LOAD)/states/index.json \
 
 TSVS=$(LOAD)/bill.tsv \
 	 $(LOAD)/vote.tsv \
+	 $(LOAD)/zip4.tsv \
 	 $(LOAD)/census_meta.tsv \
 	 $(LOAD)/census_data.tsv
 
@@ -42,12 +43,12 @@ NJS=$(PARSE)/almanac.njs \
 
 all: database
 clean:
-	rm $(JSONS) .schema .json .bills .interests .votesmart .photos
+	rm $(JSONS) .schema .json .bills .interests .votesmart .photos .fec .census .soi
 
 cleanparse:
 	rm $(NJS)
 
-database: .schema .json .bills .interests .votesmart .photos .fec .census
+database: .schema .json .bills .interests .votesmart .photos .fec .census .soi
 
 .json: .schema load/json.py $(JSONS)
 	python load/json.py
@@ -118,6 +119,14 @@ $(LOAD)/bill.tsv $(LOAD)/vote.tsv: load/bills.py
 
 .fec: .json
 	$(PYTHON) load/fec.py
+	touch $@
+
+.zip4: $(LOAD)/zip4.tsv
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/zip4.tsv
+	touch $@
+
+.soi: .schema .json .zip4
+	$(PYTHON) load/soi.py
 	touch $@
 
 # new way of doing things: parse to .njs files
