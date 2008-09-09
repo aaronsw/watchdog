@@ -9,7 +9,6 @@ DROP TABLE IF EXISTS contacts CASCADE;
 CREATE TABLE users(
     id serial primary key,
     password varchar(256),
-    
     prefix varchar(5),
     lname varchar(30),
     fname varchar(30),
