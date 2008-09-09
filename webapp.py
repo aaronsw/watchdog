@@ -334,15 +334,6 @@ class sparkdist:
         web.header('Content-Type', 'image/png')
         return simplegraphs.sparkline(points, inp.point)
 
-def add_zip4(form):
-    inputs = list(form.inputs)
-    for index, input in enumerate(inputs):
-        if input.name == 'zipcode' or input.name == 'zip5':
-            inputs.insert(index+1, forms.zip4_textbox)
-    form.inputs = tuple(inputs)
-    return form
-
-
 def add_captcha(form, img_src):
     inputs = list(form.inputs)
     captcha = forms.captcha
@@ -351,59 +342,54 @@ def add_captcha(form, img_src):
     form.inputs = tuple(inputs)
     return form
 
-def get_writerep_form(from_petition_page=False):
-    form = forms.wyrform()
-    if not from_petition_page:
-        inputs = list(form.inputs)
-        inputs = filter(lambda i: i.name not in ('tocongress', 'pid'), inputs)
-        filter(lambda i: i.name == 'msg', inputs)[0].description = 'Message'
-        filter(lambda i: i.name == 'ptitle', inputs)[0].description = 'Subject'
-        form.inputs = tuple(inputs)
-
-    return form
-
+def get_wyrform(i, dist=None):
+    form = forms.wyrform()    
+    if (not dist) and form.validates(i):
+         dist = zip2rep.getdists(i.zipcode, i.zip4, i.addr1+i.addr2)[0]
+    captcha = forms.captcha     
+    captcha_needed = ('captcha' in i) and not captcha.validate(i.captcha, form)
+    captcha_src = captcha_needed and writerep.get_captcha_src(dist)
+    if captcha_src:
+        add_captcha(form, captcha_src)  
+    return form  
+      
 class write_your_rep:
     def GET(self, form=None):
         if not form:
-            form = get_writerep_form()
+            form = forms.wyrform()
             petition.fill_user_details(form)
         msg, msg_type = helpers.get_delete_msg()
         return render.writerep(form, msg=msg)
 
+    def send_msg(self, i, wyrform, pform=None):
+        dist = zip2rep.getdists(i.zipcode, i.zip4, i.addr1+i.addr2)[0]
+        captcha_src = ('captcha' not in i) and writerep.get_captcha_src(dist)
+        if captcha_src:
+            wyrform = add_captcha(wyrform, captcha_src)
+            if pform:
+                return render.petitionform(pform, wyrform)
+            else:
+                return render.writerep(wyrform)
+                            
+        email = helpers.get_loggedin_email()
+        msg_sent = writerep.writerep(district=dist,
+                        prefix=i.prefix, lname=i.lname, fname=i.fname,
+                        addr1=i.addr1, addr2=i.addr2, city=i.city,
+                        zipcode=i.zipcode, zip4=i.zip4,
+                        phone=i.phone, email=email, msg=i.msg)
+        return msg_sent
+        
     def POST(self):
         i = web.input()
-        from_petition_page = i.has_key('pid')
-        form = get_writerep_form(from_petition_page)
-        if form.validates(i):
-            try:
-                dists = zip2rep.zip2dist(i.zipcode, i.addr1+i.addr2)
-            except zip2rep.BadAddress:
-                dists = []
-            print dists
-
-            if len(dists) != 1:
-                form = add_zip4(form)
-                return self.GET(form)
-
-            dist = dists[0]
-            captcha = ('captcha' not in i) and writerep.get_captcha_src(dist)
-            if captcha:
-                form = add_captcha(form, captcha)
-                return self.GET(form)
-
-            msg_sent = writerep.writerep(district=dist,
-                            prefix=i.prefix, lname=i.lname, fname=i.fname,
-                            addr1=i.addr1, addr2=i.addr2, city=i.city,
-                            zipcode=i.zipcode, zip4=i.get('zip4', ''),
-                            phone=i.phone, email=i.email, msg=i.msg)
-
-            if from_petition_page: return msg_sent
-
-            if msg_sent: helpers.set_msg('Your message has been sent.')
+        wyrform = get_wyrform(i)
+        if wyrform.validates(i):
+            status = self.send_msg(i, wyrform)
+            if not isinstance(status, bool):
+                return status
+            if status: helpers.set_msg('Your message has been sent.')
             raise web.seeother('/writerep')
         else:
-            return self.GET(form)
-
+            return self.GET(wyrform)
 
 class staticdata:
     def GET(self, path):

@@ -1,7 +1,7 @@
-import os
 import web
 from web import form
 from settings import db
+from zip2rep import getdists
 
 email_regex = r'[\w\.-]+@[\w\.-]+\.[a-zA-Z]{1,4}'
 email_list_regex = r'^%s$|^(%s *, *)*(%s)?$' % (email_regex, email_regex, email_regex)
@@ -16,7 +16,7 @@ def emailnotexists(email):
     "Return True if account with email `email` does not exist"
     exists = bool(db.select('users', where='email=$email', vars=locals()))
     return not(exists)
-
+    
 petitionform = form.Form(
       form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
       form.Textbox('pid', form.Validator("Address can't be blank", bool), form.Validator('ID already exists, Choose a different one.', petitionnotexists),
@@ -27,30 +27,28 @@ petitionform = form.Form(
       )
 
 wyrform = form.Form(
-      form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
-      form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='20', cols='80'),
       form.Dropdown('prefix', ['Mr.', 'Mrs.', 'Dr.', 'Ms.', 'Miss'],  description='Prefix'),
       form.Textbox('lname', form.Validator("Last name can't be blank", bool), description='Last Name'),
       form.Textbox('fname', form.Validator("First name can't be blank", bool), description='First Name'),
       form.Textbox('addr1', form.Validator("Address can't be blank", bool), description='Address', size='20'),
       form.Textbox('addr2', description='Address', size='20'),
       form.Textbox('city', form.Validator("City can't be blank", bool), description='City'),
-      form.Textbox('zipcode', form.Validator("Zip code can't be blank", bool), form.regexp(r'[0-9]{5}', 'Please enter a valid zip'),
+      form.Textbox('zipcode', form.Validator("Zip code can't be blank", bool), form.regexp(r'^[0-9]{5}$', 'Please enter a valid zip'),
                     size='5', maxlength='5', description='Zip'),
-      form.Textbox('phone', form.Validator("Phone can't be blank", bool), form.regexp(r'[0-9-.]*', 'Please enter a valid phone number'),
-                    description='Phone')
+      form.Textbox('zip4', form.regexp(r'^$|[0-9]{4}', 'Please Enter a valid zip'),
+                    size='4', maxlength='4',description=''),
+      form.Textbox('phone', form.Validator("Phone can't be blank", bool), form.regexp(r'^[0-9-.]*$', 'Please enter a valid phone number'),
+                    description='Phone'),
+      form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
+      form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='20', cols='80'),
+      validators = [form.Validator("Zipcode is shared between two districts. Enter zip4 too.",
+                        lambda i: len(getdists(i.zipcode, i.zip4, i.addr1+i.addr2)) == 1 or i.zip4),
+                    form.Validator("Couldn't find district for this address and zip.",
+                        lambda i: len(getdists(i.zipcode, i.zip4, i.addr1+i.addr2)) == 1 or not i.zip4) ]
       )
 
-zip4_textbox = form.Textbox('zip4',
-    form.notnull,
-    form.regexp(r'[0-9]{4}', 'Please Enter a valid zip'),
-    size='4',
-    maxlength='4',
-    description='Zip4'
-    )
-
 captcha = form.Textbox('captcha',
-    form.notnull,
+    form.Validator("Enter the letters as they are shown in the image", bool),
     size='10',
     description='Validation'
     )
@@ -150,7 +148,7 @@ userinfo = form.Form(
                          size='5', maxlength='5', description='Zip', post='*'),
         form.Textbox('zip4', form.notnull, form.regexp(r'[0-9]{4}', 'Please Enter a valid zip'),
                          size='4', maxlength='4', description='Zip4'),
-        form.Textbox('phone', form.notnull, form.regexp(r'[0-9-.]*', 'Please enter a valid phone number'),
+        form.Textbox('phone', form.notnull, form.regexp(r'^[0-9-.]*$', 'Please enter a valid phone number'),
                    description='Phone', post='*')
         )
 
