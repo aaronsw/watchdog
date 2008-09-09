@@ -1,13 +1,13 @@
-$def with (state, districts, senators)
+$def with (state)
 
 $var title: $state.name
 
 <ul>
-$for s in senators:
+$for s in state.senators:
     <li><a href="/p/$s.id">$s.firstname $s.lastname</a></li>
 </ul>
 <ul>
-$for d in districts:
+$for d in state.districts:
     $if d.name.lower() != state.code.lower():
         <li><a href="/us/$d.name.lower()">$d.name</a></li>
 </ul>

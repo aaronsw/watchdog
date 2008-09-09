@@ -6,31 +6,31 @@ from config import secret_key
 from settings import db
 
 def encrypt(msg, key=None):
-    return hmac.new(key or secret_key, msg).hexdigest() 
-       
+    return hmac.new(key or secret_key, msg).hexdigest()
+
 def setcookie(name, value, expires=''):
-    encoded = value + '#@#' + encrypt(value)   
-    web.setcookie(name, encoded, expires)       
-    
+    encoded = value + '#@#' + encrypt(value)
+    web.setcookie(name, encoded, expires)
+
 def getcookie(name):
     encoded = web.cookies().get(name, '#@#')
     value, encrypt_value = encoded.split('#@#')
     if encrypt(value) == encrypt_value:
         return value
-    return None  
+    return None
 
 def deletecookie(name):
-    web.setcookie(name, expires=-1)           
-       
-def set_msg(msg, msg_type=None):       
+    web.setcookie(name, expires=-1)
+
+def set_msg(msg, msg_type=None):
     if msg_type == 'error':
         msg += '$ERR$'
     web.setcookie('wd_msg', msg)
-    
+
 def get_delete_msg():
     msg = web.cookies().get('wd_msg', None)
     web.setcookie('wd_msg', '', expires=-1)
-    
+
     msg_type = None
     if msg and msg.endswith('$ERR$'):
         msg_type = 'error'
@@ -38,10 +38,10 @@ def get_delete_msg():
     return msg, msg_type
 
 def get_loggedin_email():
-    return getcookie('wd_login') 
+    return getcookie('wd_login')
 
 def get_unverified_email():
-    return getcookie('wd_email')                
+    return getcookie('wd_email')
 
 def get_loggedin_userid():
     email = get_loggedin_email()
@@ -53,7 +53,7 @@ def get_user_by_email(email):
         return db.select('users', where='email=$email', vars=locals())[0]
     except:
         return None
-            
+
 def set_login_cookie(email):
     setcookie('wd_login', email)
 

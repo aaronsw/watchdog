@@ -29,7 +29,7 @@ function fillTo(){
   <td style="border-right: solid #ddd 1pt">
       $:emailform.render()
       <input type="hidden" name="pid" value="$petition.id">
-      <input type="submit" name="submit" value="Send">
+      <button type="submit">Send</button>
   </td>
 </form>
 
@@ -39,7 +39,7 @@ $var sidebar:
             <p>Enter your $providers email address to load contacts.</p>
             $:loadcontactsform.render()
             <input type="hidden" name="pid" value="$petition.id">
-            <input type="submit" value="Load Contacts">
+            <button type="submit">Load contacts</button>
         </form>
     $if contacts:
         <p class='select-all'>

@@ -13,7 +13,7 @@ $ sign_count = len(signs)
 $for i, sign in enumerate(signs):
     <tr><td> ${sign_count - i}.</td><td>
     $if is_author and (sign.share_with != 'N'):
-        <a href='mailto:$sign.email'>$sign.name</a>
+        <a href='mailto:$sign.email'>$sign.fname $sign.lname</a>
     $elif sign.share_with == 'E':
         $sign.fname $sign.lname
     $else:

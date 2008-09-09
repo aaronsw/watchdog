@@ -15,10 +15,10 @@ def districtp(district):
     if not _districtcache:
         reps = simplejson.load(file('../data/load/politicians/index.json'))
         for repid, rep in reps.iteritems():
-            if rep['district'] in _districtcache:
-                _districtcache[rep['district']].append(repid)
+            if rep['district_id'] in _districtcache:
+                _districtcache[rep['district_id']].append(repid)
             else:
-                _districtcache[rep['district']] = [repid]
+                _districtcache[rep['district_id']] = [repid]
     
     return _districtcache.get(district) or []
 
