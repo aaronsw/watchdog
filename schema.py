@@ -266,6 +266,37 @@ class WYR(sql.Table):
     captcha = sql.Boolean()
     
 
+class SOI(sql.Table):
+    district = sql.Reference(District, primary=True)
+    # irs/soi
+    bracket_low = sql.Integer(primary=True)
+    agi = sql.Float()
+    n_dependents = sql.Float()
+    n_eitc = sql.Float()
+    n_filers = sql.Float()
+    n_prepared = sql.Float()
+    tot_charity = sql.Float()
+    tot_eitc = sql.Float()
+    tot_tax = sql.Float()
+    avg_dependents = sql.Float()
+    avg_eitc = sql.Float()
+    avg_income = sql.Float()
+    avg_taxburden = sql.Float()
+    pct_charity = sql.Percentage()
+    pct_eitc = sql.Percentage()
+    pct_prepared = sql.Percentage()
+
+class Census_meta(sql.Table):
+    internal_key = sql.String(10, primary=True)
+    census_type = sql.Integer(primary=True)
+    hr_key = sql.String(512)
+class Census_data(sql.Table):
+    district = sql.Reference(District, primary=True)
+    internal_key = sql.String(10,primary=True)
+    census_type = sql.Integer(primary=True)
+    value = sql.Float()
+#db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
+
 #db.query("CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician)")
 #db.query("GRANT ALL on v_politician_name")
 
