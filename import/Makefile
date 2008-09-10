@@ -43,7 +43,7 @@ NJS=$(PARSE)/almanac.njs \
 
 all: database
 clean:
-	rm $(JSONS) .schema .json .bills .interests .votesmart .photos .fec .census .soi
+	-rm $(JSONS) .schema .json .bills .interests .votesmart .photos .fec .census .soi
 
 cleanparse:
 	rm $(NJS)
@@ -121,12 +121,20 @@ $(LOAD)/bill.tsv $(LOAD)/vote.tsv: load/bills.py
 	$(PYTHON) load/fec.py
 	touch $@
 
-.zip4: $(LOAD)/zip4.tsv
-	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/zip4.tsv
+.zip4: $(LOAD)/zip4.tsv .json
+	echo "COPY zip4 (zip,plus4,district_id) FROM '${PWD}/../data/load/zip4.tsv';" | $(DBCLIENT) $(WATCHDOG_TABLE)
 	touch $@
 
 .soi: .schema .json .zip4
 	$(PYTHON) load/soi.py
+	touch $@
+
+$(LOAD)/census_meta.tsv $(LOAD)/census_data.tsv: load/census.py parse/census.py
+	python load/census.py
+
+.census: $(LOAD)/census_meta.tsv $(LOAD)/census_data.tsv .schema .json
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/census_meta.tsv 
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/census_data.tsv 
 	touch $@
 
 # new way of doing things: parse to .njs files
@@ -156,12 +164,3 @@ $(PARSE)/soi.njs: parse/soi.py $(CRAWL)/irs/soi/
 $(PARSE)/voteview.njs: parse/voteview.py
 	$(PYTHON) parse/voteview.py > $@.tmp
 	mv $@.tmp $@
-
-$(LOAD)/census_meta.tsv $(LOAD)/census_data.tsv: load/census.py parse/census.py
-	python load/census.py
-
-.census: $(LOAD)/census_meta.tsv $(LOAD)/census_data.tsv .schema
-	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/census_meta.tsv 
-	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/census_data.tsv 
-	touch $@
-

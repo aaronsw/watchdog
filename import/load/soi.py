@@ -29,14 +29,14 @@ def get_dist(zip5):
     if db.select('state', where='code=$zip5',vars=locals()):
         return {zip5:1.0}
     dists  = db.select('zip4', 
-            what='COUNT(plus4), district', 
+            what='COUNT(plus4), district_id', 
             where='zip=$zip5', 
-            group='district',
+            group='district_id',
             vars=locals()).list()
     all_zip4 = sum(map(lambda d: d.count, dists))
     ret = {}
     for d in dists:
-        ret[d.district] = float(d.count) / float(all_zip4)
+        ret[d.district_id] = float(d.count) / float(all_zip4)
     return ret
 
 
@@ -70,12 +70,16 @@ def load_soi():
                             cur_data[k] = new_data[k]
     for d in districts.keys():
         for b in districts[d]['brackets']:
+            if d == 'DC': d = 'DC-00' # HACK: Data has DC which should be DC-00.
+            # We can't use None because bracket_low is part of the primary key.
             if isinstance(b['bracket_low'], NoneType): b['bracket_low'] = -1
-            db.insert('soi', seqname=False, location=d, **b)
+            db.insert('soi', seqname=False, district_id=d, **b)
     #pprint(districts)
 
 
 if __name__ == "__main__":
-    load_soi()
+    with db.transaction():
+        db.delete('soi',where='1=1')
+        load_soi()
 
 

@@ -267,6 +267,7 @@ class WYR(sql.Table):
     
 
 class SOI(sql.Table):
+    #district_id = sql.String(10, primary=True) 
     district = sql.Reference(District, primary=True)
     # irs/soi
     bracket_low = sql.Integer(primary=True)
@@ -291,8 +292,9 @@ class Census_meta(sql.Table):
     census_type = sql.Integer(primary=True)
     hr_key = sql.String(512)
 class Census_data(sql.Table):
+    #district_id = sql.String(10, primary=True) 
     district = sql.Reference(District, primary=True)
-    internal_key = sql.String(10,primary=True)
+    internal_key = sql.String(10, primary=True)
     census_type = sql.Integer(primary=True)
     value = sql.Float()
 #db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")

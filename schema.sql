@@ -80,16 +80,16 @@ CREATE TABLE census_meta (
 );
 ALTER TABLE census_meta ADD primary key (internal_key, census_type);
 CREATE TABLE census_data (
-  location varchar(10),
+  distric_id varchar(10),
   internal_key varchar(10),
   census_type smallint,   -- 1 or 3
   value numeric
 );
-ALTER TABLE census_data ADD primary key (location, internal_key, census_type);
+ALTER TABLE census_data ADD primary key (district_id, internal_key, census_type);
 CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data;
 
 CREATE TABLE soi (
-  location varchar(10),
+  district_id varchar(10),
   -- irs/soi
   bracket_low int,
 
@@ -112,7 +112,7 @@ CREATE TABLE soi (
   pct_eitc numeric,
   pct_prepared numeric
 );
-alter table soi add primary key (location, bracket_low);
+alter table soi add primary key (district_id, bracket_low);
 
 CREATE TABLE politician (
   -- index.json
