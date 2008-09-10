@@ -80,6 +80,7 @@ g['abs'] = abs
 g['len'] = len
 g['changequery'] = web.changequery
 g['enumerate'] = enumerate
+g['datestr'] = web.datestr
 
 g['query_param'] = query_param
 g['is_logged_in'] = lambda: bool(get_loggedin_email())

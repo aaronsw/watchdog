@@ -4,7 +4,41 @@ $var title: Signatories for the petition - <a href='/c/$pid'>$ptitle</a>
 
 $ sign_count = len(signs)
 
-<a href='/c/$pid#sign'>Sign it</a>  
+<style>
+#text #signs { margin: 0; padding: 0; }
+#text #signs li { list-style: none; border-bottom: 1px solid #ddd; padding: 6px 0; line-height: 14px; background: none; }
+#text #signs li a { color: black; }
+#text #signs li .count { margin-right: 0.3em; }
+</style>
+
+
+<div style="width: 600px"></div>
+
+<form method="get" action="/c/$pid#sign">
+
+<p><button type="submit">Sign this petition</button></p>
+
+<ul id="signs">
+$for i, sign in enumerate(signs):
+        <li><p>
+        <span class="count">${sign_count - i}.</span>
+        <strong>
+        $if is_author and (sign.share_with != 'N'):
+                <a href='mailto:$sign.email'>$sign.fname $sign.lname</a>
+        $else:
+            $sign.fname $sign.lname
+        </strong>
+        $:datestr(sign.signed)</p>
+        $if sign.comment:
+                <p>$:sign.comment</p>
+        </li>
+</ul>
+
+<p><button type="submit">Sign this petition</button></p>
+
+</form>
+
+<!--<a href='/c/$pid#sign'>Sign it</a>  
 <table class="signs">
 <tr><td>&nbsp;</td><td><b>Name</b></td>
     <td><b>Comment</b></td>
@@ -14,11 +48,10 @@ $for i, sign in enumerate(signs):
     <tr><td> ${sign_count - i}.</td><td>
     $if is_author and (sign.share_with != 'N'):
         <a href='mailto:$sign.email'>$sign.fname $sign.lname</a>
-    $elif sign.share_with == 'E':
-        $sign.fname $sign.lname
     $else:
-        Anonymous    
+        $sign.fname $sign.lname
     </td>
     <td>$sign.comment</td></tr>
 </table>
 <a href='/c/$pid#sign'>Sign it</a>
+-->

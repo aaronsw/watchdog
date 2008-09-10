@@ -183,7 +183,8 @@ class signatories:
         ptitle = db.select('petition', what='title', where='id=$pid', vars=locals())[0].title
         signs = db.select(['signatory', 'users'],
                             what='users.fname, users.lname, users.email, '
-                                 'signatory.share_with, signatory.comment',
+                                 'signatory.share_with, signatory.comment, '
+                                 'signatory.signed',
                             where='petition_id=$pid AND user_id=users.id',
                             order='signed desc',
                             vars=locals()).list()
