@@ -72,6 +72,12 @@ class Form:
             if x.name == i: return x
         raise KeyError, i
 
+    def get(self, i, default=None):
+        try:
+            return self.__getitem__(i)
+        except KeyError:
+            return default                
+                    
     def _get_d(self): #@@ should really be form.attr, no?
         return utils.storage([(i.name, i.value) for i in self.inputs])
     d = property(_get_d)

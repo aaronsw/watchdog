@@ -20,7 +20,6 @@ Revision history:
 2008-03-25: 0.2  - fix bad bug with last district getting cut off (tx Jordan)
 2008-03-23: 0.1  - initial version
 """
-
 import urllib, re
 u = "http://frwebgate.access.gpo.gov/cgi-bin/getdoc.cgi?dbname=%s_congressional_directory&docid=%sth_txt-"
 
@@ -222,6 +221,20 @@ def zip2dist(zipcode, addr=None):
     else:
         lat, lng = geocoder(addr + ', ' + zipcode)[:2]
         return [govtrack(lat, lng)]
+        
+def getdists(zip5, zip4=None, address=None):
+    from settings import db
+    
+    if zip4:
+        dists = [x.district for x in
+              db.select('zip4', where='zip=$zip5 and plus4=$zip4', vars=locals())]
+    else:    
+        try:
+            dists = zip2dist(zip5, address and address.strip())
+        except Exception, details:
+            dists = []    
+    return dists
+        
 
 if __name__ == "__main__":
     #print "Generating the zipdict (this will take some time and bandwidth)..."

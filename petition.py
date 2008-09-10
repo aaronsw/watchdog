@@ -44,6 +44,7 @@ class index:
 def save_petition(p):
     p.pid = p.pid.replace(' ', '_')
     email = helpers.get_loggedin_email()
+    tocongress = p.get('tocongress', 'off') == 'on'
     with db.transaction():
         try:
             owner = db.select('users', where='email=$email', vars=locals())[0]
@@ -58,8 +59,7 @@ def save_petition(p):
             owner_id = owner.id
 
         db.insert('petition', seqname=False, id=p.pid, title=p.ptitle, description=p.msg,
-                    owner_id=owner_id)
-        #make the owner of the petition sign for it (??)
+                    owner_id=owner_id, to_congress=tocongress)
         db.insert('signatory', user_id=owner_id, share_with='E', petition_id=p.pid)
 
 def fill_user_details(form, fillings=['email', 'name', 'contact']):
@@ -94,10 +94,10 @@ def fill_user_details(form, fillings=['email', 'name', 'contact']):
                 i.attrs['readonly'] = 'true'
                 break
 
-def send_to_congress(p):
+def send_to_congress(p, pform, wyrform):
     from webapp import write_your_rep
     wyr = write_your_rep()
-    return wyr.POST()
+    return wyr.send_msg(p, wyrform, pform)
 
 class new:
     @auth.require_login
@@ -110,17 +110,18 @@ class new:
 
     @auth.require_login
     def POST(self):
+        from webapp import get_wyrform
         i = web.input()
         tocongress = i.get('tocongress', 'off') == 'on'
         pform = forms.petitionform()
-        wyrform = forms.wyrform()
+        wyrform = get_wyrform(i)
         email = helpers.get_loggedin_email()
         wyr_valid = (not(tocongress) or wyrform.validates(i))
         if not pform.validates(i) or not wyr_valid:
             return render.petitionform(pform, wyrform)
 
         if tocongress:
-            sent_status = send_to_congress(i)
+            sent_status = send_to_congress(i, pform, wyrform)
             if not isinstance(sent_status, bool):
                 return sent_status
 

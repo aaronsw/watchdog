@@ -22,7 +22,7 @@ fieldset #pid {
 </style>
 
 <form name="petition" method="POST" action="$target"> 
-    $:pform.userid.render()
+	$:pform.userid.render()
     $if not pform.valid: <p class="error">Please try again after fixing the problems highlighted below:</p>
 
 <fieldset id="petition">
@@ -36,10 +36,11 @@ fieldset #pid {
 <fieldset id="address">
     <legend>Your petition site address</legend>
     $if target == '/c/new':
-            <p>Letters, numbers and dashes only — no spaces.</p>
-            <strong>http://watchdog.net/c/</strong> $:pform.pid.render()
+	    <p>Letters, numbers and dashes only — no spaces.</p>
+	    <strong>http://watchdog.net/c/</strong> $:pform.pid.render()
     $else:
-            <p><strong>http://watchdog.net/c/$:pform.pid.value</strong></p>
+	    <p><strong>http://watchdog.net/c/$:pform.pid.value</strong></p>
+
 </fieldset>
 
 <fieldset id="maketocongress">
@@ -52,6 +53,8 @@ fieldset #pid {
 
     <div id="tocongressform" style="display: none;">
     <h3>We'll need some more information then...</h3>
+	$if (not cform.valid) and (cform.note): <p class="error">$cform.note</p>
+
     <table>
     <tr><th>Prefix</th><td>$:cform.prefix.render()</td></tr>
     <tr><th>First name</th><td>$:cform.fname.render()</td></tr>
@@ -59,8 +62,10 @@ fieldset #pid {
     <tr><th>Address</th><td>$:cform.addr1.render()</td></tr>
     <tr><th></th><td>$:cform.addr2.render()</td></tr>
     <tr><th>City</th><td>$:cform.city.render()</td></tr>
-    <tr><th>Zip code</th><td>$:cform.zipcode.render()</td></tr>
+    <tr><th>Zip code</th><td>$:cform.zipcode.render()-$:cform.zip4.render()</td></tr>
     <tr><th>Phone</th><td>$:cform.phone.render()</td></tr>
+    $ captcha = cform.get('captcha')
+    $if captcha: <tr><th>Validation</th><td>$:captcha.pre $:captcha.render()</td></tr>
     </table>
     </div>
 </fieldset>

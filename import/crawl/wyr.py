@@ -5,7 +5,7 @@ from ClientForm import ParseResponse, ControlNotFoundError, AmbiguityError
 from settings import db
 from BeautifulSoup import BeautifulSoup
 
-manual_websites = '../data/crawl/votesmart/websites_manual.json'
+manual_websites = '../import/load/manual/websites.json'
 votesmart_websites = '../data/crawl/votesmart/websites.json'
 
 def is_email(s):

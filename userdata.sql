@@ -29,7 +29,8 @@ CREATE TABLE petition(
     description text,
     owner_id int references users,
     created timestamp default now(),
-    deleted timestamp 
+    deleted timestamp,
+    to_congress boolean
 );
 
 CREATE TABLE signatory(
