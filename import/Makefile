@@ -122,7 +122,16 @@ $(LOAD)/bill.tsv $(LOAD)/vote.tsv: load/bills.py
 	touch $@
 
 .zip4: $(LOAD)/zip4.tsv .json
-	echo "COPY zip4 (zip,plus4,district_id) FROM '${PWD}/../data/load/zip4.tsv';" | $(DBCLIENT) $(WATCHDOG_TABLE)
+	# NOTE: leaving the index on while loading the data is unbearably slow. If
+	#       the schema changes this makefile will need to be updated too.
+	#       Also, our districts table is missing MH-00 (Marshall Islands) and
+	#       thus the foreign key must be removed.
+	echo "ALTER TABLE zip4 DROP CONSTRAINT zip4_pkey; \
+ALTER TABLE zip4 DROP CONSTRAINT zip4_district_id_fkey; \
+COPY zip4 (zip,plus4,district_id) FROM '${PWD}/../data/load/zip4.tsv'; \
+ALTER TABLE zip4 ADD FOREIGN KEY (district_id) REFERENCES district; \
+ALTER TABLE zip4 ADD PRIMARY KEY (zip,plus4); \
+		" | $(DBCLIENT) $(WATCHDOG_TABLE)
 	touch $@
 
 .soi: .schema .json .zip4
