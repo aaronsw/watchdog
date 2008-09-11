@@ -3,17 +3,14 @@ $def with (message=None)
 $var title: Import contacts
 
 $if message:
-  <div class="msg" style="border:none;">$message</div>
+    <div class="msg" style="border:none;">$message</div>
 
-  
 <p>Enter your email address to import contacts from your Yahoo or Google Account.</p>
 
 <p>Depending on your choice, Yahoo/Google will ask your confirmation to allow <a href="http://watchdog.net">watchdog.net</a> to access your addressbook. </p>
 
-
-  
 <form method="POST">
 <label for="email">Email</label>
 <input type="text" name="email" />
-<input type="submit" value="get contacts" />
+<button type="submit">Get contacts</button>
 </form>

@@ -45,12 +45,14 @@ $if page.get('sidebar', '').strip() != "None":
         <ul>
         $ li_class = "top"
         $for post in blog_content[slice(None, 4)]:
-            <li class="$li_class">
+            <li\
+            $if li_class:  class="$li_class"\
+            >
             <a href="/blog/$post.slug" class="sidebarlink">$post.title</a> <span class="attribution"> by $post.author.split()[0]</span>
             <div class="blurb">$striphtml(post.body).split('. ')[0]. <strong><a href="/blog/$post.slug">...</a></strong></div>
             </li>
             $ li_class = ""
-    
+        </ul>
     <div class="postit">
       <p><strong>Pardon the mess</strong> &mdash;<br />
       we're building this site right before your eyes.
@@ -80,7 +82,7 @@ $if not page.get('maxi'):
     </div>
 <div id="menu_footer">
   $if is_logged_in():
-      <form name="logout" action="/logout" method='POST' style="display: none;"></form>
+      <form name="logout" action="/logout" method='GET' style="display: none;"></form>
 
 	<a href="/" class="watchdog">watchdog.net</a>\
 $if is_logged_in():

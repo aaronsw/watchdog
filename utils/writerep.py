@@ -163,7 +163,8 @@ def has_message(soup, msg, tags='b'):
     msg = msg.lower()
     for b in bs:
         errmsg = str(b.string).lower()
-        if errmsg.find(msg) > -1:
+        errmsg += ' '.join(str(c) for c in b.contents)
+        if (errmsg.find(msg) > -1):
             return True
     return False
 
@@ -174,7 +175,7 @@ def get_forms(url, data=None):
         forms = ParseFile(StringIO(response), url, backwards_compat=False)
     except:
         forms = []
-    
+
     return [Form(f) for f in forms], response or ''
 
 class ZipShared(Exception): pass
@@ -309,7 +310,7 @@ def writerep_zipauth(zipauth_link, district, zipcode, state, prefix, fname,
             return f.production_click()
         else:
             soup = BeautifulSoup(response)
-            if has_message(soup, 'zip code is split between more than one', 'p'): raise ZipShared
+            if has_message(soup, 'zip code is split between more', 'p'): raise ZipShared
             if has_message(soup, 'Access to the requested form is denied', ['p', 'font']): raise ZipIncorrect
             if has_message(soup, 'you are outside', 'p'): raise ZipIncorrect 
             

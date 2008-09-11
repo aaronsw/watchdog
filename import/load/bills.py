@@ -35,7 +35,7 @@ def bill2dict(bill):
         summaries = [unicode(x) for x in bill.titles['title':]]
     d['summary'] = summaries[0]
     
-    d['sponsor'] = govtrackp(bill.sponsor().get('id'))
+    d['sponsor_id'] = govtrackp(bill.sponsor().get('id'))
     return d
 
 def fixvote(s):

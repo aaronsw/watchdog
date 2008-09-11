@@ -1,4 +1,4 @@
-$def with (form, msg=None)
+$def with (form, msg=None, redirect="")
 
 $var title: Login
 $var login_class: select\
@@ -6,10 +6,12 @@ $var login_class: select\
 $if msg:
     $var msg: $:msg
 
+<p>Don't have an account? <a href='/signup?redirect=$redirect'>Go create one</a></p>
+
 <div class="login">
     <form name="login" method="POST" >
         $:form.render()
-        <input type="submit" name="submit" value="login">
+        <button type="submit">Log in</button>
     </form>
 </div>
-<a href='/forgot_password'>Forgot Password?</a>
+<p><a href='/forgot_password'>Forgot your password?</a></p>

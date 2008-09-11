@@ -54,8 +54,8 @@ database: .schema .json .bills .interests .votesmart .photos .fec .census .soi
 	python load/json.py
 	touch $@
 
-.schema: ../schema.sql
-	$(DBCLIENT) $(WATCHDOG_TABLE) < $<
+.schema: ../schema.py
+	python -c "import schema; schema.sql.recreate()"
 	touch $@
 
 $(LOAD)/states/index.json: load/manual/states.json

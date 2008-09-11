@@ -1,5 +1,11 @@
 -- All the tables for user data 
 
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS petition CASCADE;
+DROP TABLE IF EXISTS signatory CASCADE;
+DROP TABLE IF EXISTS petition_responses CASCADE;
+DROP TABLE IF EXISTS contacts CASCADE;
+
 CREATE TABLE users(
     id serial primary key,
     password varchar(256),
@@ -15,7 +21,7 @@ CREATE TABLE users(
     zip4 varchar(4),
     phone varchar(10),
     
-    verified boolean default false, -- done verified activity at least once
+    verified boolean default false -- done verified activity at least once
 );
 
 CREATE TABLE petition(
@@ -23,7 +29,8 @@ CREATE TABLE petition(
     title text,
     description text,
     owner_id int references users,
-    created timestamp default now()  
+    created timestamp default now(),
+    deleted timestamp 
 );
 
 CREATE TABLE signatory(
@@ -32,7 +39,8 @@ CREATE TABLE signatory(
     petition_id varchar(256) references petition,
     share_with char(1), -- E=everybody, A=author of petition, N=nobody
     comment text,
-    signtime timestamp default now(),
+    signed timestamp default now(),
+    deleted timestamp,
     UNIQUE (user_id, petition_id)
 );
 
