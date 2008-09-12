@@ -1,48 +1,26 @@
-$def with (petition, emailform, contacts, loadcontactsform=None)
+$def with (petition, emailform, contacts, providers, loadcontactsform=None)
 
 $var title: Share your petition
 
 <script>
-\$(document).ready( function(){
-    
-    \$('#email').change(function set_provider(){
-        
-        email = \$('#email').val().toLowerCase();
-        if (email.indexOf('@gmail') > 0 ||  email.indexOf('@google') > 0){
-            \$('#provider').val('google');
-        }
-        else if (email.indexOf('@yahoo') > 0){
-            \$('#provider').val('yahoo');
-        }
-        else if(email.indexOf('@msn') > 0 || email.indexOf('@hotmail') > 0){
-            \$('#provider').val('msn');
-        }
-        else if(email.indexOf('@aol') > 0 ){
-            \$('#provider').val('aol');
-        }
-    });
-
-    var checkAll = function(){
-        checked = \$('#selectall')[0].checked;
-        cbs = \$('[@name=contacts]');
-        for (i in cbs){
-            cbs[i].checked = checked;
-        } 
-    }
-    var fillTo = function(){
-        cbs = \$('[@name=contacts]:checked');
-        to_addresses = ""
-        for (i=0; i< cbs.length; i++){
+function checkAll(){
+    cbs = document.getElementsByName('contacts');
+    checked = document.getElementsByName('selectall')[0].checked;
+    for (i in cbs){
+        cbs[i].checked = checked;
+    } 
+}
+function fillTo(){
+    cbs = document.getElementsByName('contacts');
+    to_addresses = ""
+    for (i=0; i< cbs.length; i++){
+        if (cbs[i].checked){
             to_addresses += cbs[i].value + ", "
         }
-        to_field = \$('#emails').val(to_addresses)
     }
-    \$('[@name=contacts]').click(fillTo); 
-    \$('#selectall').click(function(){
-        checkAll();
-        fillTo();
-    });
-});
+    to_field = document.getElementsByName('emails')[0]
+    to_field.value = to_addresses;
+}
 </script>
 
 <h2>Share <a href='/c/$petition.id'>$petition.title</a></h2>
@@ -72,11 +50,12 @@ $var sidebar:
         </form>
     $if contacts:
         <p class='select-all'>
-            <input type="checkbox" id='selectall' name="selectall" value='all' />Select all ($len(contacts) contacts)</p>
+            <input type="checkbox" name="selectall" value='all' onclick='checkAll();fillTo()' />Select all ($len(contacts) contacts)</p>
         <div class='contacts-listing'>
             <ul>
             $for c in contacts:
-                <li><input type='checkbox' name='contacts' value='$c.email' /><b>$c.name</b></br> $c.email</li>
+                <li><input type='checkbox' name='contacts' value='$c.email' onclick='fillTo()'/><b>$c.name</b></br> $c.email</li>
             </ul>    
         </div>
+
 </div>
