@@ -366,9 +366,8 @@ class share:
 
         if not emailform:
             emailform = forms.emailform
-            subject='Share petition "%s"' % (petition.title)
             msg = render_plain.share_petition_mail(petition)
-            emailform.fill(subject=subject, body=msg)
+            emailform.fill(subject=petition.title, body=msg)
 
         current_providers = set(c.provider.lower() for c in contacts)
         all_providers = set(['google', 'yahoo'])
@@ -380,7 +379,7 @@ class share:
         return render.share_petition(petition, emailform,
                             contacts, remaining_providers, loadcontactsform)
 
-    def POST(self):
+    def POST(self, pid):
         i = web.input()
         emailform = forms.emailform()
         if emailform.validates(i):
@@ -390,7 +389,7 @@ class share:
             helpers.set_msg('Thanks for sharing this petition with your friends!')
             raise web.seeother('/%s' % (pid))
         else:
-            return self.GET(emailform=emailform)
+            return self.GET(pid, emailform=emailform)
 
 
 app = web.application(urls, globals())
