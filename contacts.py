@@ -45,10 +45,10 @@ class importcontacts:
         if form.validates(i):
             session.email = email
             session.pid = i.pid
-            if i.provider == 'Yahoo':
+            if i.provider == 'yahoo':
                 ylogin_url = yahooLoginURL(email, '/WSLogin/V1/wslogin')
                 raise web.seeother(ylogin_url)
-            elif i.provider == 'Google': 
+            elif i.provider == 'google': 
                 glogin_url = gmailLoginURL(email)
                 raise web.seeother(glogin_url)
         else:
@@ -57,7 +57,11 @@ class importcontacts:
             return share_obj.GET(form)
             
 def save_contacts(email, contacts, provider):
+    #Even if the user is not logged-in, but has an account with us, let him import contacts
     user_id = helpers.get_loggedin_userid()
+    if not user_id:
+        user = db.select('users', what='id', where='email=$email', vars=locals())
+        if user: user_id = user[0].id
     for c in contacts:
         cname, cemail = c['name'], c['email']
         vars = dict(user_id=user_id, uemail=email, cemail=cemail,
@@ -66,7 +70,7 @@ def save_contacts(email, contacts, provider):
                     where='user_id=$user_id and uemail=$uemail and cemail=$cemail',
                     vars=vars)
         if not e: n = db.insert('contacts', seqname=False, **vars)
-        else: db.update('contacts', cname=cname,
+        elif cname: db.update('contacts', cname=cname,
                     where='user_id=$user_id and uemail=$uemail and cemail=$cemail',
                     vars=vars)
 
