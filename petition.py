@@ -39,7 +39,8 @@ class index:
                     group='petition.id, petition.title',
                     order='count(signatory.user_id) desc'
                     )
-        return render.petition_list(petitions)
+        msg, msg_type = helpers.get_delete_msg()
+        return render.petition_list(petitions, msg)
 
 def save_petition(p):
     p.pid = p.pid.replace(' ', '_')

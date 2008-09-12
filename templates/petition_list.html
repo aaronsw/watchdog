@@ -1,6 +1,9 @@
-$def with (petitions)
+$def with (petitions, msg=None)
 
 $var title: Top signed petitions
+
+$if msg:
+    $var msg: $:msg
 
 <p><a href="/c/new" class="action">Start a new petition</a></p>
 
