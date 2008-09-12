@@ -1,6 +1,6 @@
 $def with (petition, emailform, contacts, loadcontactsform=None)
 
-$var title: Share petition
+$var title: Share your petition
 
 <script>
 \$(document).ready( function(){
@@ -45,21 +45,28 @@ $var title: Share petition
 });
 </script>
 
-<h2>Share: <a href='$petition.url'>$petition.title</a></h2>
+<h2>Share <a href='/c/$petition.id'>$petition.title</a></h2>
 
-<form name='contactform' method='POST' action='/c/share'>
-  <td style="border-right: solid #ddd 1pt">
-      $:emailform.render()
-      <input type="hidden" name="pid" value="$petition.id">
-      <button type="submit">Send</button>
-  </td>
+<form name='contactform' method='POST' action='/c/$petition.id/share'>
+$if not emailform.valid: <p class="error">Please try again after fixing the problems highlighted below:</p>
+<fieldset id="sharepetition">
+    <label for="emails">To:</label>
+    $:emailform.emails.render()
+    <label for="subject">Subject:</label>
+    $:emailform.subject.render()
+    <label for="body">Message:</label>
+    $:emailform.body.render()
+    <input type="hidden" name="pid" value="$petition.id">
+    <button tabindex="4" type="submit">Send</button>
+</fieldset>
 </form>
 
 $var sidebar:
     $if loadcontactsform:
-        <form name="loadcontacts" method="POST" action='/importcontacts' >
-            <p>Enter your email address to load contacts.</p>
-            $:loadcontactsform.render()
+        <form id="loadcontacts" name="loadcontacts" method="POST" action='/importcontacts' >
+            <p>Enter your $providers email address to load contacts.</p>
+            $:loadcontactsform.email.render()
+            $:loadcontactsform.provider.render()
             <input type="hidden" name="pid" value="$petition.id">
             <button type="submit">Load contacts</button>
         </form>
