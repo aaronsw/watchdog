@@ -1,7 +1,7 @@
 $def with (pid)
 
-Deletion of the petition is irreversible. Do you want to continue?
+Are you sure you want to delete your petition? You can't undo it.
 <form name="delete" method="POST" action="/c/$pid?m=delete">
-    <button id="delete_p" type="submit">Delete</button>
-    <button id="cancel" onclick="window.location='/c/$pid'; return false;">Cancel</button>
+    <button id="delete_p" type="submit">Yes, delete it</button>
+    <button id="cancel" onclick="window.location='/c/$pid'; return false;">Oops, no thanks</button>
 </form>
