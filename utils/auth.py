@@ -78,6 +78,9 @@ class login:
 
 class logout:
     def GET(self):
+        return render.logout()
+
+    def POST(self):
         helpers.del_login_cookie()
         referer = web.ctx.env.get('HTTP_REFERER', '/')
         raise web.seeother(referer)
