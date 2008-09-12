@@ -229,7 +229,7 @@ class petition:
             cform = forms.wyrform()
             cform.fill(prefix=u.prefix, fname=u.fname, lname=u.lname, addr1=u.addr1,
                         addr2=u.addr2, city=u.city, zipcode=u.zip5, phone=u.phone)
-            title = "Edit petition"
+            title = "Edit your petition"
             return render.petitionform(pform, cform, title, target='/c/%s?m=edit' % (pid))
         else:
             login_link = '<a href="/login">Login</a>'
