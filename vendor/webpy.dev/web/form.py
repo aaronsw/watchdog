@@ -179,16 +179,16 @@ class Radio(Input):
         self.attrs = dict(filter(lambda (k,v): k != 'id', self.attrs.items()))
 
     def render(self):
-        x = '<span id="%s">' % self.name
+        x = '<div id="%s">' % self.name
         for arg in self.args:
             if self.value == arg: select_p = ' checked="checked"'
             else: select_p = ''
             atts = self.addatts() + ' id="%s_%s"' % (self.name, net.websafe(arg))
-            x += '<input type="radio" name="%s" value="%s"%s%s /> %s ' % (net.websafe(self.name), net.websafe(arg), select_p, atts, net.websafe(arg))
+            x += '<span><input type="radio" name="%s" value="%s"%s%s /> %s </span>' % (net.websafe(self.name), net.websafe(arg), select_p, atts, net.websafe(arg))
         if self.note:
 	    x = '<div class="wronginput">%s</div>' % x
             x += self.rendernote(self.note)
-        return x+'</span>'
+        return x+'</div>'
 
 class Checkbox(Input):
     def render(self):
