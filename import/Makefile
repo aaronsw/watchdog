@@ -80,7 +80,7 @@ $(LOAD)/politicians/index.json: load/manual/politicians.json
 	mkdir -p $(LOAD)/politicians
 	cp $< $@
 
-.govtrack: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml
+.govtrack: .json load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml
 	$(PYTHON) load/govtrack.py
 	touch $@
 
@@ -105,7 +105,7 @@ $(LOAD)/bill.tsv $(LOAD)/vote.tsv: load/bills.py
 	$(PYTHON) load/maplight.py
 	touch $@
 
-.votesmart: .json load/votesmart.py $(CRAWL)/votesmart/bios.json $(CRAWL)/votesmart/candidates.json
+.votesmart: .json .govtrack load/votesmart.py $(CRAWL)/votesmart/bios.json $(CRAWL)/votesmart/candidates.json
 	$(PYTHON) load/votesmart.py
 	touch $@
 
