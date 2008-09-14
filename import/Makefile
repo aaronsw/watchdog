@@ -21,7 +21,6 @@ JSONS=$(LOAD)/states/index.json \
       $(LOAD)/districts/index.json \
       $(LOAD)/interest_groups.json \
       $(LOAD)/districts/almanac.json \
-      $(LOAD)/districts/shapes.json \
       $(LOAD)/politicians/index.json \
       $(LOAD)/politicians/govtrack.json \
       $(LOAD)/politicians/voteview.json \
@@ -63,6 +62,10 @@ $(LOAD)/districts/index.json: load/manual/districts.json
 	mkdir -p $(LOAD)/districts
 	cp $< $@
 
+# not currently called:
+.shapes: load/shapes.py parse/shapes.py
+	$(PYTHON) load/shapes.py
+
 # from nationaljournal
 $(LOAD)/interest_groups.json: load/manual/interest_groups.json
 	mkdir -p $(LOAD)
@@ -71,9 +74,6 @@ $(LOAD)/interest_groups.json: load/manual/interest_groups.json
 $(LOAD)/districts/almanac.json: load/almanac.py parse/almanac.py
 	$(PYTHON) load/almanac.py > $@.tmp
 	mv $@.tmp $@
-
-$(LOAD)/districts/shapes.json: load/shapes.py
-	$(PYTHON) load/shapes.py > $@
 
 $(LOAD)/districts/centers.json: load/govtrack_gis.py
 	$(PYTHON) load/govtrack_gis.py > $@
@@ -120,7 +120,18 @@ $(LOAD)/bill.tsv $(LOAD)/vote.tsv: load/bills.py
 
 # new way of doing things: parse to .njs files
 
-parse: $(NJS)
+USPS_FILES = $(PARSE)/usps/ctystate.njs.gz \
+             $(PARSE)/usps/5digit.njs.gz \
+             $(PARSE)/usps/tiger.njs.gz \
+             $(PARSE)/usps/tigerdat.njs.gz \
+             $(PARSE)/usps/zip4.njs.gz \
+             $(PARSE)/usps/zip4dist.njs.gz \
+             $(PARSE)/usps/all5digitzip.txt \
+
+parse: $(NJS) parse_usps
+
+parse_usps: $(USPS_FILES)
+	echo "Haven't scripted generation of these yet."
 
 $(PARSE)/almanac.njs: parse/almanac.py 
 	$(PYTHON) parse/almanac.py --dump > $@.tmp

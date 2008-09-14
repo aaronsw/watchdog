@@ -7,6 +7,8 @@ import simplejson
 import web
 from settings import db
 
+STATE_TABLE = 'load/manual/states.json'
+
 _stripterms = ['the', 'corporation', 'corp', 'incorporated', 'inc']
 r_plain = re.compile(r'[a-z ]+')
 def stemcorpname(name):
@@ -20,6 +22,15 @@ def stemcorpname(name):
     name = ''.join(r_plain.findall(name))
     name = ' '.join(x for x in name.split() if x not in _stripterms)
     return name
+
+_unfipscache = {}
+def unfips(fipscode):
+    if not _unfipscache:
+        states = simplejson.load(file(STATE_TABLE))
+        for stateid, state in states.iteritems():
+            _unfipscache[state['fipscode']] = stateid
+        
+    return _unfipscache.get(fipscode)
 
 _districtcache = {}
 def districtp(district):
