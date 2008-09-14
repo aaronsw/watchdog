@@ -664,6 +664,7 @@ def amendment_sort(x, y):
 EFILINGS_PATH = '../data/crawl/fec/electronic/'
 def file_index():
     files = os.listdir(EFILINGS_PATH)
+    files.sort()
     zfiles = filter(lambda f: f.endswith('.zip'), files)
     reports = list()
     amendments = dict()
