@@ -1,26 +1,18 @@
 """
 Parser for FEC Files for files that conform to webl.txt and weball.txt
-
-Parser for FEC electronic filings
-
-Started 2008-04-16.
 """
 
 __author__ = [
   "Jeremy Schwartz <jerschwartz@gmail.com>",
   "Aaron Swartz <me@aaronsw.com>",
-  "Simon Carstensen <me@simonbc.com>"
 ]
 
-import gzip
-import zipfile
+import re, os, sys, gzip
 import web
-import re
-import os
-import sys
+from fixed_width import get_len, enum, filler, parse_file
 
 COBOL_INT_TABLE = dict(']0 j1 k2 l3 m4 n5 o6 p7 q8 r9'.split())
-def get_data_int(d):
+def integer(d):
     if not d or d[0] == '?':
         return d
     elif d[-1].lower() in COBOL_INT_TABLE:
@@ -33,555 +25,535 @@ def get_data_int(d):
     else:
         return int(d)
 
-def get_data_str(d):
+def string(d):
     return d.decode('cp1251').rstrip()
 
-def get_data_date(d):
-    "MMDDYYYY"
+def date(d):
+    """where `d` is like MMDDYYYY"""
     return d[4:8] + "-" + d[0:2] + "-" + d[2:4]
 
-def get_data_date2(d):
+def date2(d):
     "??DDMMYYYY"
     return d[6:10] + "-" + d[4:6] + "-" + d[2:4]
 
-def table_lookup(table):
-    def get_from_table(d):
-        if d in table:
-            return table[d]
-        else:
-            return get_data_str(d)
-    return get_from_table
+party = enum(**{"1": "Democratic", "2": "Republican", "3": "Other"})
 
-get_data_party = table_lookup({
-  "1": "Democratic",
-  "2": "Republican",
-  "3": "Other"
-})
+ico = enum(**{" ": " ", "I": "Incumbent", "C": "Challenger", "O": "Open Seat"})
 
-get_data_ico = table_lookup({
-  " ": " ",
-  "I": "Incumbent",
-  "C": "Challenger",
-  "O": "Open-Seat"
-})
+filing_freq = enum(M="Monthly", Q="Quarterly", T="Terminated")
 
-get_ff_type = table_lookup({ # filing frequency
-    'M': "Monthly",
-    'Q': "Quarterly",
-    "T": "Terminated"
-})
+cmte_type = enum(
+    C="COMMUNICATION COST",
+    D="DELEGATE",
+    H="HOUSE",
+    I="INDEPENDENT EXPENDITURE (PERSON OR GROUP, NOT A COMMITTEE)",
+    N="NON-PARTY NON-QUALIFIED",
+    P="PRESIDENTIAL",
+    Q="QUALIFIED NON-PARTY (SEE 2 USC 441(A)(4))",
+    S="SENATE",
+    X="NON-QUALIFIED PARTY",
+    Y="QUALIFIED PARTY (SEE 2 USC 441(A)(4))",
+    Z="NATIONAL PARTY ORGANIZATION. NON FED ACCT."
+)
 
-get_comte_type = table_lookup({
-    'C': "COMMUNICATION COST",
-    'D': "DELEGATE",
-    'H': "HOUSE",
-    'I': "INDEPENDENT EXPENDITURE (PERSON OR GROUP, NOT A COMMITTEE)",
-    'N': "NON-PARTY NON-QUALIFIED",
-    'P': "PRESIDENTIAL",
-    'Q': "QUALIFIED NON-PARTY (SEE 2 USC 441(A)(4))",
-    'S': "SENATE",
-    'X': "NON-QUALIFIED PARTY",
-    'Y': "QUALIFIED PARTY (SEE 2 USC 441(A)(4))",
-    'Z': "NATIONAL PARTY ORGANIZATION. NON FED ACCT."
-})
+cmte_desig = enum(
+    A="AUTHORIZED BY A CANDIDATE",
+    J="JOINT FUND RAISER",
+    P="PRINCIPAL CAMPAIGN COMMITTEE OF A CANDIDATE",
+    U="UNAUTHORIZED"
+)
 
-get_comte_desig = table_lookup({
-   'A': "AUTHORIZED BY A CANDIDATE",
-   'J': "JOINT FUND RAISER",
-   'P': "PRINCIPAL CAMPAIGN COMMITTEE OF A CANDIDATE",
-   'U': "UNAUTHORIZED"
-})
-
-def read_row(row, row_def):
-    """Reads one row from data file and returns a list of columns."""
-    out = web.storage()
-    offset = 0
-    for col in row_def:
-        s = row[offset:offset + col[COL_LENGTH]]
-        out[col[COL_NAME]] = col[COL_DATA](s)
-        offset = offset + col[COL_LENGTH]
-    return out
-
-def read_fec_file(fh, row_def):
-    """Read an entire file."""
-    for line in fh:
-        yield read_row(line, row_def)
-
-COL_NAME = 0
-COL_LENGTH = 1
-COL_DATA = 2
-
-# Row definition with field offset and names, conversion functions
-WEB_ROW_DEF_SIZE = 243
-WEB_ROW_DEF = [
-  ("candidate_id",9,get_data_str),
-  ("candidate_name",38,get_data_str),
-  ("ico",1,get_data_ico),
-  ("party",1,get_data_party),
-  ("party_desig",3,get_data_str),
-  ("total_receipts",10,get_data_int),
-  ("auth_trans_from",10,get_data_int),
-  ("total_disbursements",10,get_data_int),
-  ("trans_to_auth",10,get_data_int),
-  ("begin_cash",10,get_data_int),
-  ("end_cash",10,get_data_int),
-  ("contrib_from_candidate",10,get_data_int),
-  ("loans_from_candidate",10,get_data_int),
-  ("other_loans",10,get_data_int),
-  ("candidate_loan_repay",10,get_data_int),
-  ("other_loan_repay",10,get_data_int),
-  ("debts_owed_by",10,get_data_int),
-  ("total_indiv_contrib",10,get_data_int),
-  ("state_code",2,get_data_str),
-  ("district",2,get_data_str),
-  ("spec_elec_status",1,get_data_str),
-  ("primary_elec_status",1,get_data_str),
-  ("runoff_elec_status",1,get_data_str),
-  ("general_elec_status",1,get_data_str),
-  ("general_elec_pct",3,get_data_str),
-  ("contrib_from_other_pc",10,get_data_int),
-  ("contrib_from_pc",10,get_data_int),
-  ("end_date",8,get_data_date),
-  ("refunds_to_indiv",10,get_data_int),
-  ("refunds_to_commit",10,get_data_int)
+def_webl = [
+  ('_type', 0, lambda x: 'Candidate'),
+  ("candidate_id", 9, string),
+  ("candidate_name", 38, string),
+  ("ico", 1, ico),
+  ("party", 1, party),
+  ("party_desig", 3, string),
+  ("total_receipts", 10, integer),
+  ("auth_trans_from", 10, integer),
+  ("total_disbursements", 10, integer),
+  ("trans_to_auth", 10, integer),
+  ("begin_cash", 10, integer),
+  ("end_cash", 10, integer),
+  ("contrib_from_candidate", 10, integer),
+  ("loans_from_candidate", 10, integer),
+  ("other_loans", 10, integer),
+  ("candidate_loan_repay", 10, integer),
+  ("other_loan_repay", 10, integer),
+  ("debts_owed_by", 10, integer),
+  ("total_indiv_contrib", 10, integer),
+  ("state_code", 2, string),
+  ("district", 2, string),
+  ("spec_elec_status", 1, enum),
+  ("primary_elec_status", 1, enum),
+  ("runoff_elec_status", 1, enum),
+  ("general_elec_status", 1, enum),
+  ("general_elec_pct", 3, string),
+  ("contrib_from_other_pc", 10, integer),
+  ("contrib_from_pc", 10, integer),
+  ("end_date", 8, date),
+  ("refunds_to_indiv", 10, integer),
+  ("refunds_to_commit", 10, integer),
+  (None, 2, filler)
 ]
 
 # Supports files for CANSUM04 CANSUM02 CANSUM00 CANSUM98 CANSUM96
-CANSUM_ROW_DEF = [
-  ("candidate_id",9,get_data_str),
-  ("candidate_name",38,get_data_str),
-  ("ico",1,get_data_ico),
-  ("party",1,get_data_party),
-  ("party_desig",3,get_data_str),
-  ("total_receipts",10,get_data_int),
-  ("auth_trans_from",10,get_data_int),
-  ("total_disbursments",10,get_data_int),
-  ("trans_from_auth",10,get_data_int),
-  ("begin_cash",10,get_data_int),
-  ("end_cash",10,get_data_int),
-  ("contrib_from_candidate",10,get_data_int),
-  ("loans_from_candidate",10,get_data_int),
-  ("other_loans",10,get_data_int),
-  ("candidate_loan_repay",10,get_data_int),
-  ("other_loan_repay",10,get_data_int),
-  ("debts_owed_by",10,get_data_int),
-  ("contrib_200_499",10,get_data_int),
-  ("total_200_499",10,get_data_int),
-  ("contrib_500_749",10,get_data_int),
-  ("total_500_749",10,get_data_int),
-  ("contrib_750",10,get_data_int),
-  ("total_750",10,get_data_int),
-  ("total_indiv_contrib",10,get_data_int),
-  ("major_pty_contrib",10,get_data_int),
-  ("party_indep_expend_for",10,get_data_int),
-  ("corp_contrib",10,get_data_int),
-  ("labor_contrib",10,get_data_int),
-  ("non_connected_contrib",10,get_data_int),
-  ("tmh_contrib",10,get_data_int),
-  ("coop_contrib",10,get_data_int),
-  ("corp_wo_stock_contrib",10,get_data_int),
-  ("non_party_exp",10,get_data_int),
-  ("non_party_exp_agn",10,get_data_int),
-  ("indep_exp_for",10,get_data_int),
-  ("indep_exp_agn",10,get_data_int),
-  ("comm_cost_for",10,get_data_int),
-  ("comm_cost_agn",10,get_data_int),
-  ("state_code",2,get_data_str),
-  ("district",2,get_data_str),
-  ("spec_elec_status",1,get_data_str),
-  ("primary_elec_status",1,get_data_str),
-  ("runoff_elec_status",1,get_data_str),
-  ("gen_elec_status",1,get_data_str),
-  ("gen_elec_pct",7,get_data_int),
-  ("spec_elec_cand",1,get_data_str),
-  ("party_coord_exp",10,get_data_int),
-  ("party_indep_exp",10,get_data_int)
+def_cansum = [
+  ('_type', 0, lambda x: 'Cadidate'),
+  ("candidate_id", 9, string),
+  ("candidate_name", 38, string),
+  ("ico", 1, ico),
+  ("party", 1, party),
+  ("party_desig", 3, string),
+  ("total_receipts", 10, integer),
+  ("auth_trans_from", 10, integer),
+  ("total_disbursments", 10, integer),
+  ("trans_from_auth", 10, integer),
+  ("begin_cash", 10, integer),
+  ("end_cash", 10, integer),
+  ("contrib_from_candidate", 10, integer),
+  ("loans_from_candidate", 10, integer),
+  ("other_loans", 10, integer),
+  ("candidate_loan_repay", 10, integer),
+  ("other_loan_repay", 10, integer),
+  ("debts_owed_by", 10, integer),
+  ("contrib_200_499", 10, integer),
+  ("total_200_499", 10, integer),
+  ("contrib_500_749", 10, integer),
+  ("total_500_749", 10, integer),
+  ("contrib_750", 10, integer),
+  ("total_750", 10, integer),
+  ("total_indiv_contrib", 10, integer),
+  ("major_pty_contrib", 10, integer),
+  ("party_indep_expend_for", 10, integer),
+  ("corp_contrib", 10, integer),
+  ("labor_contrib", 10, integer),
+  ("non_connected_contrib", 10, integer),
+  ("tmh_contrib", 10, integer),
+  ("coop_contrib", 10, integer),
+  ("corp_wo_stock_contrib", 10, integer),
+  ("non_party_exp", 10, integer),
+  ("non_party_exp_agn", 10, integer),
+  ("indep_exp_for", 10, integer),
+  ("indep_exp_agn", 10, integer),
+  ("comm_cost_for", 10, integer),
+  ("comm_cost_agn", 10, integer),
+  ("state_code", 2, string),
+  ("district", 2, string),
+  ("spec_elec_status", 1, string),
+  ("primary_elec_status", 1, string),
+  ("runoff_elec_status", 1, string),
+  ("gen_elec_status", 1, string),
+  ("gen_elec_pct", 7, integer),
+  ("spec_elec_cand", 1, string),
+  ("party_coord_exp", 10, integer),
+  ("party_indep_exp", 10, integer),
+  (None, 2, filler)
 ]
-CANSUM_ROW_DEF_SIZE = 419
 
 # Supports format CANSUM94 CANSUM92
-CANSUM_94_ROW_DEF = [
-  ("candidate_id",9,get_data_str),
-  ("candidate_name",38,get_data_str),
-  ("ico",1,get_data_ico),
-  ("party",1,get_data_party),
-  ("party_desig",3,get_data_str),
-  ("total_reciepts",10,get_data_int),
-  ("auth_trans_from",10,get_data_int),
-  ("total_disbursments",10,get_data_int),
-  ("trans_to_auth",10,get_data_int),
-  ("begin_cash",10,get_data_int),
-  ("end_cash",10,get_data_int),
-  ("contrib_from_cand",10,get_data_int),
-  ("loans_from_cand",10,get_data_int),
-  ("other_loans",10,get_data_int),
-  ("cand_loans_repay",10,get_data_int),
-  ("other_loan_repay",10,get_data_int),
-  ("debts_owned_by",10,get_data_int),
-  ("contrib_200_499",10,get_data_int),
-  ("total_200_499",10,get_data_int),
-  ("contrib_500_749",10,get_data_int),
-  ("total_500_749",10,get_data_int),
-  ("contrib_750",10,get_data_int),
-  ("total_750",10,get_data_int),
-  ("total_indiv_contrib",10,get_data_int),
-  ("major_pty_contrib",10,get_data_int),
-  ("pty_coord_expend",10,get_data_int),
-  ("corp_contrib",10,get_data_int),
-  ("labor_contrib",10,get_data_int),
-  ("non_connect_cont",10,get_data_int),
-  ("tmh_contrib",10,get_data_int),
-  ("coop_contrib",10,get_data_int),
-  ("corp_wo_stock",10,get_data_int),
-  ("non_party_exp",10,get_data_int),
-  ("non_party_exp_agn",10,get_data_int),
-  ("indep_exp_for",10,get_data_int),
-  ("indep_exp_agn",10,get_data_int),
-  ("comm_cost_for",10,get_data_int),
-  ("comm_cost_agn",10,get_data_int),
-  ("state_code",2,get_data_str),
-  ("district",2,get_data_str),
-  ("spec_elec_status",1,get_data_str),
-  ("primary_elec_status",1,get_data_str),
-  ("runoff_elec_status",1,get_data_str),
-  ("gen_elec_status",7,get_data_str),
-  ("spec_elec_cand",1,get_data_str)
-]
-CANSUM_94_ROW_DEF_SIZE = 402
-
-
-CANSUM_90_ROW_DEF = [
-  ("candidate_id",9,get_data_str),
-  ("candidate_name",38,get_data_str),
-  ("ico",1,get_data_ico),
-  ("fill",10,get_data_str),
-  ("party",1,get_data_party),
-  ("party_desig",3,get_data_str),
-  ("total_reciepts",12,get_data_int),
-  ("auth_trans_from",12,get_data_int),
-  ("total_disbursments",12,get_data_int),
-  ("trans_to_auth",12,get_data_int), #9
-  ("begin_cash",12,get_data_int),
-  ("end_cash",12,get_data_int),
-  ("contrib_from_cand",12,get_data_int),
-  ("loans_from_cand",12,get_data_int),
-  ("other_loans",12,get_data_int),
-  ("cand_loans_repay",12,get_data_int),
-  ("other_loan_repay",12,get_data_int),
-  ("debts_owned_by",12,get_data_int),
-  ("contrib_200_499",8,get_data_int),
-  ("total_200_499",12,get_data_int), #19
-  ("contrib_500_749",8,get_data_int),
-  ("total_500_749",12,get_data_int),
-  ("contrib_750",8,get_data_int),
-  ("total_750",12,get_data_int),
-  ("total_indiv_contrib",12,get_data_int),
-  ("major_pty_contrib",12,get_data_int),
-  ("pty_coord_expend",12,get_data_int),
-  ("corp_contrib",12,get_data_int),
-  ("labor_contrib",12,get_data_int),
-  ("non_connect_cont",12,get_data_int), #29
-  ("tmh_contrib",12,get_data_int), #30
-  ("coop_contrib",12,get_data_int),
-  ("corp_wo_stock",12,get_data_int),
-  ("non_party_exp",12,get_data_int),
-  ("non_party_exp_agn",12,get_data_int),
-  ("indep_exp_for",12,get_data_int),
-  ("indep_exp_agn",12,get_data_int),
-  ("comm_cost_for",12,get_data_int),
-  ("comm_cost_agn",12,get_data_int), #38
-  ("state_code",2,get_data_str),
-  ("district",2,get_data_str),
-  ("spec_elec_status",1,get_data_str),
-  ("primary_elec_status",1,get_data_str),
-  ("runoff_elec_status",1,get_data_str),
-  ("gen_elec_status",1,get_data_str),
-  ("spec_elec_cand",1,get_data_str)
-]
-CANSUM_90_ROW_DEF_SIZE = 461
-
-CANSUM_88_ROW_DEF = [
-  ("candidate_id",9,get_data_str),
-  ("candidate_name",38,get_data_str),
-  ("ico",1,get_data_ico),
-  ("fill",10,get_data_str),
-  ("party",1,get_data_party),
-  ("party_desig",3,get_data_str),
-  ("total_reciepts",12,get_data_int),
-  ("auth_trans_from",12,get_data_int),
-  ("total_disbursments",12,get_data_int),
-  ("trans_to_auth",12,get_data_int), #9
-  ("begin_cash",12,get_data_int),
-  ("end_cash",12,get_data_int),
-  ("contrib_from_cand",12,get_data_int),
-  ("loans_from_cand",12,get_data_int),
-  ("other_loans",12,get_data_int),
-  ("cand_loans_repay",12,get_data_int),
-  ("other_loan_repay",12,get_data_int),
-  ("debts_owned_by",12,get_data_int),
-  ("contrib_500_749",8,get_data_int),
-  ("total_500_749",12,get_data_int),
-  ("contrib_750",8,get_data_int),#20
-  ("total_750",12,get_data_int),
-  ("total_indiv_contrib",12,get_data_int),
-  ("major_pty_contrib",12,get_data_int),
-  ("pty_coord_expend",12,get_data_int),
-  ("corp_contrib",12,get_data_int),
-  ("labor_contrib",12,get_data_int),
-  ("non_connect_cont",12,get_data_int),
-  ("tmh_contrib",12,get_data_int),
-  ("coop_contrib",12,get_data_int),
-  ("corp_wo_stock",12,get_data_int),#30
-  ("non_party_exp",12,get_data_int),
-  ("non_party_exp_agn",12,get_data_int),
-  ("indep_exp_for",12,get_data_int),
-  ("indep_exp_agn",12,get_data_int),
-  ("comm_cost_for",12,get_data_int),
-  ("comm_cost_agn",12,get_data_int),
-  ("state_code",2,get_data_str),
-  ("district",2,get_data_str),
-  ("spec_elec_status",1,get_data_str),
-  ("primary_elec_status",1,get_data_str),
-  ("runoff_elec_status",1,get_data_str),
-  ("gen_elec_status",1,get_data_str),
-  ("spec_elec_cand",1,get_data_str)
-]
-CANSUM_88_ROW_DEF_SIZE = 440
-
-PAS2_DEF = [
-  ("from_committee_id", 9, get_data_str),
-  ("amendment_status", 1, get_data_str), #@@enumeration
-  ("report_type", 3, get_data_str), #@@enumeration
-  ("primary_general", 1, get_data_str), #@@enumeration
-  ("microfilm_loc", 11, get_data_str),
-  ("type", 3, get_data_str), #@@@@ important enumeration
-  ("date", 8, get_data_date),
-  ("amount", 7, get_data_int),
-  ("to_other_id", 9, get_data_str),
-  ("to_candidate_id", 9, get_data_str),
-  ("fec_record_id", 7, get_data_str)
+def_cansum92 = [
+  ('_type', 0, lambda x: 'Candidate'),
+  ("candidate_id", 9, string),
+  ("candidate_name", 38, string),
+  ("ico", 1, ico),
+  ("party", 1, party),
+  ("party_desig", 3, string),
+  ("total_reciepts", 10, integer),
+  ("auth_trans_from", 10, integer),
+  ("total_disbursments", 10, integer),
+  ("trans_to_auth", 10, integer),
+  ("begin_cash", 10, integer),
+  ("end_cash", 10, integer),
+  ("contrib_from_cand", 10, integer),
+  ("loans_from_cand", 10, integer),
+  ("other_loans", 10, integer),
+  ("cand_loans_repay", 10, integer),
+  ("other_loan_repay", 10, integer),
+  ("debts_owned_by", 10, integer),
+  ("contrib_200_499", 10, integer),
+  ("total_200_499", 10, integer),
+  ("contrib_500_749", 10, integer),
+  ("total_500_749", 10, integer),
+  ("contrib_750", 10, integer),
+  ("total_750", 10, integer),
+  ("total_indiv_contrib", 10, integer),
+  ("major_pty_contrib", 10, integer),
+  ("pty_coord_expend", 10, integer),
+  ("corp_contrib", 10, integer),
+  ("labor_contrib", 10, integer),
+  ("non_connect_cont", 10, integer),
+  ("tmh_contrib", 10, integer),
+  ("coop_contrib", 10, integer),
+  ("corp_wo_stock", 10, integer),
+  ("non_party_exp", 10, integer),
+  ("non_party_exp_agn", 10, integer),
+  ("indep_exp_for", 10, integer),
+  ("indep_exp_agn", 10, integer),
+  ("comm_cost_for", 10, integer),
+  ("comm_cost_agn", 10, integer),
+  ("state_code", 2, string),
+  ("district", 2, string),
+  ("spec_elec_status", 1, string),
+  ("primary_elec_status", 1, string),
+  ("runoff_elec_status", 1, string),
+  ("gen_elec_status", 7, string),
+  ("spec_elec_cand", 1, string),
+  (None, 2, filler)
 ]
 
-CM_DEF = [
-  ("committee_id", 9, get_data_str),
-  ("committee_name", 90, get_data_str),
-  ("treasurer_name", 38, get_data_str),
-  ("street_one", 34, get_data_str),
-  ("street_two", 34, get_data_str),
-  ("city", 18, get_data_str),
-  ("state", 2, get_data_str),
-  ("zip", 5, get_data_str),
-  ("committee_designation", 1, get_data_str), #@@enumeration
-  ("committee_type", 1, get_data_str), #@@enumeration
-  ("committee_party", 3, get_data_str), #@@enumeration
-  ("filing_frequency", 1, get_data_str), #@@enumeration
-  ("interest_group_category", 1, get_data_str), #@@@@important enumeration
-  ("connected_org_name", 38, get_data_str),
-  ("candidate_id", 9, get_data_str)
+def_cansum90 = [
+  ('_type', 0, lambda x: 'Candidate'),
+  ("candidate_id", 9, string),
+  ("candidate_name", 38, string),
+  ("ico", 1, ico),
+  ("fill", 10, string),
+  ("party", 1, party),
+  ("party_desig", 3, string),
+  ("total_reciepts", 12, integer),
+  ("auth_trans_from", 12, integer),
+  ("total_disbursments", 12, integer),
+  ("trans_to_auth", 12, integer), #9
+  ("begin_cash", 12, integer),
+  ("end_cash", 12, integer),
+  ("contrib_from_cand", 12, integer),
+  ("loans_from_cand", 12, integer),
+  ("other_loans", 12, integer),
+  ("cand_loans_repay", 12, integer),
+  ("other_loan_repay", 12, integer),
+  ("debts_owned_by", 12, integer),
+  ("contrib_200_499", 8, integer),
+  ("total_200_499", 12, integer), #19
+  ("contrib_500_749", 8, integer),
+  ("total_500_749", 12, integer),
+  ("contrib_750", 8, integer),
+  ("total_750", 12, integer),
+  ("total_indiv_contrib", 12, integer),
+  ("major_pty_contrib", 12, integer),
+  ("pty_coord_expend", 12, integer),
+  ("corp_contrib", 12, integer),
+  ("labor_contrib", 12, integer),
+  ("non_connect_cont", 12, integer), #29
+  ("tmh_contrib", 12, integer), #30
+  ("coop_contrib", 12, integer),
+  ("corp_wo_stock", 12, integer),
+  ("non_party_exp", 12, integer),
+  ("non_party_exp_agn", 12, integer),
+  ("indep_exp_for", 12, integer),
+  ("indep_exp_agn", 12, integer),
+  ("comm_cost_for", 12, integer),
+  ("comm_cost_agn", 12, integer), #38
+  ("state_code", 2, string),
+  ("district", 2, string),
+  ("spec_elec_status", 1, string),
+  ("primary_elec_status", 1, string),
+  ("runoff_elec_status", 1, string),
+  ("gen_elec_status", 1, string),
+  ("spec_elec_cand", 1, string),
+  (None, 2, filler)
 ]
 
-WEBK_ROW_DEF = [
-    ("id",9,get_data_str),
-    ("name",90,get_data_str),
-    ("type",1,get_comte_type),
-    ("desig",1,get_comte_desig),
-    ("ff",1,get_ff_type),
-    ("total_receipts",10,get_data_int),
-    ("trans_from_aff",10,get_data_str),
-    ("contrib_rec_from_indiv",10,get_data_int),
-    ("contrib_rec_from_other_pc",10,get_data_int),
-    ("contrib_from_cand",10,get_data_int),
-    ("cand_loans",10,get_data_int),
-    ("total_loans_rec",10,get_data_int),
-    ("total_disbursment",10,get_data_int),
-    ("trans_to_aff",10,get_data_int),
-    ("refunds_to_indiv",10,get_data_int),
-    ("refunds_to_other_pc",10,get_data_int),
-    ("cand_loan_repayments",10,get_data_int),
-    ("loan_repayments",10,get_data_int),
-    ("cash_begin",10,get_data_int),
-    ("cash_close",10,get_data_int),
-    ("debts_bowned_by",10,get_data_int),
-    ("nonfederal_trans_rec",10,get_data_int),
-    ("contrib_made_to_other",10,get_data_int),
-    ("indep_exped_made",10,get_data_str),
-    ("party_coord_expend_made",10,get_data_int),
-    ("nonfederal_share_of_expend",10,get_data_int),
-    ("month",2,get_data_int),
-    ("day",2,get_data_int),
-    ("year",4,get_data_int)
+def_cansum88 = [
+  ('_type', 0, lambda x: 'Candidate'),
+  ("candidate_id", 9, string),
+  ("candidate_name", 38, string),
+  ("ico", 1, ico),
+  ("fill", 10, string),
+  ("party", 1, party),
+  ("party_desig", 3, string),
+  ("total_reciepts", 12, integer),
+  ("auth_trans_from", 12, integer),
+  ("total_disbursments", 12, integer),
+  ("trans_to_auth", 12, integer), #9
+  ("begin_cash", 12, integer),
+  ("end_cash", 12, integer),
+  ("contrib_from_cand", 12, integer),
+  ("loans_from_cand", 12, integer),
+  ("other_loans", 12, integer),
+  ("cand_loans_repay", 12, integer),
+  ("other_loan_repay", 12, integer),
+  ("debts_owned_by", 12, integer),
+  ("contrib_500_749", 8, integer),
+  ("total_500_749", 12, integer),
+  ("contrib_750", 8, integer),#20
+  ("total_750", 12, integer),
+  ("total_indiv_contrib", 12, integer),
+  ("major_pty_contrib", 12, integer),
+  ("pty_coord_expend", 12, integer),
+  ("corp_contrib", 12, integer),
+  ("labor_contrib", 12, integer),
+  ("non_connect_cont", 12, integer),
+  ("tmh_contrib", 12, integer),
+  ("coop_contrib", 12, integer),
+  ("corp_wo_stock", 12, integer),#30
+  ("non_party_exp", 12, integer),
+  ("non_party_exp_agn", 12, integer),
+  ("indep_exp_for", 12, integer),
+  ("indep_exp_agn", 12, integer),
+  ("comm_cost_for", 12, integer),
+  ("comm_cost_agn", 12, integer),
+  ("state_code", 2, string),
+  ("district", 2, string),
+  ("spec_elec_status", 1, string),
+  ("primary_elec_status", 1, string),
+  ("runoff_elec_status", 1, string),
+  ("gen_elec_status", 1, string),
+  ("spec_elec_cand", 1, string),
+  (None, 2, filler)
 ]
+
+def_pas2 = [
+  ('_type', 0, lambda x: 'Transfer'),
+  ("from_committee_id", 9, string),
+  ("amendment_status", 1, enum),
+  ("report_type", 3, enum),
+  ("primary_general", 1, enum),
+  ("microfilm_loc", 11, string),
+  ("type", 3, enum), #@@@@ important enumeration
+  ("date", 8, date),
+  ("amount", 7, integer),
+  ("to_other_id", 9, string),
+  ("to_candidate_id", 9, string),
+  ("fec_record_id", 7, string),
+  (None, 2, filler)
+]
+
+def_cm = [
+  ('_type', 0, lambda x: 'Committee'),
+  ("committee_id", 9, string),
+  ("committee_name", 90, string),
+  ("treasurer_name", 38, string),
+  ("street_one", 34, string),
+  ("street_two", 34, string),
+  ("city", 18, string),
+  ("state", 2, string),
+  ("zip", 5, string),
+  ("committee_designation", 1, enum),
+  ("committee_type", 1, enum),
+  ("committee_party", 3, enum),
+  ("filing_frequency", 1, enum),
+  ("interest_group_category", 1, enum), #@@@@important enumeration
+  ("connected_org_name", 38, string),
+  ("candidate_id", 9, string),
+  (None, 2, filler)
+]
+
+def_webk = [
+  ('_type', 0, lambda x: 'PAC/PARTY'),
+  ("id", 9, string),
+  ("name", 90, string),
+  ("type", 1, cmte_type),
+  ("desig", 1, cmte_desig),
+  ("filing_freq", 1, filing_freq),
+  ("total_receipts", 10, integer),
+  ("trans_from_aff", 10, string),
+  ("contrib_rec_from_indiv", 10, integer),
+  ("contrib_rec_from_other_pc", 10, integer),
+  ("contrib_from_cand", 10, integer),
+  ("cand_loans", 10, integer),
+  ("total_loans_rec", 10, integer),
+  ("total_disbursment", 10, integer),
+  ("trans_to_aff", 10, integer),
+  ("refunds_to_indiv", 10, integer),
+  ("refunds_to_other_pc", 10, integer),
+  ("cand_loan_repayments", 10, integer),
+  ("loan_repayments", 10, integer),
+  ("cash_begin", 10, integer),
+  ("cash_close", 10, integer),
+  ("debts_bowned_by", 10, integer),
+  ("nonfederal_trans_rec", 10, integer),
+  ("contrib_made_to_other", 10, integer),
+  ("indep_exped_made", 10, string),
+  ("party_coord_expend_made", 10, integer),
+  ("nonfederal_share_of_expend", 10, integer),
+  ("month", 2, integer),
+  ("day", 2, integer),
+  ("year", 4, integer),
+  (None, 2, filler)
+]
+
 #Supporst PACSUM[92-04]
-PAC_SUM_ROW_DEF = [
-    ("committee_id",9,get_data_str),
-    ("committee_name",90,get_data_str),
-    ("sig",1,get_data_str),
-    ("end_coverage_date",6,get_data_date),
-    ("total_receipts",10,get_data_int),
-    ("trans_from_aff",10,get_data_int),
-    ("contrib_from_party",10,get_data_int),
-    ("contrib_from_non_party",10,get_data_int),
-    ("total_indiv_contrib",10,get_data_int),
-    ("indiv_contrib_200+",10,get_data_int),
-    ("in_kind_contrib",10,get_data_int),
-    ("total_disbursements",10,get_data_int),
-    ("trans_to_aff",10,get_data_int),
-    ("contrib_to_party",10,get_data_int),
-    ("contrib_to_non_party",10,get_data_int),
-    ("indiv_contrib_refund",10,get_data_int),
-    ("begin_cash",10,get_data_int),
-    ("end_cash",10,get_data_int),
-    ("debts_owed_to",10,get_data_int),
-    ("debts_owed_by",10,get_data_int),
-    ("total_in_kind_contrib",10,get_data_int),
-    ("total_1999_contrib",10,get_data_int),
-    ("total_for",10,get_data_int),
-    ("total_against",10,get_data_int),
-    ("pres_contrib_dem",10,get_data_int),
-    ("pres_contrib_rep",10,get_data_int),
-    ("pres_contrib_oth",10,get_data_int),
-    ("senate_contrib_dem",10,get_data_int),
-    ("senate_contrib_rep",10,get_data_int),
-    ("senate_contrib_oth",10,get_data_int),
-    ("house_contrib_dem",10,get_data_int),
-    ("house_contrib_rep",10,get_data_int),
-    ("house_contrib_oth",10,get_data_int),
-    ("senate_inc_contrib",10,get_data_int),
-    ("senate_cha_contrib",10,get_data_int),
-    ("senate_opn_contrib",10,get_data_int),
-    ("house_inc_contrib",10,get_data_int),
-    ("house_cha_contrib",10,get_data_int),
-    ("house_opn_contrib",10,get_data_int),
-    ("non_federal_trans",10,get_data_int),
-    ("non_federal_expend",10,get_data_int)]
+def_pacsum = [
+  ('_type', 0, lambda x: 'PAC'),
+  ("committee_id", 9, string),
+  ("committee_name", 90, string),
+  ("sig", 1, string),
+  ("end_coverage_date", 6, date),
+  ("total_receipts", 10, integer),
+  ("trans_from_aff", 10, integer),
+  ("contrib_from_party", 10, integer),
+  ("contrib_from_non_party", 10, integer),
+  ("total_indiv_contrib", 10, integer),
+  ("indiv_contrib_200+", 10, integer),
+  ("in_kind_contrib", 10, integer),
+  ("total_disbursements", 10, integer),
+  ("trans_to_aff", 10, integer),
+  ("contrib_to_party", 10, integer),
+  ("contrib_to_non_party", 10, integer),
+  ("indiv_contrib_refund", 10, integer),
+  ("begin_cash", 10, integer),
+  ("end_cash", 10, integer),
+  ("debts_owed_to", 10, integer),
+  ("debts_owed_by", 10, integer),
+  ("total_in_kind_contrib", 10, integer),
+  ("total_1999_contrib", 10, integer),
+  ("total_for", 10, integer),
+  ("total_against", 10, integer),
+  ("pres_contrib_dem", 10, integer),
+  ("pres_contrib_rep", 10, integer),
+  ("pres_contrib_oth", 10, integer),
+  ("senate_contrib_dem", 10, integer),
+  ("senate_contrib_rep", 10, integer),
+  ("senate_contrib_oth", 10, integer),
+  ("house_contrib_dem", 10, integer),
+  ("house_contrib_rep", 10, integer),
+  ("house_contrib_oth", 10, integer),
+  ("senate_inc_contrib", 10, integer),
+  ("senate_cha_contrib", 10, integer),
+  ("senate_opn_contrib", 10, integer),
+  ("house_inc_contrib", 10, integer),
+  ("house_cha_contrib", 10, integer),
+  ("house_opn_contrib", 10, integer),
+  ("non_federal_trans", 10, integer),
+  ("non_federal_expend", 10, integer),
+  (None, 2, filler)
+]
+
+# Supports PACSUM[84-90]
+def_pacsum90 = [
+  ('_type', 0, lambda x: 'PAC'),
+  ("committee_id", 9, string),
+  ("committee_name", 90, string),
+  ("sig", 1, string),
+  ("end_coverage_date", 10, date2),
+  ("total_receipts", 12, integer),
+  ("contrib_from_aff", 12, integer),
+  ("contrib_from_party", 12, integer),
+  ("contrib_from_non_party", 12, integer),
+  ("indiv_contrib", 12, integer),
+  ("total_contrib", 12, integer),
+  ("in_kind_contrib", 12, integer),
+  ("total_disbursements", 12, integer),
+  ("contrib_to_non_party_aff", 12, integer),
+  ("contrib_to_party", 12, integer),
+  ("contrib_to_non_party", 12, integer),
+  ("indiv_contrib_refund", 12, integer),
+  ("begin_cash_year_1", 12, integer),
+  ("end_cash_year_2", 12, integer),
+  ("debts_owed_to", 12, integer),
+  ("debts_owed_by", 12, integer),
+  ("total_in_kind_contrib", 12, integer),
+  ("total_1_contrib", 12, integer),
+  ("total_indep_for", 12, integer),
+  ("total_indep_against", 12, integer),
+  ("pres_contrib_dem", 12, integer),
+  ("pres_contrib_rep", 12, integer),
+  ("pres_contrib_oth", 12, integer),
+  ("senate_contrib_dem", 12, integer),
+  ("senate_contrib_rep", 12, integer),
+  ("senate_contrib_oth", 12, integer),
+  ("house_contrib_dem", 12, integer),
+  ("house_contrib_rep", 12, integer),
+  ("house_contrib_oth", 12, integer),
+  ("senate_inc_contrib", 12, integer),
+  ("senate_cha_contrib", 12, integer),
+  ("senate_opn_contrib", 12, integer),
+  ("house_inc_contrib", 12, integer),
+  ("house_cha_contrib", 12, integer),
+  ("house_opn_contrib", 12, integer),
+  (None, 2, filler)
+]
 
 
-#Supporst PACSUM[84-90]
-PAC_SUM_90_ROW_DEF = [
-    ("committee_id",9,get_data_str),
-    ("committee_name",90,get_data_str),
-    ("sig",1,get_data_str),
-    ("end_coverage_date",10,get_data_date2),
-    ("total_receipts",12,get_data_int),
-    ("contrib_from_aff",12,get_data_int),
-    ("contrib_from_party",12,get_data_int),
-    ("contrib_from_non_party",12,get_data_int),
-    ("indiv_contrib",12,get_data_int),
-    ("total_contrib",12,get_data_int),
-    ("in_kind_contrib",12,get_data_int),
-    ("total_disbursements",12,get_data_int),
-    ("contrib_to_non_party_aff",12,get_data_int),
-    ("contrib_to_party",12,get_data_int),
-    ("contrib_to_non_party",12,get_data_int),
-    ("indiv_contrib_refund",12,get_data_int),
-    ("begin_cash_year_1",12,get_data_int),
-    ("end_cash_year_2",12,get_data_int),
-    ("debts_owed_to",12,get_data_int),
-    ("debts_owed_by",12,get_data_int),
-    ("total_in_kind_contrib",12,get_data_int),
-    ("total_1_contrib",12,get_data_int),
-    ("total_indep_for",12,get_data_int),
-    ("total_indep_against",12,get_data_int),
-    ("pres_contrib_dem",12,get_data_int),
-    ("pres_contrib_rep",12,get_data_int),
-    ("pres_contrib_oth",12,get_data_int),
-    ("senate_contrib_dem",12,get_data_int),
-    ("senate_contrib_rep",12,get_data_int),
-    ("senate_contrib_oth",12,get_data_int),
-    ("house_contrib_dem",12,get_data_int),
-    ("house_contrib_rep",12,get_data_int),
-    ("house_contrib_oth",12,get_data_int),
-    ("senate_inc_contrib",12,get_data_int),
-    ("senate_cha_contrib",12,get_data_int),
-    ("senate_opn_contrib",12,get_data_int),
-    ("house_inc_contrib",12,get_data_int),
-    ("house_cha_contrib",12,get_data_int),
-    ("house_opn_contrib",12,get_data_int)]
+# Supports PACSUM[80-82]
+def_pacsum82 = [
+  ('_type', 0, lambda x: 'PAC'),
+  ("committee_id", 9, string),
+  ("committee_name", 90, string),
+  ("committee_type", 1, string),
+  ("sig", 1, string),
+  ("party", 3, string),
+  ("not_used", 1, string),
+  ("state", 2, string),
+  ("total_receipts", 10, integer),
+  ("trans_in_party", 10, integer),
+  ("trans_in_party_other", 10, integer),
+  ("corp_contrib", 10, integer),
+  ("labor_contrib", 10, integer),
+  ("non_connected_contrib", 10, integer),
+  ("tmh_contrib", 10, integer),
+  ("coop_contrib", 10, integer),
+  ("corp_wo_stock_contrib", 10, integer),
+  ("num_cand_contrib_to", 10, integer),
+  ("total_party_contrib", 10, integer),
+  ("not_used2", 10, string),
+  ("not_used3", 10, string),
+  ("contrib_500+", 10, integer),
+  ("total_disbursements", 10, integer),
+  ("trans_out_party_same", 10, integer),
+  ("trans_out_party_other", 10, integer),
+  ("total_contrib", 10, integer),
+  ("not_used4", 80, string),
+  ("latest_cash_on_hand", 10, integer),
+  ("jan_1_cash_on_hand", 10, integer),
+  ("debts_owed_to", 10, integer),
+  ("debts_owed_by", 10, integer),
+  ("in_kind_contrib", 10, integer),
+  ("contrib_refunds", 10, integer),
+  ("contrib_to_dem_pres", 10, integer),
+  ("contrib_to_rep_pres", 10, integer),
+  ("contrib_to_other_pres", 10, integer),
+  ("contrib_to_dem_senate", 10, integer),
+  ("contrib_to_rep_senate", 10, integer),
+  ("contrib_to_other_senate", 10, integer),
+  ("contrib_to_dem_house", 10, integer),
+  ("contrib_to_rep_house", 10, integer),
+  ("contrib_to_other_house", 10, integer),
+  ("expend_on_dem_pres", 10, integer),
+  ("expend_on_rep_pres", 10, integer),
+  ("expend_on_other_pres", 10, integer),
+  ("expend_on_dem_senate", 10, integer),
+  ("expend_on_rep_senate", 10, integer),
+  ("expend_on_other_senate", 10, integer),
+  ("expend_on_dem_house", 10, integer),
+  ("expend_on_rep_house", 10, integer),
+  ("expend_on_other_house", 10, integer),
+  ("end_coverage_date", 8, date),
+  ("senate_house_inc_contrib", 9, integer),
+  ("senate_house_cha_contrib", 9, integer),
+  ("senate_house_opn_contrib", 9, integer),
+  (None, 2, filler)
+]
 
-
-#Supporst PACSUM[80-82]
-PAC_SUM_82_ROW_DEF = [
-    ("committee_id",9,get_data_str),
-    ("committee_name",90,get_data_str),
-    ("committee_type",1,get_data_str),
-    ("sig",1,get_data_str),
-    ("party",3,get_data_str),
-    ("not_used",1,get_data_str),
-    ("state",2,get_data_str),
-    ("total_receipts",10,get_data_int),
-    ("trans_in_party",10,get_data_int),
-    ("trans_in_party_other",10,get_data_int),
-    ("corp_contrib",10,get_data_int),
-    ("labor_contrib",10,get_data_int),
-    ("non_connected_contrib",10,get_data_int),
-    ("tmh_contrib",10,get_data_int),
-    ("coop_contrib",10,get_data_int),
-    ("corp_wo_stock_contrib",10,get_data_int),
-    ("num_cand_contrib_to",10,get_data_int),
-    ("total_party_contrib",10,get_data_int),
-    ("not_used2",10,get_data_str),
-    ("not_used3",10,get_data_str),
-    ("contrib_500+",10,get_data_int),
-    ("total_disbursements",10,get_data_int),
-    ("trans_out_party_same",10,get_data_int),
-    ("trans_out_party_other",10,get_data_int),
-    ("total_contrib",10,get_data_int),
-    ("not_used4",80,get_data_str),
-    ("latest_cash_on_hand",10,get_data_int),
-    ("jan_1_cash_on_hand",10,get_data_int),
-    ("debts_owed_to",10,get_data_int),
-    ("debts_owed_by",10,get_data_int),
-    ("in_kind_contrib",10,get_data_int),
-    ("contrib_refunds",10,get_data_int),
-    ("contrib_to_dem_pres",10,get_data_int),
-    ("contrib_to_rep_pres",10,get_data_int),
-    ("contrib_to_other_pres",10,get_data_int),
-    ("contrib_to_dem_senate",10,get_data_int),
-    ("contrib_to_rep_senate",10,get_data_int),
-    ("contrib_to_other_senate",10,get_data_int),
-    ("contrib_to_dem_house",10,get_data_int),
-    ("contrib_to_rep_house",10,get_data_int),
-    ("contrib_to_other_house",10,get_data_int),
-    ("expend_on_dem_pres",10,get_data_int),
-    ("expend_on_rep_pres",10,get_data_int),
-    ("expend_on_other_pres",10,get_data_int),
-    ("expend_on_dem_senate",10,get_data_int),
-    ("expend_on_rep_senate",10,get_data_int),
-    ("expend_on_other_senate",10,get_data_int),
-    ("expend_on_dem_house",10,get_data_int),
-    ("expend_on_rep_house",10,get_data_int),
-    ("expend_on_other_house",10,get_data_int),
-    ("end_coverage_date",8,get_data_date),
-    ("senate_house_inc_contrib",9,get_data_int),
-    ("senate_house_cha_contrib",9,get_data_int),
-    ("senate_house_opn_contrib",9,get_data_int)]
-
-INDIV_ROW_DEF = [
-  ('filer_id', 9, get_data_str),
-  ('amendment_type', 1, get_data_str), #@@enumeration
-  ('report_type', 3, get_data_str), #@@enumeration
-  ('primary_general', 1, get_data_str), #@@enumeration
-  ('microfilm_loc', 11, get_data_str),
-  ('transaction_type', 3, get_data_str), #@@important enumeration
-  ('src_name', 34, get_data_str),
-  ('src_city', 18, get_data_str),
-  ('src_state', 2, get_data_str),
-  ('src_zip', 5, get_data_str),
-  ('src_occupation', 35, get_data_str),
-  ('date', 8, get_data_date),
-  ('amount', 7, get_data_int),
-  ('src_id', 9, get_data_str),
-  ('fec_record_id', 7, get_data_str)
+def_indiv = [
+  ('_type', 0, lambda x: 'Individual Contribution'),
+  ('filer_id', 9, string),
+  ('amendment_type', 1, enum),
+  ('report_type', 3, enum),
+  ('primary_general', 1, enum),
+  ('microfilm_loc', 11, string),
+  ('transaction_type', 3, enum), #@@important enumeration
+  ('src_name', 34, string),
+  ('src_city', 18, string),
+  ('src_state', 2, string),
+  ('src_zip', 5, string),
+  ('src_occupation', 35, string),
+  ('date', 8, date),
+  ('amount', 7, integer),
+  ('src_id', 9, string),
+  ('fec_record_id', 7, string),
+  (None, 2, filler)
 ]
 
 def parse_candidates():
-    return read_fec_file(file("../data/crawl/fec/2008/weball.dat"), WEB_ROW_DEF)
+    return parse_file(def_webl, file("../data/crawl/fec/2008/weball.dat"))
 def parse_committees():
-    return read_fec_file(file("../data/crawl/fec/2008/cm.dat"), CM_DEF)
+    return parse_file(def_cm, file("../data/crawl/fec/2008/cm.dat"))
 def parse_transfers():
-    return read_fec_file(file("../data/crawl/fec/2008/pas2.dat"), PAS2_DEF)
+    return parse_file(def_pas2, file("../data/crawl/fec/2008/pas2.dat"))
 def parse_contributions():
-    return read_fec_file(gzip.open("../data/crawl/fec/2008/indiv.dat.gz"), INDIV_ROW_DEF)
+    return parse_file(def_indiv, gzip.open("../data/crawl/fec/2008/indiv.dat.gz"))
 
 if __name__ == "__main__":
     import tools

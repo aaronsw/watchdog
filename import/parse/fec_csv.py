@@ -6,22 +6,19 @@ __author__ = ["Simon Carstensen <me@simonbc.com>"]
 import glob, zipfile
 
 HEADERS_PATH = '../data/crawl/fec/electronic/headers/'
+EFILINGS_PATH = '../data/crawl/fec/electronic/'
 
 def parse_headers():
-    """Parse and load the specifications of the FEC electronic filing formats"""
+    """Parse and load the specifications of the FEC electronic filing formats."""
 
-    files = os.listdir(HEADERS_PATH)
-    files.sort()
     out = dict()
-    for f in filter(lambda x: x.endswith('.csv'), files):
-        headers = file(HEADERS_PATH+f).read().strip()
-        headers = headers.split('\r') # split into lines
+    for f in glob.glob(HEADERS_PATH + '*.csv'):
+        headers = file(f).read().strip().split('\r')
         headers = filter(lambda x: not x.startswith('TEXT'), headers) # remove comments
         ver = f[:-4]
         out[ver] = dict()
         for h in headers:
-            cols = map(lambda x: x.strip(), h.split(';'))
-            cols = filter(lambda x: x != '', cols)
+            cols = [x.strip() for x in h.split(';') if x != '']
             form_type = cols[0].replace(' ', '')
             out[ver][form_type] = cols[1:]
     return out
@@ -50,9 +47,9 @@ def get_format_ver(hdr, sep):
     return (ver in VERSIONS and ver) or None
 
 def get_form_type(report, sep, ver):
-    type = report.split(sep)[0]
-    type = fixquotes(type)
-    return type
+    ftype = report.split(sep)[0]
+    ftype = fixquotes(ftype)
+    return ftype
 
 def get_orig_report_id(hdr, sep, ver):
     i = (ver in ['6.1', '6.2'] and 5) or 6
@@ -84,22 +81,22 @@ def rsplit(filing, sep):
 def amendment_sort(x, y):
     return cmp(x['report_no'], y['report_no'])
 
-EFILINGS_PATH = '../data/crawl/fec/electronic/'
 def file_index():
-    files = os.listdir(EFILINGS_PATH)
-    zfiles = filter(lambda f: f.endswith('.zip'), files)
     reports = list()
     amendments = dict()
-    for f in zfiles:
+
+    files = glob.glob(EFILINGS_PATH + '*.zip')
+    files.sort()
+    for f in files:
         print >> sys.stderr, '\r', f,
         sys.stderr.flush()
-        if not os.stat(EFILINGS_PATH+f).st_size: continue
-        zf = zipfile.ZipFile(EFILINGS_PATH+f)
+
+        if not os.stat(f).st_size: continue
+        zf = zipfile.ZipFile(f)
         filenames = zf.namelist()
         for fn in filenames:
             d = read_report(f, fn, zf.read(fn))
-            if not d:
-                continue
+            if not d: continue
             if d['form_type'].endswith('A'):
                 # amendment
                 orig_report_id = get_orig_report_id(d['hdr'], d['sep'], d['ver'])

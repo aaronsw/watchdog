@@ -2,19 +2,10 @@
 Parser for USPS AIS records.
 """
 
+from fixed_width import date, year, string, boolean, filler, enum, integer, \
+  FIELD_KEY, FIELD_LEN, FIELD_TYP, get_len, parse_line, parse_file
+
 ## Types used in definitions
-
-def date(s):
-    return s[0:4] + '-' + s[4:6] + '-' + s[6:8]
-
-def year(s):
-    return '20' + s
-
-def string(s):
-    return s.strip()
-
-def boolean(s):
-    return {'Y': True, 'N': False, ' ': None}[s]
 
 def halfbool1(s):
     return dict(A=True, B=True, C=False, D=False)
@@ -22,31 +13,7 @@ def halfbool1(s):
 def halfbool2(s):
     return dict(A=True, B=False, C=True, D=False)
 
-filler = string
-
-def enum(s=None, **db):
-    if isinstance(s, basestring):
-        return string(s)
-    else:
-        if ' ' not in db: db[' '] = None
-        return lambda s: db[s]
-
 oddeven = enum(O='ODD', E='EVEN', B='BOTH')
-
-def integer(s):
-    s = s.strip()
-    if s:
-        try:
-            return int(s)
-        except ValueError:
-            return s
-    else: return None
-
-## Format of the definitions
-
-FIELD_KEY = 0
-FIELD_LEN = 1
-FIELD_TYP = 2
 
 ## The definitions
 
@@ -276,29 +243,7 @@ def_tigerzip = {
   ]
 }
 
-def parse_line(linedef, line):
-    out = {}
-    n = 0
-    for (k, l, t) in linedef:
-        if l < 0 : # go back
-            out[k] = t(line[n+l:n])
-        elif k is not None:
-            out[k] = t(line[n:n+l])
-        if l > 0: n += l
-    return out
-
-def get_len(filedef):
-    linelen = set(sum(line[FIELD_LEN] for line in kind if line[FIELD_LEN] > 0) for kind in filedef.itervalues())
-    assert len(linelen) == 1, [(kind_name, sum(line[FIELD_LEN] for line in kind if line[FIELD_LEN] > 0)) for kind_name, kind in filedef.iteritems()]
-    linelen = list(linelen)[0]
-    return linelen
-
 ## The functions you might want to call
-
-def parse_file(filedef, fh):
-    linelen = get_len(filedef)
-    for line in iter(lambda: fh.read(linelen), ''):
-        yield parse_line(filedef[line[0]], line)
 
 def parse_tigerzip(fh):
     linelen = get_len(def_tigerzip)

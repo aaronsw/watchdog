@@ -255,6 +255,7 @@ class Contribution (sql.Table):
 
 class Expenditure (sql.Table):
     id = sql.Serial(primary=True)
+    candidate_name = sql.String()
     committee = sql.String()
     expenditure_date = sql.Date()
     recipient = sql.String()

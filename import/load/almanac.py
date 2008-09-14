@@ -1,5 +1,7 @@
 #!/usr/bin/python
 import glob, web, os, cgitb, simplejson, sys
+import tools
+from settings import db
 from parse import almanac
 sys.excepthook = cgitb.Hook(format='text', file=sys.stderr)
 
@@ -21,10 +23,8 @@ def coalesce_population(data, fields):
     return (None, None)
 
 def main():
-    districts = simplejson.load(file(DATA_DIR + '/load/districts/index.json'))
-    
     assert os.path.exists(ALMANAC_DIR), ALMANAC_DIR
-    out = {}
+    
     for fn in glob.glob(ALMANAC_DIR + 'people/*/rep*'):
         district = web.storage()
         
@@ -36,7 +36,7 @@ def main():
         if 'demographics' in d:
             demog = d['demographics']
         else:
-            #@@ maybe only when diststate + '-00' in districts?
+            #@@ maybe only when ends with '-00'?
             statefile = ALMANAC_DIR + 'states/%s/index.html' % diststate.lower()
             demog = almanac.scrape_state(statefile).get('state')
 
@@ -52,18 +52,9 @@ def main():
                 (2000, 'Pop. 2000'),
             ])
 
-        if 'interest_group_rating' in d:
-            district.interest_group_rating = d['interest_group_rating']
-
         district.almanac = 'http://' + d['filename'][d['filename'].find('nationaljournal.com'):]
+        distname = tools.fixdist(diststate + '-' + distnum)
+        
+        db.update('district', where='name=$distname', vars=locals(), **district)
 
-        # Nationaljournal numbers districts of congressmen-at-large
-        # and territorial delegates '01' in its URLs, but our
-        # districts file numbers them '00'.
-        if distnum == '01' and diststate + '-00' in districts:
-            distnum = '00'
-        out[diststate + '-' + distnum]  = district
-    return out
-
-if __name__ == '__main__':
-    print simplejson.dumps(main(), indent=2, sort_keys=True)
+if __name__ == '__main__': main()

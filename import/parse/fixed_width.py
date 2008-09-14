@@ -1,6 +1,11 @@
+"""
+Library for processing fixed-width files.
+"""
+
 ## Types used in definitions
 
 def date(s):
+    """where `s` is YYYYMMDD"""
     return s[0:4] + '-' + s[4:6] + '-' + s[6:8]
 
 def year(s):
@@ -46,28 +51,33 @@ FIELD_KEY = 0
 FIELD_LEN = 1
 FIELD_TYP = 2
 
-
 ## The functions you might want to call
 
 def parse_line(linedef, line):
-    assert(line[-1] in '\n\r')
     out = {}
     n = 0
     for (k, l, t) in linedef:
+        if l < 0 : # go back
+            out[k] = t(line[n+l:n])
         if k is not None:
             out[k] = t(line[n:n+l])
-        n += l
+        if l > 0: n += l
     return out
 
 def get_len(filedef):
-    linelen = set(sum(line[FIELD_LEN] for line in kind) for kind in filedef.itervalues())
-    assert len(linelen) == 1, [(kind_name, sum(line[FIELD_LEN] for line in kind)) for kind_name, kind in filedef.iteritems()]
-    linelen = list(linelen)[0]
-    return linelen
+    if isinstance(filedef, dict):
+        linelen = set(sum(line[FIELD_LEN] for line in kind) for kind in filedef.itervalues())
+        assert len(linelen) == 1, [(kind_name, sum(line[FIELD_LEN] for line in kind)) for kind_name, kind in filedef.iteritems()]
+        linelen = list(linelen)[0]
+        return linelen
+    else:
+        return sum(line[FIELD_LEN] for line in filedef)
 
 def parse_file(filedef, fh, f_whichdef=None):
     linelen = get_len(filedef)
-    if not f_whichdef: f_whichdef = lambda x: x[0]
+    if isinstance(filedef, dict):
+        if not f_whichdef: f_whichdef = lambda x: x[0]
+    else:
+        f_whichdef = lambda x: slice(None, None)
     for line in iter(lambda: fh.read(linelen), ''):
         yield parse_line(filedef[f_whichdef(line)], line)
-

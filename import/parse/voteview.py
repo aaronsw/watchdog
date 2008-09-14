@@ -5,7 +5,7 @@ parse voteview partisanship data
 HOUSE_DAT = "../data/crawl/voteview/HL01110C21_PRES_BSSE.DAT"
 SENATE_DAT = "../data/crawl/voteview/SL01110C21_BSSE.dat"
 
-state_map = { #@@ import to state db
+state_map = { #@@ import to state json as icpsr
   41: 'AL', 81: 'AK', 61: 'AZ', 42: 'AR', 71: 'CA', 62: 'CO', 1: 'CT',
   11: 'DE', 43: 'FL', 44: 'GA', 82: 'HI', 63: 'ID', 21: 'IL', 22: 'IN',
   31: 'IA', 32: 'KS', 51: 'KY', 45: 'LA', 2: 'ME', 52: 'MD', 3: 'MA',

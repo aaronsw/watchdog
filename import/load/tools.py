@@ -8,6 +8,7 @@ import web
 from settings import db
 
 STATE_TABLE = 'load/manual/states.json'
+DISTRICT_TABLE = 'load/manual/states.json'
 
 _stripterms = ['the', 'corporation', 'corp', 'incorporated', 'inc']
 r_plain = re.compile(r'[a-z ]+')
@@ -31,6 +32,14 @@ def unfips(fipscode):
             _unfipscache[state['fipscode']] = stateid
         
     return _unfipscache.get(fipscode)
+
+def fixdist(dist):
+    districts = simplejson.load(file(DISTRICT_TABLE))
+    if dist.endswith('-01') and dist[:-1] + '0' in districts:
+        return dist[:-1] + '0'
+    else:
+        return dist
+    
 
 _districtcache = {}
 def districtp(district):

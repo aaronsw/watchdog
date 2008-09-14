@@ -20,7 +20,6 @@ LOAD=../data/load
 JSONS=$(LOAD)/states/index.json \
       $(LOAD)/districts/index.json \
       $(LOAD)/politicians/index.json \
-      $(LOAD)/politicians/earmarks.json \
 
 TSVS=$(LOAD)/bill.tsv \
 	 $(LOAD)/vote.tsv \
@@ -37,7 +36,7 @@ NJS=$(PARSE)/almanac.njs \
 
 LOADERS = .schema .json \
           .almanac .centers .voteview .govtrack \
-          .bills .interests .votesmart .photos .fec .census .soi
+          .bills .interests .votesmart .photos .fec .census .soi .earmarks
 
 all: database
 clean:
@@ -67,12 +66,15 @@ $(LOAD)/districts/index.json: load/manual/districts.json
 # not currently using .shapes
 .shapes: load/shapes.py parse/shapes.py
 	$(PYTHON) load/shapes.py
+	touch $@
 
 .almanac: load/almanac.py parse/almanac.py
 	$(PYTHON) load/almanac.py
+	touch $@
 
 .centers: load/govtrack_gis.py
 	$(PYTHON) load/govtrack_gis.py
+	touch $@
 
 $(LOAD)/politicians/index.json: load/manual/politicians.json
 	mkdir -p $(LOAD)/politicians
@@ -80,16 +82,19 @@ $(LOAD)/politicians/index.json: load/manual/politicians.json
 
 .govtrack: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml
 	$(PYTHON) load/govtrack.py
+	touch $@
 
 .voteview: load/voteview.py parse/voteview.py ../data/crawl/voteview/
 	$(PYTHON) load/voteview.py
+	touch $@
 
-$(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack.json
-	$(PYTHON) load/earmarks.py > $@.tmp
-	mv $@.tmp $@
+.earmarks: load/earmarks.py $(LOAD)/politicians/govtrack.json
+	$(PYTHON) load/earmarks.py
+	touch $@
 
 $(LOAD)/bill.tsv $(LOAD)/vote.tsv: load/bills.py
 	$(PYTHON) load/bills.py
+	touch $@
 
 .bills: $(LOAD)/bill.tsv $(LOAD)/vote.tsv .schema
 	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/bill.tsv
@@ -125,7 +130,7 @@ ALTER TABLE zip4 ADD PRIMARY KEY (zip,plus4); \
 		" | $(DBCLIENT) $(WATCHDOG_TABLE)
 	touch $@
 
-.soi: .schema .json .zip4
+.soi: .schema .json
 	$(PYTHON) load/soi.py
 	touch $@
 

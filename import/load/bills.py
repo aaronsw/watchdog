@@ -4,43 +4,38 @@ load bill data
 from: data/crawl/govtrack/us/110/{bills,rolls}
 """
 from __future__ import with_statement
-import os
-import sys
-import glob
-
+import os, sys, glob
 import xmltramp
 import web
-
 from tools import db, govtrackp
 
-DATA_DIR='../data/'
-GOVTRACK_CRAWL=DATA_DIR+'/crawl/govtrack'
+DATA_DIR = '../data/'
+GOVTRACK_CRAWL = DATA_DIR+'/crawl/govtrack'
 
 def bill2dict(bill):
-    d = {}
-    d['id'] = 'us/%s/%s%s' % (bill('session'), bill('type'), bill('number'))
-    d['session'] = bill('session')
-    d['type'] = bill('type')
-    d['number'] = bill('number')
-    d['introduced'] = bill.introduced('datetime')
+    d = web.storage()
+    d.id = 'us/%s/%s%s' % (bill('session'), bill('type'), bill('number'))
+    d.session = bill('session')
+    d.type = bill('type')
+    d.number = bill('number')
+    d.introduced = bill.introduced('datetime')
     titles = [unicode(x) for x in bill.titles['title':] 
       if x('type') == 'short']
     if not titles:
         titles = [unicode(x) for x in bill.titles['title':]]
-    d['title'] = titles[0]
+    d.title = titles[0]
 
     summaries = [unicode(x) for x in bill.titles['title':] 
       if x('type') == 'official']
     if not summaries:
         summaries = [unicode(x) for x in bill.titles['title':]]
-    d['summary'] = summaries[0]
+    d.summary = summaries[0]
     
-    d['sponsor_id'] = govtrackp(bill.sponsor().get('id'))
+    d.sponsor_id = govtrackp(bill.sponsor().get('id'))
     return d
 
 def fixvote(s):
     return {'0': None, '+': 1, '-': -1, 'P': 0}[s]
-
             
 vote_list = {}
 bill_list =[]

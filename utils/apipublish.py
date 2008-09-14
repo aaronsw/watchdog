@@ -16,20 +16,20 @@ def _listify(v):
     else:
         return v
 
-def _getitems(obj):
+def _getitems(obj, listify=True):
     out = []
     for k in obj.columns:
         c = obj.columns[k]
         if hasattr(c, 'export') and not c.export:
             pass
         else:
-            out.append((k, c, _listify(getattr(obj, k))))
+            v = getattr(obj, k)
+            if listify: v = _listify(v)
+            out.append((k, c, v))
     out.sort(lambda x, y: cmp(x[0], y[0]))
     return out
 
 class SmartJSONEncoder(simplejson.JSONEncoder):
-    #@@ I got rid of the date field in schema.sql.  I think that means
-    # that we can dump all this isinstance date handling stuff?
     DATE_FORMAT = "%Y-%m-%d"
     TIME_FORMAT = "%H:%M:%S"
     def _default(self, obj):
@@ -46,19 +46,21 @@ class SmartJSONEncoder(simplejson.JSONEncoder):
                 try:
                     return simplejson.dumps(obj)
                 except:
-                    return simplejson.dumps(obj._uri_)
+                    return obj._uri_
     def default(self, obj):
         return getattr(obj, 'tojson', lambda: self._default(obj))()
+
+def tojson(x):
+    return simplejson.dumps(x, cls=SmartJSONEncoder)
 
 def publishjson(lst):
     out = ['[']
     for obj in lst:
         out.append('  {')
-        out.append('    "_type": "%s",' % obj._uri_)
+        out.append('    "_type": "%s",' % obj.__class__.__name__)
         out.append('    "uri": "%s",' % obj._uri_)
-        for k, c, v in _getitems(obj):
-            for item in v:
-                out.append('    "%s": %s,' % (k, SmartJSONEncoder().default(item)))
+        for k, c, v in _getitems(obj, listify=False):
+            out.append('    "%s": %s,' % (k, tojson(v)))
         out[-1] = out[-1][:-1]
         out.append('  }')
     out.append(']\n')
