@@ -39,7 +39,8 @@ class index:
                     group='petition.id, petition.title',
                     order='count(signatory.user_id) desc'
                     )
-        return render.petition_list(petitions)
+        msg, msg_type = helpers.get_delete_msg()
+        return render.petition_list(petitions, msg)
 
 def save_petition(p):
     p.pid = p.pid.replace(' ', '_')
@@ -228,7 +229,7 @@ class petition:
             cform = forms.wyrform()
             cform.fill(prefix=u.prefix, fname=u.fname, lname=u.lname, addr1=u.addr1,
                         addr2=u.addr2, city=u.city, zipcode=u.zip5, phone=u.phone)
-            title = "Edit petition"
+            title = "Edit your petition"
             return render.petitionform(pform, cform, title, target='/c/%s?m=edit' % (pid))
         else:
             login_link = '<a href="/login">Login</a>'
@@ -365,9 +366,8 @@ class share:
 
         if not emailform:
             emailform = forms.emailform
-            subject='Share petition "%s"' % (petition.title)
             msg = render_plain.share_petition_mail(petition)
-            emailform.fill(subject=subject, body=msg)
+            emailform.fill(subject=petition.title, body=msg)
 
         current_providers = set(c.provider.lower() for c in contacts)
         all_providers = set(['google', 'yahoo'])
@@ -379,7 +379,7 @@ class share:
         return render.share_petition(petition, emailform,
                             contacts, remaining_providers, loadcontactsform)
 
-    def POST(self):
+    def POST(self, pid):
         i = web.input()
         emailform = forms.emailform()
         if emailform.validates(i):
@@ -389,7 +389,7 @@ class share:
             helpers.set_msg('Thanks for sharing this petition with your friends!')
             raise web.seeother('/%s' % (pid))
         else:
-            return self.GET(emailform=emailform)
+            return self.GET(pid, emailform=emailform)
 
 
 app = web.application(urls, globals())

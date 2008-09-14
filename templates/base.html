@@ -82,7 +82,7 @@ $if not page.get('maxi'):
     </div>
 <div id="menu_footer">
   $if is_logged_in():
-      <form name="logout" action="/logout" method='GET' style="display: none;"></form>
+      <form name="logout" action="/logout" method='POST' style="display: none;"></form>
 
 	<a href="/" class="watchdog">watchdog.net</a>\
 $if is_logged_in():

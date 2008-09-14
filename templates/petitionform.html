@@ -26,7 +26,8 @@ fieldset #pid {
     $if not pform.valid: <p class="error">Please try again after fixing the problems highlighted below:</p>
 
 <fieldset id="petition">
-    <legend>Create your petition</legend>
+    $if title == 'Edit your petition': <legend>Title and description</legend>
+    $else: <legend>Create your petition</legend>
     <label for="ptitle">Name your petition</label>
     $:pform.ptitle.render()
     <label for="msg">Give it a description</label>

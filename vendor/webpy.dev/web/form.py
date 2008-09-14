@@ -76,8 +76,8 @@ class Form:
         try:
             return self.__getitem__(i)
         except KeyError:
-            return default                
-                    
+            return default
+
     def _get_d(self): #@@ should really be form.attr, no?
         return utils.storage([(i.name, i.value) for i in self.inputs])
     d = property(_get_d)
@@ -176,17 +176,19 @@ class Radio(Input):
     def __init__(self, name, args, *validators, **attrs):
         self.args = args
         super(Radio, self).__init__(name, *validators, **attrs)
+        self.attrs = dict(filter(lambda (k,v): k != 'id', self.attrs.items()))
 
     def render(self):
-        x = '<span>'
+        x = '<div id="%s">' % self.name
         for arg in self.args:
             if self.value == arg: select_p = ' checked="checked"'
             else: select_p = ''
-            x += '<input type="radio" name="%s" value="%s"%s%s /> %s ' % (net.websafe(self.name), net.websafe(arg), select_p, self.addatts(), net.websafe(arg))
+            atts = self.addatts() + ' id="%s_%s"' % (self.name, net.websafe(arg))
+            x += '<span><input type="radio" name="%s" value="%s"%s%s /> %s </span>' % (net.websafe(self.name), net.websafe(arg), select_p, atts, net.websafe(arg))
         if self.note:
 	    x = '<div class="wronginput">%s</div>' % x
             x += self.rendernote(self.note)
-        return x+'</span>'
+        return x+'</div>'
 
 class Checkbox(Input):
     def render(self):

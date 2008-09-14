@@ -16,7 +16,7 @@ def emailnotexists(email):
     "Return True if account with email `email` does not exist"
     exists = bool(db.select('users', where='email=$email', vars=locals()))
     return not(exists)
-    
+
 petitionform = form.Form(
       form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
       form.Textbox('pid', form.Validator("Address can't be blank", bool), form.Validator('ID already exists, Choose a different one.', petitionnotexists),
@@ -88,9 +88,10 @@ emailform = form.Form(
                 form.regexp(email_list_regex, 'One or more emails are not valid'),
                 description="To:",
                 cols=70,
-                rows=3),
-    form.Textbox('subject', form.notnull, description="Subject:", size='50'),
-    form.Textarea('body', form.notnull, description="", cols=70, rows=12)
+                rows=3,
+                tabindex=1),
+    form.Textbox('subject', form.notnull, description="Subject:", size='50', tabindex=2),
+    form.Textarea('body', form.notnull, description="", cols=70, rows=12, tabindex=3)
     )
 
 loadcontactsform = form.Form(
@@ -99,9 +100,12 @@ loadcontactsform = form.Form(
             form.regexp(email_regex, 'Please enter a valid email'),
             description='Email:',
             size='15'),
-    form.Radio('provider',
-            ['Google', 'Yahoo'],
-            value='Google',
+    form.Dropdown('provider',
+            [('', 'Select Provider'), 
+            ('google', 'Google'),
+            ('yahoo', 'Yahoo'),
+            ('msn', 'MSN/Hotmail'),
+            ('aol', 'AOL')],
             description='')
     )
 
