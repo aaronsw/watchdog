@@ -588,6 +588,7 @@ def parse_headers():
     """Parse and load the specifications of the FEC electronic filing formats"""
 
     files = os.listdir(HEADERS_PATH)
+    files.sort()
     out = dict()
     for f in filter(lambda x: x.endswith('.csv'), files):
         headers = file(HEADERS_PATH+f).read().strip()
@@ -667,6 +668,9 @@ def file_index():
     reports = list()
     amendments = dict()
     for f in zfiles:
+        print >> sys.stderr, '\r', f,
+        sys.stderr.flush()
+        if not os.stat(EFILINGS_PATH+f).st_size: continue
         zf = zipfile.ZipFile(EFILINGS_PATH+f)
         filenames = zf.namelist()
         for fn in filenames:
