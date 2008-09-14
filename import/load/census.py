@@ -47,8 +47,11 @@ def load_census_data(type):
                 loc_code = '%s-%02d' % (geo[logrecno]['STATE'], int(geo[logrecno]['CD110']))
             else: continue
 
+            # Fix some districts:
+            if loc_code in ['DC','PR']: loc_code = loc_code+'-00'
+            if loc_code in ['DC-98','PR-98']: continue
             for internal_key, value in row.items():
-                db.insert('census_data', seqname=False, location=loc_code, internal_key=internal_key, census_type=type, value=value)
+                db.insert('census_data', seqname=False, district_id=loc_code, internal_key=internal_key, census_type=type, value=value)
 
 def main():
     for type in [1, 3]:
@@ -61,7 +64,7 @@ if __name__ == "__main__":
         db = bulk_loader_db(os.environ.get('WATCHDOG_TABLE', 'watchdog_dev'))
         meta_cols = ['internal_key', 'census_type', 'hr_key']
         db.open_table('census_meta', meta_cols, filename=tsv_file_format%'census_meta')
-        data_cols = ['location', 'internal_key', 'census_type', 'value']
+        data_cols = ['district_id', 'internal_key', 'census_type', 'value']
         db.open_table('census_data', data_cols, filename=tsv_file_format%'census_data')
         main()
     else:

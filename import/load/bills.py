@@ -95,11 +95,11 @@ def loadbill(fn, maplightid=None, batch_mode=False):
 def main():
     from bulk_loader import bulk_loader_db
     for c,fn in enumerate(glob.glob(GOVTRACK_CRAWL+'/us/*/bills/*.xml')):
-        loadbill(fn,batch_mode=True)
+        loadbill(fn, batch_mode=True)
 
 
     db = bulk_loader_db(os.environ.get('WATCHDOG_TABLE', 'watchdog_dev'))
-    bill_cols = ['id', 'session', 'type', 'number', 'introduced', 'title', 'sponsor', 'summary', 'maplightid', 'yeas', 'neas']
+    bill_cols = ['id', 'session', 'type', 'number', 'introduced', 'title', 'sponsor_id', 'summary', 'maplightid', 'yeas', 'neas']
     db.open_table('bill', bill_cols, delete_first=True, filename=DATA_DIR+'load/bill.tsv')
     vote_col = ['bill_id', 'politician_id', 'vote']
     db.open_table('vote', vote_col, delete_first=True, filename=DATA_DIR+'load/vote.tsv')

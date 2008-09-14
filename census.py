@@ -81,7 +81,7 @@ def query_census(location, hr_keys):
     # Use DISTINCT since some hr_keys map to multiple internal_keys (but should
     # have same value).
     #q = db.select('census', what='SUM(DISTINCT(value))', where=web.sqlors('hr_key=', hr_keys)+' AND location='+web.sqlquote(location))
-    q = db.query('SELECT SUM(value) FROM (SELECT DISTINCT value, hr_key FROM census WHERE '+web.sqlors('hr_key=', hr_keys)+' AND location='+web.sqlquote(location)+') AS foo;')
+    q = db.query('SELECT SUM(value) FROM (SELECT DISTINCT value, hr_key FROM census WHERE '+web.sqlors('hr_key=', hr_keys)+' AND district_id='+web.sqlquote(location)+') AS foo;')
     if not q: return None
     return q[0].sum
 
@@ -138,7 +138,7 @@ def get_total_pop(location):
 
 if __name__ == "__main__":
     from pprint import pprint
-    states = ['AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA', 
+    states = ['AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 
     'HI', 'IA', 'ID', 'IL', 'IN', 'KS', 'KY', 'LA', 'MA', 'MD', 'ME', 'MI', 
     'MN', 'MO', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM', 'NV', 'NY', 
     'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VA', 'VT', 
