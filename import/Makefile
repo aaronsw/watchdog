@@ -19,13 +19,8 @@ PARSE=../data/parse
 LOAD=../data/load
 JSONS=$(LOAD)/states/index.json \
       $(LOAD)/districts/index.json \
-      $(LOAD)/interest_groups.json \
-      $(LOAD)/districts/almanac.json \
       $(LOAD)/politicians/index.json \
-      $(LOAD)/politicians/govtrack.json \
-      $(LOAD)/politicians/voteview.json \
       $(LOAD)/politicians/earmarks.json \
-      $(LOAD)/districts/centers.json
 
 TSVS=$(LOAD)/bill.tsv \
 	 $(LOAD)/vote.tsv \
@@ -39,14 +34,16 @@ NJS=$(PARSE)/almanac.njs \
     $(PARSE)/soi.njs \
     $(PARSE)/voteview.njs
 
+LOADERS = .schema .json \
+          .almanac .centers .voteview .govtrack \
+          .bills .interests .votesmart .photos .fec .census
+
 all: database
 clean:
-	rm $(JSONS) .schema .json .bills .interests .votesmart .photos
+	rm $(JSONS) $(LOADERS)
 
 cleanparse:
 	rm $(NJS)
-
-database: .schema .json .bills .interests .votesmart .photos .fec .census
 
 .json: .schema load/json.py $(JSONS)
 	python load/json.py
@@ -64,33 +61,25 @@ $(LOAD)/districts/index.json: load/manual/districts.json
 	mkdir -p $(LOAD)/districts
 	cp $< $@
 
-# not currently called:
+# not currently using .shapes
 .shapes: load/shapes.py parse/shapes.py
 	$(PYTHON) load/shapes.py
 
-# from nationaljournal
-$(LOAD)/interest_groups.json: load/manual/interest_groups.json
-	mkdir -p $(LOAD)
-	cp $< $@
+.almanac: load/almanac.py parse/almanac.py
+	$(PYTHON) load/almanac.py
 
-$(LOAD)/districts/almanac.json: load/almanac.py parse/almanac.py
-	$(PYTHON) load/almanac.py > $@.tmp
-	mv $@.tmp $@
-
-$(LOAD)/districts/centers.json: load/govtrack_gis.py
-	$(PYTHON) load/govtrack_gis.py > $@
+.centers: load/govtrack_gis.py
+	$(PYTHON) load/govtrack_gis.py
 
 $(LOAD)/politicians/index.json: load/manual/politicians.json
 	mkdir -p $(LOAD)/politicians
 	cp $< $@
 
-$(LOAD)/politicians/govtrack.json: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml
-	$(PYTHON) load/govtrack.py > $@.tmp
-	mv $@.tmp $@
+.govtrack: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml
+	$(PYTHON) load/govtrack.py
 
-$(LOAD)/politicians/voteview.json: load/voteview.py parse/voteview.py ../data/crawl/voteview/
-	$(PYTHON) load/voteview.py > $@.tmp
-	mv $@.tmp $@
+.voteview: load/voteview.py parse/voteview.py ../data/crawl/voteview/
+	$(PYTHON) load/voteview.py
 
 $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack.json
 	$(PYTHON) load/earmarks.py > $@.tmp
