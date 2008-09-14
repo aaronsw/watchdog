@@ -245,10 +245,13 @@ class Contribution (sql.Table):
     contributor = sql.String()
     occupation = sql.String()
     employer = sql.String()
+    employer_stem = sql.String()
     candidate_name = sql.String()
     filer_id = sql.String(10)
     report_id = sql.Integer()
     amount = sql.String(20)
+
+#@@INDEX by employer_stem
 
 class Expenditure (sql.Table):
     id = sql.Serial(primary=True)

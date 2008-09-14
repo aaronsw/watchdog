@@ -2,10 +2,24 @@
 """
 common tools for load scripts
 """
-import os
+import os, re
 import simplejson
 import web
 from settings import db
+
+_stripterms = ['the', 'corporation', 'corp', 'incorporated', 'inc']
+r_plain = re.compile(r'[a-z ]+')
+def stemcorpname(name):
+    """
+    >>> stemcorpname('The Boeing Corp.')
+    'boeing'
+    >>> stemcorpname('SAIC Inc.')
+    'saic'
+    """
+    name = name.lower()
+    name = ''.join(r_plain.findall(name))
+    name = ' '.join(x for x in name.split() if x not in _stripterms)
+    return name
 
 _districtcache = {}
 def districtp(district):

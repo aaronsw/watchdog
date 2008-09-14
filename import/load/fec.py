@@ -62,6 +62,7 @@ def load_fec_efilings():
                           contributor=s['contributor'],
                           occupation=s['occupation'],
                           employer=s['employer'],
+                          employer_stem=tools.stemcorpname(s['employer']),
                           candidate_name=f['candidate'],
                           filer_id=f['filer_id'],
                           report_id=f['report_id'],
