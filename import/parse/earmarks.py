@@ -16,9 +16,9 @@ import xls2list
 
 fmt = (
   'id',
-  'usd_house_request', 'usd_senate_request', 
-  'usd_pre_reduction', 'usd_final', 'usd_budget_request',
-  'description', 'city_location', 'county', 'state',
+  'house_request', 'senate_request', 
+  'prereduction_amt', 'final_amt', 'budget_request',
+  'description', 'city', 'county', 'state',
   'bill', 'bill_section', 'bill_subsection', 'project_heading',
   'house_member', 'house_party', 'house_state', 'district',
   'senate_member', 'senate_party', 'senate_state',

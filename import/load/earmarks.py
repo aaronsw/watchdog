@@ -1,5 +1,9 @@
+from __future__ import with_statement
+
 import sys
 import simplejson
+import web
+import tools
 from parse import earmarks
 from settings import db
 
@@ -18,15 +22,39 @@ for repid, rep in reps.iteritems():
         del lastname2rep[rep['lastname']]
     else:
         lastname2rep[rep['lastname']] = repid
+
 for repid, rep in reps.iteritems():
     if rep['lastname'] in ambiguous:
         lastname2rep[rep['lastname'] + ', ' + rep['firstname']] = repid
 
+
+def cleanrow(s):
+    if isinstance(s, basestring):
+        s = s.strip()
+        if s == '': s = None
+    return s
+
 def load():
     outdb = {}
-    
+    with db.transaction():
+        db.delete('earmark', '1=1')
+        done = set()
+        for e in earmarks.parse_file(earmarks.EARMARK_FILE):
+            de = dict(e)
+            de['id'] = web.intget(de['id'])
+            if not de['id'] or de['id'] in done: continue # missing the ID? come on!
+            if isinstance(de['house_request'], basestring): continue # CLASSIFIED
+
+            for k in de: de[k] = cleanrow(de[k])
+            for x in ['house_member', 'house_state', 'house_party', 'senate_member', 'senate_state', 'senate_party', 'district']:
+                de.pop(x)
+            
+            de['recipient_stem'] = tools.stemcorpname(de['intended_recipient'])
+            db.insert('earmark', seqname=False, **de)
+            done.add(de['id'])
+        
     for e in earmarks.parse_file(earmarks.EARMARK_FILE):
-        for rawRequest, chamber in zip([e.usd_house_request, e.usd_senate_request],[e.house_member, e.senate_member]):
+        for rawRequest, chamber in zip([e.house_request, e.senate_request],[e.house_member, e.senate_member]):
             for rep in chamber:
                 if rep not in lastname2rep:
                     #@@ should work on improving quality
@@ -40,14 +68,14 @@ def load():
                       'amt_earmark_received': 0
                     })
                     outdb[rep]['n_earmark_requested'] += 1
-                    requested = rawRequest or e.usd_final
+                    requested = rawRequest or e.final_amt
                     if not isinstance(requested, float):
-                        requested = e.usd_final
+                        requested = e.final_amt
                     if requested:
                         outdb[rep]['amt_earmark_requested'] += requested
-                    if isinstance(e.usd_final, float) and e.usd_final:
+                    if isinstance(e.final_amt, float) and e.final_amt:
                         outdb[rep]['n_earmark_received'] += 1
-                        outdb[rep]['amt_earmark_received'] += e.usd_final
+                        outdb[rep]['amt_earmark_received'] += e.final_amt
     
     for rep, d in outdb.iteritems():
         db.update('politician', where='id=$rep', vars=locals(), **d)

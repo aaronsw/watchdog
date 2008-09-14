@@ -253,6 +253,28 @@ class Contribution (sql.Table):
 
 #@@INDEX by employer_stem
 
+class Earmark(sql.Table):
+    id = sql.Integer(primary=True)
+    house_request = sql.Dollars()
+    senate_request = sql.Dollars()
+    final_amt = sql.Dollars()
+    budget_request = sql.Dollars()
+    prereduction_amt = sql.Dollars()
+    description = sql.String()
+    city = sql.String() # eventually a ref, we hope
+    county = sql.String()
+    state = sql.String() #@@ref?
+    bill = sql.String() #@@ref
+    bill_section = sql.String()
+    bill_subsection = sql.String()
+    project_heading = sql.String()
+    district = sql.Integer()
+    presidential = sql.String()
+    undisclosed = sql.String()
+    intended_recipient = sql.String()
+    recipient_stem = sql.String()
+    notes = sql.String()    
+
 class Expenditure (sql.Table):
     id = sql.Serial(primary=True)
     candidate_name = sql.String()
@@ -268,7 +290,6 @@ class WYR(sql.Table):
     contact = sql.String()
     contacttype = sql.String(1) # E=email, W=wyr, I=ima, Z=zipauth
     captcha = sql.Boolean()
-    
 
 class SOI(sql.Table):
     #district_id = sql.String(10, primary=True) 
@@ -295,12 +316,14 @@ class Census_meta(sql.Table):
     internal_key = sql.String(10, primary=True)
     census_type = sql.Integer(primary=True)
     hr_key = sql.String(512)
+
 class Census_data(sql.Table):
     #district_id = sql.String(10, primary=True) 
     district = sql.Reference(District, primary=True)
     internal_key = sql.String(10, primary=True)
     census_type = sql.Integer(primary=True)
     value = sql.Float()
+
 #db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
 
 #db.query("CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician)")

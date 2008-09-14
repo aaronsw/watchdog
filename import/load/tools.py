@@ -19,6 +19,7 @@ def stemcorpname(name):
     >>> stemcorpname('SAIC Inc.')
     'saic'
     """
+    if not name: return name
     name = name.lower()
     name = ''.join(r_plain.findall(name))
     name = ' '.join(x for x in name.split() if x not in _stripterms)
