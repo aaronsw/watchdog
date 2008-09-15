@@ -190,7 +190,7 @@ class bill:
             return bill_list(format, int(i.page))
         
         try:
-            b = schema.Bill.select(id=bill_id)[0]
+            b = schema.Bill.where(id=bill_id)[0]
         except IndexError:
             raise web.notfound
         
