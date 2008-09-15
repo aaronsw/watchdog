@@ -104,8 +104,7 @@ loadcontactsform = form.Form(
             [('', 'Select Provider'), 
             ('google', 'Google'),
             ('yahoo', 'Yahoo'),
-            ('msn', 'MSN/Hotmail'),
-            ('aol', 'AOL')],
+            ('msn', 'MSN/Hotmail')],
             description='')
     )
 

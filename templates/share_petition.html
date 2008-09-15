@@ -64,7 +64,7 @@ $if not emailform.valid: <p class="error">Please try again after fixing the prob
 $var sidebar:
     $if loadcontactsform:
         <form id="loadcontacts" name="loadcontacts" method="POST" action='/u/import_contacts' >
-            <p>Enter your $providers email address to load contacts.</p>
+            <p>Enter your email address to load contacts.</p>
             $:loadcontactsform.email.render()
             $:loadcontactsform.provider.render()
             <input type="hidden" name="pid" value="$petition.id">

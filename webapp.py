@@ -33,9 +33,9 @@ urls = (
   r'/about/feedback', 'feedback',
   r'/blog', blog.app,
   r'/data/(.*)', 'staticdata',
-  r'/bbauth/', 'contacts.bbauth',
-  r'/authsub', 'contacts.authsub',
-  r'/ydnlIEWXo\.html', 'contacts.yauth'
+  r'/bbauth/', 'contacts.auth_yahoo',
+  r'/authsub', 'contacts.auth_google',
+  r'/auth/msn', 'contacts.auth_msn',
 )
 
 class index:
