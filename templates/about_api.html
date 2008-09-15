@@ -153,7 +153,7 @@ this is a rather difficult problem.
 
 <p>
 We provide a simple API for solving this:
-Give us a zip code and we'll give you back 
+Give us a zip code or zip+4 and we'll give you back 
 all the matching Congressional districts.
 Give us a zip code and an address and we'll give you back
 just the one that matches.
@@ -162,6 +162,7 @@ just the one that matches.
 <p>
 You can do these queries via URLs like
 <code>http://watchdog.net/us/?zip=90210</code><br />
+<code>http://watchdog.net/us/?zip=90210-5106</code><br />
 and
 <code>http://watchdog.net/us/?address=360+N+Rodeo+Dr&amp;zip=90210</code>
 </p>
@@ -178,4 +179,11 @@ For the source code and data,
 see the files <code>zip2rep.py</code> and <code>zipdict.txt</code>
 in <a href="http://watchdog.net/code/?p=dev.git;a=tree;f=utils"
 >our utils directory</a>.
+</p>
+
+<p>
+The zip+4 information comes from the USPS
+and is available in TSV format in our 
+<a href="http://watchdog.net/data/load/zip4.tsv">zip4.tsv</a>
+file.
 </p>

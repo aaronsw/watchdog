@@ -101,9 +101,12 @@ loadcontactsform = form.Form(
             form.regexp(email_regex, 'Please enter a valid email'),
             description='Email:',
             size='15'),
-    form.Radio('provider',
-            ['Google', 'Yahoo'],
-            value='Google',
+    form.Dropdown('provider',
+            [('', 'Select Provider'), 
+            ('google', 'Google'),
+            ('yahoo', 'Yahoo'),
+            ('msn', 'MSN/Hotmail'),
+            ('aol', 'AOL')],
             description='')
     )
 

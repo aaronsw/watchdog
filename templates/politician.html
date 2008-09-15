@@ -205,18 +205,6 @@ $if pol.predictability:
 
 <h2 class="rep">Interest Group Alignment</h2>
 
-<table class="interest_group_ratings">
-<tr><td></td>
-$for group in pol.interest_group_table['groups']:
-    <th><abbr title="$group['longname']">$group['groupname']</abbr></th>
-</tr>
-$for year in pol.interest_group_table['rows']:
-    <tr><th>$year['year']</td>
-    $for rating in year['ratings']:
-        <td>$rating</td>
-    </tr>
-</table>
-
 <table>
 <tr><th>Group</th><th>Agreement</th></tr>
 $for group in pol.related_groups:

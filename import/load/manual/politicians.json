@@ -27,10 +27,6 @@
     "district_id": "WV-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Alan_Mollohan"
   }, 
-  "albert_wynn": {
-    "district_id": "MD-04", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Albert_Wynn"
-  }, 
   "albio_sires": {
     "district_id": "NJ-13", 
     "wikipedia": "http://en.wikipedia.org/wiki/Albio_Sires"
@@ -434,6 +430,10 @@
   "donna_christian-christensen": {
     "district_id": "VI-00", 
     "wikipedia": "http://en.wikipedia.org/wiki/Donna_Christian-Christensen"
+  }, 
+  "donna_edwards": {
+    "district_id": "MD-04", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Donna_Edwards"
   }, 
   "doris_matsui": {
     "district_id": "CA-05", 
@@ -1567,6 +1567,10 @@
     "district_id": "NJ-09", 
     "wikipedia": "http://en.wikipedia.org/wiki/Steve_Rothman"
   }, 
+  "steve_scalise": {
+    "district_id": "LA-01", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Steve_Scalise"
+  }, 
   "sue_myrick": {
     "district_id": "NC-09", 
     "wikipedia": "http://en.wikipedia.org/wiki/Sue_Myrick"
@@ -1678,6 +1682,10 @@
   "tom_udall": {
     "district_id": "NM-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Tom_Udall"
+  }, 
+  "travis_childers": {
+    "district_id": "MS-01", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Travis_Childers"
   }, 
   "trent_franks": {
     "district_id": "AZ-02", 

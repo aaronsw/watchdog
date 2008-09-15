@@ -5,44 +5,51 @@ from: data/crawl/govtrack/us/110/{bills,rolls}
 """
 from __future__ import with_statement
 import os, sys, glob
-import xmltramp, web
+import xmltramp
+import web
 from tools import db, govtrackp
 
+DATA_DIR = '../data/'
+GOVTRACK_CRAWL = DATA_DIR+'/crawl/govtrack'
+
 def bill2dict(bill):
-    d = {}
-    d['id'] = 'us/%s/%s%s' % (bill('session'), bill('type'), bill('number'))
-    d['session'] = bill('session')
-    d['type'] = bill('type')
-    d['number'] = bill('number')
-    d['introduced'] = bill.introduced('datetime')
+    d = web.storage()
+    d.id = 'us/%s/%s%s' % (bill('session'), bill('type'), bill('number'))
+    d.session = bill('session')
+    d.type = bill('type')
+    d.number = bill('number')
+    d.introduced = bill.introduced('datetime')
     titles = [unicode(x) for x in bill.titles['title':] 
       if x('type') == 'short']
     if not titles:
         titles = [unicode(x) for x in bill.titles['title':]]
-    d['title'] = titles[0]
+    d.title = titles[0]
 
     summaries = [unicode(x) for x in bill.titles['title':] 
       if x('type') == 'official']
     if not summaries:
         summaries = [unicode(x) for x in bill.titles['title':]]
-    d['summary'] = summaries[0]
+    d.summary = summaries[0]
     
-    d['sponsor_id'] = govtrackp(bill.sponsor().get('id'))
+    d.sponsor_id = govtrackp(bill.sponsor().get('id'))
     return d
 
 def fixvote(s):
     return {'0': None, '+': 1, '-': -1, 'P': 0}[s]
-
             
-def loadbill(fn, maplightid=None):            
+vote_list = {}
+bill_list =[]
+def loadbill(fn, maplightid=None, batch_mode=False):            
     bill = xmltramp.load(fn)
     d = bill2dict(bill)
     if maplightid: d['maplightid'] = maplightid
-    db.insert('bill', seqname=False, **d)
-    print '\r  %-25s' % d['id'],
-    sys.stdout.flush()
+    else: d['maplightid'] = None
+    if not batch_mode: db.insert('bill', seqname=False, **d)
+    print >>sys.stderr,'\r  %-25s' % d['id'],
+    sys.stderr.flush()
     
     done = []
+    d['yeas']=d['neas']=0
     for vote in bill.actions['vote':]:
         if not vote().get('roll'): continue
         if vote('where') in done: continue # don't count veto overrides
@@ -53,7 +60,7 @@ def loadbill(fn, maplightid=None):
           vote('where'), 
           vote('datetime')[:4], 
           vote('roll'))
-        vote = xmltramp.load('../data/crawl/govtrack/us/' + votedoc)
+        vote = xmltramp.load(GOVTRACK_CRAWL+'/us/' + votedoc)
         yeas = 0
         neas = 0
         for voter in vote['voter':]:
@@ -63,26 +70,39 @@ def loadbill(fn, maplightid=None):
                 neas += 1
             rep = govtrackp(voter('id'))
             if rep:
-                # UGLY HACK: if a politician (bob_menendez for instance) voted
-                # for the same bill in both chambers of congress the insert
-                # fails.
-                if not db.select('vote',where="bill_id=$d['id'] AND politician_id=$rep", vars=locals()):
-                    db.insert('vote', seqname=False, politician_id=rep, bill_id=d['id'], vote=fixvote(voter('vote')))
+                if batch_mode:
+                    vote_list['%(bill_id)s\t%(politician_id)s'% {'bill_id':d['id'], 'politician_id':rep}]={'bill_id':d['id'], 'politician_id':rep, 'vote':fixvote(voter('vote'))}
                 else:
-                    print
-                    print "Updating:", votedoc, rep, d['id'], fixvote(voter('vote'))
-                    db.update('vote', where="bill_id=$d['id'] AND politician_id=$rep", vote=fixvote(voter('vote')),vars=locals())
-        db.update('bill', where="id = $d['id']", yeas=yeas, neas=neas, vars=locals())
-                
+                    if not db.select('vote',where="bill_id=$d['id'] AND politician_id=$rep", vars=locals()):
+                        db.insert('vote', seqname=False, politician_id=rep, bill_id=d['id'], vote=fixvote(voter('vote')))
+                    else:
+                        print
+                        print "Updating:", votedoc, rep, d['id'], fixvote(voter('vote'))
+                        db.update('vote', where="bill_id=$d['id'] AND politician_id=$rep", vote=fixvote(voter('vote')),vars=locals())
 
+        if not batch_mode: db.update('bill', where="id = $d['id']", yeas=yeas, neas=neas, vars=locals())
+        d['yeas'] = yeas
+        d['neas'] = neas
+    if batch_mode: bill_list.append(d)
+
+
+################################################################################
 def main():
-    with db.transaction():
-        db.delete('vote', '1=1')
-        bill_ids = ', '.join((str(s.id) for s in db.select('bill', what='id')))
-        db.delete('interest_group_bill_support', where='bill_id in ($bill_ids)', vars=locals()) 
-        db.delete('bill', '1=1')
-        for fn in glob.glob('../data/crawl/govtrack/us/*/bills/*.xml'):
-            loadbill(fn)
+    from bulk_loader import bulk_loader_db
+    for c,fn in enumerate(glob.glob(GOVTRACK_CRAWL+'/us/*/bills/*.xml')):
+        loadbill(fn, batch_mode=True)
+
+
+    db = bulk_loader_db(os.environ.get('WATCHDOG_TABLE', 'watchdog_dev'))
+    bill_cols = ['id', 'session', 'type', 'number', 'introduced', 'title', 'sponsor_id', 'summary', 'maplightid', 'yeas', 'neas']
+    db.open_table('bill', bill_cols, delete_first=True, filename=DATA_DIR+'load/bill.tsv')
+    vote_col = ['bill_id', 'politician_id', 'vote']
+    db.open_table('vote', vote_col, delete_first=True, filename=DATA_DIR+'load/vote.tsv')
+    for bill in bill_list:
+        db.insert('bill',**bill)
+    for vote in vote_list.values():
+        db.insert('vote',**vote)
+
 
 if __name__ == "__main__":
     main()

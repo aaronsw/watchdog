@@ -7,7 +7,7 @@ else
 endif
 
 ifeq ($(WATCHDOG_TABLE),)
-	WATCHDOG_TABLE=watchdog_dev
+    WATCHDOG_TABLE=watchdog_dev
 endif
 
 export PYTHONPATH := ../:.:$(PWD)/../vendor:$(PYTHONPATH)
@@ -19,14 +19,13 @@ PARSE=../data/parse
 LOAD=../data/load
 JSONS=$(LOAD)/states/index.json \
       $(LOAD)/districts/index.json \
-      $(LOAD)/interest_groups.json \
-      $(LOAD)/districts/almanac.json \
-      $(LOAD)/districts/shapes.json \
       $(LOAD)/politicians/index.json \
-      $(LOAD)/politicians/govtrack.json \
-      $(LOAD)/politicians/voteview.json \
-      $(LOAD)/politicians/earmarks.json \
-      $(LOAD)/districts/centers.json
+
+TSVS=$(LOAD)/bill.tsv \
+	 $(LOAD)/vote.tsv \
+	 $(LOAD)/zip4.tsv \
+	 $(LOAD)/census_meta.tsv \
+	 $(LOAD)/census_data.tsv
 
 NJS=$(PARSE)/almanac.njs \
     $(PARSE)/earmarks.njs \
@@ -35,14 +34,18 @@ NJS=$(PARSE)/almanac.njs \
     $(PARSE)/soi.njs \
     $(PARSE)/voteview.njs
 
+LOADERS = .schema .json \
+          .almanac .centers .voteview .govtrack \
+          .bills .interests .votesmart .photos .fec .census .soi .earmarks
+
 all: database
 clean:
-	rm $(JSONS) .schema .json .bills .interests .votesmart .photos
+	rm $(JSONS) $(LOADERS)
 
 cleanparse:
 	rm $(NJS)
 
-database: .schema .json .bills .interests .votesmart .photos .fec
+database: $(LOADERS)
 
 .json: .schema load/json.py $(JSONS)
 	python load/json.py
@@ -60,39 +63,42 @@ $(LOAD)/districts/index.json: load/manual/districts.json
 	mkdir -p $(LOAD)/districts
 	cp $< $@
 
-# from nationaljournal
-$(LOAD)/interest_groups.json: load/manual/interest_groups.json
-	mkdir -p $(LOAD)
-	cp $< $@
+# not currently using .shapes
+.shapes: load/shapes.py parse/shapes.py
+	$(PYTHON) load/shapes.py
+	touch $@
 
-$(LOAD)/districts/almanac.json: load/almanac.py parse/almanac.py
-	$(PYTHON) load/almanac.py > $@.tmp
-	mv $@.tmp $@
+.almanac: load/almanac.py parse/almanac.py
+	$(PYTHON) load/almanac.py
+	touch $@
 
-$(LOAD)/districts/shapes.json: load/shapes.py
-	$(PYTHON) load/shapes.py > $@
-
-$(LOAD)/districts/centers.json: load/govtrack_gis.py
-	$(PYTHON) load/govtrack_gis.py > $@
+.centers: load/govtrack_gis.py
+	$(PYTHON) load/govtrack_gis.py
+	touch $@
 
 $(LOAD)/politicians/index.json: load/manual/politicians.json
 	mkdir -p $(LOAD)/politicians
 	cp $< $@
 
-$(LOAD)/politicians/govtrack.json: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml
-	$(PYTHON) load/govtrack.py > $@.tmp
-	mv $@.tmp $@
+.govtrack: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml
+	$(PYTHON) load/govtrack.py
+	touch $@
 
-$(LOAD)/politicians/voteview.json: load/voteview.py parse/voteview.py ../data/crawl/voteview/
-	$(PYTHON) load/voteview.py > $@.tmp
-	mv $@.tmp $@
+.voteview: load/voteview.py parse/voteview.py ../data/crawl/voteview/
+	$(PYTHON) load/voteview.py
+	touch $@
 
-$(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack.json
-	$(PYTHON) load/earmarks.py > $@.tmp
-	mv $@.tmp $@
+.earmarks: load/earmarks.py $(LOAD)/politicians/govtrack.json
+	$(PYTHON) load/earmarks.py
+	touch $@
 
-.bills: .schema load/bills.py .json
+$(LOAD)/bill.tsv $(LOAD)/vote.tsv: load/bills.py
 	$(PYTHON) load/bills.py
+	touch $@
+
+.bills: $(LOAD)/bill.tsv $(LOAD)/vote.tsv .schema
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/bill.tsv
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/vote.tsv
 	touch $@
 
 .interests: load/maplight.py .bills
@@ -111,9 +117,45 @@ $(LOAD)/politicians/earmarks.json: load/earmarks.py $(LOAD)/politicians/govtrack
 	$(PYTHON) load/fec.py
 	touch $@
 
+.zip4: $(LOAD)/zip4.tsv .json
+	# NOTE: leaving the index on while loading the data is unbearably slow. If
+	#       the schema changes this makefile will need to be updated too.
+	#       Also, our districts table is missing MH-00 (Marshall Islands) and
+	#       thus the foreign key must be removed.
+	echo "ALTER TABLE zip4 DROP CONSTRAINT zip4_pkey; \
+ALTER TABLE zip4 DROP CONSTRAINT zip4_district_id_fkey; \
+COPY zip4 (zip,plus4,district_id) FROM '${PWD}/../data/load/zip4.tsv'; \
+ALTER TABLE zip4 ADD FOREIGN KEY (district_id) REFERENCES district; \
+ALTER TABLE zip4 ADD PRIMARY KEY (zip,plus4); \
+		" | $(DBCLIENT) $(WATCHDOG_TABLE)
+	touch $@
+
+.soi: .schema .json
+	$(PYTHON) load/soi.py
+	touch $@
+
+$(LOAD)/census_meta.tsv $(LOAD)/census_data.tsv: load/census.py parse/census.py
+	python load/census.py
+
+.census: $(LOAD)/census_meta.tsv $(LOAD)/census_data.tsv .schema .json
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/census_meta.tsv 
+	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/census_data.tsv 
+	touch $@
+
 # new way of doing things: parse to .njs files
 
-parse: $(NJS)
+USPS_FILES = $(PARSE)/usps/ctystate.njs.gz \
+             $(PARSE)/usps/5digit.njs.gz \
+             $(PARSE)/usps/tiger.njs.gz \
+             $(PARSE)/usps/tigerdat.njs.gz \
+             $(PARSE)/usps/zip4.njs.gz \
+             $(PARSE)/usps/zip4dist.njs.gz \
+             $(PARSE)/usps/all5digitzip.txt \
+
+parse: $(NJS) parse_usps
+
+parse_usps: $(USPS_FILES)
+	echo "Haven't scripted generation of these yet."
 
 $(PARSE)/almanac.njs: parse/almanac.py 
 	$(PYTHON) parse/almanac.py --dump > $@.tmp

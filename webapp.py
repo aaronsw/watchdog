@@ -3,16 +3,12 @@ import re
 import web
 web.config.debug = True
 
-from utils import zip2rep, simplegraphs, apipublish, helpers, forms, writerep, userinfo
+from utils import zip2rep, simplegraphs, apipublish, helpers, forms, writerep, users
 import blog
 import petition
 import settings
 from settings import db, render
 import schema
-
-#@@@ utils.auth.login doesn't work in urls as webpy tries to import auth from its own utils
-from utils.auth import login, signup, logout, forgot_password, set_password
-
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -30,19 +26,13 @@ urls = (
   r'/p/(.*?)%s?' % options, 'politician',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/c', petition.app,
-  r'/user', userinfo.app,
+  r'/u', users.app,
   r'/writerep', 'write_your_rep',
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
   r'/blog', blog.app,
   r'/data/(.*)', 'staticdata',
-  r'/login', 'login',
-  r'/signup', 'signup',
-  r'/logout', 'logout',
-  r'/forgot_password', 'forgot_password',
-  r'/set_password', 'set_password',
-  r'/importcontacts', 'contacts.importcontacts',
   r'/bbauth/', 'contacts.bbauth',
   r'/authsub', 'contacts.authsub',
   r'/ydnlIEWXo\.html', 'contacts.yauth'
@@ -163,29 +153,6 @@ class district:
         
         return render.district(d)
 
-def interest_group_ratings(polid):
-    "Returns the interest group ratings for a politician."
-    return list(db.select(['interest_group_rating', 'interest_group'],
-                          what='year, interest_group.groupname, rating, longname',
-                          where=('politician_id = $polid '
-                              'AND interest_group.id = interest_group_rating.group_id'),
-                          vars=locals()))
-
-def interest_group_table(data):
-    "Transform the relational form of the data into something mirroring HTML."
-    groupnames = list(set(datum['groupname'] for datum in data))
-    groupnames.sort()
-    longnames = dict((datum['groupname'], datum['longname']) for datum in data)
-    years = list(set(datum['year'] for datum in data))
-    years.sort(reverse=True)
-    hash = dict(((datum['groupname'], datum['year']), datum['rating'])
-                 for datum in data)
-    rows = [dict(year=year,
-                 ratings=[hash.get((group, year)) for group in groupnames])
-            for year in years]
-    return dict(groups=[dict(groupname=groupname, longname=longnames[groupname])
-                        for groupname in groupnames], rows=rows)
-
 def group_politician_similarity(politician_id, qmin=None):
     """Find the interest groups that vote most like a politician."""
     query_min = lambda mintotal, politician_id=politician_id: db.select(
@@ -254,8 +221,6 @@ class politician:
         p.fec_ids = [x.fec_id for x in db.select('politician_fec_ids', what='fec_id',
           where='politician_id=$polid', vars=locals())]
 
-        p.interest_group_rating = interest_group_ratings(polid)
-        p.interest_group_table = interest_group_table(p.interest_group_rating)
         p.related_groups = group_politician_similarity(polid)
 
         out = apipublish.publish([p], format)

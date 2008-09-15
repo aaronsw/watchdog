@@ -12,6 +12,10 @@ DROP TABLE IF EXISTS category CASCADE;
 DROP TABLE IF EXISTS contribution CASCADE;
 DROP TABLE IF EXISTS expenditure CASCADE;
 DROP TABLE IF EXISTS wyr CASCADE;
+DROP VIEW IF EXISTS census CASCADE;
+DROP TABLE IF EXISTS census_data CASCADE;
+DROP TABLE IF EXISTS census_meta CASCADE;
+DROP TABLE IF EXISTS soi CASCADE;
 
 CREATE TABLE state (
   -- index.json
@@ -63,11 +67,52 @@ CREATE TABLE zip4 (
   --primary key (zip, plus4)  
 );
 
---alter table zip4 drop constraint zip4_pkey;
+----alter table zip4 drop constraint zip4_pkey;
 --COPY zip4 FROM  '/home/watchdog/web/data/load/zip4.tsv';
-alter table zip4 add primary key (zip, plus4);
+--alter table zip4 add primary key (zip, plus4);
 --alter table zip4 add constraint "zip4_district_fkey" FOREIGN KEY (district) REFERENCES district(name) #@@
 --GRANT ALL ON zip4 TO watchdog;
+
+CREATE TABLE census_meta (
+  internal_key varchar(10),
+  census_type smallint,
+  hr_key varchar(512)
+);
+ALTER TABLE census_meta ADD primary key (internal_key, census_type);
+CREATE TABLE census_data (
+  distric_id varchar(10),
+  internal_key varchar(10),
+  census_type smallint,   -- 1 or 3
+  value numeric
+);
+ALTER TABLE census_data ADD primary key (district_id, internal_key, census_type);
+CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data;
+
+CREATE TABLE soi (
+  district_id varchar(10),
+  -- irs/soi
+  bracket_low int,
+
+  agi numeric,
+  n_dependents numeric,
+  n_eitc numeric,
+  n_filers numeric,
+  n_prepared numeric,
+
+  tot_charity numeric,
+  tot_eitc numeric,
+  tot_tax numeric,
+
+  avg_dependents numeric,
+  avg_eitc numeric,
+  avg_income numeric,
+  avg_taxburden numeric,
+
+  pct_charity numeric,
+  pct_eitc numeric,
+  pct_prepared numeric
+);
+alter table soi add primary key (district_id, bracket_low);
 
 CREATE TABLE politician (
   -- index.json

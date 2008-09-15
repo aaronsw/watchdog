@@ -245,13 +245,39 @@ class Contribution (sql.Table):
     contributor = sql.String()
     occupation = sql.String()
     employer = sql.String()
+    employer_stem = sql.String()
     candidate_name = sql.String()
     filer_id = sql.String(10)
     report_id = sql.Integer()
     amount = sql.String(20)
 
+#@@INDEX by employer_stem
+
+class Earmark(sql.Table):
+    id = sql.Integer(primary=True)
+    house_request = sql.Dollars()
+    senate_request = sql.Dollars()
+    final_amt = sql.Dollars()
+    budget_request = sql.Dollars()
+    prereduction_amt = sql.Dollars()
+    description = sql.String()
+    city = sql.String() # eventually a ref, we hope
+    county = sql.String()
+    state = sql.String() #@@ref?
+    bill = sql.String() #@@ref
+    bill_section = sql.String()
+    bill_subsection = sql.String()
+    project_heading = sql.String()
+    district = sql.Integer()
+    presidential = sql.String()
+    undisclosed = sql.String()
+    intended_recipient = sql.String()
+    recipient_stem = sql.String()
+    notes = sql.String()    
+
 class Expenditure (sql.Table):
     id = sql.Serial(primary=True)
+    candidate_name = sql.String()
     committee = sql.String()
     expenditure_date = sql.Date()
     recipient = sql.String()
@@ -264,7 +290,41 @@ class WYR(sql.Table):
     contact = sql.String()
     contacttype = sql.String(1) # E=email, W=wyr, I=ima, Z=zipauth
     captcha = sql.Boolean()
-    
+
+class SOI(sql.Table):
+    #district_id = sql.String(10, primary=True) 
+    district = sql.Reference(District, primary=True)
+    # irs/soi
+    bracket_low = sql.Integer(primary=True)
+    agi = sql.Float()
+    n_dependents = sql.Float()
+    n_eitc = sql.Float()
+    n_filers = sql.Float()
+    n_prepared = sql.Float()
+    tot_charity = sql.Float()
+    tot_eitc = sql.Float()
+    tot_tax = sql.Float()
+    avg_dependents = sql.Float()
+    avg_eitc = sql.Float()
+    avg_income = sql.Float()
+    avg_taxburden = sql.Float()
+    pct_charity = sql.Percentage()
+    pct_eitc = sql.Percentage()
+    pct_prepared = sql.Percentage()
+
+class Census_meta(sql.Table):
+    internal_key = sql.String(10, primary=True)
+    census_type = sql.Integer(primary=True)
+    hr_key = sql.String(512)
+
+class Census_data(sql.Table):
+    #district_id = sql.String(10, primary=True) 
+    district = sql.Reference(District, primary=True)
+    internal_key = sql.String(10, primary=True)
+    census_type = sql.Integer(primary=True)
+    value = sql.Float()
+
+#db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
 
 #db.query("CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician)")
 #db.query("GRANT ALL on v_politician_name")

@@ -25,7 +25,7 @@ $if page.get('front'):
         $if is_logged_in():
             <a href="#" onclick="document.forms['logout'].submit()" class="$page.get('login_class', 'footer')">logout</a
         $else:
-            <a href="/login" class="$page.get('login_class', 'footer')">login</a
+            <a href="/u/login" class="$page.get('login_class', 'footer')">login</a
           ><a href="/about/" class="$page.get('about_class', 'footer')">about</a
           ><a href="/blog/" class="$page.get('blog_class', 'footer')">blog</a
           ><a href="/about/#feedback" class="footer">feedback</a>
@@ -82,13 +82,13 @@ $if not page.get('maxi'):
     </div>
 <div id="menu_footer">
   $if is_logged_in():
-      <form name="logout" action="/logout" method='GET' style="display: none;"></form>
+      <form name="logout" action="/u/logout" method='POST' style="display: none;"></form>
 
 	<a href="/" class="watchdog">watchdog.net</a>\
 $if is_logged_in():
-    <a href="/logout" onclick="document.forms['logout'].submit()" class="footer">logout</a
+    <a href="/u/logout" onclick="document.forms['logout'].submit()" class="footer">logout</a
 $else:
-    <a href="/login" class="footer">login</a
+    <a href="/u/login" class="footer">login</a
   ><a href="/about/" class="footer">about</a
   ><a href="/blog/" class="footer">blog</a
   ><a href="/about/#feedback" class="footer">feedback</a>

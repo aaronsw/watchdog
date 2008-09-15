@@ -2,10 +2,45 @@
 """
 common tools for load scripts
 """
-import os
+import os, re
 import simplejson
 import web
 from settings import db
+
+STATE_TABLE = 'load/manual/states.json'
+DISTRICT_TABLE = 'load/manual/states.json'
+
+_stripterms = ['the', 'corporation', 'corp', 'incorporated', 'inc']
+r_plain = re.compile(r'[a-z ]+')
+def stemcorpname(name):
+    """
+    >>> stemcorpname('The Boeing Corp.')
+    'boeing'
+    >>> stemcorpname('SAIC Inc.')
+    'saic'
+    """
+    if not name: return name
+    name = name.lower()
+    name = ''.join(r_plain.findall(name))
+    name = ' '.join(x for x in name.split() if x not in _stripterms)
+    return name
+
+_unfipscache = {}
+def unfips(fipscode):
+    if not _unfipscache:
+        states = simplejson.load(file(STATE_TABLE))
+        for stateid, state in states.iteritems():
+            _unfipscache[state['fipscode']] = stateid
+        
+    return _unfipscache.get(fipscode)
+
+def fixdist(dist):
+    districts = simplejson.load(file(DISTRICT_TABLE))
+    if dist.endswith('-01') and dist[:-1] + '0' in districts:
+        return dist[:-1] + '0'
+    else:
+        return dist
+    
 
 _districtcache = {}
 def districtp(district):
