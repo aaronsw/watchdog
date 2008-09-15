@@ -24,6 +24,7 @@ a.sidebarlink:hover  {text-decoration:underline; }
 #main {margin:0px 0px 0px 0px; float:left; background-color:#FFFFFF; min-height:550px; display:inline; clear: both; width: 100%;}
 
 #text {margin: 50px 280px 0 40px;}
+#text h2 {font-family:"Georgia"; margin: 20px 0; font-size:26px; font-weight:normal; color: #002233 }
 #text ul {padding:0; margin:10px 0 10px 40px;}
 #text li {list-style:none; padding-left:15px; background:url(/static/images/li.gif) no-repeat 0px 6px;}
 h1 {margin:20px 0 20px 0; font-weight: normal; color:#EE4400; font-family:"Georgia"; font-size:26px; }
@@ -216,7 +217,7 @@ table.imgbox td.left { text-align: center; width: 112px; }
 table.imgbox td.left img { width: 112px;}
 table.imgbox td.right { padding-left: 15px; vertical-align: top; padding-top: 1em;}
 
-#upperbar { background-color: #d9eefa; padding: 0.8em 1.5em; position: relative; }
+#upperbar { background-color: #d9eefa; padding: 0.8em 1.5em; position: relative; border-top: 1px solid #ccc;}
 #upperbar h2 { display: inline; font-size: 1.2em;}
 #upperbar #uppermenu { color: #a8dcfa; position: absolute; top: 0.8em; right: 1.5em;}
 #upperbar #uppermenu a { margin: 0 0.2em; }

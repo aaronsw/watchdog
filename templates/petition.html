@@ -14,6 +14,10 @@ fieldset#signpetition {
 $if msg:
     $var msg: $:msg
 
+<h2>$p.title</h2>
+
+<p>$:format(p.description)</p>
+
 <div id="upperbar">
 $if p.signatory_count == 0:
         <h2>Be the first to sign this petition!</h2>
@@ -31,8 +35,6 @@ $if isauthor:
     <a href="?m=delete">Delete</a>
 </div>
 </div>
-
-<p>$:format(p.description)</p>
 
 <form name="sign" method="POST" action="/c/$p.id?m=sign">
         $if not signform.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>

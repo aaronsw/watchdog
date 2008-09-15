@@ -140,7 +140,7 @@ def save_signature(forminput, pid):
         signature = dict(petition_id=pid, user_id=user.id,
                         share_with='N', comment=forminput.comment)
         db.insert('signatory', **signature)
-        helpers.set_msg('Thanks! Your signature has been taken for this petition.')
+        helpers.set_msg('Thanks for your signing! Why don\'t you tell your friends about it?')
         helpers.unverified_login(user.email)
     return user
 
@@ -273,7 +273,7 @@ class petition:
         if form.validates(i):
             user = save_signature(i, pid)
             sendmail_to_signatory(user, pid)
-            return web.seeother('/%s' % pid)
+            return web.seeother('/%s/share' % pid)
         else:
             return self.GET(pid, signform=form)
 
@@ -371,8 +371,10 @@ class share:
 
         if remaining_providers and not loadcontactsform:
             loadcontactsform = forms.loadcontactsform
+
+        msg, msg_type = helpers.get_delete_msg()
         return render.share_petition(petition, emailform,
-                            contacts, loadcontactsform)
+                            contacts, loadcontactsform, msg)
 
     def POST(self, pid):
         i = web.input()

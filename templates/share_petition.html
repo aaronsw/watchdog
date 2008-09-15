@@ -1,6 +1,9 @@
-$def with (petition, emailform, contacts, loadcontactsform=None)
+$def with (petition, emailform, contacts, loadcontactsform=None, msg=None)
 
 $var title: Share your petition
+
+$if msg:
+    $var msg: $:msg
 
 <script>
 \$(document).ready( function(){
