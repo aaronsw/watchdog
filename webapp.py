@@ -3,16 +3,12 @@ import re
 import web
 web.config.debug = True
 
-from utils import zip2rep, simplegraphs, apipublish, helpers, forms, writerep, userinfo
+from utils import zip2rep, simplegraphs, apipublish, helpers, forms, writerep, users
 import blog
 import petition
 import settings
 from settings import db, render
 import schema
-
-#@@@ utils.auth.login doesn't work in urls as webpy tries to import auth from its own utils
-from utils.auth import login, signup, logout, forgot_password, set_password
-
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -30,19 +26,13 @@ urls = (
   r'/p/(.*?)%s?' % options, 'politician',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/c', petition.app,
-  r'/user', userinfo.app,
+  r'/u', users.app,
   r'/writerep', 'write_your_rep',
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
   r'/blog', blog.app,
   r'/data/(.*)', 'staticdata',
-  r'/login', 'login',
-  r'/signup', 'signup',
-  r'/logout', 'logout',
-  r'/forgot_password', 'forgot_password',
-  r'/set_password', 'set_password',
-  r'/importcontacts', 'contacts.importcontacts',
   r'/bbauth/', 'contacts.bbauth',
   r'/authsub', 'contacts.authsub',
   r'/ydnlIEWXo\.html', 'contacts.yauth'

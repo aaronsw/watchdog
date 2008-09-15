@@ -232,7 +232,7 @@ class petition:
             title = "Edit your petition"
             return render.petitionform(pform, cform, title, target='/c/%s?m=edit' % (pid))
         else:
-            login_link = '<a href="/login">Login</a>'
+            login_link = '<a href="/u/login">Login</a>'
             helpers.set_msg('Only author of this petition can edit it. %s if you are.' % login_link, msg_type='error')
             raise web.seeother('/%s' % pid)
 
@@ -260,7 +260,7 @@ class petition:
             msg = render_plain.confirm_deletion(pid)
             helpers.set_msg(msg)
         else:
-            login_link = '<a href="/login">Login</a>'
+            login_link = '<a href="/u/login">Login</a>'
             helpers.set_msg('Only author of this petition can delete it. %s if you are.' % login_link, msg_type='error')
 
         raise web.seeother('/%s' % pid)

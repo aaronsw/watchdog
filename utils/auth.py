@@ -101,7 +101,7 @@ def check_secret_token(email, token):
 
 def set_password_url(email, token):
     query = urllib.urlencode(dict(email=email, token=token))
-    url = 'http://watchdog.net/set_password?%s' % (query)
+    url = 'http://watchdog.net/u/set_password?%s' % (query)
     return url
 
 class forgot_password:
@@ -130,7 +130,7 @@ watchdog.net
 """ % (reset_url)
             web.sendmail(config.from_address, i.email, subject, msg )
             helpers.set_msg('Check your email to reset your password.')
-            raise web.seeother('/forgot_password')
+            raise web.seeother('/u/forgot_password')
         else:
             return self.GET(form)
 
@@ -142,7 +142,7 @@ class set_password:
             return render.set_password(form, i.email)
         else:
             helpers.set_msg('Invalid token', msg_type='error')
-            raise web.seeother('/forgot_password')
+            raise web.seeother('/u/forgot_password')
 
     def POST(self):
         i = web.input()
@@ -151,7 +151,7 @@ class set_password:
             password = encrypt_password(i.password)
             db.update('users', password=password, verified=True, where='email=$i.email', vars=locals())
             helpers.set_msg('Login with your new password.')
-            raise web.seeother(web.ctx.homedomain + '/login')
+            raise web.seeother(web.ctx.homedomain + '/u/login')
         else:
             return self.GET(form)
 
@@ -184,12 +184,12 @@ def assert_verified(email):
         send_mail_to_set_password(email)
     else:
         query = urllib.urlencode(dict(redirect=web.ctx.homepath + web.ctx.fullpath))
-        raise web.seeother("%s/login?%s" % (web.ctx.homedomain, query))
+        raise web.seeother("%s/u/login?%s" % (web.ctx.homedomain, query))
 
 def require_login(f):
     def g(*a, **kw):
         if not helpers.get_loggedin_email():
             query = urllib.urlencode(dict(redirect=web.ctx.homepath + web.ctx.fullpath))
-            raise web.seeother("%s/login?%s" % (web.ctx.homedomain, query))
+            raise web.seeother("%s/u/login?%s" % (web.ctx.homedomain, query))
         return f(*a, **kw)
     return g
