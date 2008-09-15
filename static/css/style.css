@@ -141,8 +141,10 @@ table.signs td.count { font-weight: bold }
 a.attributelink  { color: #0f5b89 }
 
 .emphasis { color:#EE4400; font-weight: bold; }
-.wrong { color:#EE4400; font-weight: bold; }
-.msg { background:#fff; padding: 10px;  color: #50aa50; }
+.error { border: 3px solid red; padding: 2px 5px; background-color: red; color: white; }
+.wrong { background-color: red; color: white; font-weight: bold; display: inline; padding: 0.2em 0.4em; }
+.msg { font-size: 1.2em; padding: 1em; background: #dfd; border: 2px solid #beb; color: #070; margin: 15px 0 15px 0;}
+.msg form { margin: 0.5em 0;}
 .petition { border-top: 1px solid #ccc; padding: 10px;}
 .sources { background-color: #eee; color: #555; padding: 1em; font-size: smaller; margin-top: 2em; clear: both;}
 .answer { margin-left: 1.5em;}
@@ -196,10 +198,6 @@ table.charted img { border: 0;}
 td.support, td.oppose { padding-left: .5em; } /* for compatibility with everything else */
 .support { background-color: #afa;}
 .oppose { background-color: #faa;}
-.wrong, .error {color: red; }
-.msg {display: block; background-color:#bfb; border:1px solid #ccc; margin: auto; margin-top:10px; width: 50%; text-align: center; color: #070; padding: 1em}
-
-
 
 /* wyr */
 .passbox { width: 15em; float: right; border: 1px solid #999; padding: 0 1em; text-align: center; background-color: #ccc; color: #444;}

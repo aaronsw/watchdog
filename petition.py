@@ -45,24 +45,13 @@ class index:
 
 def save_petition(p):
     p.pid = p.pid.replace(' ', '_')
-    email = helpers.get_loggedin_email()
     tocongress = p.get('tocongress', 'off') == 'on'
+    email = helpers.get_loggedin_email()
+    u = helpers.get_user_by_email(email)
     with db.transaction():
-        try:
-            owner = db.select('users', where='email=$email', vars=locals())[0]
-        except:
-            owner_id = db.insert('users', email=email,
-                                prefix=p.prefix, lname=p.lname, fname=p.fname,
-                                addr1=p.addr1, addr2=p.addr2, phone=p.phone,
-                                city=p.city, zip5=p.zipcode,
-                                verified=True)
-        else:
-            if not owner.verified: db.update('users', where='email=$email', verified=True, vars=locals())
-            owner_id = owner.id
-
         db.insert('petition', seqname=False, id=p.pid, title=p.ptitle, description=p.msg,
-                    owner_id=owner_id, to_congress=tocongress)
-        db.insert('signatory', user_id=owner_id, share_with='E', petition_id=p.pid)
+                    owner_id=u.id, to_congress=tocongress)
+        db.insert('signatory', user_id=u.id, share_with='A', petition_id=p.pid)
 
 def fill_user_details(form, fillings=['email', 'name', 'contact']):
     details = {}
