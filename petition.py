@@ -3,7 +3,7 @@ from __future__ import with_statement
 
 import web
 from utils import forms, helpers, auth
-from settings import db, render
+from settings import db, render, session
 from utils.auth import require_login
 import config
 
@@ -39,8 +39,9 @@ class index:
                     group='petition.id, petition.title',
                     order='count(signatory.user_id) desc'
                     )
+                    
         msg, msg_type = helpers.get_delete_msg()
-        return render.petition_list(petitions, msg)
+        return render.petition_list(petitions, msg)            
 
 def save_petition(p):
     p.pid = p.pid.replace(' ', '_')
@@ -327,30 +328,38 @@ class petition:
         helpers.set_msg('Petition "%s" deleted' % (title))
         raise web.seeother('/')
 
-def get_contacts(user_id):
+def get_contacts(user, by='id'):
+    if by == 'email':
+        where = 'uemail=$user'
+    else: 
+        where = 'user_id=$user'
+            
     contacts = db.select('contacts',
                     what='cname as name, cemail as email, provider',
-                    where='user_id=$user_id',
+                    where=where,
                     vars=locals()).list()
-    #remove repeated emails due to multiple providers; prefer the one which has name
-    cdict = {}
-    for c in contacts:
-        if c.email not in cdict.keys():
-            cdict[c.email] = c
-        elif c.name:
-            cdict[c.email] = c
-    contacts = cdict.values()
+                    
+    if by == 'id':                
+        #remove repeated emails due to multiple providers; prefer the one which has name
+        cdict = {}
+        for c in contacts:
+            if c.email not in cdict.keys():
+                cdict[c.email] = c
+            elif c.name:
+                cdict[c.email] = c
+        contacts = cdict.values()
+        
     for c in contacts:
         c.name = c.name or c.email.split('@')[0]
 
     contacts.sort(key=lambda x: x.name.lower())
     return contacts
-
+    
 def signed(email, pid):
     try:
         user_id = db.select('users', what='id', where='email=$email', vars=locals())[0].id
     except IndexError:
-        return True
+        return False
     else:
         is_signatory = db.select('signatory', where='user_id=$user_id and petition_id=$pid', vars=locals())
         return bool(is_signatory)
@@ -360,6 +369,9 @@ class share:
         i = web.input()
         user_id = helpers.get_loggedin_userid()
         contacts = get_contacts(user_id)
+        if (not contacts) and ('email' in session):
+            contacts = get_contacts(session.get('email'), by='email')    
+        
         contacts = filter(lambda c: not signed(c.email, pid), contacts)
         petition = db.select('petition', where='id=$pid', vars=locals())[0]
         petition.url = 'http://watchdog.net/c/%s' %(pid)
@@ -377,7 +389,7 @@ class share:
         if remaining_providers and not loadcontactsform:
             loadcontactsform = forms.loadcontactsform
         return render.share_petition(petition, emailform,
-                            contacts, remaining_providers, loadcontactsform)
+                            contacts, loadcontactsform)
 
     def POST(self, pid):
         i = web.input()
