@@ -25,7 +25,7 @@ def coalesce_population(data, fields):
 def main():
     assert os.path.exists(ALMANAC_DIR), ALMANAC_DIR
     
-    for fn in glob.glob(ALMANAC_DIR + 'people/*/rep*'):
+    for fn in glob.glob(ALMANAC_DIR + 'people/*/rep*.htm'):
         district = web.storage()
         
         dist = web.lstrips(web.rstrips(fn.split('/')[-1], '.htm'), 'rep_')
