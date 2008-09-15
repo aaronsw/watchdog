@@ -42,9 +42,8 @@ $if isauthor:
             $:signform.fname.render()
             <label for="lname">Last name</label>
             $:signform.lname.render()
-            $if not useremail: 
-                <label for="email">Email</label>
-                $:signform.email.render()
+            <label for="email">Email</label>
+            $:signform.email.render()
             <label for="comment">Comment</label>
             $:signform.comment.render()
         </fieldset>

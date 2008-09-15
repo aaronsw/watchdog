@@ -39,9 +39,9 @@ class index:
                     group='petition.id, petition.title',
                     order='count(signatory.user_id) desc'
                     )
-                    
+
         msg, msg_type = helpers.get_delete_msg()
-        return render.petition_list(petitions, msg)            
+        return render.petition_list(petitions, msg)
 
 def save_petition(p):
     p.pid = p.pid.replace(' ', '_')
@@ -89,12 +89,6 @@ def fill_user_details(form, fillings=['email', 'name', 'contact']):
                 if filter(lambda i: i.name == 'zip4', form.inputs):
                     details['zip4'] = user.zip4
     form.fill(**details)
-
-    if helpers.get_loggedin_email():
-        for i in form.inputs:
-            if i.name == 'email':
-                i.attrs['readonly'] = 'true'
-                break
 
 def send_to_congress(p, pform, wyrform):
     from webapp import write_your_rep
@@ -215,9 +209,9 @@ class petition:
             fill_user_details(signform, ['name', 'email'])
 
         msg, msg_type = helpers.get_delete_msg()
-        email = helpers.get_loggedin_email() or helpers.get_unverified_email()
-        isauthor = is_author(email, pid)
-        return render.petition(p, signform, email, isauthor, msg)
+        useremail = helpers.get_loggedin_email() or helpers.get_unverified_email()
+        isauthor = is_author(useremail, pid)
+        return render.petition(p, signform, useremail, isauthor, msg)
 
     @auth.require_login
     def GET_edit(self, pid):
@@ -331,15 +325,15 @@ class petition:
 def get_contacts(user, by='id'):
     if by == 'email':
         where = 'uemail=$user'
-    else: 
+    else:
         where = 'user_id=$user'
-            
+
     contacts = db.select('contacts',
                     what='cname as name, cemail as email, provider',
                     where=where,
                     vars=locals()).list()
-                    
-    if by == 'id':                
+
+    if by == 'id':
         #remove repeated emails due to multiple providers; prefer the one which has name
         cdict = {}
         for c in contacts:
@@ -348,13 +342,13 @@ def get_contacts(user, by='id'):
             elif c.name:
                 cdict[c.email] = c
         contacts = cdict.values()
-        
+
     for c in contacts:
         c.name = c.name or c.email.split('@')[0]
 
     contacts.sort(key=lambda x: x.name.lower())
     return contacts
-    
+
 def signed(email, pid):
     try:
         user_id = db.select('users', what='id', where='email=$email', vars=locals())[0].id
@@ -370,8 +364,8 @@ class share:
         user_id = helpers.get_loggedin_userid()
         contacts = get_contacts(user_id)
         if (not contacts) and ('email' in session):
-            contacts = get_contacts(session.get('email'), by='email')    
-        
+            contacts = get_contacts(session.get('email'), by='email')
+
         contacts = filter(lambda c: not signed(c.email, pid), contacts)
         petition = db.select('petition', where='id=$pid', vars=locals())[0]
         petition.url = 'http://watchdog.net/c/%s' %(pid)
