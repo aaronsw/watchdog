@@ -139,3 +139,9 @@ table.imgbox td.right { padding-left: 15px; vertical-align: top; padding-top: 1e
 #loadcontacts p { margin: 0 0 0.5em 0; }
 #loadcontacts #email { margin-bottom: 0.5em;}
 #loadcontacts #provider span { display: block; }
+
+.login { padding-right: 1.5em; border-right: 1px solid #ccc; }
+.signup { padding-left: 1.5em; }
+.login th, .signup th { font-weight: normal; }
+.login fieldset, .signup fieldset { width: 250px; }
+.login input, .signup input { width: 250px; }
