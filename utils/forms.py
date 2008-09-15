@@ -102,7 +102,7 @@ loadcontactsform = form.Form(
             description='Email:',
             size='15'),
     form.Dropdown('provider',
-            [('', 'Select Provider'), 
+            [('', 'Select Provider'),
             ('google', 'Google'),
             ('yahoo', 'Yahoo'),
             ('msn', 'MSN/Hotmail')],
@@ -110,8 +110,6 @@ loadcontactsform = form.Form(
     )
 
 signupform = form.Form(
-    form.Textbox('lname', form.notnull, description='Last Name'),
-    form.Textbox('fname', form.notnull, description='First Name'),
     form.Textbox('email',
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
@@ -119,7 +117,8 @@ signupform = form.Form(
             description='Email'),
     form.Password('password', form.notnull, description='Password'),
     form.Password('password_again', form.notnull, description='Password again'),
-    form.Hidden('redirect')
+    form.Hidden('redirect'),
+    validators = [form.Validator('Oops, passwords don\'t match', lambda i: i.password == i.password_again)]
     )
 
 loginform = form.Form(

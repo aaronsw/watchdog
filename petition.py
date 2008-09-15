@@ -140,7 +140,7 @@ def save_signature(forminput, pid):
         signature = dict(petition_id=pid, user_id=user.id,
                         share_with='N', comment=forminput.comment)
         db.insert('signatory', **signature)
-        helpers.set_msg('Thanks for your signing! Why don\'t you tell your friends about it?')
+        helpers.set_msg('Thanks for your signing! Why don\'t you tell your friends about it now?')
         helpers.unverified_login(user.email)
     return user
 
