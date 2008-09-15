@@ -2,6 +2,7 @@ import web
 from web import form
 from settings import db
 from zip2rep import getdists
+from auth import loginuser
 
 email_regex = r'[\w\.-]+@[\w\.-]+\.[a-zA-Z]{1,4}'
 email_list_regex = r'^%s$|^(%s *, *)*(%s)?$' % (email_regex, email_regex, email_regex)
@@ -115,9 +116,9 @@ signupform = form.Form(
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
             form.Validator('An account with that email already exists', emailnotexists),
-            description='Email:'),
-    form.Password('password', form.notnull, description='Password:'),
-    form.Password('password_again', form.notnull, description='Password again:'),
+            description='Email'),
+    form.Password('password', form.notnull, description='Password'),
+    form.Password('password_again', form.notnull, description='Password again'),
     form.Hidden('redirect')
     )
 
@@ -125,9 +126,10 @@ loginform = form.Form(
     form.Textbox('useremail',
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
-            description='Email:'),
-    form.Password('password', form.notnull, description='Password:'),
-    form.Hidden('redirect')
+            description='Email'),
+    form.Password('password', form.notnull, description='Password'),
+    form.Hidden('redirect'),
+    validators = [form.Validator('Oops, wrong email or password', lambda i: bool(loginuser(i.useremail, i.password)))]
     )
 
 forgot_password = form.Form(

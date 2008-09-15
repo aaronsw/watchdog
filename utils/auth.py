@@ -20,7 +20,7 @@ def check_password(user, password):
     key, enc_password = user.password.split('@')
     return enc_password == get_hexdigest(key, password)
 
-def _login(useremail, password):
+def loginuser(useremail, password):
     user = helpers.get_user_by_email(useremail)
     if user and check_password(user, password):
         helpers.set_login_cookie(useremail)
@@ -40,19 +40,14 @@ def new_user(fname, lname, email, password):
     return user
 
 class signup:
-    def GET(self):
-        referer = web.ctx.env.get('HTTP_REFERER', '/')
-        i = web.input(redirect=referer)
-        form = forms.signupform()
-        form['redirect'].value = i.redirect
-        msg, msg_type = helpers.get_delete_msg()
-        return render.signup(form, msg, i.redirect)
-
     def POST(self):
         i = web.input(redirect='/')
-        f = forms.signupform()
-        if not f.validates(i):
-            return render.signup(f)
+        sf = forms.signupform()
+        if not sf.validates(i):
+            lf = forms.loginform()
+            lf['redirect'].value = sf['redirect'].value = i.redirect
+            sf.fill(i)
+            return render.login(lf, sf, redirect=i.redirect)
         user = new_user(i.fname, i.lname, i.email, i.password)
         helpers.set_login_cookie(i.email)
         raise web.seeother(i.redirect)
@@ -61,19 +56,19 @@ class login:
     def GET(self):
         referer = web.ctx.env.get('HTTP_REFERER', '/')
         i = web.input(redirect=referer)
-        form = forms.loginform()
-        form['redirect'].value = i.redirect
+        lf, sf= forms.loginform(), forms.signupform()
+        sf['redirect'].value = sf['redirect'].value = i.redirect
         msg, msg_type = helpers.get_delete_msg()
-        return render.login(form, msg, i.redirect)
+        return render.login(lf, sf, msg, i.redirect)
 
     def POST(self):
         i = web.input(redirect='/')
-        user = _login(i.useremail, i.password)
-        if not user:
-            f = forms.loginform()
-            f.fill(i)
-            f.note = 'Invalid email or password.'
-            return render.login(f)
+        lf = forms.loginform()
+        if not lf.validates(i):
+            sf = forms.signupform()
+            lf['redirect'].value = sf['redirect'].value = i.redirect
+            lf.fill(i)
+            return render.login(lf, sf, redirect=i.redirect)
         raise web.seeother(i.redirect)
 
 class logout:

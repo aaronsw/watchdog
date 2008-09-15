@@ -1,17 +1,52 @@
-$def with (form, msg=None, redirect="")
+$def with (loginform, signupform, msg=None, redirect="")
 
-$var title: Login
+$var title: Log in or sign up
 $var login_class: select\
 
 $if msg:
     $var msg: $:msg
 
-<p>Don't have an account? <a href='/u/signup?redirect=$redirect'>Go create one</a></p>
+$if not loginform.valid:
+    $if loginform.note: <p class="error">$loginform.note</p>
+    $else: <p class="error">Please try again after fixing the problems highlighted below:</p>
+$elif not signupform.valid:
+    $if signupform.note: <p class="error">$signupform.note</p>
+    $else: <p class="error">Please try again after fixing the problems highlighted below:</p>
 
-<div class="login">
-    <form name="login" method="POST" >
-        $:form.render()
-        <button type="submit">Log in</button>
+<table>
+<tr>
+<td class="login">
+    <form name="login" method="POST" action="login">
+        $:signupform.redirect.render()
+        <fieldset>
+        <legend>Log in to your account</legend>
+        <label>Enter your email</label>
+        $:loginform.useremail.render()
+        <label>And your password</label>
+        $:loginform.password.render()
+        <div><button type="submit">Log in</button></div>
+        <p><a href='/forgot_password'>Forgot your password?</a></p>
+        </fieldset>
     </form>
-</div>
-<p><a href='/u/forgot_password'>Forgot your password?</a></p>
+</td>
+<td class="signup">
+    <form name="signup" method="POST" action="signup">
+        $:signupform.redirect.render()
+        <fieldset>
+        <legend>... or sign up to create one</legend>
+        <label>First name</label>
+        $:signupform.fname.render()
+        <label>Last name</label>
+        $:signupform.lname.render()
+        <label>Your email</label>
+        $:signupform.email.render()
+        <label>Password</label>
+        $:signupform.password.render()
+        <label>Password again</label>
+        $:signupform.password_again.render()
+        <div><button type="submit">Sign up</button></div>
+        </fieldset>
+    </form>
+</td>
+</tr>
+</table>
