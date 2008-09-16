@@ -28,14 +28,14 @@ def loginuser(useremail, password):
     else:
         return None
 
-def new_user(email, password):
+def new_user(fname, lname, email, password):
     token = get_secret_token(email)
     password = encrypt_password(password)
     exists = db.select('users', where='email=$email', vars=locals())
     if exists:
         return None
 
-    user_id = db.insert('users', email=email, password=password, verified=True)
+    user_id = db.insert('users', fname=fname, lname=lname, email=email, password=password, verified=True)
     user = web.storage(id=user_id, email=email, password=password, verified=True)
     return user
 

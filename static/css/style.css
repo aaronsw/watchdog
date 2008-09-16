@@ -53,9 +53,9 @@ img { border:none }
 
 
 /* form elements */
-textarea { background-color: #d9eefa; border: 1px solid #83b3d0; color: #999; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin: 10px 4px 0px 0px; }
+textarea { background-color: #d9eefa; border: 1px solid #83b3d0; color: #023; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin: 10px 4px 0px 0px; }
 textarea:focus { background-color: #f0faff; border: 1px solid #83b3d0; color: #EE4400; }
-input { background-color: #d9eefa; border: 1px solid #83b3d0; color: #999; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px; }
+input { background-color: #d9eefa; border: 1px solid #83b3d0; color: #023; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px; }
 input:focus { color: #EE4400; background-color: #f0faff;  }
 input.personalize { background-color: #002233; border: 1px solid #0f5b89; color: #FFF399; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px; width: 152px; font-size:12px; line-height:20px; font-family:Arial, Helvetica, sans-serif; }
 input.personalize:focus { background-color: #0f5b89; border: 1px solid #EE4400;  }
@@ -69,8 +69,8 @@ input.highlight:focus { background-color: #fdf6c5; border: 1px solid #EE4400;  }
 /* fieldsets */
 fieldset { width: 510px; border: 1px solid #ccc; background: #F5F5FD; padding: 0 2em 2em 2em; margin: 0 0 2em 0; }
 legend { font-weight: bold; font-size: 1.2em; padding: 0 0.5em; color:#EE4400; }
-fieldset label { display: block; font-size: 0.95em; margin: 1em 0 0 0; }
-fieldset input { padding: 0.3em; font-weight: bold; font-size: 1.1em; max-width: 500px; margin: 0; }
+fieldset label { display: block; font-size: 0.95em; margin: 1em 0 0 0; color: #023; }
+fieldset input { padding: 0.3em; font-weight: bold; font-size: 1.1em; max-width: 500px; margin: 0; color: #023; }
 fieldset textarea { font-size: 1.1em; width: 505px; padding: 0.2em; height: 200px; margin: 0}
 fieldset th { vertical-align: middle; }
 fieldset { vertical-align: middle; }
@@ -233,8 +233,8 @@ h2.repred { color: #EE4400; margin-bottom: 6px; }
 #loadcontacts #email { margin-bottom: 0.5em;}
 #loadcontacts #provider span { display: block; }
 
-.login { padding-right: 1.5em; border-right: 1px solid #ccc; }
-.signup { padding-left: 1.5em; }
+.login { padding-right: 2em; border-right: 1px solid #ccc; }
+.signup { padding-left: 2em; }
 .login th, .signup th { font-weight: normal; }
 .login fieldset, .signup fieldset { width: 250px; }
 .login input, .signup input { width: 250px; }

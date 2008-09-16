@@ -13,6 +13,8 @@ urls = (
   '', 'redir',
   '/', 'index',
   '/new', 'new',
+  '/login', 'login',
+  '/signup', 'signup',
   '/verify', 'checkID',
   '/(.*)/share', 'share',
   '/(.*)/signatories', 'signatories',
@@ -42,16 +44,6 @@ class index:
 
         msg, msg_type = helpers.get_delete_msg()
         return render.petition_list(petitions, msg)
-
-def save_petition(p):
-    p.pid = p.pid.replace(' ', '_')
-    tocongress = p.get('tocongress', 'off') == 'on'
-    email = helpers.get_loggedin_email()
-    u = helpers.get_user_by_email(email)
-    with db.transaction():
-        db.insert('petition', seqname=False, id=p.pid, title=p.ptitle, description=p.msg,
-                    owner_id=u.id, to_congress=tocongress)
-        db.insert('signatory', user_id=u.id, share_with='A', petition_id=p.pid)
 
 def fill_user_details(form, fillings=['email', 'name', 'contact']):
     details = {}
@@ -84,8 +76,26 @@ def send_to_congress(p, pform, wyrform):
     wyr = write_your_rep()
     return wyr.send_msg(p, wyrform, pform)
 
+def create_petition(i, email):
+    tocongress = i.get('tocongress', 'off') == 'on'
+    if tocongress:
+        pform, wyrform = forms.petitionform(), forms.wyrform()
+        pform.fill(i), wyrform.fill(i)
+        sent_status = send_to_congress(i, pform, wyrform)
+        if not isinstance(sent_status, bool):
+            return sent_status
+
+    i.pid = i.pid.replace(' ', '_')
+    u = helpers.get_user_by_email(email)
+    with db.transaction():
+        db.insert('petition', seqname=False, id=i.pid, title=i.ptitle, description=i.msg,
+                    owner_id=u.id, to_congress=tocongress)
+        db.insert('signatory', user_id=u.id, share_with='A', petition_id=i.pid)
+    msg = """Congratulations, you've created your petition.
+             Now sign and share it with all your friends."""
+    helpers.set_msg(msg)
+
 class new:
-    @auth.require_login
     def GET(self):
         pform = forms.petitionform()
         cform = forms.wyrform()
@@ -93,29 +103,52 @@ class new:
         email = helpers.get_loggedin_email() or helpers.get_unverified_email()
         return render.petitionform(pform, cform)
 
-    @auth.require_login
-    def POST(self):
+    def POST(self, input=None):
         from webapp import get_wyrform
-        i = web.input()
+        i = input or web.input()
         tocongress = i.get('tocongress', 'off') == 'on'
         pform = forms.petitionform()
         wyrform = get_wyrform(i)
-        email = helpers.get_loggedin_email()
         wyr_valid = (not(tocongress) or wyrform.validates(i))
         if not pform.validates(i) or not wyr_valid:
             return render.petitionform(pform, wyrform)
 
-        if tocongress:
-            sent_status = send_to_congress(i, pform, wyrform)
-            if not isinstance(sent_status, bool):
-                return sent_status
+        email = helpers.get_loggedin_email()
+        if not email:
+            return login().GET(i)
 
-        save_petition(i)
-        helpers.set_login_cookie(email)
-        msg = """Congratulations, you've created your petition.
-                 Now sign and share it with all your friends."""
-        helpers.set_msg(msg)
-        return web.seeother('/%s' % i.pid)
+        create_petition(i, email)
+        raise web.seeother('/%s' % i.pid)
+
+class login:
+    def GET(self, i):
+        lf, sf = forms.loginform(), forms.signupform()
+        pf, wf = forms.petitionform(), forms.wyrform()
+        pf.fill(i), wf.fill(i)
+        return render.petitionlogin(lf, sf, pf, wf)
+
+    def POST(self):
+        i = web.input()
+        lf, pf, wf = forms.loginform(), forms.petitionform(), forms.wyrform()
+        if not lf.validates(i):
+            sf, wf = forms.signupform()
+            lf.fill(i), pf.fill(i), wf.fill(i)
+            return render.petitionlogin(lf, sf, pf, wf)
+        create_petition(i, i.useremail)
+        raise web.seeother('/%s' % i.pid)
+
+class signup:
+    def POST(self):
+        i = web.input()
+        sf = forms.signupform()
+        if not sf.validates(i):
+            lf, pf, wf = forms.loginform(), forms.petitionform(), forms.wyrform()
+            sf.fill(i), pf.fill(i), wf.fill(i)
+            return render.petitionlogin(lf, sf, pf, wf)
+        user = auth.new_user( i.fname, i.lname, i.email, i.password)
+        helpers.set_login_cookie(i.email)
+        create_petition(i, i.email)
+        raise web.seeother('/%s' % i.pid)
 
 def askforpasswd(user_id):
     useremail = helpers.get_loggedin_email()
@@ -136,9 +169,10 @@ def save_signature(forminput, pid):
         user = web.storage(id=user_id, lname=forminput.lname, fname=forminput.fname, email=forminput.email)
 
     signed = db.select('signatory', where='petition_id=$pid AND user_id=$user.id', vars=locals())
+    share_with = (forminput.get('share_with', 'off') == 'on' and 'N') or 'A'
     if not signed:
         signature = dict(petition_id=pid, user_id=user.id,
-                        share_with='N', comment=forminput.comment)
+                        share_with=share_with, comment=forminput.comment)
         db.insert('signatory', **signature)
         helpers.set_msg('Thanks for your signing! Why don\'t you tell your friends about it now?')
         helpers.unverified_login(user.email)
@@ -163,17 +197,20 @@ def is_author(email, pid):
     else:
         return user_id == owner_id
 
+def get_signs(pid):
+    return db.select(['signatory', 'users'],
+                        what='users.fname, users.lname, users.email, '
+                              'signatory.share_with, signatory.comment, '
+                              'signatory.signed',
+                        where='petition_id=$pid AND user_id=users.id',
+                        order='signed desc',
+                        vars=locals())
+
 class signatories:
     def GET(self, pid):
         user_email = helpers.get_loggedin_email()
         ptitle = db.select('petition', what='title', where='id=$pid', vars=locals())[0].title
-        signs = db.select(['signatory', 'users'],
-                            what='users.fname, users.lname, users.email, '
-                                 'signatory.share_with, signatory.comment, '
-                                 'signatory.signed',
-                            where='petition_id=$pid AND user_id=users.id',
-                            order='signed desc',
-                            vars=locals()).list()
+        signs = get_signs(pid).list()
         return render.signature_list(pid, ptitle, signs, is_author(user_email, pid))
 
 class petition:
@@ -270,10 +307,13 @@ class petition:
     def POST_sign(self, pid):
         form = forms.signform()
         i = web.input()
+        email = helpers.get_loggedin_email() or helpers.get_unverified_email()
+        if email:
+            i.email = email
         if form.validates(i):
             user = save_signature(i, pid)
             sendmail_to_signatory(user, pid)
-            return web.seeother('/%s/share' % pid)
+            raise web.seeother('/%s/share' % pid)
         else:
             return self.GET(pid, signform=form)
 

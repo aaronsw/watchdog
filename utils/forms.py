@@ -63,12 +63,7 @@ signform = form.Form(
             description='Email:',
             post=' *',
             size='30'),
-    form.Dropdown('share_with',
-            [('N', 'Nobody'),
-             ('A', 'Author of this petition'),
-             ('E', 'Everybody')
-             ],
-             description='Share my email with:'),
+    form.Checkbox('share_with', value='off', description="Share my email with the author of this petition"),
     form.Textarea('comment',
             description='Comments:',
             cols=70,
@@ -110,6 +105,8 @@ loadcontactsform = form.Form(
     )
 
 signupform = form.Form(
+    form.Textbox('lname', form.notnull, description='Last Name'),
+    form.Textbox('fname', form.notnull, description='First Name'),
     form.Textbox('email',
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
