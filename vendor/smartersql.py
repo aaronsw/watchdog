@@ -157,7 +157,7 @@ class Table(object):
             
             if v.sql_type:
                 setattr(self, v.sql_name, row[v.sql_name])
-            
+
 
 ## columns
 
