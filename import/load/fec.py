@@ -3,9 +3,10 @@ FEC data loader.
 """
 from __future__ import with_statement
 import itertools
+import web
 import tools
 from tools import db
-from parse import fec
+from parse import fec_cobol, fec_csv
 
 fec2pol = {}
 def load_fec_ids():
@@ -23,7 +24,8 @@ def load_fec_ids():
                   fec_id=fec_id)
 
 def load_fec_cans():
-    for can in fec.parse_candidates():
+    for can in fec_cobol.parse_candidates():
+        can = web.storage(can)
         if can.candidate_id in fec2pol:
             pol_id = fec2pol[can.candidate_id]
 
@@ -40,7 +42,7 @@ def load_fec_cans():
             )
 
 def load_fec_efilings():
-    for f in fec.parse_efilings():
+    for f in fec_cvs.parse_efilings():
         for s in f['schedules']:
             if s['type'] == 'contribution':
                 politician_id = None

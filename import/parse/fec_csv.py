@@ -4,6 +4,7 @@ Parser for FEC electronic filings.
 __author__ = ["Simon Carstensen <me@simonbc.com>"]
 
 import glob, zipfile
+import re
 
 HEADERS_PATH = '../data/crawl/fec/electronic/headers/'
 EFILINGS_PATH = '../data/crawl/fec/electronic/'
