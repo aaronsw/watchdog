@@ -63,12 +63,7 @@ signform = form.Form(
             description='Email:',
             post=' *',
             size='30'),
-    form.Dropdown('share_with',
-            [('N', 'Nobody'),
-             ('A', 'Author of this petition'),
-             ('E', 'Everybody')
-             ],
-             description='Share my email with:'),
+    form.Checkbox('share_with', value='off', description="Share my email with the author of this petition"),
     form.Textarea('comment',
             description='Comments:',
             cols=70,
@@ -102,7 +97,7 @@ loadcontactsform = form.Form(
             description='Email:',
             size='15'),
     form.Dropdown('provider',
-            [('', 'Select Provider'), 
+            [('', 'Select Provider'),
             ('google', 'Google'),
             ('yahoo', 'Yahoo'),
             ('msn', 'MSN/Hotmail')],
@@ -119,7 +114,8 @@ signupform = form.Form(
             description='Email'),
     form.Password('password', form.notnull, description='Password'),
     form.Password('password_again', form.notnull, description='Password again'),
-    form.Hidden('redirect')
+    form.Hidden('redirect'),
+    validators = [form.Validator('Oops, passwords don\'t match', lambda i: i.password == i.password_again)]
     )
 
 loginform = form.Form(

@@ -34,15 +34,11 @@ $elif not signupform.valid:
         $:signupform.redirect.render()
         <fieldset>
         <legend>... or sign up to create one</legend>
-        <label>First name</label>
-        $:signupform.fname.render()
-        <label>Last name</label>
-        $:signupform.lname.render()
-        <label>Your email</label>
+        <label>Enter your email</label>
         $:signupform.email.render()
-        <label>Password</label>
+        <label>Give it a password</label>
         $:signupform.password.render()
-        <label>Password again</label>
+        <label>Type the password again</label>
         $:signupform.password_again.render()
         <div><button type="submit">Sign up</button></div>
         </fieldset>

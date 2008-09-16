@@ -48,7 +48,7 @@ class signup:
             lf['redirect'].value = sf['redirect'].value = i.redirect
             sf.fill(i)
             return render.login(lf, sf, redirect=i.redirect)
-        user = new_user(i.fname, i.lname, i.email, i.password)
+        user = new_user(i.email, i.password)
         helpers.set_login_cookie(i.email)
         raise web.seeother(i.redirect)
 

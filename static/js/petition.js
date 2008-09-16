@@ -29,16 +29,28 @@ $('#pid').change( function checkID(){
         });
     });
 
-$('#tocongress').click(function() {
+var tocongress_click = function() {
     if ($('#tocongress:checked').val()) {
         $('#tocongressform').show();
         $('#prefix').focus();
-        $('#tocongresscheck').css('background-color', '#ccebff');
+        $('#tocongresscheck').css('background-color', '#beb');
     } else {
         $('#tocongressform').hide()
         $('#tocongresscheck').css('background-color', '#ffc');
     }
-});
+}
+$('#tocongress').click(tocongress_click);
+tocongress_click();
+
+var share_with_click = function() {
+    if ($('#share_with:checked').val()) {
+        $('#share_with_container').css('background-color', '#beb');
+    } else {
+        $('#share_with_container').css('background-color', '#ffc');
+    }
+}
+$('#share_with').click(share_with_click);
+share_with_click();
 
 $('#ptitle').focus();
 if ($('#tocongress:checked').val()) {
