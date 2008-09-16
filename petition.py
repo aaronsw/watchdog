@@ -131,7 +131,7 @@ class login:
         i = web.input()
         lf, pf, wf = forms.loginform(), forms.petitionform(), forms.wyrform()
         if not lf.validates(i):
-            sf, wf = forms.signupform()
+            sf, wf = forms.signupform(), forms.wyrform()
             lf.fill(i), pf.fill(i), wf.fill(i)
             return render.petitionlogin(lf, sf, pf, wf)
         create_petition(i, i.useremail)
