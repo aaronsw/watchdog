@@ -22,10 +22,10 @@ $if page.get('front'):
 	  $if not page.get('front'): </div>
   $if not page.get('front'):
         $if is_logged_in():
-            <div style="float: right; padding-right: 32px; padding-top: 15px;">        
+            <div style="float: right; padding-right: 22px; padding-top: 15px;">        
             <a href="#" onclick="document.forms['logout'].submit()" class="$page.get('login_class', 'footer')">logout</a
         $else:
-            <div style="float: right; padding-right: 22px; padding-top: 15px;">        
+            <div style="float: right; padding-right: 32px; padding-top: 15px;">        
             <a href="/u/login" class="$page.get('login_class', 'footer')">login</a
           ><a href="/about/" class="$page.get('about_class', 'footer')">about</a
           ><a href="/blog/" class="$page.get('blog_class', 'footer')">blog</a
