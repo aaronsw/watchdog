@@ -76,9 +76,9 @@ def load_votesmart():
                             pol_cand)))
 
             if not db.select('congress',
-                    where="politician_id=$polid AND congress_num='cand'", 
+                    where="politician_id=$polid AND congress_num='-1'", 
                     vars=locals()):
-                db.insert('congress', seqname=False, congress_num='cand',
+                db.insert('congress', seqname=False, congress_num='-1',
                         politician_id=polid, district_id=district,
                         party=pol_cand['party'])
 
@@ -100,7 +100,7 @@ def load_votesmart():
 def main():
     with db.transaction():
         db.update('politician', votesmartid=None, where='1=1')
-        db.delete('congress', where="congress_num='cand'")
+        db.delete('congress', where="congress_num='-1'")
         load_votesmart()
 
 

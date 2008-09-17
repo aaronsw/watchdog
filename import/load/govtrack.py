@@ -138,6 +138,7 @@ def main():
                     if (polid, repr, term) not in done:
                         db.insert('congress', seqname=False, party=r.party,
                                 congress_num=term, politician_id=polid,
+                                current_member=pol.current_member,
                                 district_id=repr)
                     done.add((polid,repr,term))
 
