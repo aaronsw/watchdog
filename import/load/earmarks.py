@@ -6,6 +6,7 @@ import web
 import tools
 from parse import earmarks
 from settings import db
+from pprint import pprint, pformat
 
 reps = simplejson.load(file('../data/load/politicians/govtrack.json'))
 
@@ -50,14 +51,20 @@ def load():
                 de.pop(x)
             
             de['recipient_stem'] = tools.stemcorpname(de['intended_recipient'])
-            db.insert('earmark', seqname=False, **de)
+            try:
+                db.insert('earmark', seqname=False, **de)
+            except:
+                pprint(de)
+                raise
             done.add(de['id'])
         
+    reps_not_found = set()
     for e in earmarks.parse_file(earmarks.EARMARK_FILE):
         for rawRequest, chamber in zip([e.house_request, e.senate_request],[e.house_member, e.senate_member]):
             for rep in chamber:
                 if rep not in lastname2rep:
                     #@@ should work on improving quality
+                    reps_not_found.add(rep)
                     pass
                 else:
                     rep = lastname2rep[rep]
@@ -77,6 +84,7 @@ def load():
                         outdb[rep]['n_earmark_received'] += 1
                         outdb[rep]['amt_earmark_received'] += e.final_amt
     
+    print "Did not find",len(reps_not_found),"reps:", pformat(reps_not_found)
     for rep, d in outdb.iteritems():
         db.update('politician', where='id=$rep', vars=locals(), **d)
 
