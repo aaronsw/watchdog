@@ -10,6 +10,9 @@ fieldset #tocongresscheck input, fieldset #tocongresscheck label { display: inli
 fieldset #pid { margin-right: 0.3em; font-size: 0.9em; width: 130px; }
 </style>
 
+
+$if target != '/c/new': <h2>Edit <a href='/c/$pform.pid.value'>$pform.ptitle.value</a></h2>
+
 <form name="petition" method="POST" action="$target"> 
 	$:pform.userid.render()
     $if not pform.valid: <p class="error">Please try again after fixing the problems highlighted below:</p>

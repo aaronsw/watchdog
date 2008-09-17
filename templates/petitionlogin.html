@@ -1,0 +1,94 @@
+$def with (loginform, signupform, petitionform, wyrform, msg=None, redirect="")
+
+$var title: Log in or sign up
+$var login_class: select\
+
+$if msg:
+    $var msg: $:msg
+
+$if not loginform.valid:
+    $if loginform.note: <p class="error">$loginform.note</p>
+    $else: <p class="error">Please try again after fixing the problems highlighted below:</p>
+$elif not signupform.valid:
+    $if signupform.note: <p class="error">$signupform.note</p>
+    $else: <p class="error">Please try again after fixing the problems highlighted below:</p>
+
+
+<style>
+#text h2 { margin-bottom: 30px; }
+#text fieldset td { padding: 0; }
+#text fieldset #fname { margin-right: 7px; }
+#text fieldset #fname { width: 115px; }
+#text fieldset #lname { width: 115px; }
+</style>
+
+
+<h2>You just need an account now...</h2>
+
+<table>
+<tr>
+<td class="login">
+    <form name="login" method="POST" action="login">
+        <div style="display: none">
+            $:petitionform.ptitle.render()
+            $:petitionform.pid.render()
+            $:petitionform.msg.render()
+            $:petitionform.tocongress.render()
+            $:wyrform.prefix.render()
+            $:wyrform.fname.render()
+            $:wyrform.lname.render()
+            $:wyrform.addr1.render()
+            $:wyrform.addr2.render()
+            $:wyrform.city.render()
+            $:wyrform.zipcode.render()
+            $:wyrform.zip4.render()
+            $:wyrform.phone.render()
+        </div>
+        $:signupform.redirect.render()
+        <fieldset>
+        <legend>Log in to your account</legend>
+        <label>Enter your email</label>
+        $:loginform.useremail.render()
+        <label>And your password</label>
+        $:loginform.password.render()
+        <div><button type="submit">Log in</button></div>
+        <p><a href='/forgot_password'>Forgot your password?</a></p>
+        </fieldset>
+    </form>
+</td>
+<td class="signup">
+    <form name="signup" method="POST" action="signup">
+        <div style="display: none">
+            $:petitionform.ptitle.render()
+            $:petitionform.pid.render()
+            $:petitionform.msg.render()
+            $:petitionform.tocongress.render()
+            $:wyrform.prefix.render()
+            $:wyrform.fname.render()
+            $:wyrform.lname.render()
+            $:wyrform.addr1.render()
+            $:wyrform.addr2.render()
+            $:wyrform.city.render()
+            $:wyrform.zipcode.render()
+            $:wyrform.zip4.render()
+            $:wyrform.phone.render()
+        </div>
+        $:signupform.redirect.render()
+        <fieldset>
+        <legend>... or sign up to create one</legend>
+        <table>
+        <tr><td><label for="fname">First name</label>$:signupform.fname.render()</td>
+        <td><label for="lname">Last name</label>$:signupform.lname.render()</td></tr>
+        </table>
+        <label>Enter your email</label>
+        $:signupform.email.render()
+        <label>Give it a password</label>
+        $:signupform.password.render()
+        <label>Type the password again</label>
+        $:signupform.password_again.render()
+        <div><button type="submit">Sign up</button></div>
+        </fieldset>
+    </form>
+</td>
+</tr>
+</table>

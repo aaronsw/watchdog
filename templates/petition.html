@@ -2,13 +2,18 @@ $def with (p, signform, useremail, isauthor, msg=None)
 
 $var title: $p.title
 
+<script type="text/javascript" src="/static/js/petition.js"></script>
+
 <style>
-fieldset#signpetition input {
-    width: 500px;
-}
-fieldset#signpetition {
-    margin-top: 2em;
-}
+fieldset#signpetition input { width: 500px; }
+fieldset#signpetition { margin-top: 2em; }
+#text fieldset td { padding: 0; }
+#text fieldset #fname { margin-right: 7px; }
+#text fieldset #fname { width: 190px; }
+#text fieldset #lname { width: 290px; }
+#text fieldset #share_with { width: 13px; }
+#text fieldset #share_with_container { margin-top: 1em; background-color: #ffc; width: 23em;}
+#text fieldset #share_with_container label { display: inline; }
 </style>
 
 $if msg:
@@ -16,7 +21,7 @@ $if msg:
 
 <h2>$p.title</h2>
 
-<p>$:format(p.description)</p>
+$:format(p.description)
 
 <div id="upperbar">
 $if p.signatory_count == 0:
@@ -27,7 +32,6 @@ $else:
 	$else:
 		$ ppl = 'people</a></strong> have'
 	<h2> <strong><a href='/c/$p.id/signatories'>$p.signatory_count $:ppl signed this petition. </h2>
-
 <div id="uppermenu">
   <a href="/c/$p.id/share">Share</a>&nbsp;
 $if isauthor:
@@ -36,18 +40,27 @@ $if isauthor:
 </div>
 </div>
 
+<a name="sign"></a>
+
 <form name="sign" method="POST" action="/c/$p.id?m=sign">
         $if not signform.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
         <fieldset id="signpetition">
             <legend>Sign this petition</legend>
-            <label for="fname">First name</label>
-            $:signform.fname.render()
-            <label for="lname">Last name</label>
-            $:signform.lname.render()
+            <table>
+            <tr><td><label for="fname">First name</label>$:signform.fname.render()</td>
+            <td><label for="lname">Last name</label>$:signform.lname.render()</td></tr>
+            </table>
             <label for="email">Email</label>
-            $:signform.email.render()
+            $if useremail:
+                <div><strong>$useremail</strong></div>
+            $else:
+                $:signform.email.render()
             <label for="comment">Comment</label>
             $:signform.comment.render()
+            <div id="share_with_container">
+            $:signform.share_with.render() 
+            <label for="share_with">Do not share my email with the author of this petition</label>
+            </div>
         </fieldset>
     <p><button type="submit">Sign this petition</button></p>
 </form>
