@@ -68,7 +68,7 @@ database: $(LOADERS)
 	$(PYTHON) load/govtrack_gis.py
 	touch $@
 
-.govtrack: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml
+.govtrack: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml .json
 	$(PYTHON) load/govtrack.py
 	touch $@
 
@@ -76,7 +76,7 @@ database: $(LOADERS)
 	$(PYTHON) load/voteview.py
 	touch $@
 
-.earmarks: load/earmarks.py .govtrack
+.earmarks: load/earmarks.py .govtrack .voteview
 	$(PYTHON) load/earmarks.py
 	touch $@
 

@@ -7,30 +7,29 @@ import tools
 from parse import earmarks
 from settings import db
 from pprint import pprint, pformat
-import schema
 
-reps = dict((x.id, x) for x in db.select('politician').list())
+reps = web.storage(dict((x.id, x) for x in db.select('politician').list()))
+hacks = dict()
 
 # HACKs: hard-coding naming inconsistencies
 # Unusual name fixes
-reps['bill_young']['firstname'] = 'C.W. Bill'
+hacks['bill_young'] = 'C.W. Bill'
 # Common name fixes
-reps['mike_thompson']['firstname'] = 'Mike'
-reps['tim_f._murphy']['firstname'] = 'Timothy'
+hacks['mike_thompson'] = 'Mike'
+hacks['tim_f._murphy'] = 'Timothy'   #Tim is in there as BOTH Tim and Timothy
 # Dups
-reps['mike_j._rogers']['firstname'] = 'Mike (MI)'
-reps['mike_d._rogers']['firstname'] = 'Mike (AL)'
+hacks['mike_j._rogers'] = 'Mike (MI)'
+hacks['mike_d._rogers'] = 'Mike (AL)'
 # Spelling
-reps['corrine_brown']['firstname'] = 'Corinne'
+hacks['corrine_brown'] = 'Corinne'
 
 # Force a few names into ambiguous mode
 ambiguous = ['neal', 'taylor', 'jones']
 
 lastname2rep = {}
 
-for rep in schema.Politician.select():
+for repid, rep in reps.items():
     if not rep.lastname: continue
-    repid = rep.id
     lastname = rep.lastname.lower()
     if lastname in lastname2rep:
         ambiguous.append(lastname)
@@ -38,17 +37,17 @@ for rep in schema.Politician.select():
     else:
         lastname2rep[lastname] = repid
 
-for rep in schema.Politician.select():
+for repid, rep in reps.items():
     if not rep.lastname: continue
-    repid = rep.id
     lastname=rep.lastname.lower()
     firstname=rep.firstname.lower()
     if lastname in ambiguous:
         lastname2rep[lastname + ', ' + firstname] = repid
         if rep.nickname:
             lastname2rep[lastname + ', ' + rep.nickname.lower()] = repid
-        if repid in reps:
-            lastname2rep[lastname + ', ' + reps[repid]['firstname'].lower()] = repid
+        if repid in hacks:
+            lastname2rep[lastname + ', ' + hacks[repid].lower()] = repid
+
 
 
 def cleanrow(s):
