@@ -7,26 +7,48 @@ import tools
 from parse import earmarks
 from settings import db
 from pprint import pprint, pformat
+import schema
 
 reps = simplejson.load(file('../data/load/politicians/govtrack.json'))
 
 # HACKs: hard-coding naming inconsistencies
+# Unusual name fixes
 reps['bill_young']['firstname'] = 'C.W. Bill'
-reps['charles_a._wilson']['firstname'] = 'Charlie'
-reps['hank_johnson']['firstname'] = 'Hank'
-lastname2rep = {'Lahood': 'ray_lahood'}
+# Common name fixes
+reps['mike_thompson']['firstname'] = 'Mike'
+reps['tim_f._murphy']['firstname'] = 'Timothy'
+# Dups
+reps['mike_j._rogers']['firstname'] = 'Mike (MI)'
+reps['mike_d._rogers']['firstname'] = 'Mike (AL)'
+# Spelling
+reps['corrine_brown']['firstname'] = 'Corinne'
 
-ambiguous = []
-for repid, rep in reps.iteritems():
-    if rep['lastname'] in lastname2rep:
-        ambiguous.append(rep['lastname'])
-        del lastname2rep[rep['lastname']]
+# Force a few names into ambiguous mode
+ambiguous = ['neal', 'taylor', 'jones']
+
+lastname2rep = {}
+
+for rep in schema.Politician.select():
+    if not rep.lastname: continue
+    repid = rep.id
+    lastname = rep.lastname.lower()
+    if lastname in lastname2rep:
+        ambiguous.append(lastname)
+        del lastname2rep[lastname]
     else:
-        lastname2rep[rep['lastname']] = repid
+        lastname2rep[lastname] = repid
 
-for repid, rep in reps.iteritems():
-    if rep['lastname'] in ambiguous:
-        lastname2rep[rep['lastname'] + ', ' + rep['firstname']] = repid
+for rep in schema.Politician.select():
+    if not rep.lastname: continue
+    repid = rep.id
+    lastname=rep.lastname.lower()
+    firstname=rep.firstname.lower()
+    if lastname in ambiguous:
+        lastname2rep[lastname + ', ' + firstname] = repid
+        if rep.nickname:
+            lastname2rep[lastname + ', ' + rep.nickname.lower()] = repid
+        if repid in reps:
+            lastname2rep[lastname + ', ' + reps[repid]['firstname'].lower()] = repid
 
 
 def cleanrow(s):
@@ -62,12 +84,12 @@ def load():
     for e in earmarks.parse_file(earmarks.EARMARK_FILE):
         for rawRequest, chamber in zip([e.house_request, e.senate_request],[e.house_member, e.senate_member]):
             for rep in chamber:
-                if rep not in lastname2rep:
+                if rep.lower() not in lastname2rep:
                     #@@ should work on improving quality
                     reps_not_found.add(rep)
                     pass
                 else:
-                    rep = lastname2rep[rep]
+                    rep = lastname2rep[rep.lower()]
                     outdb.setdefault(rep, {
                       'amt_earmark_requested': 0,
                       'n_earmark_requested': 0,
@@ -87,5 +109,6 @@ def load():
     print "Did not find",len(reps_not_found),"reps:", pformat(reps_not_found)
     for rep, d in outdb.iteritems():
         db.update('politician', where='id=$rep', vars=locals(), **d)
+
 
 if __name__ == "__main__": load()
