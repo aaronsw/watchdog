@@ -89,7 +89,7 @@ def loadbill(fn, maplightid=None, batch_mode=False):
 ################################################################################
 def main():
     from bulk_loader import bulk_loader_db
-    for c,fn in enumerate(glob.glob(GOVTRACK_CRAWL+'/us/*/bills/*.xml')):
+    for c,fn in enumerate(sorted(glob.glob(GOVTRACK_CRAWL+'/us/*/bills/*.xml'))):
         loadbill(fn, batch_mode=True)
 
 

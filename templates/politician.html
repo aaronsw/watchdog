@@ -177,7 +177,7 @@ $else:
 </td></tr></table>
 <h2 class="rep">Voting Analysis</h2>
 
-<table class="charted">
+<table class="charted structure">
 $if pol.nominate:
     <tr class="even">
       <th>Ideology</th>
@@ -205,13 +205,18 @@ $if pol.predictability:
 
 <h2 class="rep">Interest Group Alignment</h2>
 
-<table>
+<table cellpadding="0" cellspacing="0" width="100%" class="interest_group_agreement">
 <tr><th>Group</th><th>Agreement</th></tr>
+$ trclass = "odd"
 $for group in pol.related_groups:
-    <tr>
+    <tr class="$trclass">
       <td>$group.longname</td>
       <td>$int(group.agreement * 100)% (<a href="/p/$pol.id/$group.id">$group.agreed/$group.total votes</a>)</td>
     </tr>
+    $if trclass == "odd":
+        $ trclass = "even"
+    $else:
+        $ trclass = "odd"
 </table>
 
 <p><a href="/p/$pol.id/groups">More...</a></p>
