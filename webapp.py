@@ -203,6 +203,18 @@ class politician:
     def GET(self, polid, format=None):
         if polid != polid.lower():
             raise web.seeother('/p/' + polid.lower())
+        
+        i = web.input()
+        idlookup = False
+        for k in ['votesmartid', 'bioguideid', 'opensecretsid', 'govtrackid']:
+            if i.get(k):
+                idlookup = True
+                ps = schema.Politician.where(**{k: i[k]})
+                if ps: raise web.seeother('/p/' + ps[0].id)
+
+        if idlookup:
+            # we were looking up by ID but nothing matched
+            raise web.notfound
 
         if polid == "" or polid == "index":
             p = schema.Politician.select(order='district_id asc')
