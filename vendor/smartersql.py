@@ -269,4 +269,4 @@ def recreate():
 
 def grantall(username):
     for table in _all_tables:
-        table.cls.db.query('GRANT ALL ON %s TO %s' % (table.sql_name, username))
+        table.db.query('GRANT ALL ON %s TO %s' % (table.sql_name, username))
