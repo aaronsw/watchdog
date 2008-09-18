@@ -24,7 +24,6 @@ a.sidebarlink:hover  {text-decoration:underline; }
 #main {margin:0px 0px 0px 0px; float:left; background-color:#FFFFFF; min-height:550px; display:inline; clear: both; width: 100%;}
 
 #text {margin: 50px 280px 0 40px;}
-#text h2 {font-family:"Georgia"; margin: 20px 0; font-size:26px; font-weight:normal; color: #002233 }
 #text ul {padding:0; margin:10px 0 10px 40px;}
 #text li {list-style:none; padding-left:15px; background:url(/static/images/li.gif) no-repeat 0px 6px;}
 h1 {margin:20px 0 20px 0; font-weight: normal; color:#EE4400; font-family:"Georgia"; font-size:26px; }
@@ -84,14 +83,15 @@ button.alert {border: 1px solid #50aa50; background-color: #50aa50; color: #fff;
 button.alert:hover {border: 1px solid #EE4400; background-color: #EE4400; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px;}
 
 .frontbox {
-    padding: .05em;
-	background-color: #e6f2f9;
-	border-left: 1px solid #99c7e4;
-	border-right: 1px solid #99c7e4;
-	background:transparent url(/static/images/gradient.middle.gif) center 0px no-repeat; 
+	background:transparent url(/static/images/box/blue.bkg.png) center 0px repeat; 
     text-align: center;
-    width: 458px;
 }
+
+.frontbox-top { background:#fff url(/static/images/box/blue.top.png) center 0px repeat-x; }
+.frontbox-bottom { background:#fff url(/static/images/box/blue.bottom.png) center 0px repeat-x; }
+.frontbox-left { background:#fff url(/static/images/box/left.line.png) right 0px repeat-y; }
+.frontbox-right { background:transparent url(/static/images/box/right.line.png) right 0px repeat-y; }
+.frontbox-white { background-color: #fff; }
 
 .liquidbox {
     padding: .05em 20px;
