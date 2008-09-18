@@ -134,8 +134,8 @@ def get_votesmart_contacts(dists):
     d = {}
     websites = simplejson.load(file(votesmart_websites))
     dists = tuple(dists)
-    rs = db.select('politician', what='district, votesmartid',
-                where='district in $dists', vars=locals())
+    rs = db.select('politician', what='district_id, votesmartid',
+                where='district_id in $dists', vars=locals())
     
     for r in rs:
         _url = None
@@ -152,7 +152,7 @@ def get_votesmart_contacts(dists):
 						
             if contacttype and contacttype != 'wyr':
                 captcha = (contacttype == 'ima') and has_captcha(url)
-                d[r.district] = dict(contact=_url, contacttype=contacttype, captcha=captcha)    
+                d[r.district_id] = dict(contact=_url, contacttype=contacttype, captcha=captcha)    
     return d
 
 def get_manual_contacts(dists):
