@@ -328,21 +328,3 @@ class Census_data(sql.Table):
 
 #db.query("CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician)")
 #db.query("GRANT ALL on v_politician_name")
-
-# GRANT ALL on state TO watchdog;
-# GRANT ALL on district TO watchdog;
-# GRANT ALL ON zip TO watchdog;
-# GRANT ALL ON zip4 TO watchdog;
-# GRANT ALL on politician TO watchdog;
-# GRANT ALL on interest_group_rating TO watchdog;
-# GRANT ALL on interest_group TO watchdog;
-# GRANT ALL on bill TO watchdog;
-# GRANT ALL on vote TO watchdog;
-# GRANT ALL on interest_group_bill_support TO watchdog;
-# GRANT ALL on group_politician_similarity TO watchdog;
-# GRANT ALL on category TO watchdog;
-# GRANT ALL on wyr TO watchdog;
-# GRANT ALL on v_politician_name to watchdog;
-# GRANT ALL on politician_fec_ids to watchdog;
-# GRANT ALL on contribution to watchdog;
-# GRANT ALL on expenditure to watchdog;

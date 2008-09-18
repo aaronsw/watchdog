@@ -9,7 +9,7 @@ from settings import db
 from pprint import pprint, pformat
 import schema
 
-reps = simplejson.load(file('../data/load/politicians/govtrack.json'))
+reps = dict((x.id, x) for x in db.select('politician').list())
 
 # HACKs: hard-coding naming inconsistencies
 # Unusual name fixes

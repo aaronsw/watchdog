@@ -1,39 +1,59 @@
 $var front: True
 $var title: The good government site with teeth
 
-<form action="/us/" method="GET">
-  <div style="width: 462px;">
-  <div style="height: 18px; background:transparent url(/static/images/gradient.top.gif) center 0px no-repeat;"></div>
-  <div  class="frontbox">
-  <h1>Get started</h1>
-  <p><strong>Name or ZIP:</strong> <input type="text" name="zip" class="white" /> <button type="submit" class="alert" />Search</button>
-  <p class="explain">
-  <em>Districts:</em> Enter a zip code, like 
-    <a href="/us/?zip=90210">90210</a> or 
-    <a href="/us/?zip=02138">02138</a><br />
-  <em>Politicians:</em> Enter a name, like 
-    <a href="/p/nancy_pelosi">Pelosi</a> or 
-    <a href="/p/ron_paul">Ron Paul</a><br />
-  </p>
-  </div>
-  <div style="height: 18px; margin-top: -10px; background:#fff url(/static/images/gradient.bottom.gif) center 0px no-repeat;"></div>
-  </div>
-</form>
-
 <p><a href="/about/">watchdog.net</a> is a hub for data about politics. We're bringing together census data, voting records, lobbying forms, campaign finance reports, and much more in one easy-to-understand place. And then we give you the tools to actually do something about it. (<a href="/about/">More...</a>)</p>
 
+<form action="/us/" method="get"><div class="frontbox">
+  <table cellpadding="0" cellspacing="0" border="0" width="100%"><tr>
+    <td width="28" class="frontbox-white">
+      <img src="/static/images/box/left.top.curve.png" 
+        border="0" width="28" height="28" alt="" />
+    </td>
+    <td width="28" class="frontbox-top"></td>
+    <td width="28" class="frontbox-top">
+      <img src="/static/images/box/right.top.curve.png" 
+        border="0" width="28" height="28" alt="" />
+    </td>
+  </tr><tr>
+    <td width="28" class="frontbox-left"></td>
+    <td class="frontbox" width="100%">
+      <h1>Get started</h1>
+      
+      <p>
+        <strong>Name or ZIP:</strong>
+        <input type="text" class="white" name="zip" />
+        <button type="submit" />Search</button>
+      </p>
+      
+      <p class="explain">
+        <em>Districts:</em> 
+        Enter a zip code, 
+        like <a href="/us/?zip=90210">90210</a> 
+        or <a href="/us/?zip=02138">02138</a><br />
+        
+        <em>Politicians:</em> 
+        Enter a name, 
+        like <a href="/p/nancy_pelosi">Pelosi</a> 
+        or <a href="/p/ron_paul">Ron Paul</a>
+      </p>
+    </td>
+    <td width="28" class="frontbox-right"></td>
+  </tr><tr>
+    <td width="28" class="frontbox-white">
+      <img src="/static/images/box/left.bottom.curve.png" 
+        border="0" width="28" height="28" alt="" />
+      </td>
+    <td width="28" class="frontbox-bottom"></td>
+    <td width="28" class="frontbox-bottom">
+      <img src="/static/images/box/right.bottom.curve.png" 
+        border="0" width="28" height="28" alt="" />
+    </td>
+</tr></table>
+</div></form>
 
-<h1>Get involved!</h1>
 
-<p><strong>We want to make a difference!</strong> So we need all the help we can get. 
-Here are a few of the key things we need help with:</p>
-<ul>
-  <li><b>Programmers</b> &mdash; We have dozens of tasks we could use your help with (especially Python programmers).</li>
-<!--          <li><b>Designers</b> &mdash; We'd love your help cleaning up our pages or refining our look.</li>    -->
-  <li><b>Networkers</b> &mdash; We'd love your help tracking people down.</li>
 
-  <li><b>Researchers</b> &mdash; We'd love your help finding more data sets to integrate.</li>
-  <li><b>Funders</b> &mdash; We'd love money to help fund this project!</li>
-</ul>
-<p>Or maybe there's something else you can contribute. Whatever it is, <a href="/about/#feedback">contact us</a> and let us know what you can contribute. Welcome to the team.</p>
+<h1>Get involved</h1>
+
+<p>We need all the help we can get. Programmers, researchers, visualizers, funders, citzens --  <a href="/about/#feedback">contact us</a> and let us know what you can contribute. Welcome to the team.</p>
 

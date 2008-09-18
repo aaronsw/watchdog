@@ -9,6 +9,7 @@ from settings import db
 
 STATE_TABLE = 'load/manual/states.json'
 DISTRICT_TABLE = 'load/manual/states.json'
+POLITICIAN_TABLE = 'load/manual/politicians.json'
 
 _stripterms = ['the', 'corporation', 'corp', 'incorporated', 'inc']
 r_plain = re.compile(r'[a-z ]+')
@@ -48,7 +49,7 @@ def districtp(district):
     Return the watchdog ID for the represenative of `district`.
     """
     if not _districtcache:
-        reps = simplejson.load(file('../data/load/politicians/index.json'))
+        reps = simplejson.load(file(POLITICIAN_TABLE))
         for repid, rep in reps.iteritems():
             if rep['district_id'] in _districtcache:
                 _districtcache[rep['district_id']].append(repid)
