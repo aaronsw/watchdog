@@ -52,7 +52,7 @@ database: $(LOADERS)
 	touch $@
 
 .schema: ../schema.py
-	python -c "import schema; schema.sql.recreate()"
+	python -c "import schema; schema.sql.recreate(); schema.sql.grantall('watchdog')"
 	touch $@
 
 # not currently using .shapes
