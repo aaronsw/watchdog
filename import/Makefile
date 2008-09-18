@@ -76,7 +76,7 @@ database: $(LOADERS)
 	$(PYTHON) load/voteview.py
 	touch $@
 
-.earmarks: load/earmarks.py $(LOAD)/politicians/govtrack.json
+.earmarks: load/earmarks.py .govtrack
 	$(PYTHON) load/earmarks.py
 	touch $@
 

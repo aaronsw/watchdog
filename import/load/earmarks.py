@@ -7,7 +7,7 @@ import tools
 from parse import earmarks
 from settings import db
 
-reps = simplejson.load(file('../data/load/politicians/govtrack.json'))
+reps = dict((x.id, x) for x in db.select('politician').list())
 
 # HACKs: hard-coding naming inconsistencies
 reps['bill_young']['firstname'] = 'C.W. Bill'
