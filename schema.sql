@@ -271,8 +271,9 @@ CREATE TABLE expenditure(
   amount varchar(20)
 );
 
-CREATE TABLE wyr(
-    district varchar(6) references district,
+
+CREATE TABLE rep_contacts(
+    district varchar(10) references district,
     contact varchar(255),
     contacttype varchar(1),    -- E=email, W=wyr, I=ima, Z=zipauth
     captcha boolean

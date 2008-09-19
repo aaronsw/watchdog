@@ -3,12 +3,13 @@ import re
 import web
 web.config.debug = True
 
-from utils import zip2rep, simplegraphs, apipublish, helpers, forms, writerep, users
+from utils import zip2rep, simplegraphs, apipublish, users
 import blog
 import petition
 import settings
 from settings import db, render
 import schema
+from utils.writerep import write_your_rep, wyr_test
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -28,6 +29,7 @@ urls = (
   r'/c', petition.app,
   r'/u', users.app,
   r'/writerep', 'write_your_rep',
+  r'/wyrtest', 'wyr_test',
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
@@ -308,63 +310,6 @@ class sparkdist:
 
         web.header('Content-Type', 'image/png')
         return simplegraphs.sparkline(points, inp.point)
-
-def add_captcha(form, img_src):
-    inputs = list(form.inputs)
-    captcha = forms.captcha
-    captcha.pre = '<img src="%s" border="0" />&nbsp;&nbsp;' % img_src
-    inputs.append(captcha)
-    form.inputs = tuple(inputs)
-    return form
-
-def get_wyrform(i, dist=None):
-    form = forms.wyrform()    
-    if (not dist) and form.validates(i):
-         dist = zip2rep.getdists(i.zipcode, i.zip4, i.addr1+i.addr2)[0]
-    captcha = forms.captcha     
-    captcha_needed = ('captcha' in i) and not captcha.validate(i.captcha, form)
-    captcha_src = captcha_needed and writerep.get_captcha_src(dist)
-    if captcha_src:
-        add_captcha(form, captcha_src)  
-    return form  
-      
-class write_your_rep:
-    def GET(self, form=None):
-        if not form:
-            form = forms.wyrform()
-            petition.fill_user_details(form)
-        msg, msg_type = helpers.get_delete_msg()
-        return render.writerep(form, msg=msg)
-
-    def send_msg(self, i, wyrform, pform=None):
-        dist = zip2rep.getdists(i.zipcode, i.zip4, i.addr1+i.addr2)[0]
-        captcha_src = ('captcha' not in i) and writerep.get_captcha_src(dist)
-        if captcha_src:
-            wyrform = add_captcha(wyrform, captcha_src)
-            if pform:
-                return render.petitionform(pform, wyrform)
-            else:
-                return render.writerep(wyrform)
-                            
-        email = helpers.get_loggedin_email()
-        msg_sent = writerep.writerep(district=dist,
-                        prefix=i.prefix, lname=i.lname, fname=i.fname,
-                        addr1=i.addr1, addr2=i.addr2, city=i.city,
-                        zipcode=i.zipcode, zip4=i.zip4,
-                        phone=i.phone, email=email, msg=i.msg)
-        return msg_sent
-        
-    def POST(self):
-        i = web.input()
-        wyrform = get_wyrform(i)
-        if wyrform.validates(i):
-            status = self.send_msg(i, wyrform)
-            if not isinstance(status, bool):
-                return status
-            if status: helpers.set_msg('Your message has been sent.')
-            raise web.seeother('/writerep')
-        else:
-            return self.GET(wyrform)
 
 class staticdata:
     def GET(self, path):
