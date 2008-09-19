@@ -17,9 +17,6 @@ PYTHON=python
 CRAWL=../data/crawl
 PARSE=../data/parse
 LOAD=../data/load
-JSONS=$(LOAD)/states/index.json \
-      $(LOAD)/districts/index.json \
-      $(LOAD)/politicians/index.json \
 
 TSVS=$(LOAD)/bill.tsv \
 	 $(LOAD)/vote.tsv \
@@ -40,7 +37,10 @@ LOADERS = .schema .json \
 
 all: database
 clean:
-	rm $(JSONS) $(LOADERS)
+	rm $(LOADERS)
+
+cleanload:
+	rm $(TSVS)
 
 cleanparse:
 	rm $(NJS)
@@ -52,16 +52,8 @@ database: $(LOADERS)
 	touch $@
 
 .schema: ../schema.py
-	python -c "import schema; schema.sql.recreate()"
+	python -c "import schema; schema.sql.recreate(); schema.sql.grantall('watchdog')"
 	touch $@
-
-$(LOAD)/states/index.json: load/manual/states.json
-	mkdir -p $(LOAD)/states
-	cp $< $@
-
-$(LOAD)/districts/index.json: load/manual/districts.json
-	mkdir -p $(LOAD)/districts
-	cp $< $@
 
 # not currently using .shapes
 .shapes: load/shapes.py parse/shapes.py
@@ -76,11 +68,7 @@ $(LOAD)/districts/index.json: load/manual/districts.json
 	$(PYTHON) load/govtrack_gis.py
 	touch $@
 
-$(LOAD)/politicians/index.json: load/manual/politicians.json
-	mkdir -p $(LOAD)/politicians
-	cp $< $@
-
-.govtrack: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml
+.govtrack: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml .json
 	$(PYTHON) load/govtrack.py
 	touch $@
 
@@ -88,7 +76,7 @@ $(LOAD)/politicians/index.json: load/manual/politicians.json
 	$(PYTHON) load/voteview.py
 	touch $@
 
-.earmarks: load/earmarks.py $(LOAD)/politicians/govtrack.json
+.earmarks: load/earmarks.py .govtrack .voteview
 	$(PYTHON) load/earmarks.py
 	touch $@
 

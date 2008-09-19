@@ -266,3 +266,7 @@ def drop():
 def recreate():
     drop()
     create()
+
+def grantall(username):
+    for table in _all_tables:
+        table.db.query('GRANT ALL ON %s TO %s' % (table.sql_name, username))

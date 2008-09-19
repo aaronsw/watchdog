@@ -66,8 +66,6 @@ class feedback:
 class find:
     def GET(self, format=None):
         i = web.input(address=None)
-        join = ['district' + ' LEFT OUTER JOIN politician '
-                             'ON (politician.district = district.name)']
         pzip5 = re.compile(r'\d{5}')
         pzip4 = re.compile(r'\d{5}-\d{4}')
         pname = re.compile(r'[a-zA-Z\.]+')
@@ -203,6 +201,18 @@ class politician:
     def GET(self, polid, format=None):
         if polid != polid.lower():
             raise web.seeother('/p/' + polid.lower())
+        
+        i = web.input()
+        idlookup = False
+        for k in ['votesmartid', 'bioguideid', 'opensecretsid', 'govtrackid']:
+            if i.get(k):
+                idlookup = True
+                ps = schema.Politician.where(**{k: i[k]})
+                if ps: raise web.seeother('/p/' + ps[0].id)
+
+        if idlookup:
+            # we were looking up by ID but nothing matched
+            raise web.notfound
 
         if polid == "" or polid == "index":
             p = schema.Politician.select(order='district_id asc')
@@ -280,7 +290,7 @@ class dproperty:
                 item.path = '/us/' + item.name.lower()
             elif table == 'politician':
                 item.name = '%s %s (%s-%s)' % (item.firstname, item.lastname,
-                  item.party[0], item.district.split('-')[0])
+                  item.party[0], item.district_id.split('-')[0])
                 item.path = '/p/' + item.id
         return render.dproperty(items, what)
 
