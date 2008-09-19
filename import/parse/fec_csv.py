@@ -3,7 +3,7 @@ Parser for FEC electronic filings.
 """
 __author__ = ["Simon Carstensen <me@simonbc.com>"]
 
-import glob, zipfile
+import glob, zipfile, re, tools, sys, os
 
 HEADERS_PATH = '../data/crawl/fec/electronic/headers/'
 EFILINGS_PATH = '../data/crawl/fec/electronic/'
@@ -15,7 +15,7 @@ def parse_headers():
     for f in glob.glob(HEADERS_PATH + '*.csv'):
         headers = file(f).read().strip().split('\r')
         headers = filter(lambda x: not x.startswith('TEXT'), headers) # remove comments
-        ver = f[:-4]
+        ver = f.split('/')[-1][:-4]
         out[ver] = dict()
         for h in headers:
             cols = [x.strip() for x in h.split(';') if x != '']
@@ -34,8 +34,7 @@ def value_separator(header):
 def fixquotes(val):
     """Sometimes values are put inside quotes, remove these"""
     if val.startswith('"') and val.endswith('"'):
-        val = val[1:]
-        val = val[:-1]
+        val = val[1:-1]
     return val
 
 VERSIONS = ['3.00', '5.00', '5.1', '5.2', '6.1', '6.2']
@@ -44,9 +43,10 @@ def get_format_ver(hdr, sep):
     ver = hdr.split(sep)[2]
     ver = fixquotes(ver)
     ver = ver.strip()
+    if ver == '5.3': ver = '5.2'
     return (ver in VERSIONS and ver) or None
 
-def get_form_type(report, sep, ver):
+def get_form_type(report, sep):
     ftype = report.split(sep)[0]
     ftype = fixquotes(ftype)
     return ftype
@@ -92,11 +92,15 @@ def file_index():
         sys.stderr.flush()
 
         if not os.stat(f).st_size: continue
-        zf = zipfile.ZipFile(f)
+        try: zf = zipfile.ZipFile(f)
+        except: continue
         filenames = zf.namelist()
         for fn in filenames:
-            d = read_report(f, fn, zf.read(fn))
-            if not d: continue
+            try:
+                d = read_report(f, fn, zf.read(fn))
+                if not d: continue
+            except:
+                continue
             if d['form_type'].endswith('A'):
                 # amendment
                 orig_report_id = get_orig_report_id(d['hdr'], d['sep'], d['ver'])
@@ -119,7 +123,7 @@ def get_committee(report, sep):
     return rsplit(report, sep)[2]
 
 def get_candidate_fec(header, report, form_type, ver):
-    if form_type.startswith('F3X'):
+    if form_type.startswith('F3X') or ver == '3.00':
         return None
     if ver in ['6.1', '6.2']:
         i = header.index('CANDIDATE ID NUMBER')
@@ -192,7 +196,7 @@ def get_occupation(header, schedule, ver):
         return None
 
 def get_contributor_org(header, schedule, ver):
-    if ver in ['3.00', '5.0']:
+    if ver in ['3.00', '5.00']:
         return None
     if ver in ['6.1', '6.2']:
         i = header.index('CONTRIBUTOR ORGANIZATION NAME')
@@ -300,7 +304,7 @@ def get_schedules(headers, schedules, sep, ver):
         if not SCH_RE.match(s):
             continue
         sch = dict()
-        sch['form_type'] = get_form_type(s, sep, ver)
+        sch['form_type'] = get_form_type(s, sep)
         header = get_header(headers, sch['form_type'], ver)
         if not header:
             continue
@@ -323,7 +327,7 @@ def get_schedules(headers, schedules, sep, ver):
     return out
 
 def get_records(data):
-    zf = zipfile.ZipFile(EFILINGS_PATH+data['zfn'])
+    zf = zipfile.ZipFile(data['zfn'])
     filing = zf.read(data['report_id']+'.fec')
     lines = filing.split('\n')
     lines = filter(lambda x: x != '', map(lambda x: x.strip(), lines))
@@ -331,7 +335,7 @@ def get_records(data):
     cover, schedules = lines[1], lines[2:]
     return cover, schedules
 
-def get_report(headers, data):
+def parse_report(headers, data):
     cover, schedules = get_records(data)
     form_type, ver, sep = data['form_type'], data['ver'], data['sep']
     header = get_header(headers, form_type, ver)
@@ -358,7 +362,7 @@ def read_report(zfilename, filename, data):
     ver = get_format_ver(hdr, sep)
     if not ver:
         return None
-    form_type = get_form_type(records[0], sep, ver)
+    form_type = get_form_type(records[0], sep)
     if form_type not in FORM_TYPES:
         return None
     out = dict(zfn=zfilename, report_id=report_id, hdr=hdr, sep=sep, ver=ver, form_type=form_type)
@@ -367,7 +371,7 @@ def read_report(zfilename, filename, data):
 def apply_amendment(headers, report, amendment):
     cover, schedules = get_records(amendment)
     sep, ver = amendment['sep'], amendment['ver']
-    amendment = get_report(headers, amendment)
+    amendment = parse_report(headers, amendment)
     report['committee'] = amendment['committee']
     report['candidate'] = amendment['candidate']
     for k, v in amendment['schedules'].items():
@@ -382,16 +386,18 @@ def apply_amendments(headers, report, amendments):
     report['schedules'] = report['schedules'].values()
     return report
 
-def get_filings(headers, reports, amendments):
+def parse_filings(headers, reports, amendments):
     for r in reports:
-        r = get_report(headers, r)
+        print r['zfn']
+        r = parse_report(headers, r)
         r = apply_amendments(headers, r, amendments)
         yield r
 
 def parse_efilings():
     headers = parse_headers()
     reports, amendments = file_index()
-    return get_filings(headers, reports, amendments)
+    return parse_filings(headers, reports, amendments)
 
 if __name__ == "__main__":
     tools.export(parse_efilings())
+

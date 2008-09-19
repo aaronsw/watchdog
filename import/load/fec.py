@@ -81,4 +81,4 @@ def load_fec_efilings():
 if __name__ == "__main__":
     load_fec_ids()
     load_fec_cans()
-    #load_fec_efilings()
+    load_fec_efilings()
