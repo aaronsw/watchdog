@@ -41,12 +41,23 @@ CREATE TABLE signatory(
     comment text,
     signed timestamp default now(),
     deleted timestamp,
+    sent_to_congress char(1) default 'N', --N=not to congress, S=sent to congress, D=due for sending
     UNIQUE (user_id, petition_id)
 );
 
-CREATE TABLE petition_responses(
+CREATE TABLE wyr(
     id serial primary key,
-    sign_id int references signatory,
+    district varchar(10) references district,    
+    subject text,
+    message text,
+    sender int references users,
+    sent boolean,
+    written timestamp default now()
+);
+
+CREATE TABLE wyr_responses(
+    id serial primary key,
+    wyr_id int,
     response text,
     category char(1), --S=support, O=oppose, U=undecided, N=No answer
     received timestamp
@@ -62,6 +73,8 @@ CREATE TABLE contacts(
     provider VARCHAR(20),
     UNIQUE(user_id, uemail, cemail)
 );
+
+
 
 GRANT ALL ON users TO watchdog;
 GRANT ALL ON users_id_seq TO watchdog;

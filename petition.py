@@ -66,31 +66,37 @@ def fill_user_details(form, fillings=['email', 'name', 'contact']):
                 details['addr2'] = user.addr2
                 details['city'] = user.city
                 details['zipcode'] = user.zip5
+                details['zip4'] = user.zip4
                 details['phone'] = user.phone
-                if filter(lambda i: i.name == 'zip4', form.inputs):
-                    details['zip4'] = user.zip4
-    form.fill(**details)
+                
+        form.fill(**details)
 
-def send_to_congress(p, pform, wyrform):
+def send_to_congress(i, pform, wyrform, sign_id):
     from webapp import write_your_rep
     wyr = write_your_rep()
-    return wyr.send_msg(p, wyrform, pform)
+    wyr.set_dist(i)
+    wyr.set_msg_id(sign_id, petition=True)
+    return wyr.send_msg(i, wyrform, pform)
 
 def create_petition(i, email):
     tocongress = i.get('tocongress', 'off') == 'on'
-    if tocongress:
-        pform, wyrform = forms.petitionform(), forms.wyrform()
-        pform.fill(i), wyrform.fill(i)
-        sent_status = send_to_congress(i, pform, wyrform)
-        if not isinstance(sent_status, bool):
-            return sent_status
-
     i.pid = i.pid.replace(' ', '_')
     u = helpers.get_user_by_email(email)
+    msg_sent = (tocongress and 'D') or 'N' # D=sending due; N=not for congress  
     with db.transaction():
         db.insert('petition', seqname=False, id=i.pid, title=i.ptitle, description=i.msg,
                     owner_id=u.id, to_congress=tocongress)
-        db.insert('signatory', user_id=u.id, share_with='A', petition_id=i.pid)
+        sign_id = db.insert('signatory', user_id=u.id, share_with='A', petition_id=i.pid, sent_to_congress=msg_sent)
+        
+    if tocongress:
+        pform, wyrform = forms.petitionform(), forms.wyrform()
+        pform.fill(i), wyrform.fill(i)
+        sent_status = send_to_congress(i, pform, wyrform, sign_id)
+        if not isinstance(sent_status, bool): #in case that redirects with a captcha
+            return sent_status
+        if sent_status:
+            db.update('signatory', where='id=$sign_id', sent_to_congress='S', vars=locals())    
+        
     msg = """Congratulations, you've created your petition.
              Now sign and share it with all your friends."""
     helpers.set_msg(msg)
@@ -104,7 +110,7 @@ class new:
         return render.petitionform(pform, cform)
 
     def POST(self, input=None):
-        from webapp import get_wyrform
+        from utils.writerep import get_wyrform
         i = input or web.input()
         tocongress = i.get('tocongress', 'off') == 'on'
         pform = forms.petitionform()
@@ -403,14 +409,6 @@ class share:
             emailform = forms.emailform
             msg = render_plain.share_petition_mail(petition)
             emailform.fill(subject=petition.title, body=msg)
-
-        current_providers = set(c.provider.lower() for c in contacts)
-        all_providers = set(['google', 'yahoo'])
-        remaining_providers = all_providers.difference(current_providers)
-        remaining_providers = ' or '.join(p.title() for p in remaining_providers)
-
-        if remaining_providers and not loadcontactsform:
-            loadcontactsform = forms.loadcontactsform
 
         msg, msg_type = helpers.get_delete_msg()
         return render.share_petition(petition, emailform,
