@@ -7,28 +7,21 @@ DATA_PATH = '../data/crawl/manual/rvdb/allYears/'
 
 import glob
 
-def read_state_codes(fname):
-    """
-    Read in state codes file and store in a dict
-    """
-    fdata = file(fname).readlines()
+def read_state_codes(fname=STATE_CODES):
+    """Turn `fname` into a dict."""
     state_codes = {}
-    for line in fdata:
+    for line in file(fname).readlines():
         line = line.split(' ',1)
-        state_codes[line[0]] = line[1].strip().lower().replace(' ','_')
-
+        state_codes[line[0]] = line[1].strip().title()
     return state_codes
-    
+
 def parse_historical_voting():
     """
-    parse County-level data. The data is in this format
+    Parse county-level data. The data is in the format:
     STATE_CODE  COUNTY_NAME DEMOCRAT_COUNT REPUBLICAN_COUNT OTHER_COUNT
     """
-    
-    election_results = {}
-    election_data = {}
-    state_codes = read_state_codes(STATE_CODES)
-    files = glob.glob(DATA_PATH+'*')
+    state_codes = read_state_codes()
+    files = glob.glob(DATA_PATH + '*')
     
     for fname in files[:-1]: # skip junk file
         for line in file(fname).readlines():
@@ -36,14 +29,16 @@ def parse_historical_voting():
             dem_count, rep_count, other_count = numbers.split()
             state = state_codes[code.strip()]
         
-            yield {'dem_count':dem_count,
-                   'rep_count':rep_count,
-                   'other_count':other_count,
-                   'state': state,
-                   'county_name': county_name,
-                   'year':fname.split('/')[-1]}
-           
-    
+            yield {
+              'n_democrats': dem_count,
+              'n_republicans': rep_count,
+              'n_other': other_count,
+              'state_name': state,
+              'state_fips': code.strip(),
+              'county_name': county_name,
+              'year': fname.split('/')[-1]
+            }
+
 if __name__ == "__main__":
     import tools
     tools.export(parse_historical_voting())
