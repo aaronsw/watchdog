@@ -4,10 +4,17 @@
 /* core styles */
 html {background:url(/static/images/bkg.png); background-color: #002233; }
 body {margin:0; font-size:12px; line-height:20px; font-family:Arial, Helvetica, sans-serif; }
-a {color:#EE4400; text-decoration:none;}
-a:hover {text-decoration:underline;}
-a.sidebarlink  {text-decoration:none; font-weight: bold; }
-a.sidebarlink:hover  {text-decoration:underline; }
+a {color:#EE4400; text-decoration:none;} 
+a:visited {color:#0f5b89; text-decoration:underline; } 
+a:hover { text-decoration:underline; } 
+a.headline {color:#EE4400; text-decoration:none;} 
+a.headline:visited {color:#EE4400; } 
+a.headline:hover {color:#EE4400; text-decoration:underline; background-color: transparent;} 
+a.sidebarlink {text-decoration:none; font-weight: bold; } 
+a.sidebarlink:hover {text-decoration:underline; } 
+a.attributelink { color: #0f5b89 } 
+a.attributelink:hover {text-decoration:underline; background-color: transparent; } 
+a.logo:hover { background-color: transparent; }
 
 #container {width:782px; margin:0 auto; padding-top: 10px;}
 #container-leaf {width:100%; margin:0 auto; padding-top: 0px;}
