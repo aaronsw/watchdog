@@ -26,6 +26,6 @@ def load_all():
         db.insert('district', seqname=False, name=name, **unidecode(district))
 
     for polid, pol in items('politicians'):
-        db.insert('politician', seqname=False, id=polid, wikipedia=pol.get('wikipedia'))
+        db.insert('politician', seqname=False, id=polid, **unidecode(pol))
 
 if __name__ == "__main__": load_all()

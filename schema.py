@@ -81,7 +81,7 @@ class Politician(sql.Table):
     
     # politicians.json
     id = sql.String(256, primary=True)
-    #district = sql.Reference(District) # Moved to Congress table
+    district = sql.Reference(District) # Moved to Congress table
     wikipedia = sql.URL()
   
     # govtrack.json --@@get from votesmart?
@@ -105,9 +105,14 @@ class Politician(sql.Table):
     @property
     def fullname(self):
         return (self.firstname or '') + ' ' + (self.middlename or '') + ' ' + (self.lastname or '')
+
+    @property
+    def title(self):
+        dist = self.district_id
+        return 'Sen.' if State.where(code=dist) else 'Rep.'
     
     officeurl = sql.URL()
-    #party = sql.String() # Moved to Congress table
+    party = sql.String() # Moved to Congress table
     religion = sql.String()
     
     n_bills_introduced = sql.Number()

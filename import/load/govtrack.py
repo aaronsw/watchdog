@@ -53,6 +53,7 @@ def cong_term_lookup(dstart,dend):
 def combine():
     watchdog_map = {}
     govtrack_map = {}
+    all_ids = {}
 
     for pol in govtrack.parse_basics():
         watchdog_id = tools.getWatchdogID(pol.get('represents'),pol.lastname)
@@ -62,6 +63,15 @@ def combine():
             current_member = True
         else:
             watchdog_id = tools.id_ify(pol.get('firstname')+'_'+pol.get('lastname')+('_'+pol.get('namemod') if pol.get('namemod') else ''))
+            #@@TODO: find better way to handle collisions
+            if watchdog_id in all_ids and all_ids[watchdog_id] != pol.id: 
+                count = 1
+                wd_id = watchdog_id
+                while wd_id in all_ids:
+                    wd_id = watchdog_id+'_%03d'%count 
+                    count += 1
+                watchdog_id = wd_id
+        all_ids[watchdog_id] = pol.id
 
         govtrack_map[pol.id] = watchdog_map[watchdog_id] = newpol = web.storage()
 
