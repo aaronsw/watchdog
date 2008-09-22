@@ -105,7 +105,8 @@ class find:
                 in_name = i.zip.lower()
                 name = in_name.replace(' ', '_')
                 vars = {'name':'%%%s%%' % name}
-                reps = db.select('politician', where="id like $name", vars=vars)
+                #reps = db.select('politician, congress', where="current_member AND congress_num=110 AND id like $name", vars=vars)
+                reps = db.query('select * from politician JOIN (select * from congress where current_member and congress_num=110) as cur on id=politician_id where id like $name', vars=vars)
                 if len(reps) == 0:
                     vars = {'name':'%%%s%%' % in_name}
                     reps = db.select('v_politician_name', where="name ilike $name", vars=vars)
