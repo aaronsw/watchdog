@@ -4,7 +4,7 @@
 /* core styles */
 html {background:url(/static/images/bkg.png); background-color: #002233; }
 body {margin:0; font-size:12px; line-height:20px; font-family:Arial, Helvetica, sans-serif; }
-a, h1 a:visited {color:#EE4400; text-decoration:none;} 
+a, #intro a:visited {color:#EE4400; text-decoration:none;} 
 a:visited {color:#0f5b89; text-decoration:underline; } 
 a:hover { text-decoration:underline; } 
 a.headline {color:#EE4400; text-decoration:none;} 
