@@ -3,7 +3,8 @@
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS petition CASCADE;
 DROP TABLE IF EXISTS signatory CASCADE;
-DROP TABLE IF EXISTS petition_responses CASCADE;
+DROP TABLE IF EXISTS wyr_responses CASCADE;
+DROP TABLE IF EXISTS wyr CASCADE;
 DROP TABLE IF EXISTS contacts CASCADE;
 
 CREATE TABLE users(
@@ -47,7 +48,7 @@ CREATE TABLE signatory(
 
 CREATE TABLE wyr(
     id serial primary key,
-    district varchar(10) references district,    
+    politician varchar(256) references politician,    
     subject text,
     message text,
     sender int references users,
@@ -81,3 +82,5 @@ GRANT ALL ON users_id_seq TO watchdog;
 GRANT ALL ON petition TO watchdog;
 GRANT ALL ON signatory TO watchdog;
 GRANT ALL ON contacts TO watchdog;
+GRANT ALL ON wyr TO watchdog;
+GRANT ALL ON wyr_responses TO watchdog;
