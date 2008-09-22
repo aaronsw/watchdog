@@ -515,3 +515,17 @@ def init():
         db.query("GRANT ALL on v_politician_name TO watchdog")
     except:
         pass # user doesn't exist
+
+class Census_Population(sql.Table):
+    state_id = sql.String(2)     # STATE
+    county_id = sql.String(3)    # COUNTY
+    blockgrp_id = sql.String(1)  # BLOCKGRP
+    block_id = sql.String(4)     # BLOCK
+    district_id = sql.String(2)  # CD110
+    tract_id = sql.String(6)     # TRACT
+    zip_id = sql.String(5)       # ZCTA
+    sumlev = sql.String(16)      # SUMLEV
+    area_land = sql.Integer()    # AREALAND
+    area_land.sql_type = 'bigint'
+    population = sql.Integer()   
+
