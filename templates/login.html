@@ -6,6 +6,8 @@ $var login_class: select\
 $if msg:
     $var msg: $:msg
 
+<p class="error">Sorry, logging in isn't supported quite yet. Please stay tuned.</p>
+
 $if not loginform.valid:
     $if loginform.note: <p class="error">$loginform.note</p>
     $else: <p class="error">Please try again after fixing the problems highlighted below:</p>
@@ -25,7 +27,7 @@ $elif not signupform.valid:
         <label>And your password</label>
         $:loginform.password.render()
         <div><button type="submit">Log in</button></div>
-        <p><a href='/forgot_password'>Forgot your password?</a></p>
+        <p><a href='/u/forgot_password'>Forgot your password?</a></p>
         </fieldset>
     </form>
 </td>

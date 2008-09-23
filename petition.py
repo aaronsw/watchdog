@@ -74,7 +74,7 @@ def fill_user_details(form, fillings=['email', 'name', 'contact']):
 def send_to_congress(i, pform, wyrform, sign_id):
     from webapp import write_your_rep
     wyr = write_your_rep()
-    wyr.set_dist(i)
+    wyr.set_pol(i)
     wyr.set_msg_id(sign_id, petition=True)
     return wyr.send_msg(i, wyrform, pform)
 
