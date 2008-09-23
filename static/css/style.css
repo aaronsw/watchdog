@@ -119,7 +119,7 @@ a.highlight:hover {background-color: #d9eefa; border: 1px solid #83b3d0; color: 
 a.select {background-color: #eee; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; border-bottom: 4px solid #ccc; border-top: 1px solid #ccc; margin-right: 1px; }
 a.watchdog {border: 1px solid #0f5b89; background-color: #0f5b89; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px;}
 a.watchdog:hover {border: 1px solid #002233; background-color: #002233; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px;}
-a.footer {border: 1px solid #EE4400; background-color: #EE4400; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 1px;}
+a.footer, a.footer:visited {border: 1px solid #EE4400; background-color: #EE4400; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 1px;}
 a.footer:hover {border: 1px solid #D8D600; background-color: #FFF399; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px;}
 a.action {background-color: #d9eefa; border: 1px solid #83b3d0; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px; }
 a.action:hover {background-color: #d9eefa; border: 1px solid #83b3d0; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px;}
