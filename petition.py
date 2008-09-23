@@ -5,7 +5,9 @@ import web
 from utils import forms, helpers, auth
 from settings import db, render, session
 from utils.auth import require_login
+from utils.users import fill_user_details
 import config
+from utils.wyrutils import CaptchaException
 
 from datetime import datetime
 
@@ -45,77 +47,73 @@ class index:
         msg, msg_type = helpers.get_delete_msg()
         return render.petition_list(petitions, msg)
 
-def fill_user_details(form, fillings=['email', 'name', 'contact']):
-    details = {}
-    email = helpers.get_loggedin_email() or helpers.get_unverified_email()
-    if email:
-        if 'email' in fillings:
-            details['email'] = email
-
-        user = db.select('users', where='email=$email', vars=locals())
-        if user:
-            user = user[0]
-            if 'name' in fillings:
-                details['userid'] = user.id
-                details['prefix'] = user.prefix
-                details['fname'] = user.fname
-                details['lname'] = user.lname
-            if 'contact' in fillings:
-                details['prefix'] = user.prefix
-                details['addr1'] = user.addr1
-                details['addr2'] = user.addr2
-                details['city'] = user.city
-                details['zipcode'] = user.zip5
-                details['zip4'] = user.zip4
-                details['phone'] = user.phone
-                
-        form.fill(**details)
-
-def send_to_congress(i, pform, wyrform, sign_id):
-    from webapp import write_your_rep
+def send_to_congress(i, wyrform, signid=None):
+    from utils.writerep import write_your_rep
+    
+    pform, wyrform = forms.petitionform(), (wyrform or forms.wyrform())
+    pform.fill(i), wyrform.fill(i)
     wyr = write_your_rep()
     wyr.set_pol(i)
-    wyr.set_msg_id(sign_id, petition=True)
-    return wyr.send_msg(i, wyrform, pform)
+    if not signid: signid = get_first_signid(i.pid)
+    wyr.set_msg_id(signid, petition=True)
+    msg_sent = wyr.send_msg(i, wyrform, pform)
+    if msg_sent:
+        db.update('signatory', where='id=$signid', sent_to_congress='S', vars=locals())            
+    
+def captcha_to_be_filled(i):    
+    from utils.wyrutils import getdists, has_captcha, dist2pol
+    dist = getdists(i.zipcode, i.zip4, i.addr1+i.addr2)[0]
+    return has_captcha(dist2pol(dist))
 
-def create_petition(i, email):
+def get_first_signid(pid):
+    try:    
+        first_sign = db.select('signatory', what='id', 
+                    where="petition_id=$pid",
+                    order='signed', limit='1', vars=locals())[0]
+    except IndexError:
+        pass
+    else:                    
+        return first_sign.id                    
+        
+def create_petition(i, email, wyrform):
     tocongress = i.get('tocongress', 'off') == 'on'
     i.pid = i.pid.replace(' ', '_')
     u = helpers.get_user_by_email(email)
-    msg_sent = (tocongress and 'D') or 'N' # D=sending due; N=not for congress  
+    
+    has_captcha = tocongress and captcha_to_be_filled(i)
+    msg_sent = has_captcha and 'T' #mark it as temporary
+    msg_sent = msg_sent or (tocongress and 'D') or 'N' # D=sending due; N=not for congress  
     with db.transaction():
         db.insert('petition', seqname=False, id=i.pid, title=i.ptitle, description=i.msg,
                     owner_id=u.id, to_congress=tocongress)
-        sign_id = db.insert('signatory', user_id=u.id, share_with='A', petition_id=i.pid, sent_to_congress=msg_sent)
-        
-    if tocongress:
-        pform, wyrform = forms.petitionform(), forms.wyrform()
-        pform.fill(i), wyrform.fill(i)
-        sent_status = send_to_congress(i, pform, wyrform, sign_id)
-        if not isinstance(sent_status, bool): #in case that redirects with a captcha
-            return sent_status
-        if sent_status:
-            db.update('signatory', where='id=$sign_id', sent_to_congress='S', vars=locals())    
-        
+        signid = db.insert('signatory', user_id=u.id, share_with='A', petition_id=i.pid, sent_to_congress=msg_sent)
+
+    if has_captcha: wyrform.fill(signid=signid)
+    if tocongress: send_to_congress(i, wyrform, signid)
+
     msg = """Congratulations, you've created your petition.
              Now sign and share it with all your friends."""
     helpers.set_msg(msg)
-
+    
 class new:
-    def GET(self):
+    def GET(self, wyrform=None):
         pform = forms.petitionform()
-        cform = forms.wyrform()
-        fill_user_details(pform)
+        cform = wyrform or forms.wyrform()
+        fill_user_details(cform)
         email = helpers.get_loggedin_email() or helpers.get_unverified_email()
         return render.petitionform(pform, cform)
 
     def POST(self, input=None):
-        from utils.writerep import get_wyrform
         i = input or web.input()
         tocongress = i.get('tocongress', 'off') == 'on'
-        pform = forms.petitionform()
-        wyrform = get_wyrform(i)
+        pform, wyrform = forms.petitionform(), forms.wyrform()
         wyr_valid = (not(tocongress) or wyrform.validates(i))
+        
+        if 'signid' in i:
+            signid = i.signid
+            send_to_congress(i, wyrform, signid)
+            raise web.seeother('/%s' % i.pid)
+            
         if not pform.validates(i) or not wyr_valid:
             return render.petitionform(pform, wyrform)
 
@@ -123,37 +121,54 @@ class new:
         if not email:
             return login().GET(i)
 
-        create_petition(i, email)
+        try:    
+            create_petition(i, email, wyrform)
+        except CaptchaException:
+            return render.petitionform(pform, wyrform) 
+               
         raise web.seeother('/%s' % i.pid)
 
 class login:
-    def GET(self, i):
+    def GET(self, i, wf=None):
         lf, sf = forms.loginform(), forms.signupform()
-        pf, wf = forms.petitionform(), forms.wyrform()
+        pf, wf = forms.petitionform(), (wf or forms.wyrform())
         pf.fill(i), wf.fill(i)
         return render.petitionlogin(lf, sf, pf, wf)
 
     def POST(self):
         i = web.input()
-        lf, pf, wf = forms.loginform(), forms.petitionform(), forms.wyrform()
+        lf, wf =  forms.loginform(), forms.wyrform()
         if not lf.validates(i):
-            sf, wf = forms.signupform(), forms.wyrform()
+            pf, sf = forms.petitionform(), forms.signupform()
             lf.fill(i), pf.fill(i), wf.fill(i)
             return render.petitionlogin(lf, sf, pf, wf)
-        create_petition(i, i.useremail)
+            
+        try:    
+            create_petition(i, i.useremail, wf)
+        except CaptchaException:
+            pf= forms.petitionform()
+            pf.fill(i)
+            return render.petitionform(pf, wf)    
+            
         raise web.seeother('/%s' % i.pid)
 
 class signup:
     def POST(self):
         i = web.input()
-        sf = forms.signupform()
+        sf, wf = forms.signupform(), forms.wyrform()
         if not sf.validates(i):
-            lf, pf, wf = forms.loginform(), forms.petitionform(), forms.wyrform()
+            lf, pf = forms.loginform(), forms.petitionform()
             sf.fill(i), pf.fill(i), wf.fill(i)
             return render.petitionlogin(lf, sf, pf, wf)
         user = auth.new_user( i.fname, i.lname, i.email, i.password)
         helpers.set_login_cookie(i.email)
-        create_petition(i, i.email)
+        try:
+            create_petition(i, i.email, wf)
+        except CaptchaException:
+            pf = forms.petitionform()
+            pf.fill(i)
+            return render.petitionform(pf, wf)
+            
         raise web.seeother('/%s' % i.pid)
 
 def askforpasswd(user_id):

@@ -1,7 +1,7 @@
 import web
 from web import form
 from settings import db
-from zip2rep import getdists
+from wyrutils import getdists
 from auth import loginuser
 
 email_regex = r'[\w\.-]+@[\w\.-]+\.[a-zA-Z]{1,4}'
@@ -23,7 +23,7 @@ petitionform = form.Form(
       form.Textbox('pid', form.Validator("Address can't be blank", bool), form.Validator('ID already exists, Choose a different one.', petitionnotexists),
                     pre='http://watchdog.net/c/', description='URL:', size='30'),
       form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='20', cols='80'),
-      form.Checkbox('tocongress', value='off', description="Petition to Congress?"),
+      form.Checkbox('tocongress', value='', description="Petition to Congress?"),
       form.Hidden('userid')
       )
 
@@ -42,10 +42,12 @@ wyrform = form.Form(
                     description='Phone'),
       form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
       form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='20', cols='80'),
+      form.Textbox('captcha', pre='', description="Validation:"),
+      form.Hidden('signid'),
       validators = [form.Validator("Zipcode is shared between two districts. Enter zip4 too.",
                         lambda i: len(getdists(i.zipcode, i.zip4, i.addr1+i.addr2)) == 1 or i.zip4),
                     form.Validator("Couldn't find district for this address and zip.",
-                        lambda i: len(getdists(i.zipcode, i.zip4, i.addr1+i.addr2)) == 1 or not i.zip4) ]
+                        lambda i: len(getdists(i.zipcode, i.zip4, i.addr1+i.addr2)) == 1 or not i.zip4)]
       )
 
 captcha = form.Textbox('captcha',

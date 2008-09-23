@@ -14,6 +14,32 @@ urls = (
     r'/(.*)', 'userinfo', 
     )
     
+def fill_user_details(form, fillings=['email', 'name', 'contact']):
+    details = {}
+    email = helpers.get_loggedin_email() or helpers.get_unverified_email()
+    if email:
+        if 'email' in fillings:
+            details['email'] = email
+
+        user = db.select('users', where='email=$email', vars=locals())
+        if user:
+            user = user[0]
+            if 'name' in fillings:
+                details['userid'] = user.id
+                details['prefix'] = user.prefix
+                details['fname'] = user.fname
+                details['lname'] = user.lname
+            if 'contact' in fillings:
+                details['prefix'] = user.prefix
+                details['addr1'] = user.addr1
+                details['addr2'] = user.addr2
+                details['city'] = user.city
+                details['zipcode'] = user.zip5
+                details['zip4'] = user.zip4
+                details['phone'] = user.phone
+
+        form.fill(**details)
+    
 def get_password_form(user):
     #if the user has already set a password before, add the current password field to the form.
     form = forms.change_password()

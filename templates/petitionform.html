@@ -3,6 +3,7 @@ $def with (pform, cform, title="Create a new petition", target="/c/new")
 $var title: $title
 
 <script type="text/javascript" src="/static/js/petition.js"></script>
+<script type="text/javascript" src="/static/js/wyr.js"></script>
 
 <style>
 fieldset #tocongresscheck { background-color: #ffc; width: 16.8em; }
@@ -55,10 +56,11 @@ $if target != '/c/new': <h2>Edit <a href='/c/$pform.pid.value'>$pform.ptitle.val
     <tr><th>Address</th><td>$:cform.addr1.render()</td></tr>
     <tr><th></th><td>$:cform.addr2.render()</td></tr>
     <tr><th>City</th><td>$:cform.city.render()</td></tr>
-    <tr><th>Zip code</th><td>$:cform.zipcode.render()-$:cform.zip4.render()</td></tr>
+    <tr><th>Zip code</th><td>$:cform.zipcode.render()-$:cform.zip4.render()</td><td id="note_zipcode"></td></tr></tr>
     <tr><th>Phone</th><td>$:cform.phone.render()</td></tr>
-    $ captcha = cform.get('captcha')
-    $if captcha: <tr><th>Validation</th><td>$:captcha.pre $:captcha.render()</td></tr>
+    $if cform.captcha.pre:
+        $:cform.signid.render()
+        <tr><th>Validation</th><td>$:cform.captcha.pre $:cform.captcha.render()</td></tr>
     </table>
     </div>
 </fieldset>

@@ -3,13 +3,12 @@ import re
 import web
 web.config.debug = True
 
-from utils import zip2rep, simplegraphs, apipublish, users
+from utils import zip2rep, simplegraphs, apipublish, users, writerep
 import blog
 import petition
 import settings
 from settings import db, render
 import schema
-from utils.writerep import write_your_rep, wyr_test
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -28,8 +27,7 @@ urls = (
   r'/b/(.*?)%s?' % options, 'bill',
   r'/c', petition.app,
   r'/u', users.app,
-  r'/writerep', 'write_your_rep',
-  r'/wyrtest', 'wyr_test',
+  r'/writerep', writerep.app,
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',

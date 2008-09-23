@@ -222,19 +222,6 @@ def zip2dist(zipcode, addr=None):
         lat, lng = geocoder(addr + ', ' + zipcode)[:2]
         return [govtrack(lat, lng)]
         
-def getdists(zip5, zip4=None, address=None):
-    from settings import db
-    
-    if zip4:
-        dists = [x.district for x in
-              db.select('zip4', where='zip=$zip5 and plus4=$zip4', vars=locals())]
-    else:    
-        try:
-            dists = zip2dist(zip5, address and address.strip())
-        except Exception, details:
-            dists = []    
-    return dists
-        
 
 if __name__ == "__main__":
     #print "Generating the zipdict (this will take some time and bandwidth)..."

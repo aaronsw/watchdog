@@ -2,12 +2,28 @@ $def with (form, msg=None)
 
 $var title: Write your representative
 
+<script type="text/javascript" src="/static/js/wyr.js"></script>
+
 $if msg:
     $var msg: $:msg
 
 <form name="writerepform" method="POST">
     $if not form.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
-	$:form.render() 
-  	<p><button type="submit">Send message</button></p>
+   <table>
+   <tr><th>Prefix</th><td>$:form.prefix.render()</td></tr>
+   <tr><th>First name</th><td>$:form.fname.render()</td></tr>
+   <tr><th>Last name</th><td>$:form.lname.render()</td></tr>
+   <tr><th>Address</th><td>$:form.addr1.render()</td></tr>
+   <tr><th></th><td>$:form.addr2.render()</td></tr>
+   <tr><th>City</th><td>$:form.city.render()</td></tr>
+   <tr><th>Zip code</th><td>$:form.zipcode.render()-$:form.zip4.render()</td><td id="note_zipcode"></td></tr>
+   <tr><th>Phone</th><td>$:form.phone.render()</td></tr>
+   <tr><th>Subject</th><td colspan=3>$:form.ptitle.render()</td></tr>
+   <tr><th>Message</th><td colspan=3>$:form.msg.render()</td></tr>
+      
+    $if form.captcha.pre:
+        <tr><th>Validation</th><td>$:form.captcha.pre $:form.captcha.render()</td></tr>
+   </table>
+    <p><button type="submit">Send message</button></p>
 </form>    
 
