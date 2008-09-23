@@ -4,10 +4,17 @@
 /* core styles */
 html {background:url(/static/images/bkg.png); background-color: #002233; }
 body {margin:0; font-size:12px; line-height:20px; font-family:Arial, Helvetica, sans-serif; }
-a {color:#EE4400; text-decoration:none;}
-a:hover {text-decoration:underline;}
-a.sidebarlink  {text-decoration:none; font-weight: bold; }
-a.sidebarlink:hover  {text-decoration:underline; }
+a, #intro a:visited {color:#EE4400; text-decoration:none;} 
+a:visited {color:#0f5b89; text-decoration:underline; } 
+a:hover { text-decoration:underline; } 
+a.headline {color:#EE4400; text-decoration:none;} 
+a.headline:visited {color:#EE4400; } 
+a.headline:hover {color:#EE4400; text-decoration:underline; background-color: transparent;} 
+a.sidebarlink {text-decoration:none; font-weight: bold; } 
+a.sidebarlink:hover {text-decoration:underline; } 
+a.attributelink { color: #0f5b89 } 
+a.attributelink:hover {text-decoration:underline; background-color: transparent; } 
+a.logo:hover { background-color: transparent; }
 
 #container {width:782px; margin:0 auto; padding-top: 10px;}
 #container-leaf {width:100%; margin:0 auto; padding-top: 0px;}
@@ -112,7 +119,7 @@ a.highlight:hover {background-color: #d9eefa; border: 1px solid #83b3d0; color: 
 a.select {background-color: #eee; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; border-bottom: 4px solid #ccc; border-top: 1px solid #ccc; margin-right: 1px; }
 a.watchdog {border: 1px solid #0f5b89; background-color: #0f5b89; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px;}
 a.watchdog:hover {border: 1px solid #002233; background-color: #002233; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px;}
-a.footer {border: 1px solid #EE4400; background-color: #EE4400; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 1px;}
+a.footer, #intro a.footer:visited {border: 1px solid #EE4400; background-color: #EE4400; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 1px;}
 a.footer:hover {border: 1px solid #D8D600; background-color: #FFF399; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px;}
 a.action {background-color: #d9eefa; border: 1px solid #83b3d0; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px; }
 a.action:hover {background-color: #d9eefa; border: 1px solid #83b3d0; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px;}

@@ -210,10 +210,10 @@ def dump():
     DATA_DIR = '../data'
     ALMANAC_DIR = DATA_DIR + '/crawl/almanac/nationaljournal.com/pubs/almanac/2008/'
 
-    for fn in glob.glob(ALMANAC_DIR + 'people/*/rep*'):
-        tools.export(scrape_person(fn))
+    for fn in glob.glob(ALMANAC_DIR + 'people/*/rep*.htm'):
+        tools.export([scrape_person(fn)])
     for fn in glob.glob(ALMANAC_DIR + 'states/*/index.html'):
-        tools.export(scrape_state(fn))
+        tools.export([scrape_state(fn)])
 
 if __name__ == '__main__':
     if '--dump' in sys.argv[1:]:
