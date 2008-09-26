@@ -31,6 +31,7 @@ wyrform = form.Form(
       form.Dropdown('prefix', ['Mr.', 'Mrs.', 'Dr.', 'Ms.', 'Miss'],  description='Prefix'),
       form.Textbox('lname', form.Validator("Last name can't be blank", bool), description='Last Name'),
       form.Textbox('fname', form.Validator("First name can't be blank", bool), description='First Name'),
+      form.Textbox('email', form.notnull, form.regexp(email_regex, 'Please enter a valid email'), description='Email', size='30'),
       form.Textbox('addr1', form.Validator("Address can't be blank", bool), description='Address', size='20'),
       form.Textbox('addr2', description='Address', size='20'),
       form.Textbox('city', form.Validator("City can't be blank", bool), description='City'),
@@ -66,11 +67,7 @@ signform = form.Form(
             post=' *',
             size='30'),
     form.Checkbox('share_with', value='off', description="Share my email with the author of this petition"),
-    form.Textarea('comment',
-            description='Comments:',
-            cols=70,
-            rows=5
-            )
+    form.Textarea('comment', form.notnull, description='Comments:', cols=70, rows=5)
     )
 
 passwordform = form.Form(

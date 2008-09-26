@@ -77,6 +77,7 @@ class logout:
 
     def POST(self):
         helpers.del_login_cookie()
+        helpers.del_unverified_cookie()
         referer = web.ctx.env.get('HTTP_REFERER', '/')
         raise web.seeother(referer)
 

@@ -12,9 +12,9 @@ from BeautifulSoup import BeautifulSoup
 from StringIO import StringIO
 
 import web
-import captchasolver, forms, helpers
+import captchasolver, forms, helpers, auth
 from settings import db, render
-from users import fill_user_details
+from users import fill_user_details, update_user_details
 from wyrutils import * #@@@ put all the list here 
 
 PRODUCTION_MODE = False
@@ -260,6 +260,8 @@ class write_your_rep:
         captcha_src = (not i.get('captcha')) and get_captcha_src(pol)
         if captcha_src:
             set_captcha(wyrform, captcha_src)
+            #msg = 'Please fill in the captcha verification below'
+            #helpers.set_msg(msg, msg_type='note')
             raise CaptchaException
             
         email = 'p-%s@watchdog.net' % (self.msg_id)
@@ -269,6 +271,7 @@ class write_your_rep:
                         zipcode=i.zipcode, zip4=i.zip4,
                         phone=i.phone, email=email, subject=i.ptitle, msg=i.msg,
                         captcha=i.get('captcha', ''))
+        update_user_details(i)
         return msg_sent
 
     def save_and_send_msg(self, i, wyrform, pform=None):
@@ -284,12 +287,16 @@ class write_your_rep:
         if not form:
             form = forms.wyrform()
             fill_user_details(form)
+        useremail = helpers.get_loggedin_email() or helpers.get_unverified_email()    
         msg, msg_type = helpers.get_delete_msg()
-        return render.writerep(form, msg=msg)
+        return render.writerep(form, useremail=useremail, msg=msg)
 
     def POST(self):
         i = web.input()
         wyrform = forms.wyrform()
+        if 'email' not in i: 
+            email = helpers.get_loggedin_email() or helpers.get_unverified_email()
+            i.email = email
         if wyrform.validates(i):
             try:
                 status = self.save_and_send_msg(i, wyrform)
@@ -315,7 +322,6 @@ class wyr_test:
         from_addr = self.get_from_input('email', i) or ''
         subject = self.get_from_input('issue', i) or ''
         msg = self.get_from_input('message', i) or ''
-        print 'sending mail:', from_addr, to_addr, subject, msg
         web.sendmail(from_addr, to_addr, subject, msg)
         return 
 
