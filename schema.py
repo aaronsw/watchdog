@@ -1,3 +1,4 @@
+import simplejson
 import web
 import smartersql as sql
 
@@ -213,6 +214,27 @@ class Bill(sql.Table):
             d[r.party][r.vote] = r.count
         return d
     
+    @property
+    def votes_by_caucus(self):
+        caucuses = simplejson.load(file('import/load/manual/caucuses.json'))
+        members = sum([x['members'] for x in caucuses], [])
+        result = db.select(['vote'],
+            where=web.sqlors('politician_id=', members) + 
+              'AND bill_id=' + web.sqlquote(self.id),
+            vars=locals()
+            ).list()
+        
+        if not result: return None
+        
+        votemap = dict((r.politician_id, r.vote) for r in result)
+        d = {}
+        for c in caucuses:
+            cdict = d[c['name']] = {}
+            for m in c['members']:
+                v = votemap.get(m)
+                cdict.setdefault(v, 0)
+                cdict[v] += 1
+        return d
 
 class Vote (sql.Table):
     bill = sql.Reference(Bill, primary=True)
