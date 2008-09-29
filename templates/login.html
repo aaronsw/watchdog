@@ -6,6 +6,14 @@ $var login_class: select\
 $if msg:
     $var msg: $:msg
 
+<style>
+    #text h2 { margin-bottom: 30px; }
+    #text fieldset td { padding: 0; }
+    #text fieldset #fname { margin-right: 7px; }
+    #text fieldset #fname { width: 115px; }
+    #text fieldset #lname { width: 115px; }
+</style>    
+
 <p class="error">Sorry, logging in isn't supported quite yet. Please stay tuned.</p>
 
 $if not loginform.valid:
