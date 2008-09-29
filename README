@@ -38,8 +38,8 @@ INSTALL:
     cd watchdog
     
     # download a copy of the data sources
-    # (you won't have permission to download all of it
-    #  so there will be a few errors)
+    # (you won't have permission to download all of it)
+    # (so there will be a few errors when you do this )
     make sync
     cd import
     
