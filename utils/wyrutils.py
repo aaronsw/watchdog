@@ -66,6 +66,15 @@ def get_captcha_src(pol):
                 img_src = imgs[0].get('src', '') 
                 return urljoin(url, img_src)
 
+def add_captcha(wf):
+    try:
+        dist = getdists(wf.zipcode.value, wf.zip4.value, wf.addr1.value+wf.addr2.value)[0]
+    except:
+        pass
+    else:        
+        src = get_captcha_src(dist2pol(dist))
+        set_captcha(wf, src)
+
 def set_captcha(wyrform, img_src):
     if img_src:
         wyrform.captcha.pre = '<img src="%s" border="0" />&nbsp;&nbsp;' % img_src

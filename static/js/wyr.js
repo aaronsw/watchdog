@@ -20,10 +20,7 @@ var zip_check_event = function(){
             }
             else{
                 msg = '' ;
-                if (! $('#captcha')[0]){
-                    load_captcha(dists);
-                }
-                ret = true;
+                ret = load_unload_captcha(dists);
             }
             $('#note_zipcode').html('<strong style="color:red">' + msg + '</strong>');
             return ret;
@@ -31,13 +28,17 @@ var zip_check_event = function(){
 }
 
 $('#zip4').change(zip_check_event);
-$('#zip4').blur(zip_check_event);
+//$('#zip4').blur(zip_check_event);
 
-function load_captcha(dist){
+function load_unload_captcha(dist){
     $.get('/writerep/getcaptcha', {dist: dist},
         function (captcha_elmt){ 
             if (captcha_elmt != 'None'){
                 $('tr:last').after(captcha_elmt);
+                return false;
+            }
+            else{
+                 $('tr td input#captcha').parent().parent().remove()
             }
         });
 }

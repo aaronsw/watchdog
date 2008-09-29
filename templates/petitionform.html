@@ -1,6 +1,9 @@
-$def with (pform, cform, title="Create a new petition", target="/c/new")
+$def with (pform, cform, title="Create a new petition", target="/c/new", msg=None)
 
 $var title: $title
+
+$if msg:
+    $var msg: $:msg
 
 <script type="text/javascript" src="/static/js/petition.js"></script>
 <script type="text/javascript" src="/static/js/wyr.js"></script>

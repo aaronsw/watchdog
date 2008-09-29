@@ -71,12 +71,16 @@ $if isauthor:
                 $:signform.email.render()
             $if wyrform:
                 <td><label for="phone">Phone</label>$:wyrform.phone.render()</td>
-            </tr></table>
+            </tr>
                 
-            <label for="comment">Comment</label>
-            $:signform.comment.render()
+            <tr><td colspan=3><label for="comment">Comment</label>
+            $:signform.comment.render()</td></tr>
+            
             $if wyrform and wyrform.captcha.pre:
-                <table><tr><th>Validation</th><td>$:wyrform.captcha.pre $:wyrform.captcha.render()</td></tr></table>
+                <tr><td colspan=3>
+                    <label for="captcha">Verification</label>$:wyrform.captcha.pre $:wyrform.captcha.render()
+                </td></tr>
+            </table>    
             <div id="share_with_container">
             $:signform.share_with.render() 
             <label for="share_with">Do not share my email with the author of this petition</label>

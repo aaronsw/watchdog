@@ -7,7 +7,7 @@ from settings import db, render, session
 from utils.auth import require_login
 from utils.users import fill_user_details
 import config
-from utils.wyrutils import CaptchaException
+from utils.wyrutils import CaptchaException, add_captcha
 
 from datetime import datetime
 
@@ -54,7 +54,7 @@ def send_to_congress(i, wyrform, signid=None):
     pform.fill(i), wyrform.fill(i)
     wyr = write_your_rep()
     wyr.set_pol(i)
-    if not signid: signid = get_first_signid(i.pid)
+    if not signid: signid = get_signid(i.pid)
     wyr.set_msg_id(signid, petition=True)
     msg_sent = wyr.send_msg(i, wyrform, pform)
     sent_status = msg_sent and 'S' or 'D'   # Sent or Due for sending
@@ -65,15 +65,18 @@ def captcha_to_be_filled(i):
     dist = getdists(i.zipcode, i.zip4, i.addr1+i.addr2)[0]
     return has_captcha(dist2pol(dist))
 
-def get_first_signid(pid):
+def get_signid(pid):
+    uemail = helpers.get_loggedin_email() or helpers.get_unverified_email()
+    user = helpers.get_user_by_email(uemail)
+    uid = user and user.id
     try:    
-        first_sign = db.select('signatory', what='id', 
-                    where="petition_id=$pid",
-                    order='signed', limit='1', vars=locals())[0]
+        sign = db.select('signatory', what='id', 
+                    where="petition_id=$pid and user_id=$uid",
+                    vars=locals())[0]
     except IndexError:
         pass
     else:                    
-        return first_sign.id                    
+        return sign.id
         
 def create_petition(i, email, wyrform):
     tocongress = i.get('tocongress', 'off') == 'on'
@@ -96,6 +99,7 @@ class new:
         pform = forms.petitionform()
         cform = wyrform or forms.wyrform()
         fill_user_details(cform)
+        add_captcha(cform)
         email = helpers.get_loggedin_email() or helpers.get_unverified_email()
         return render.petitionform(pform, cform)
 
@@ -121,7 +125,8 @@ class new:
         try:    
             create_petition(i, email, wyrform)
         except CaptchaException:
-            return render.petitionform(pform, wyrform) 
+            msg, msg_type = helpers.get_delete_msg()
+            return render.petitionform(pform, wyrform, msg) 
                
         raise web.seeother('/%s' % i.pid)
 
@@ -143,9 +148,10 @@ class login:
         try:    
             create_petition(i, i.useremail, wf)
         except CaptchaException:
+            msg, msg_type = helpers.get_delete_msg()
             pf= forms.petitionform()
             pf.fill(i)
-            return render.petitionform(pf, wf)    
+            return render.petitionform(pf, wf, msg)    
             
         raise web.seeother('/%s' % i.pid)
 
@@ -162,9 +168,10 @@ class signup:
         try:
             create_petition(i, i.email, wf)
         except CaptchaException:
+            msg, msg_type = helpers.get_delete_msg()
             pf = forms.petitionform()
             pf.fill(i)
-            return render.petitionform(pf, wf)
+            return render.petitionform(pf, wf, msg)
             
         raise web.seeother('/%s' % i.pid)
 
@@ -196,7 +203,8 @@ def save_signature(i, pid, uid, tocongress=False):
         helpers.set_msg("Thanks for your signing! Why don't you tell your friends about it now?")
         return signid 
     else:
-        helpers.set_msg("You've signed this petition before. Why don't you tell your friends about it now?")
+        if not signed[0].sent_to_congress == 'T':
+            helpers.set_msg("You've signed this petition before. Why don't you tell your friends about it now?")
         
 def sendmail_to_signatory(user, pid):
     p = get_petition_by_id(pid)
@@ -234,16 +242,6 @@ def get_petition_by_id(pid):
         return db.select('petition', where='id=$pid and deleted is null', vars=locals())[0]
     except IndexError:
         return                            
-
-def add_captcha(wf):
-    from utils.wyrutils import getdists, get_captcha_src, dist2pol, set_captcha
-    try:
-        dist = getdists(wf.zipcode.value, wf.zip4.value, wf.addr1.value+wf.addr2.value)[0]
-    except:
-        pass
-    else:        
-        src = get_captcha_src(dist2pol(dist))
-        set_captcha(wf, src)
 
 class signatories:
     def GET(self, pid):
