@@ -347,15 +347,9 @@ class petition:
 
     def POST_sign(self, pid):
         i = web.input()
+        auth.assert_login(i)
         sform, wyrform = forms.signform(), forms.wyrform()
         tocongress = to_congress(pid)
-        
-        if 'email' not in i:
-            email = helpers.get_loggedin_email() or helpers.get_unverified_email()                
-            if email: i.email = email
-        else:    
-            if helpers.is_verified(i.email):
-                raise web.seeother('/c/login')
                 
         if tocongress:
             p = get_petition_by_id(pid)
@@ -365,10 +359,7 @@ class petition:
             wyr_valid = True
 
         if sform.validates(i) and wyr_valid:
-            if not email:
-                helpers.unverified_login(i.fname, i.lname, i.email)
             user = helpers.get_user_by_email(i.email)
-            
             signid = save_signature(i, pid, user.id, tocongress)
             if tocongress: 
                 try:
@@ -376,7 +367,6 @@ class petition:
                     msg_sent = send_to_congress(i, wyrform, signid)
                 except CaptchaException:
                     return self.GET(pid, signform=sform, wyrform=wyrform)    
-                        
             if signid:
                 sendmail_to_signatory(user, pid)
             raise web.seeother('/%s/share' % pid)

@@ -3,7 +3,6 @@
 """
 writerep.py
 Write Your Representative
-Created by Pradeep Gowda on 2008-04-24.
 """
 import sys
 import urllib2
@@ -263,7 +262,7 @@ class write_your_rep:
             msg = 'Please fill in the captcha verification below'
             helpers.set_msg(msg, msg_type='note')
             raise CaptchaException
-            
+
         email = 'p-%s@watchdog.net' % (self.msg_id)
         msg_sent = writerep(pol=pol,
                         prefix=i.prefix, lname=i.lname, fname=i.fname,
@@ -295,10 +294,8 @@ class write_your_rep:
 
     def POST(self):
         i = web.input()
+        auth.assert_login(i)
         wyrform = forms.wyrform()
-        if 'email' not in i: 
-            email = helpers.get_loggedin_email() or helpers.get_unverified_email()
-            i.email = email
         if wyrform.validates(i):
             try:
                 status = self.save_and_send_msg(i, wyrform)

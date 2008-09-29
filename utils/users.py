@@ -40,7 +40,8 @@ def fill_user_details(form, fillings=['email', 'name', 'contact']):
         form.fill(**details)
     
 def update_user_details(i):
-    userid = helpers.get_loggedin_userid() or helpers.get_unverified_userid()
+    user = helpers.get_user_by_email(i.get('email'))
+    userid = user and user.id
     i['zip5'] = i.get('zipcode')
     details = ['prefix', 'lname', 'fname', 'addr1', 'addr2', 'city', 'zip5', 'zip4', 'phone']
     
