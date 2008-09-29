@@ -50,7 +50,7 @@ class signup:
             return render.login(lf, sf, redirect=i.redirect)
         user = new_user(i.email, i.password)
         helpers.set_login_cookie(i.email)
-        raise web.seeother(i.redirect)
+        raise web.seeother(i.redirect, absolute=True)
 
 class login:
     def GET(self):
@@ -69,7 +69,7 @@ class login:
             lf['redirect'].value = sf['redirect'].value = i.redirect
             lf.fill(i)
             return render.login(lf, sf, redirect=i.redirect)
-        raise web.seeother(i.redirect)
+        raise web.seeother(i.redirect, absolute=True)
 
 class logout:
     def GET(self):
@@ -126,7 +126,7 @@ watchdog.net
 """ % (reset_url)
             web.sendmail(config.from_address, i.email, subject, msg )
             helpers.set_msg('Check your email to reset your password.')
-            raise web.seeother('/u/forgot_password')
+            raise web.seeother('/u/forgot_password', absolute=True)
         else:
             return self.GET(form)
 
@@ -138,7 +138,7 @@ class set_password:
             return render.set_password(form, i.email)
         else:
             helpers.set_msg('Invalid token', msg_type='error')
-            raise web.seeother('/u/forgot_password')
+            raise web.seeother('/u/forgot_password', absolute=True)
 
     def POST(self):
         i = web.input()
@@ -147,7 +147,7 @@ class set_password:
             password = encrypt_password(i.password)
             db.update('users', password=password, verified=True, where='email=$i.email', vars=locals())
             helpers.set_msg('Login with your new password.')
-            raise web.seeother(web.ctx.homedomain + '/u/login')
+            raise web.seeother('/u/login', absolute=True)
         else:
             return self.GET(form)
 
@@ -180,12 +180,12 @@ def assert_verified(email):
         send_mail_to_set_password(email)
     else:
         query = urllib.urlencode(dict(redirect=web.ctx.homepath + web.ctx.fullpath))
-        raise web.seeother("%s/u/login?%s" % (web.ctx.homedomain, query))
+        raise web.seeother("/u/login?%s" % (query), absolute=True)
 
 def require_login(f):
     def g(*a, **kw):
         if not helpers.get_loggedin_email():
             query = urllib.urlencode(dict(redirect=web.ctx.homepath + web.ctx.fullpath))
-            raise web.seeother("%s/u/login?%s" % (web.ctx.homedomain, query))
+            raise web.seeother("/u/login?%s" % (query), absolute=True)
         return f(*a, **kw)
     return g
