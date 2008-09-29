@@ -1,7 +1,7 @@
 """
 Parser for FEC electronic filings.
 """
-__author__ = [ "Simon Carstensen <me@simonbc.com>" ]
+__author__ = ["Simon Carstensen <me@simonbc.com>"]
 
 import glob, zipfile, re, tools, sys, os
 
