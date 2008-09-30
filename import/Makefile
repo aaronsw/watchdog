@@ -85,8 +85,7 @@ $(LOAD)/bill.tsv $(LOAD)/vote.tsv: load/bills.py
 	touch $@
 
 .bills: $(LOAD)/bill.tsv $(LOAD)/vote.tsv .schema
-	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/bill.tsv
-	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/vote.tsv
+	(echo "BEGIN; DELETE FROM interest_group_bill_support; DELETE FROM vote; DELETE FROM bill;"; cat $(LOAD)/bill.tsv; cat $(LOAD)/vote.tsv; echo "COMMIT;") | $(DBCLIENT) $(WATCHDOG_TABLE)
 	touch $@
 
 .interests: load/maplight.py .bills
