@@ -6,6 +6,14 @@ $var login_class: select\
 $if msg:
     $var msg: $:msg
 
+<style>
+    #text h2 { margin-bottom: 30px; }
+    #text fieldset td { padding: 0; }
+    #text fieldset #fname { margin-right: 7px; }
+    #text fieldset #fname { width: 115px; }
+    #text fieldset #lname { width: 115px; }
+</style>    
+
 <p class="error">Sorry, logging in isn't supported quite yet. Please stay tuned.</p>
 
 $if not loginform.valid:
@@ -36,6 +44,10 @@ $elif not signupform.valid:
         $:signupform.redirect.render()
         <fieldset>
         <legend>... or sign up to create one</legend>
+        <table>
+        <tr><td><label for="fname">First name</label>$:signupform.fname.render()</td>
+        <td><label for="lname">Last name</label>$:signupform.lname.render()</td></tr>
+        </table>
         <label>Enter your email</label>
         $:signupform.email.render()
         <label>Give it a password</label>

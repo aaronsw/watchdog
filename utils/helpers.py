@@ -62,7 +62,7 @@ def get_unverified_userid():
 def get_user_by_email(email):
     try:
         return db.select('users', where='email=$email', vars=locals())[0]
-    except:
+    except IndexError:
         return None
 
 def set_login_cookie(email):
@@ -74,13 +74,13 @@ def del_login_cookie():
 def del_unverified_cookie():
     web.setcookie("wd_email", "", expires=-1)
     
-def unverified_login(lname, fname, email):
+def unverified_login(email, fname, lname):
     setcookie('wd_email', email)
     if not get_user_by_email(email):
         db.insert('users', fname=fname, lname=lname, email=email)
 
 def is_verified(email):
-    verified = db.select('users', where='email=$email and verified=True', vars=locals())
+    verified = db.select('users', where='email=$email and (verified=True or password is not null)', vars=locals())
     return bool(verified)
 
 def query_param(param, default_value):

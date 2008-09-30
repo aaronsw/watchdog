@@ -40,9 +40,8 @@ $if msg:
    
    <tr><td colspan=3><label for="subject">Subject</label>$:form.ptitle.render()</td></tr>
    <tr><td colspan=3><label for="msg">Message</label>$:form.msg.render()</td></tr>
-      
     $if form.captcha.pre:
-        <tr><th>Validation</th><td>$:form.captcha.pre $:form.captcha.render()</td></tr>
+        <tr><td colspan=2><label for="captcha">Verification</label>$:form.captcha.pre $:form.captcha.render()</td></tr>
    </table>
    </fieldset>
     <p><button type="submit">Send message</button></p>

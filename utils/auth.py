@@ -50,13 +50,14 @@ class signup:
             return render.login(lf, sf, redirect=i.redirect)
         user = new_user(i.email, i.password)
         helpers.set_login_cookie(i.email)
-        raise web.seeother(i.redirect)
+        raise web.seeother(i.redirect, absolute=True)
 
 class login:
     def GET(self):
         referer = web.ctx.env.get('HTTP_REFERER', '/')
         i = web.input(redirect=referer)
         lf, sf= forms.loginform(), forms.signupform()
+        lf.fill(i)
         sf['redirect'].value = sf['redirect'].value = i.redirect
         msg, msg_type = helpers.get_delete_msg()
         return render.login(lf, sf, msg, i.redirect)
@@ -69,7 +70,7 @@ class login:
             lf['redirect'].value = sf['redirect'].value = i.redirect
             lf.fill(i)
             return render.login(lf, sf, redirect=i.redirect)
-        raise web.seeother(i.redirect)
+        raise web.seeother(i.redirect, absolute=True)
 
 class logout:
     def GET(self):
@@ -126,7 +127,7 @@ watchdog.net
 """ % (reset_url)
             web.sendmail(config.from_address, i.email, subject, msg )
             helpers.set_msg('Check your email to reset your password.')
-            raise web.seeother('/u/forgot_password')
+            raise web.seeother('/u/forgot_password', absolute=True)
         else:
             return self.GET(form)
 
@@ -138,7 +139,7 @@ class set_password:
             return render.set_password(form, i.email)
         else:
             helpers.set_msg('Invalid token', msg_type='error')
-            raise web.seeother('/u/forgot_password')
+            raise web.seeother('/u/forgot_password', absolute=True)
 
     def POST(self):
         i = web.input()
@@ -147,7 +148,7 @@ class set_password:
             password = encrypt_password(i.password)
             db.update('users', password=password, verified=True, where='email=$i.email', vars=locals())
             helpers.set_msg('Login with your new password.')
-            raise web.seeother(web.ctx.homedomain + '/u/login')
+            raise web.seeother('/u/login', absolute=True)
         else:
             return self.GET(form)
 
@@ -172,20 +173,29 @@ watchdog.net
 """ % (url)
     web.sendmail(config.from_address, email, subject, msg)
 
-def assert_verified(email):
-    if helpers.get_loggedin_email():
-        pass
-    elif helpers.no_verified_activity(email):
-        helpers.set_login_cookie(email)
-        send_mail_to_set_password(email)
+def assert_login(i):
+    #let unlogged in users also do actions like signing, wyr
+    # if the email has verified account with us but not logged-in, redirect to login form
+    # if the email has unverified account, make them login and send set password email
+    # if the email has no account, set an unverified account and send set password email
+    uemail = helpers.get_loggedin_email() or helpers.get_unverified_email()
+    if uemail: 
+        email = i.email = uemail
     else:
-        query = urllib.urlencode(dict(redirect=web.ctx.homepath + web.ctx.fullpath))
-        raise web.seeother("%s/u/login?%s" % (web.ctx.homedomain, query))
+        email = i.get('email')    
+    
+    if helpers.is_verified(email) and not helpers.get_loggedin_email():
+        d = dict(redirect=web.ctx.homepath + web.ctx.fullpath, useremail=email)
+        query = urllib.urlencode(d)
+        raise web.seeother("/u/login?%s" % (query), absolute=True)
+    else:
+        helpers.unverified_login(email, i.get('fname'), i.get('lname'))
+        send_mail_to_set_password(email)
 
 def require_login(f):
     def g(*a, **kw):
         if not helpers.get_loggedin_email():
             query = urllib.urlencode(dict(redirect=web.ctx.homepath + web.ctx.fullpath))
-            raise web.seeother("%s/u/login?%s" % (web.ctx.homedomain, query))
+            raise web.seeother("/u/login?%s" % (query), absolute=True)
         return f(*a, **kw)
     return g
