@@ -180,7 +180,7 @@ class Reference (Column):
     def __init__(self, target, **kw):
         super(Reference, self).__init__(**kw)
         assert len(target.primary) == 1, \
-          "Referencing columns with composite primary keys isn't supported."
+          "Referenced column must have exactly 1 primary key."
 
         self.target = target
         self.target_column = target.primary.values()[0]
@@ -269,4 +269,7 @@ def recreate():
 
 def grantall(username):
     for table in _all_tables:
-        table.db.query('GRANT ALL ON %s TO %s' % (table.sql_name, username))
+        try:
+            table.db.query('GRANT ALL ON %s TO %s' % (table.sql_name, username))
+        except:
+            pass
