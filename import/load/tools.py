@@ -2,9 +2,14 @@
 """
 common tools for load scripts
 """
-import os, re
+import os
+import re
+import string
+import unicodedata
+
 import simplejson
 import web
+
 from settings import db
 
 STATE_TABLE = 'load/manual/states.json'
@@ -58,11 +63,32 @@ def districtp(district):
     
     return _districtcache.get(district) or []
 
+def id_ify(text):
+    """Take a string and convert it to a suitable watchdog id."""
+    text = text.strip()
+    # replace accented characters with non-accented ones
+    text = unicodedata.normalize('NFKD',text).encode('ascii','ignore')
+    P = set(string.punctuation)
+    P.remove('_')
+    # Remove punctuation (except '_') and replace spaces with '_' and lower case.
+    text = ''.join(filter(lambda y: y not in P, text)).lower().replace(' ','_')
+    return text
+
 def getWatchdogID(district, lastname):
+    # Filter out accented characters.
+    #lastname = unicodedata.normalize('NFKD',lastname).encode('ascii','ignore')
     watchdog_ids = filter(lambda x: lastname.lower().replace(' ', '_') in x, districtp(district))
     if len(watchdog_ids) == 1:
         return watchdog_ids[0]
     return None
+
+
+def fix_district_name(name):
+    name=name.replace("-SEN1","").replace("-SEN2","").strip()
+    if name in ['DC','GU','PR']:
+        name += '-00'
+    return name
+    
 
 
 _govtrackcache = {}

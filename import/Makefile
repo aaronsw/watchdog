@@ -68,7 +68,7 @@ database: $(LOADERS)
 	$(PYTHON) load/govtrack_gis.py
 	touch $@
 
-.govtrack: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml .json
+.govtrack: .json load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml 
 	$(PYTHON) load/govtrack.py
 	touch $@
 
@@ -87,7 +87,7 @@ database: $(LOADERS)
 	$(PYTHON) load/maplight.py
 	touch $@
 
-.votesmart: .json load/votesmart.py $(CRAWL)/votesmart/bios.json $(CRAWL)/votesmart/candidates.json
+.votesmart: .json .govtrack load/votesmart.py $(CRAWL)/votesmart/bios.json $(CRAWL)/votesmart/candidates.json
 	$(PYTHON) load/votesmart.py
 	touch $@
 
