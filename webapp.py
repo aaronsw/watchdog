@@ -25,6 +25,7 @@ urls = (
   r'/p/(.*?)/(\d+)', 'politician_group',
   r'/p/(.*?)%s?' % options, 'politician',
   r'/b/(.*?)%s?' % options, 'bill',
+  r'/r/us/(.*?)%s?' % options, 'roll',
   r'/c', petition.app,
   r'/u', users.app,
   r'/writerep', writerep.app,
@@ -181,6 +182,19 @@ def bill_list(format, page=0, limit=50):
 
     return render.bill_list(bills, limit)
 
+class roll:
+    def GET(self, roll_id, format=None):
+        try:
+            b = schema.Roll.where(id=roll_id)[0]
+            votes = schema.Vote.where(roll_id=b.id)
+        except IndexError:
+            raise web.notfound
+
+        out = apipublish.publish([b], format)
+        if out: return out
+
+        return render.roll(b, votes)
+
 class bill:
     def GET(self, bill_id, format=None):
         if bill_id == "" or bill_id == "index":
@@ -250,9 +264,9 @@ class politician_groups:
 
 class politician_group:
     def GET(self, politician_id, group_id):
-        votes = db.select(['vote', 'interest_group_bill_support', 'bill'],
-          where="interest_group_bill_support.bill_id = vote.bill_id AND "
-                 "vote.bill_id = bill.id AND "
+        votes = db.select(['position', 'interest_group_bill_support', 'bill'],
+          where="interest_group_bill_support.bill_id = position.bill_id AND "
+                 "position.bill_id = bill.id AND "
                 "politician_id = $politician_id AND group_id = $group_id",
          order='vote = support desc',
           vars=locals())

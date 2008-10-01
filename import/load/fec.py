@@ -42,7 +42,7 @@ def load_fec_cans():
             )
 
 def load_fec_efilings():
-    for f in fec_cvs.parse_efilings():
+    for f in fec_csv.parse_efilings():
         for s in f['schedules']:
             if s['type'] == 'contribution':
                 politician_id = None

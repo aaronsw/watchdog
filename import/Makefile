@@ -80,13 +80,8 @@ database: $(LOADERS)
 	$(PYTHON) load/earmarks.py
 	touch $@
 
-$(LOAD)/bill.tsv $(LOAD)/vote.tsv: load/bills.py
+.bills: load/bills.py
 	$(PYTHON) load/bills.py
-	touch $@
-
-.bills: $(LOAD)/bill.tsv $(LOAD)/vote.tsv .schema
-	(echo "BEGIN; DELETE FROM interest_group_bill_support; DELETE FROM vote; DELETE FROM bill;"; cat $(LOAD)/bill.tsv; cat $(LOAD)/vote.tsv; echo "COMMIT;") | $(DBCLIENT) $(WATCHDOG_TABLE)
-	touch $@
 
 .interests: load/maplight.py .bills
 	$(PYTHON) load/maplight.py

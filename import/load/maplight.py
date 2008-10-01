@@ -57,9 +57,9 @@ def generate_similarities():
     """
     Generate similarity information for each (interest group, politician) pair and store in DB
     """
-    result = db.query('select igbp.group_id, vote.politician_id, igbp.support, vote.vote'
-                    ' from interest_group_bill_support igbp, vote'
-                    ' where igbp.bill_id = vote.bill_id')
+    result = db.query('select igbp.group_id, position.politician_id, igbp.support, position.vote'
+                    ' from interest_group_bill_support igbp, position'
+                    ' where igbp.bill_id = position.bill_id')
     sim = {}
     total = {}
              
