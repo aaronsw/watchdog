@@ -2,10 +2,10 @@
 load data from govtrack.us
 """
 from __future__ import with_statement
-
+import datetime
+from pprint import pprint, pformat
 import simplejson
 import web
-
 from parse import govtrack
 import tools
 from settings import db
@@ -27,9 +27,6 @@ mapping = {
 }
 
 
-import simplejson
-import datetime
-from pprint import pprint, pformat
 cong_terms = simplejson.load(file('load/manual/congress_terms.json'))
 def to_dt(s): return datetime.datetime(*(map(int,s.split('-'))))
 for t in cong_terms.values():

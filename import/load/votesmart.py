@@ -15,27 +15,26 @@ def unidecode(d):
         newd[k.encode('utf8')] = v
     return newd
 
-# Mappings from voteview to schema
+# Mappings from votesmart to schema
 cand_mapping = {
-        'candidateId':'votesmartid',
-        'electionParties':'party',
-        'firstName':'firstname',
-        'lastName':'lastname',
-        'middleName':'middlename',
-        'nickName':'nickname',
-        'electionStatus' : 'election_status',
-        }
+  'candidateId':'votesmartid',
+  'electionParties':'party',
+  'firstName':'firstname',
+  'lastName':'lastname',
+  'middleName':'middlename',
+  'nickName':'nickname',
+  'electionStatus' : 'election_status',
+}
 bios_mapping = {
-        'firstName':'firstname',
-        'lastName':'lastname',
-        'middleName':'middlename',
-        'nickName':'nickname',
-        'gender':'gender',
-        'birthDate':'birthday',
-        'education':'education',
-        'religion':'religion',
-        }
-
+  'firstName':'firstname',
+  'lastName':'lastname',
+  'middleName':'middlename',
+  'nickName':'nickname',
+  'gender':'gender',
+  'birthDate':'birthday',
+  'education':'education',
+  'religion':'religion',
+}
 
 def filter_dict(f, d):
     if isinstance(f, dict):

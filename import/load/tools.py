@@ -2,10 +2,7 @@
 """
 common tools for load scripts
 """
-import os
-import re
-import string
-import unicodedata
+import os, re, string, unicodedata
 
 import simplejson
 import web
