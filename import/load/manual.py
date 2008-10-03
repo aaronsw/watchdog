@@ -1,5 +1,4 @@
-import os, glob
-import simplejson
+import os, glob, json
 import web
 from settings import db
 import cgitb
@@ -15,7 +14,7 @@ def unidecode(d):
 
 def items(fname):
     print 'loading', fname
-    return simplejson.load(file(DATA_DIR + '/%s.json' % fname)).iteritems()
+    return json.load(file(DATA_DIR + '/%s.json' % fname)).iteritems()
 
 def load_all():
     for code, state in items('states'):

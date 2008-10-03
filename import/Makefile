@@ -47,8 +47,8 @@ cleanparse:
 
 database: $(LOADERS)
 
-.json: .schema load/json.py $(JSONS)
-	python load/json.py
+.manual: .schema load/manual.py load/manual/*.json
+	python load/manual.py
 	touch $@
 
 .schema: ../schema.py
