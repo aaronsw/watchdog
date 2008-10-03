@@ -5,7 +5,7 @@
 html {background:url(/static/images/bkg.png); background-color: #002233; }
 body {margin:0; font-size:12px; line-height:20px; font-family:Arial, Helvetica, sans-serif; }
 a, #intro a:visited {color:#EE4400; text-decoration:none;} 
-a:visited {color:#0f5b89; text-decoration:underline; } 
+a:visited {color:#6B260D; text-decoration:none; } 
 a:hover { text-decoration:underline; } 
 a.headline {color:#EE4400; text-decoration:none;} 
 a.headline:visited {color:#EE4400; } 
@@ -178,8 +178,8 @@ table.interest_group_support td, th { text-align: left; }
 .explain { color: #999; margin-top: -.5em; font-size: smaller;}
 .explain a { color: #777; text-decoration: underline; }
 
-.chartlist { width: 30em; padding-left: 0; margin-left: 0;}
-.chartlist li { display: block; position: relative; line-height: 1.6; border-bottom: .1em solid white; }
+.chartlist { width: 30em; padding-left: 0; margin-left: 0; list-style: none; }
+#text .chartlist li, .chartlist li { display: block; position: relative; line-height: 1.6; border-bottom: .1em solid white; list-style: none; background-image: none; }
 .chartlist li a { position: relative; padding: 0.25em 4.5em 0.25em 9px; min-width: 4.5em; z-index: 2;}
 .chartlist .count { color: #888; position: absolute; display: block; top: 0; right: 0; text-align: right; padding-right: .5em; z-index: 2;}
 .chartlist .index { display: block; position: absolute; left: 0; top: 0; bottom: 0; background: #cff; text-indent: 9999px; overflow: hidden; min-width: 1px; }
