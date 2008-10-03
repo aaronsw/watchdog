@@ -51,5 +51,5 @@ class TestUnicode(TestCase):
     def test_unicode_decode(self):
         for i in range(0, 0xd7ff):
             u = unichr(i)
-            js = '"\\u{0:04x}"'.format(i)
+            js = '"\\u%04x"' % format(i)
             self.assertEquals(json.loads(js), u)

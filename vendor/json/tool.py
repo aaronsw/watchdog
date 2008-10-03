@@ -24,7 +24,7 @@ def main():
         infile = open(sys.argv[1], 'rb')
         outfile = open(sys.argv[2], 'wb')
     else:
-        raise SystemExit("{0} [infile [outfile]]".format(sys.argv[0]))
+        raise SystemExit("%s [infile [outfile]]" % sys.argv[0])
     try:
         obj = json.load(infile)
     except ValueError, e:
