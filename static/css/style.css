@@ -25,7 +25,7 @@ a.logo:hover { background-color: transparent; }
 #intro {font-size:24px; font-family:"Georgia" sans-serif; line-height: 29px; color: #fff; padding-top: 35px; padding-left: 15px; }
 #intro-leaf {font-size:24px; font-family:"Georgia" sans-serif; line-height: 29px; color: #fff; padding-left: 15px; }
 
-#header { background:url(/static/images/main_bkg.png) center -74px no-repeat; height: 70px; }
+#header { background:url(/static/images/main_bkg.png) center -74px no-repeat; height: 70px; clear: both;}
 #header-leaf {  }
 
 #main {margin:0px 0px 0px 0px; float:left; background-color:#FFFFFF; min-height:550px; display:inline; clear: both; width: 100%;}

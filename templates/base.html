@@ -15,12 +15,19 @@ $if not page.get('front'):-leaf\
 $if page.get('front'):
     <div id="logo"><a href="/"><img src="/static/images/watchdog.big.gif" alt="Watchdog" /></a></div>
   <div id="intro">
-    $if not page.get('front'):<a href="/"><img src="/static/images/watchdog.small.png" alt="Watchdog" style="float: left;" /></a><div style="float: left; padding-bottom: 10px;">
-	  <a href="/">Watchdog.net.</a>
-	  $if page.get('front'):<br />
-	  $:page.title.strip().
-	  $if not page.get('front'):</div>
-  $if not page.get('front'):
+    $if page.get('front'):
+        <a href="/about">
+          <img class="logo" src="/static/images/watchdog.slogan.twolines.png"
+            alt="Watchdog. The good government site with teeth." />
+        </a>
+    $else:
+        <a href="/">
+          <img src="/static/images/watchdog.small.png" style="float: left;" 
+            alt="" />
+        </a>
+        <div style="float: left; padding-bottom: 10px;">
+	        <a href="/">Watchdog.net.</a> $:page.title.strip().
+	      </div>
         $if is_logged_in():
             <div style="float: right; padding-right: 22px; padding-top: 15px;">        
             <a href="#" onclick="document.forms['logout'].submit()" class="$page.get('login_class', 'footer')">logout</a
@@ -30,7 +37,7 @@ $if page.get('front'):
           ><a href="/about/" class="$page.get('about_class', 'footer')">about</a
           ><a href="/blog/" class="$page.get('blog_class', 'footer')">blog</a
           ><a href="/about/#feedback" class="footer">feedback</a>
-      </div>
+        </div>
   </div>
   <div id="header\
 $if not page.get('front'):-leaf\
