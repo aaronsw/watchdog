@@ -3,7 +3,7 @@ publish Python objects as various API formats
 """
 
 import datetime
-import simplejson
+import json
 import web
 
 API_PREFIX = "http://watchdog.net/about/api#"
@@ -29,7 +29,7 @@ def _getitems(obj, listify=True):
     out.sort(lambda x, y: cmp(x[0], y[0]))
     return out
 
-class SmartJSONEncoder(simplejson.JSONEncoder):
+class SmartJSONEncoder(json.JSONEncoder):
     DATE_FORMAT = "%Y-%m-%d"
     TIME_FORMAT = "%H:%M:%S"
     def _default(self, obj):
@@ -44,7 +44,7 @@ class SmartJSONEncoder(simplejson.JSONEncoder):
                 return super(SmartJSONEncoder, self).default(obj)
             except TypeError:
                 try:
-                    return simplejson.dumps(obj)
+                    return json.dumps(obj)
                 except:
                     return obj._uri_
     def default(self, obj):

@@ -1,10 +1,6 @@
-import time
-import md5
-import urllib, urllib2 
+import time, hashlib, urllib, urllib2, string, json
 from xml.dom import minidom    
 from BeautifulSoup import BeautifulSoup
-import string
-import demjson
 
 import web
 from settings import db, render, session
@@ -20,7 +16,7 @@ def yahooLoginURL(email, url, token=None):
     yurl = 'https://api.login.yahoo.com'
     purl = '%s?appid=%s&appdata=%s&ts=%s' % (url,appid, appdata, ts)
     surl ='%s%s' % (purl, secret)
-    sig = md5.new(surl).hexdigest()
+    sig = hashlib.md5(surl).hexdigest()
     furl = '%s%s&sig=%s' % (yurl, purl, sig)
     if token: furl = '%s&token=%s' % ( furl, token)
     return  furl
@@ -91,7 +87,7 @@ def save_contacts(email, contacts, provider):
 
 class auth_yahoo:
     def get_contacts(self, contacts_json):
-        content = demjson.decode(contacts_json)
+        content = json.loads(contacts_json)
         
         contacts = []
         for c in content.get('contacts'):

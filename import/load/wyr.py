@@ -1,7 +1,7 @@
-import simplejson
+import json
 from settings import db
 
-wyr = simplejson.load(file('../data/crawl/votesmart/wyr.json'))
+wyr = json.load(file('../data/crawl/votesmart/wyr.json'))
 
 types = dict(email='E', wyr='W', ima='I', zipauth='Z')
 

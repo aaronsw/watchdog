@@ -1,4 +1,4 @@
-import urllib, demjson, pickle, os, sys
+import urllib, json, pickle, os, sys
 
 def listify(x):
     if not isinstance(x, list):
@@ -7,7 +7,7 @@ def listify(x):
         return x
 
 def jsonify(d):
-    return demjson.encode(d, compactly=False).encode('utf8')
+    return json.dumps(d, indent=2, sort_keys=True)
 
 def cachejson(funct):
     name = funct.__name__
@@ -19,7 +19,7 @@ def cachejson(funct):
     fh.close()
 
 def uncachejson(name):
-    return demjson.decode(file('%s.json' % name).read())
+    return json.load(file('%s.json' % name))
 
 PVS_API_KEY = file('.pvsapikey.secret').read().strip()
 PVS_URL = 'http://api.votesmart.org/%s?%s&key=%s&o=JSON'
@@ -37,12 +37,8 @@ PVS_EMPTY = [
 
 def pvs(cmd, **attrs):
     u = PVS_URL % (cmd, urllib.urlencode(attrs), PVS_API_KEY)
-    d = urllib.urlopen(u).read()
-    try:
-        return demjson.decode(d)
-    except demjson.JSONDecodeError:
-        print repr(d)
-        raise
+    d = urllib.urlopen(u)
+    return json.load(d)
 
 def pvsexists(d):
     if d.get('error') and d['error']['errorMessage'] in PVS_EMPTY:
@@ -185,7 +181,7 @@ def parsenetstrings(fh):
 
 def parseratings():
     for string in parsenetstrings(file('ratings.json.netstrings')):
-        yield demjson.decode(string)
+        yield json.loads(string)
 
 def getoffices():
     out = {}
@@ -224,10 +220,7 @@ def getnpat():
     cans = sum(uncachejson('candidates').values(), [])
     
     for can in cans:
-        try:
-            d = pvs('Npat.getNpat', candidateId=can['candidateId'])
-        except demjson.JSONDecodeError:
-            continue
+        d = pvs('Npat.getNpat', candidateId=can['candidateId'])
         if d.get('error'):
             if d['error']['errorMessage'] == 'Unknown error': continue            
             print d

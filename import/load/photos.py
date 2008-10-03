@@ -10,7 +10,7 @@ to:   data/parse/politicians/photos.json
 """
 
 import os
-import simplejson
+import json
 from settings import db
 
 def govtrack_u(govtrackid):
@@ -37,7 +37,7 @@ def load():
     out = {}
 
     pols = db.select('politician')
-    #simplejson.load(file('../data/load/politicians/govtrack.json'))
+    #json.load(file('../data/load/politicians/govtrack.json'))
 
     for pol in pols:
         options = [

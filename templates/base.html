@@ -9,17 +9,17 @@ $def with (page)
   $:page.get('head')
 </head><body>
 <div id="container\
-$if not page.get('front'): -leaf\
+$if not page.get('front'):-leaf\
 ">
 <!-- header -->
 $if page.get('front'):
     <div id="logo"><a href="/"><img src="/static/images/watchdog.big.gif" alt="Watchdog" /></a></div>
   <div id="intro">
-    $if not page.get('front'): <a href="/"><img src="/static/images/watchdog.small.png" alt="Watchdog" style="float: left;" /></a><div style="float: left; padding-bottom: 10px;">
+    $if not page.get('front'):<a href="/"><img src="/static/images/watchdog.small.png" alt="Watchdog" style="float: left;" /></a><div style="float: left; padding-bottom: 10px;">
 	  <a href="/">Watchdog.net.</a>
-	  $if page.get('front'): <br />
+	  $if page.get('front'):<br />
 	  $:page.title.strip().
-	  $if not page.get('front'): </div>
+	  $if not page.get('front'):</div>
   $if not page.get('front'):
         $if is_logged_in():
             <div style="float: right; padding-right: 22px; padding-top: 15px;">        
@@ -33,7 +33,7 @@ $if page.get('front'):
       </div>
   </div>
   <div id="header\
-$if not page.get('front'): -leaf\
+$if not page.get('front'):-leaf\
 "></div>
 <!-- /header -->
 <div id="main">
@@ -68,7 +68,7 @@ $:page.get('pretext')
 
 $if not page.get('maxi'):
     <div id="text"\
-    $if page.get('front'): style="margin-top: -10px;"\
+    $if page.get('front'):  style="margin-top: -10px;"\
     >
 
 $:page.get('pretitle')
@@ -97,7 +97,7 @@ $else:
 </div><!-- /main -->
 
 <div id="footer\
-$if not page.get('front'): -leaf\
+$if not page.get('front'):-leaf\
 ">
 <div id="left_footer">What do you think? <a href="/about/#feedback"><strong>Send us your feedback.</strong></a></div>
 <div id="right_footer">

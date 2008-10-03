@@ -1,7 +1,6 @@
 from __future__ import with_statement
 
 import sys
-import simplejson
 import web
 import tools
 from parse import earmarks
@@ -47,8 +46,6 @@ for repid, rep in reps.items():
             lastname2rep[lastname + ', ' + rep.nickname.lower()] = repid
         if repid in hacks:
             lastname2rep[lastname + ', ' + hacks[repid].lower()] = repid
-
-
 
 def cleanrow(s):
     if isinstance(s, basestring):

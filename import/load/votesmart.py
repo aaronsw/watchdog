@@ -2,12 +2,12 @@
 Load Project Vote Smart data.
 """
 
-import simplejson
+import json
 import tools
 from settings import db
 
-cans = simplejson.load(file('../data/crawl/votesmart/candidates.json'))
-bios = simplejson.load(file('../data/crawl/votesmart/bios.json'))
+cans = json.load(file('../data/crawl/votesmart/candidates.json'))
+bios = json.load(file('../data/crawl/votesmart/bios.json'))
 
 def main():
     for dist, canl in cans.iteritems():

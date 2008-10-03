@@ -2,7 +2,7 @@
 load data from govtrack.us
 """
 
-import web, simplejson
+import web
 from parse import govtrack
 import tools
 from settings import db

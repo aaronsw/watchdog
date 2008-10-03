@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import glob, web, os, cgitb, simplejson, sys
+import glob, web, os, cgitb, sys
 import tools
 from settings import db
 from parse import almanac

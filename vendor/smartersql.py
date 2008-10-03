@@ -56,7 +56,7 @@ _all_tables = []
 
 class metatracker(type):
     def __init__(self, name, bases, *a, **kw):
-        super(type, self).__init__(name, bases, *a, **kw)
+        type.__init__(self, name, bases, *a, **kw)
         if bases[0] != object:
             _all_tables.append(self)
             self.columns = self._analyze(init=True)

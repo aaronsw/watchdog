@@ -1,4 +1,4 @@
-import simplejson
+import json
 import web
 import smartersql as sql
 
@@ -227,7 +227,7 @@ class Bill(sql.Table):
     
     @property
     def votes_by_caucus(self):
-        caucuses = simplejson.load(file('import/load/manual/caucuses.json'))
+        caucuses = json.load(file('import/load/manual/caucuses.json'))
         members = sum([x['members'] for x in caucuses], [])
         result = db.select(['position'],
             where=web.sqlors('politician_id=', members) + 
@@ -275,7 +275,7 @@ class Roll(sql.Table):
     
     @property
     def votes_by_caucus(self):
-        caucuses = simplejson.load(file('import/load/manual/caucuses.json'))
+        caucuses = json.load(file('import/load/manual/caucuses.json'))
         members = sum([x['members'] for x in caucuses], [])
         result = db.select(['vote'],
             where=web.sqlors('politician_id=', members) + 

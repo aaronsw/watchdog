@@ -1,26 +1,21 @@
 $def with (pol)
 
-$var head:
-    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script>
-    <script src="http://www.govtrack.us/scripts/gmap-wms.js"></script>
-	  <script src="/static/js/distmap.js"></script>
-	  <script type="text/javascript">distcenter('googlemap', '$pol.district.name.replace('-0', '').replace('-', '')', [$pol.district.center_lat, $pol.district.center_lng, $pol.district.zoom_level - 2])</script>
+$var head: <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script> <script src="http://www.govtrack.us/scripts/gmap-wms.js"></script> <script src="/static/js/distmap.js"></script> <script type="text/javascript">distcenter('googlemap', '$pol.district.name.replace('-0', '').replace('-', '')', [$pol.district.center_lat, $pol.district.center_lng, $pol.district.zoom_level - 2])</script>
 
 $var title: $pol.firstname $pol.middlename $pol.lastname
 
 $var sidebar: None
 
-$var pretext:
-    <div id="sidebarmap" style="clear: right;">
-      <div id="googlemap" class="sidemap"></div>
-      <!--<input type="text" name="zip" class="zipcode" value="Enter your zip" />-->
-    </div>
+$var pretext: <div id="sidebarmap" style="clear: right;"><div id="googlemap" class="sidemap"></div><!--<input type="text" name="zip" class="zipcode" value="Enter your zip" />--></div>
     
 <div class="rep-info">
-$if pol.photo_path:
-    <a href="$pol.photo_path"><img src="$pol.photo_path" alt="Headshot" class="headshot" /></a>
+<table class="structure"><tr>
 
-<h2>$pol.firstname $pol.middlename $pol.lastname</h2>
+$if pol.photo_path:
+    <td><a href="$pol.photo_path"><img src="$pol.photo_path" alt="Headshot" class="headshot" /></a></td>
+
+<td>
+<h2 style="padding-top: 0; margin-top: 0">$pol.firstname $pol.middlename $pol.lastname</h2>
 
 <p>
   $if pol.nickname: known as "$pol.nickname"<br />
@@ -35,13 +30,13 @@ $if pol.photo_path:
 
 $if pol.education:
     <p>Education: $pol.education</p>
-
+</td></tr></table>
 </div>
 <table class="structure">
 <tr><td width="50%">
 <h2 class="rep">Money</h2>
 
-<table class="structure charted">
+<table class="structure charted"><tbody>
 $if pol.money_raised:
     <tr class="even">
       <th>Raised</th>
@@ -81,11 +76,11 @@ $if pol.money_raised:
     </tr>
 $else:
     <tr><th>No information available.</th></tr>
-</table>
+</tbody></table>
 </td><td class="width: 50%">
 <h2 class="rep">Earmarks</h2>
 
-<table class="charted structure">
+<table class="charted structure"><tbody>
   <tr class="even">
     <th>Requested</th>
     <td>$commify(pol.n_earmark_requested)</td>
@@ -116,11 +111,11 @@ $else:
            class="sparkline" /></a></td>
   </tr>
   <tr><th colspan="2">Data for fiscal year 2008</th></tr>
-</table>
+</tbody></table>
 </td></tr><tr><td width="50%" class="rule">
 <h2 class="rep">Bills</h2>
 
-<table class="charted structure">
+<table class="charted structure"><tbody>
   <tr class="even">
     <th>Co-sponsored</th>
     <td>$commify(pol.n_bills_cosponsored)</td>
@@ -153,11 +148,11 @@ $else:
            src="/p/by/n_bills_enacted/distribution.png?point=$pol.n_bills_enacted"
            class="sparkline" /></a></td>
   </tr>
-</table>
+</tbody></table>
 </td><td width="50%" class="rule">
 <h2 class="rep">Speeches</h2>
 
-<table class="charted structure">
+<table class="charted structure"><tbody>
   <tr class="even">
     <th>Spoke</th>
     <td><a href="http://www.govtrack.us/congress/person.xpd?tab=speeches&amp;id=$pol.govtrackid">$commify(pol.n_speeches) times</a></td>
@@ -173,11 +168,11 @@ $else:
            class="sparkline" /></a></td>
   </tr>
   <tr><th colspan="2">Data for 110th Congress</th></tr>
-</table>
+</tbody></table>
 </td></tr></table>
 <h2 class="rep">Voting Analysis</h2>
 
-<table class="charted structure">
+<table class="charted structure"><tbody>
 $if pol.nominate:
     <tr class="even">
       <th>Ideology</th>
@@ -201,12 +196,12 @@ $if pol.predictability:
              src="/p/by/predictability/distribution.png?point=$pol.predictability"
              class="sparkline" /></a></td>
     </tr>
-</table>
+</tbody></table>
 
 <h2 class="rep">Interest Group Alignment</h2>
 
 <table cellpadding="0" cellspacing="0" width="100%" class="interest_group_agreement">
-<tr><th>Group</th><th>Agreement</th></tr>
+<tbody><tr><th>Group</th><th>Agreement</th></tr>
 $ trclass = "odd"
 $for group in pol.related_groups:
     <tr class="$trclass">
@@ -217,7 +212,7 @@ $for group in pol.related_groups:
         $ trclass = "even"
     $else:
         $ trclass = "odd"
-</table>
+</tbody></table>
 
 <p><a href="/p/$pol.id/groups">More...</a></p>
 
