@@ -239,4 +239,10 @@ def webproxy():
     web.run(urls, locals())
 
 if __name__ == "__main__":
+    cachejson(getstates)
+    cachejson(getdistricts)
+    cachejson(getcandidates)
+    cachejson(getbios)
+    cachejson(getoffices)
     cachejson(getwebsites)
+    cachejson(getnpat)

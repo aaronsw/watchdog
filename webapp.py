@@ -18,7 +18,7 @@ urls = (
   r'/us/([a-z][a-z])%s?' % options, 'state',
   r'/us/([A-Z][A-Z]-\d+)', 'redistrict',
   r'/us/([a-z][a-z]-\d+)%s?' % options, 'district',
-  r'/(us|p)/by/(.*)/distribution.png', 'sparkdist',
+  r'/(us|p)/by/(.*)/distribution\.png', 'sparkdist',
   r'/(us|p)/by/(.*)', 'dproperty',
   r'/p/(.*?)/introduced', 'politician_introduced',
   r'/p/(.*?)/groups', 'politician_groups',
@@ -192,8 +192,12 @@ class roll:
 
         out = apipublish.publish([b], format)
         if out: return out
+        
+        def votepct(pvotes):
+            s = (float(pvotes.get(1, 0)) / sum(pvotes.values()))
+            return str(s * 100)[:4].rstrip('.') + '%'
 
-        return render.roll(b, votes)
+        return render.roll(b, votes, votepct)
 
 class bill:
     def GET(self, bill_id, format=None):

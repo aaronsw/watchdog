@@ -1,4 +1,4 @@
-$def with (roll, votes)
+$def with (roll, votes, votepct)
 
 $var title: Roll call vote $roll.id
 
@@ -8,7 +8,6 @@ $if roll.bill: <p>See <a href="/b/$roll.bill.id">$roll.bill.name</a></p>
 
 <p>Result: <strong>$roll.result</strong> (required $roll.required)</p>
 
-
 $if roll.votes_by_party:
     <h2>Votes</h2>
     <table class="interest_group_support">
@@ -16,12 +15,14 @@ $if roll.votes_by_party:
         <th>Support</th>
         <th>Oppose</th>
         <th>Abstain</th>
+        <th>% supporting</th>
     </tr>
     $for party, pvotes in roll.votes_by_party.items():
         <tr><th>$party</th>
             <td>$pvotes.get(1, 0)</td>
             <td>$pvotes.get(-1, 0)</td>
             <td>$pvotes.get(0, 0)</td>
+            <td>$votepct(pvotes)</td>
         </tr>
     </table>
 
@@ -33,12 +34,14 @@ $if roll.votes_by_caucus:
         <th>Support</th>
         <th>Oppose</th>
         <th>Abstain</th>
+        <th>% supporting</th>
     </tr>
     $for caucus, cvotes in roll.votes_by_caucus.items():
         <tr><th>$caucus</th>
             <td>$cvotes.get(1, 0)</td>
             <td>$cvotes.get(-1, 0)</td>
             <td>$cvotes.get(0, 0)</td>
+            <td>$votepct(pvotes)</td>
         </tr>
     </table>   
 
