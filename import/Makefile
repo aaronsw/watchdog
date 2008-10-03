@@ -56,15 +56,15 @@ database: $(LOADERS)
 	touch $@
 
 # not currently using .shapes
-.shapes: load/shapes.py parse/shapes.py
+.shapes: .json load/shapes.py parse/shapes.py
 	$(PYTHON) load/shapes.py
 	touch $@
 
-.almanac: load/almanac.py parse/almanac.py
+.almanac: .json load/almanac.py parse/almanac.py
 	$(PYTHON) load/almanac.py
 	touch $@
 
-.centers: load/govtrack_gis.py
+.centers: .json load/govtrack_gis.py ../data/crawl/govtrack/gis/gmapdata/*
 	$(PYTHON) load/govtrack_gis.py
 	touch $@
 
@@ -72,7 +72,7 @@ database: $(LOADERS)
 	$(PYTHON) load/govtrack.py
 	touch $@
 
-.voteview: load/voteview.py parse/voteview.py ../data/crawl/voteview/
+.voteview: .json load/voteview.py parse/voteview.py ../data/crawl/voteview/
 	$(PYTHON) load/voteview.py
 	touch $@
 
@@ -80,7 +80,7 @@ database: $(LOADERS)
 	$(PYTHON) load/earmarks.py
 	touch $@
 
-.bills: load/bills.py
+.bills: .govtrack load/bills.py
 	$(PYTHON) load/bills.py
 
 .interests: load/maplight.py .bills
