@@ -31,49 +31,49 @@ $var maxi: True
 $if d.politician[0].id and d.politician[0].firstname:
     $if d.politician[0].photo_path:
         <a href="/p/$d.politician[0].id"><img src="$d.politician[0].photo_path" 
-          alt="Headshot" class="smallheadshot" /></a>
+          width="5em" alt="Headshot" class="smallheadshot" /></a>
     
-    <p>Represented by <a href="/p/$d.politician[0].id">$d.politician[0].name</a>.<br />
+    <p><br />Represented by <a href="/p/$d.politician[0].id">$d.politician[0].name</a>.<br />
 $else:
-    <p>
+    <p><br /><br />
 
 <a href="/us/${d.state.code.lower()}">More about $d.state.name...</a>
 </p>
-
-<table class="charted" style="clear: both">
+<br clear="both" />
+<table class="charted" cellpadding="0" cellspacing="0" border="0"><tbody>
 $if d.cook_index:
-    <tr>
+    <tr class="even">
       <th>Cook <acronym title="Partisan Voting Index">PVI</acronym>:</th>
       <td>$d.cook_index</td>
       <td></td>
     </tr>
-  <tr>
+  <tr class="odd">
     <th>Area:</th>
     <td>$commify(d.area_sqmi) sq. mi.</td>
     <td><a href="/us/by/area_sqmi#d$d.name"
          ><img src="/us/by/area_sqmi/distribution.png?point=$d.area_sqmi"
                class="sparkline" /></a></td>
-  </tr><tr>
+  </tr><tr class="even">
     <th>Population:</th>
     <td>$commify(d.est_population) ($d.est_population_year est.)</td>
     <td><a href="/us/by/est_population#d$d.name"
          ><img 
            src="/us/by/est_population/distribution.png?point=$d.est_population"
            class="sparkline" /></a></td>
-  </tr><tr>
+  </tr><tr class="odd">
     <th>Poverty rate:</th>
     <td>$d.poverty_pct%</td>
     <td><a href="/us/by/poverty_pct#d$d.name"
          ><img src="/us/by/poverty_pct/distribution.png?point=$d.poverty_pct"
                class="sparkline" /></a></td>
-  </tr><tr>
+  </tr><tr class="even">
     <th>Median household income:</th>
     <td>\$$commify(d.median_income)</td>
     <td><a href="/us/by/median_income#d$d.name"
          ><img src="/us/by/median_income/distribution.png?point=$d.median_income"
                class="sparkline" /></a></td>
   </tr>
-</table>
+</tbody></table>
 </div>
 
 <div class="sources">
