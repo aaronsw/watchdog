@@ -6,6 +6,7 @@ from __future__ import with_statement
 import simplejson
 import web
 
+import web
 from parse import govtrack
 import tools
 from settings import db

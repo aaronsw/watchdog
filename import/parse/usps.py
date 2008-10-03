@@ -202,6 +202,75 @@ def_zip4 = {
   ]
 }
 
+def_delstat = {
+  'C': def_copyright(276),
+  'D': [
+    ('_type', 1, lambda s: "Delivery Statistics"),
+    ('zip', 5, string),
+    ('update_id', 10, string),
+    ('action', 1, enum(A="ADD", D="DELETE")),
+    ('carrier_route_id', 4, string),
+    ('active_business_centralized', 5, integer),
+    ('active_business_curb', 5, integer),
+    ('active_business_ndcbu', 5, integer),
+    ('active_business_other', 5, integer),
+    ('active_business_facility_box', 5, integer),
+    ('active_business_contract_box', 5, integer),
+    ('active_business_detached_box', 5, integer),
+    ('active_business_npu', 5, integer),
+    ('active_business_caller_service_box', 5, integer),
+    ('active_business_remittance_box', 5, integer),
+    ('active_business_contest_box', 5, integer),
+    ('active_business_other_box', 5, integer),
+    ('active_residential_centralized', 5, integer),
+    ('active_residential_curb', 5, integer),
+    ('active_residential_ndcbu', 5, integer),
+    ('active_residential_other', 5, integer),
+    ('active_residential_facility_box', 5, integer),
+    ('active_residential_contract_box', 5, integer),
+    ('active_residential_detached_box', 5, integer),
+    ('active_residential_npu', 5, integer),
+    ('active_residential_caller_service_box', 5, integer),
+    ('active_residential_remittance_box', 5, integer),
+    ('active_residential_contest_box', 5, integer),
+    ('active_residential_other_box', 5, integer),
+    ('active_general', 5, integer),
+    ('possible_business_centralized', 5, integer),
+    ('possible_business_curb', 5, integer),
+    ('possible_business_ndcbu', 5, integer),
+    ('possible_business_other', 5, integer),
+    ('possible_business_facility_box', 5, integer),
+    ('possible_business_contract_box', 5, integer),
+    ('possible_business_detached_box', 5, integer),
+    ('possible_business_npu', 5, integer),
+    ('possible_business_caller_service_box', 5, integer),
+    ('possible_business_remittance_box', 5, integer),
+    ('possible_business_contest_box', 5, integer),
+    ('possible_business_other_box', 5, integer),
+    ('possible_residential_centralized', 5, integer),
+    ('possible_residential_curb', 5, integer),
+    ('possible_residential_ndcbu', 5, integer),
+    ('possible_residential_other', 5, integer),
+    ('possible_residential_facility_box', 5, integer),
+    ('possible_residential_contract_box', 5, integer),
+    ('possible_residential_detached_box', 5, integer),
+    ('possible_residential_npu', 5, integer),
+    ('possible_residential_caller_service_box', 5, integer),
+    ('possible_residential_remittance_box', 5, integer),
+    ('possible_residential_contest_box', 5, integer),
+    ('possible_residential_other_box', 5, integer),
+    ('possible_general', 5, integer),
+    ('drop_business_and_families_served', 5, integer),
+    ('active_business_residential_mixed', 5, integer),
+    ('active_residential_business_mixed', 5, integer),
+    ('finance_no', 6, string),
+    ('state', 2, string),
+    ('county_code', 3, string),
+    ('city_state_key', 6, string),
+    ('preferred_last_line_key', 6, string)
+  ]
+}
+
 def_tigerdat = [
   ('_type', 0, lambda s: "Census/USPS County Map"),
   ('state_code', 2, string),
@@ -274,7 +343,12 @@ def parse_zip2dist(fh):
 if __name__ == "__main__":
     import sys, glob, tools
     
-    def_map = {'--ctystate': def_ctystate, '--5digit': def_5digit, '--zip4': def_zip4}
+    def_map = {
+      '--ctystate': def_ctystate, 
+      '--5digit': def_5digit, 
+      '--zip4': def_zip4, 
+      '--delstat': def_delstat
+    }
     
     if sys.argv[1] in def_map:
         for fn in glob.glob(sys.argv[2] + '*.txt'):

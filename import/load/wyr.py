@@ -1,7 +1,7 @@
-import simplejson
+import json
 from settings import db
 
-wyr = simplejson.load(file('../data/crawl/votesmart/wyr.json'))
+wyr = json.load(file('../data/crawl/votesmart/wyr.json'))
 
 types = dict(email='E', wyr='W', ima='I', zipauth='Z')
 
@@ -21,7 +21,7 @@ def load_wyr():
                     'captcha': data['captcha']
                    }
                    
-            db.insert('wyr', seqname=False, **d)
+            db.insert('rep_contacts', seqname=False, **d)
            
 if __name__ == "__main__": 
     load_wyr()

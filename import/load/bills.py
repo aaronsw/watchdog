@@ -4,13 +4,32 @@ load bill data
 from: data/crawl/govtrack/us/110/{bills,rolls}
 """
 from __future__ import with_statement
-import os, sys, glob
+import os, sys, glob, anydbm
+from psycopg2 import IntegrityError #@@level-breaker
 import xmltramp
 import web
 from tools import db, govtrackp
 
-DATA_DIR = '../data/'
+DATA_DIR = '../data'
 GOVTRACK_CRAWL = DATA_DIR+'/crawl/govtrack'
+
+class NotDone(Exception): pass
+
+def makemarkdone(done):
+    def markdone(func):
+        def internal(fn, *a, **kw):
+            mtime = str(os.stat(fn).st_mtime)
+            if fn not in done or done[fn] != mtime:
+                    try:
+                        func(fn)
+                        done[fn] = mtime
+                    except NotDone:
+                        pass
+        return internal
+    return markdone
+
+def fixvote(s):
+    return {'0': None, '+': 1, '-': -1, 'P': 0}[s]
 
 def bill2dict(bill):
     d = web.storage()
@@ -34,77 +53,80 @@ def bill2dict(bill):
     d.sponsor_id = govtrackp(bill.sponsor().get('id'))
     return d
 
-def fixvote(s):
-    return {'0': None, '+': 1, '-': -1, 'P': 0}[s]
-            
-vote_list = {}
-bill_list =[]
-def loadbill(fn, maplightid=None, batch_mode=False):            
+def loadbill(fn, maplightid=None):
     bill = xmltramp.load(fn)
     d = bill2dict(bill)
-    if maplightid: d['maplightid'] = maplightid
-    else: d['maplightid'] = None
-    if not batch_mode: db.insert('bill', seqname=False, **d)
-    print >>sys.stderr,'\r  %-25s' % d['id'],
-    sys.stderr.flush()
+    d.maplightid = maplightid
     
-    done = []
-    d['yeas']=d['neas']=0
+    try:
+        bill_id = d.id
+        db.insert('bill', seqname=False, **d)
+    except IntegrityError:
+        bill_id = d.pop('id')
+        db.update('bill', where="id=" + web.sqlquote(bill_id), **d)
+    
+    positions = {}
     for vote in bill.actions['vote':]:
         if not vote().get('roll'): continue
-        if vote('where') in done: continue # don't count veto overrides
-        done.append(vote('where'))
         
-        votedoc = '%s/rolls/%s%s-%s.xml' % (
-          d['session'],
-          vote('where'), 
-          vote('datetime')[:4], 
-          vote('roll'))
-        vote = xmltramp.load(GOVTRACK_CRAWL+'/us/' + votedoc)
-        yeas = 0
-        neas = 0
+        rolldoc = '/us/%s/rolls/%s%s-%s.xml' % (
+          d.session, vote('where'), vote('datetime')[:4], vote('roll'))
+        roll = xmltramp.load(GOVTRACK_CRAWL + rolldoc)
+        for voter in roll['voter':]:
+            positions[govtrackp(voter('id'))] = fixvote(voter('vote'))
+
+    if None in positions: del positions[None]
+    with db.transaction():
+        db.delete('position', where='bill_id=$bill_id', vars=locals())
+        for p, v in positions.iteritems():
+            db.insert('position', seqname=False, 
+              bill_id=bill_id, politician_id=p, vote=v)
+        
+
+def loadroll(fn):
+    roll = web.storage()
+    roll.id = fn.split('/')[-1].split('.')[0]
+    vote = xmltramp.load(fn)
+    if vote['bill':]:
+        b = vote.bill
+        roll.bill_id = 'us/%s/%s%s' % (b('session'), b('type'), b('number'))
+    else:
+        roll.bill_id = None
+    roll.type = str(vote.type)
+    roll.question = str(vote.question)
+    roll.required = str(vote.required)
+    roll.result = str(vote.result)
+    
+    try:
+        db.insert('roll', seqname=False, **roll)
+    except IntegrityError:
+        if not db.update('roll', where="id=" + web.sqlquote(roll.id), bill_id=roll.bill_id):
+            print "\nMissing bill:", roll.bill_id
+            raise NotDone
+    
+    with db.transaction():
+        db.delete('vote', where="roll_id=$roll.id", vars=locals())
         for voter in vote['voter':]:
-            if fixvote(voter('vote')) == 1:
-                yeas += 1
-            elif fixvote(voter('vote')) == -1:
-                neas += 1
             rep = govtrackp(voter('id'))
             if rep:
-                if batch_mode:
-                    vote_list['%(bill_id)s\t%(politician_id)s'% {'bill_id':d['id'], 'politician_id':rep}]={'bill_id':d['id'], 'politician_id':rep, 'vote':fixvote(voter('vote'))}
-                else:
-                    if not db.select('vote',where="bill_id=$d['id'] AND politician_id=$rep", vars=locals()):
-                        db.insert('vote', seqname=False, politician_id=rep, bill_id=d['id'], vote=fixvote(voter('vote')))
-                    else:
-                        print
-                        print "Updating:", votedoc, rep, d['id'], fixvote(voter('vote'))
-                        db.update('vote', where="bill_id=$d['id'] AND politician_id=$rep", vote=fixvote(voter('vote')),vars=locals())
+                db.insert('vote', seqname=False, 
+                  politician_id=rep, roll_id=roll.id, vote=fixvote(voter('vote')))
+            else:
+                pass #@@!--check again after load_everyone
+                # print "\nMissing rep: %s" % voter('id')
 
-        if not batch_mode: db.update('bill', where="id = $d['id']", yeas=yeas, neas=neas, vars=locals())
-        d['yeas'] = yeas
-        d['neas'] = neas
-    if batch_mode: bill_list.append(d)
-
-
-################################################################################
 def main():
-    from bulk_loader import bulk_loader_db
-    for c,fn in enumerate(glob.glob(GOVTRACK_CRAWL+'/us/*/bills/*.xml')):
-        loadbill(fn, batch_mode=True)
-
-
-    db = bulk_loader_db(os.environ.get('WATCHDOG_TABLE', 'watchdog_dev'))
-    bill_cols = ['id', 'session', 'type', 'number', 'introduced', 'title', 'sponsor_id', 'summary', 'maplightid', 'yeas', 'neas']
-    db.open_table('bill', bill_cols, delete_first=True, filename=DATA_DIR+'load/bill.tsv')
-    vote_col = ['bill_id', 'politician_id', 'vote']
-    db.open_table('vote', vote_col, delete_first=True, filename=DATA_DIR+'load/vote.tsv')
-    for bill in bill_list:
-        db.insert('bill',**bill)
-    for vote in vote_list.values():
-        db.insert('vote',**vote)
-
+    done = anydbm.open('.bills', 'c')
+    markdone = makemarkdone(done)
+        
+    for fn in sorted(glob.glob(GOVTRACK_CRAWL+'/us/*/bills/*.xml')):
+        print >>sys.stderr,'\r  %-25s' % fn,; sys.stderr.flush()
+        markdone(loadbill)(fn)
+    
+    for fn in sorted(glob.glob(GOVTRACK_CRAWL+'/us/*/rolls/*.xml')):
+        print >>sys.stderr,'\r  %-25s' % fn,; sys.stderr.flush()
+        markdone(loadroll)(fn)
+    print >>sys.stderr, '\r' + ' '*72
 
 if __name__ == "__main__":
     main()
-
-    

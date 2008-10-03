@@ -56,7 +56,7 @@ _all_tables = []
 
 class metatracker(type):
     def __init__(self, name, bases, *a, **kw):
-        super(type, self).__init__(name, bases, *a, **kw)
+        type.__init__(self, name, bases, *a, **kw)
         if bases[0] != object:
             _all_tables.append(self)
             self.columns = self._analyze(init=True)
@@ -157,7 +157,7 @@ class Table(object):
             
             if v.sql_type:
                 setattr(self, v.sql_name, row[v.sql_name])
-            
+
 
 ## columns
 
@@ -180,7 +180,7 @@ class Reference (Column):
     def __init__(self, target, **kw):
         super(Reference, self).__init__(**kw)
         assert len(target.primary) == 1, \
-          "Referencing columns with composite primary keys isn't supported."
+          "Referenced column must have exactly 1 primary key."
 
         self.target = target
         self.target_column = target.primary.values()[0]
@@ -266,3 +266,10 @@ def drop():
 def recreate():
     drop()
     create()
+
+def grantall(username):
+    for table in _all_tables:
+        try:
+            table.db.query('GRANT ALL ON %s TO %s' % (table.sql_name, username))
+        except:
+            pass

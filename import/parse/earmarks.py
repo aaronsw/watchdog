@@ -32,13 +32,20 @@ def parse_row(row):
         out[item] = row[n]
     out.house_member = (out.house_member or []) and [x.strip() for x in out.house_member.split(';')]
     out.senate_member = (out.senate_member or []) and [x.strip() for x in out.senate_member.split(';')]
+    #out.state = (out.state or []) and [x.strip() for x in out.state.split(';')]
     return out
 
 def parse_file(fn):
     """Break down the xls into a 2d data array, stripping off first rows which do not have data."""
     data = xls2list.xls2list(fn)
-    for row in data[3:]:
-        yield parse_row(row)
+    for n, row in enumerate(data[3:]):
+        r = parse_row(row)
+        # All of the earmarks have a description, stop when we finish all
+        # earmarks
+        if not r.description: break 
+        # The id's aren't remotely uniq, map to something that is
+        r.id=n
+        yield r
 
 if __name__ == "__main__":
     import tools

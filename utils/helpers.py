@@ -25,6 +25,8 @@ def deletecookie(name):
 def set_msg(msg, msg_type=None):
     if msg_type == 'error':
         msg += '$ERR$'
+    elif msg_type == 'note':
+        msg += '$NOTE$'    
     web.setcookie('wd_msg', msg)
 
 def get_delete_msg():
@@ -32,9 +34,13 @@ def get_delete_msg():
     web.setcookie('wd_msg', '', expires=-1)
 
     msg_type = None
-    if msg and msg.endswith('$ERR$'):
-        msg_type = 'error'
-        msg = msg[:-5]
+    if msg:
+        if msg.endswith('$ERR$'):
+            msg_type = 'error'
+            msg = msg[:-5]
+        elif msg.endswith('$NOTE$'):
+            msg_type = 'note'    
+            msg = msg[:-6]
     return msg, msg_type
 
 def get_loggedin_email():
@@ -46,12 +52,17 @@ def get_unverified_email():
 def get_loggedin_userid():
     email = get_loggedin_email()
     user = get_user_by_email(email)
-    return user and user.id or None
+    return user and user.id
+    
+def get_unverified_userid():
+    email = get_unverified_email()
+    user = get_user_by_email(email)
+    return user and user.id
 
 def get_user_by_email(email):
     try:
         return db.select('users', where='email=$email', vars=locals())[0]
-    except:
+    except IndexError:
         return None
 
 def set_login_cookie(email):
@@ -60,12 +71,17 @@ def set_login_cookie(email):
 def del_login_cookie():
     web.setcookie("wd_login", "", expires=-1)
 
-def unverified_login(email):
+def del_unverified_cookie():
+    web.setcookie("wd_email", "", expires=-1)
+    
+def unverified_login(email, fname, lname):
     setcookie('wd_email', email)
+    if not get_user_by_email(email):
+        db.insert('users', fname=fname, lname=lname, email=email)
 
-def no_verified_activity(email):
-    verified = db.select('users', where='email=$email and verified=True', vars=locals())
-    return not bool(verified)
+def is_verified(email):
+    verified = db.select('users', where='email=$email and (verified=True or password is not null)', vars=locals())
+    return bool(verified)
 
 def query_param(param, default_value):
     d = {param:default_value}
@@ -83,7 +99,7 @@ g['enumerate'] = enumerate
 g['datestr'] = web.datestr
 
 g['query_param'] = query_param
-g['is_logged_in'] = lambda: bool(get_loggedin_email())
+g['is_logged_in'] = lambda: bool(get_loggedin_email() or get_unverified_email())
 
 import markdown
 g['format'] = markdown.markdown

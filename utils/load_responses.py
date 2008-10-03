@@ -35,25 +35,36 @@ def get_msg_body(msg):
 def process(msg):
     #store the msg in db and send followup msg to the signatory
  
-    signid = getid(msg)
+    wyr_id = getid(msg)
     if not signid: return
     msgbody = get_msg_body(msg)
     received = format_date(msg.get('Date')) #msg.get_date() doesn't work!!
     
     try:
-        db.insert('petition_responses', sign_id=signid, response=msgbody, received=received)
+        db.insert('wyr_responses', wyr_id=wyr_id, response=msgbody, received=received)
     except Exception, details:
         print 'Error:', details
     else:
-        send_followup(signid, response_body)
+        send_followup(wyr_id, response_body)
+
+def get_user_email(wyrid):
+    if (wyrid % 2): #odd wyrid => msg is from signature of a petition to congress
+        wyrid = (wyrid - 1)/2
+        tables = ['signatory', 'users']
+        where = 'signatory.user_id=users.id and signatory.id=$wyrid'
+    else: #even wyr_id => msg is from /writerep
+        wyrid = wyrid/2
+        tables = ['wyr', 'users']
+        where = 'wyr.sender=users.id and wyr.id=$wyr.id'
+
+    to_addr = db.select(tables, what='users.email', where=where, vars=locals())
+    if to_addr:
+        return to_addr[0].email
+    
         
-def send_followup(signid, response_body):
+def send_followup(wyr_id, response_body):
     from_addr = config.from_address
-    to_addr = db.select('[signatory, user]', 
-                        what='users.email', 
-                        where='signatory.user_id = users.id and signatory.id=$signid',
-                        vars=locals()
-                        )[0].email
+    to_addr = get_user_email(wyr_id)
     subject = 'FILL IN HERE'
     body = response_body +  'FILL IN HERE'                   
     web.sendmail(from_addr, to_addr, subject, body)

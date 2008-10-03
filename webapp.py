@@ -3,7 +3,7 @@ import re
 import web
 web.config.debug = True
 
-from utils import zip2rep, simplegraphs, apipublish, helpers, forms, writerep, users
+from utils import zip2rep, simplegraphs, apipublish, users, writerep
 import blog
 import petition
 import settings
@@ -18,16 +18,17 @@ urls = (
   r'/us/([a-z][a-z])%s?' % options, 'state',
   r'/us/([A-Z][A-Z]-\d+)', 'redistrict',
   r'/us/([a-z][a-z]-\d+)%s?' % options, 'district',
-  r'/(us|p)/by/(.*)/distribution.png', 'sparkdist',
+  r'/(us|p)/by/(.*)/distribution\.png', 'sparkdist',
   r'/(us|p)/by/(.*)', 'dproperty',
   r'/p/(.*?)/introduced', 'politician_introduced',
   r'/p/(.*?)/groups', 'politician_groups',
   r'/p/(.*?)/(\d+)', 'politician_group',
   r'/p/(.*?)%s?' % options, 'politician',
   r'/b/(.*?)%s?' % options, 'bill',
+  r'/r/us/(.*?)%s?' % options, 'roll',
   r'/c', petition.app,
   r'/u', users.app,
-  r'/writerep', 'write_your_rep',
+  r'/writerep', writerep.app,
   r'/about(/?)', 'about',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
@@ -66,8 +67,6 @@ class feedback:
 class find:
     def GET(self, format=None):
         i = web.input(address=None)
-        join = ['district' + ' LEFT OUTER JOIN politician '
-                             'ON (politician.district = district.name)']
         pzip5 = re.compile(r'\d{5}')
         pzip4 = re.compile(r'\d{5}-\d{4}')
         pname = re.compile(r'[a-zA-Z\.]+')
@@ -184,6 +183,23 @@ def bill_list(format, page=0, limit=50):
 
     return render.bill_list(bills, limit)
 
+class roll:
+    def GET(self, roll_id, format=None):
+        try:
+            b = schema.Roll.where(id=roll_id)[0]
+            votes = schema.Vote.where(roll_id=b.id)
+        except IndexError:
+            raise web.notfound
+
+        out = apipublish.publish([b], format)
+        if out: return out
+        
+        def votepct(pvotes):
+            s = (float(pvotes.get(1, 0)) / sum(pvotes.values()))
+            return str(s * 100)[:4].rstrip('.') + '%'
+
+        return render.roll(b, votes, votepct)
+
 class bill:
     def GET(self, bill_id, format=None):
         if bill_id == "" or bill_id == "index":
@@ -204,6 +220,18 @@ class politician:
     def GET(self, polid, format=None):
         if polid != polid.lower():
             raise web.seeother('/p/' + polid.lower())
+        
+        i = web.input()
+        idlookup = False
+        for k in ['votesmartid', 'bioguideid', 'opensecretsid', 'govtrackid']:
+            if i.get(k):
+                idlookup = True
+                ps = schema.Politician.where(**{k: i[k]})
+                if ps: raise web.seeother('/p/' + ps[0].id)
+
+        if idlookup:
+            # we were looking up by ID but nothing matched
+            raise web.notfound
 
         if polid == "" or polid == "index":
             p = schema.Politician.select(order='district_id asc')
@@ -241,9 +269,9 @@ class politician_groups:
 
 class politician_group:
     def GET(self, politician_id, group_id):
-        votes = db.select(['vote', 'interest_group_bill_support', 'bill'],
-          where="interest_group_bill_support.bill_id = vote.bill_id AND "
-                 "vote.bill_id = bill.id AND "
+        votes = db.select(['position', 'interest_group_bill_support', 'bill'],
+          where="interest_group_bill_support.bill_id = position.bill_id AND "
+                 "position.bill_id = bill.id AND "
                 "politician_id = $politician_id AND group_id = $group_id",
          order='vote = support desc',
           vars=locals())
@@ -281,7 +309,7 @@ class dproperty:
                 item.path = '/us/' + item.name.lower()
             elif table == 'politician':
                 item.name = '%s %s (%s-%s)' % (item.firstname, item.lastname,
-                  item.party[0], item.district.split('-')[0])
+                  (item.party or 'I')[0], item.district_id.split('-')[0])
                 item.path = '/p/' + item.id
         return render.dproperty(items, what)
 
@@ -299,63 +327,6 @@ class sparkdist:
 
         web.header('Content-Type', 'image/png')
         return simplegraphs.sparkline(points, inp.point)
-
-def add_captcha(form, img_src):
-    inputs = list(form.inputs)
-    captcha = forms.captcha
-    captcha.pre = '<img src="%s" border="0" />&nbsp;&nbsp;' % img_src
-    inputs.append(captcha)
-    form.inputs = tuple(inputs)
-    return form
-
-def get_wyrform(i, dist=None):
-    form = forms.wyrform()    
-    if (not dist) and form.validates(i):
-         dist = zip2rep.getdists(i.zipcode, i.zip4, i.addr1+i.addr2)[0]
-    captcha = forms.captcha     
-    captcha_needed = ('captcha' in i) and not captcha.validate(i.captcha, form)
-    captcha_src = captcha_needed and writerep.get_captcha_src(dist)
-    if captcha_src:
-        add_captcha(form, captcha_src)  
-    return form  
-      
-class write_your_rep:
-    def GET(self, form=None):
-        if not form:
-            form = forms.wyrform()
-            petition.fill_user_details(form)
-        msg, msg_type = helpers.get_delete_msg()
-        return render.writerep(form, msg=msg)
-
-    def send_msg(self, i, wyrform, pform=None):
-        dist = zip2rep.getdists(i.zipcode, i.zip4, i.addr1+i.addr2)[0]
-        captcha_src = ('captcha' not in i) and writerep.get_captcha_src(dist)
-        if captcha_src:
-            wyrform = add_captcha(wyrform, captcha_src)
-            if pform:
-                return render.petitionform(pform, wyrform)
-            else:
-                return render.writerep(wyrform)
-                            
-        email = helpers.get_loggedin_email()
-        msg_sent = writerep.writerep(district=dist,
-                        prefix=i.prefix, lname=i.lname, fname=i.fname,
-                        addr1=i.addr1, addr2=i.addr2, city=i.city,
-                        zipcode=i.zipcode, zip4=i.zip4,
-                        phone=i.phone, email=email, msg=i.msg)
-        return msg_sent
-        
-    def POST(self):
-        i = web.input()
-        wyrform = get_wyrform(i)
-        if wyrform.validates(i):
-            status = self.send_msg(i, wyrform)
-            if not isinstance(status, bool):
-                return status
-            if status: helpers.set_msg('Your message has been sent.')
-            raise web.seeother('/writerep')
-        else:
-            return self.GET(wyrform)
 
 class staticdata:
     def GET(self, path):

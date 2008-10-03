@@ -1,0 +1,67 @@
+$def with (roll, votes, votepct)
+
+$var title: Roll call vote $roll.id
+
+<h2>$roll.question</h2>
+
+$if roll.bill: <p>See <a href="/b/$roll.bill.id">$roll.bill.name</a></p>
+
+<p>Result: <strong>$roll.result</strong> (required $roll.required)</p>
+
+$if roll.votes_by_party:
+    <h2>Votes</h2>
+    <table class="interest_group_support">
+    <tr><th>Party</th>
+        <th>Support</th>
+        <th>Oppose</th>
+        <th>Abstain</th>
+        <th>% supporting</th>
+    </tr>
+    $for party, pvotes in roll.votes_by_party.items():
+        <tr><th>$party</th>
+            <td>$pvotes.get(1, 0)</td>
+            <td>$pvotes.get(-1, 0)</td>
+            <td>$pvotes.get(0, 0)</td>
+            <td>$votepct(pvotes)</td>
+        </tr>
+    </table>
+
+<p></p>
+
+$if roll.votes_by_caucus:
+    <table class="interest_group_support">
+    <tr><th>Caucus</th>
+        <th>Support</th>
+        <th>Oppose</th>
+        <th>Abstain</th>
+        <th>% supporting</th>
+    </tr>
+    $for caucus, cvotes in roll.votes_by_caucus.items():
+        <tr><th>$caucus</th>
+            <td>$cvotes.get(1, 0)</td>
+            <td>$cvotes.get(-1, 0)</td>
+            <td>$cvotes.get(0, 0)</td>
+            <td>$votepct(pvotes)</td>
+        </tr>
+    </table>   
+
+<h2>Roll</h2>
+
+$ vote_decode = {1: 'Support', 0: 'Abstain', -1: 'Oppose', None: 'Present'}
+
+<table>
+  <tr><th>Politician</th><th>Vote</th></tr>
+$for vote in votes:
+    <tr>
+      <td>$vote.politician.name</td>
+      <td class="$vote_decode[vote.vote].lower()"\
+      >$vote_decode[vote.vote]</td>
+</table>
+
+<p><strong>Developers:</strong> Get this page in <a href="/r/us/${roll.id}.n3">N3</a>, <a href="/r/us/${roll.id}.xml">XML</a>, or <a href="/r/${roll.id}.json">JSON</a>.</p>
+
+<div class="sources">
+  Bill data comes from <a 
+    href="http://www.govtrack.us/congress/vote.xpd?vote=$roll.id"
+  >GovTrack</a>.
+</div>

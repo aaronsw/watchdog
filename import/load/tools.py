@@ -2,18 +2,19 @@
 """
 common tools for load scripts
 """
-import os
-import re
 import string
 import unicodedata
 
 import simplejson
+import os, re
+import json
 import web
 
 from settings import db
 
 STATE_TABLE = 'load/manual/states.json'
 DISTRICT_TABLE = 'load/manual/states.json'
+POLITICIAN_TABLE = 'load/manual/politicians.json'
 
 _stripterms = ['the', 'corporation', 'corp', 'incorporated', 'inc']
 r_plain = re.compile(r'[a-z ]+')
@@ -33,14 +34,14 @@ def stemcorpname(name):
 _unfipscache = {}
 def unfips(fipscode):
     if not _unfipscache:
-        states = simplejson.load(file(STATE_TABLE))
+        states = json.load(file(STATE_TABLE))
         for stateid, state in states.iteritems():
             _unfipscache[state['fipscode']] = stateid
         
     return _unfipscache.get(fipscode)
 
 def fixdist(dist):
-    districts = simplejson.load(file(DISTRICT_TABLE))
+    districts = json.load(file(DISTRICT_TABLE))
     if dist.endswith('-01') and dist[:-1] + '0' in districts:
         return dist[:-1] + '0'
     else:
@@ -53,7 +54,7 @@ def districtp(district):
     Return the watchdog ID for the represenative of `district`.
     """
     if not _districtcache:
-        reps = simplejson.load(file('../data/load/politicians/index.json'))
+        reps = json.load(file(POLITICIAN_TABLE))
         for repid, rep in reps.iteritems():
             if rep['district_id'] in _districtcache:
                 _districtcache[rep['district_id']].append(repid)

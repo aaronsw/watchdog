@@ -17,9 +17,6 @@ PYTHON=python
 CRAWL=../data/crawl
 PARSE=../data/parse
 LOAD=../data/load
-JSONS=$(LOAD)/states/index.json \
-      $(LOAD)/districts/index.json \
-      $(LOAD)/politicians/index.json \
 
 TSVS=$(LOAD)/bill.tsv \
 	 $(LOAD)/vote.tsv \
@@ -40,39 +37,34 @@ LOADERS = .schema .json \
 
 all: database
 clean:
-	rm $(JSONS) $(LOADERS)
+	rm $(LOADERS)
+
+cleanload:
+	rm $(TSVS)
 
 cleanparse:
 	rm $(NJS)
 
 database: $(LOADERS)
 
-.json: .schema load/json.py $(JSONS)
-	python load/json.py
+.manual: .schema load/manual.py load/manual/*.json
+	python load/manual.py
 	touch $@
 
 .schema: ../schema.py
-	python -c "import schema; schema.sql.recreate()"
+	python -c "import schema; schema.sql.recreate(); schema.sql.grantall('watchdog')"
 	touch $@
 
-$(LOAD)/states/index.json: load/manual/states.json
-	mkdir -p $(LOAD)/states
-	cp $< $@
-
-$(LOAD)/districts/index.json: load/manual/districts.json
-	mkdir -p $(LOAD)/districts
-	cp $< $@
-
 # not currently using .shapes
-.shapes: load/shapes.py parse/shapes.py
+.shapes: .json load/shapes.py parse/shapes.py
 	$(PYTHON) load/shapes.py
 	touch $@
 
-.almanac: load/almanac.py parse/almanac.py
+.almanac: .json load/almanac.py parse/almanac.py
 	$(PYTHON) load/almanac.py
 	touch $@
 
-.centers: load/govtrack_gis.py
+.centers: .json load/govtrack_gis.py ../data/crawl/govtrack/gis/gmapdata/*
 	$(PYTHON) load/govtrack_gis.py
 	touch $@
 
@@ -80,26 +72,20 @@ $(LOAD)/politicians/index.json: load/manual/politicians.json
 	mkdir -p $(LOAD)/politicians
 	cp $< $@
 
-.govtrack: .json load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml
+.govtrack: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml .json
 	$(PYTHON) load/govtrack.py
 	touch $@
 
-.voteview: load/voteview.py parse/voteview.py ../data/crawl/voteview/
+.voteview: .json load/voteview.py parse/voteview.py ../data/crawl/voteview/
 	$(PYTHON) load/voteview.py
 	touch $@
 
-.earmarks: load/earmarks.py $(LOAD)/politicians/govtrack.json
+.earmarks: load/earmarks.py .govtrack .voteview
 	$(PYTHON) load/earmarks.py
 	touch $@
 
-$(LOAD)/bill.tsv $(LOAD)/vote.tsv: load/bills.py
+.bills: .govtrack load/bills.py
 	$(PYTHON) load/bills.py
-	touch $@
-
-.bills: $(LOAD)/bill.tsv $(LOAD)/vote.tsv .schema
-	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/bill.tsv
-	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/vote.tsv
-	touch $@
 
 .interests: load/maplight.py .bills
 	$(PYTHON) load/maplight.py

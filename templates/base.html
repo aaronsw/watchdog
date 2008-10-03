@@ -9,30 +9,38 @@ $def with (page)
   $:page.get('head')
 </head><body>
 <div id="container\
-$if not page.get('front'): -leaf\
+$if not page.get('front'):-leaf\
 ">
 <!-- header -->
 $if page.get('front'):
     <div id="logo"><a href="/"><img src="/static/images/watchdog.big.gif" alt="Watchdog" /></a></div>
   <div id="intro">
-    $if not page.get('front'): <a href="/"><img src="/static/images/watchdog.small.png" alt="Watchdog" style="float: left;" /></a><div style="float: left; padding-bottom: 10px;">
-	  <a href="/">Watchdog.net.</a>
-	  $if page.get('front'): <br />
-	  $:page.title.strip().
-	  $if not page.get('front'): </div>
-  $if not page.get('front'):
-      <div style="float: right; padding-right: 32px; padding-top: 15px;">
+    $if page.get('front'):
+        <a href="/about">
+          <img class="logo" src="/static/images/watchdog.slogan.twolines.png"
+            alt="Watchdog. The good government site with teeth." />
+        </a>
+    $else:
+        <a href="/">
+          <img src="/static/images/watchdog.small.png" style="float: left;" 
+            alt="" />
+        </a>
+        <div style="float: left; padding-bottom: 10px;">
+	        <a href="/">Watchdog.net.</a> $:page.title.strip().
+	      </div>
         $if is_logged_in():
+            <div style="float: right; padding-right: 22px; padding-top: 15px;">        
             <a href="#" onclick="document.forms['logout'].submit()" class="$page.get('login_class', 'footer')">logout</a
         $else:
+            <div style="float: right; padding-right: 32px; padding-top: 15px;">
             <a href="/u/login" class="$page.get('login_class', 'footer')">login</a
           ><a href="/about/" class="$page.get('about_class', 'footer')">about</a
           ><a href="/blog/" class="$page.get('blog_class', 'footer')">blog</a
           ><a href="/about/#feedback" class="footer">feedback</a>
-      </div>
+        </div>
   </div>
   <div id="header\
-$if not page.get('front'): -leaf\
+$if not page.get('front'):-leaf\
 "></div>
 <!-- /header -->
 <div id="main">
@@ -55,8 +63,8 @@ $if page.get('sidebar', '').strip() != "None":
         </ul>
     <div class="postit">
       <p><strong>Pardon the mess</strong> &mdash;<br />
-      we're building this site right before your eyes.
-      So expect things to break, fix, appear, and disappear before your very eyes.
+      we're building this site as you use it.
+      Expect things to break, fix, appear, and disappear.
       We'd love your <a href="/about/#feedback">feedback</a> and your <a href="/about/#help">help</a>.</p>
       
       <p><a href="/about/#hiring" class="highlight">We're hiring!</a></p>
@@ -67,7 +75,7 @@ $:page.get('pretext')
 
 $if not page.get('maxi'):
     <div id="text"\
-    $if page.get('front'): style="margin-top: -10px;"\
+    $if page.get('front'):  style="margin-top: -10px;"\
     >
 
 $:page.get('pretitle')
@@ -96,7 +104,7 @@ $else:
 </div><!-- /main -->
 
 <div id="footer\
-$if not page.get('front'): -leaf\
+$if not page.get('front'):-leaf\
 ">
 <div id="left_footer">What do you think? <a href="/about/#feedback"><strong>Send us your feedback.</strong></a></div>
 <div id="right_footer">

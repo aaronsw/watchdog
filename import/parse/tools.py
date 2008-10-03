@@ -4,7 +4,7 @@ common tools for parsers
 """
 
 import sys
-import simplejson
+import json
 
 def netstring(x):
     """
@@ -14,7 +14,7 @@ def netstring(x):
     return str(len(x)) + ':' + x + ','
 
 def jsonify(d):
-    return simplejson.dumps(d, indent=2, sort_keys=True)
+    return json.dumps(d, indent=2, sort_keys=True)
 
 def export(generator):
     for item in generator:
@@ -24,7 +24,7 @@ def unexport(fh):
     n = '0'
     while n:
         n = int(n + ''.join(c for c in iter(lambda: fh.read(1), ':')))
-        yield simplejson.loads(fh.read(n))
+        yield json.loads(fh.read(n))
         assert fh.read(1) == ','
         n = fh.read(1)
 

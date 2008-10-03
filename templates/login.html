@@ -6,6 +6,16 @@ $var login_class: select\
 $if msg:
     $var msg: $:msg
 
+<style>
+    #text h2 { margin-bottom: 30px; }
+    #text fieldset td { padding: 0; }
+    #text fieldset #fname { margin-right: 7px; }
+    #text fieldset #fname { width: 115px; }
+    #text fieldset #lname { width: 115px; }
+</style>    
+
+<p class="error">Sorry, logging in isn't supported quite yet. Please stay tuned.</p>
+
 $if not loginform.valid:
     $if loginform.note: <p class="error">$loginform.note</p>
     $else: <p class="error">Please try again after fixing the problems highlighted below:</p>
@@ -25,7 +35,7 @@ $elif not signupform.valid:
         <label>And your password</label>
         $:loginform.password.render()
         <div><button type="submit">Log in</button></div>
-        <p><a href='/forgot_password'>Forgot your password?</a></p>
+        <p><a href='/u/forgot_password'>Forgot your password?</a></p>
         </fieldset>
     </form>
 </td>
@@ -34,15 +44,15 @@ $elif not signupform.valid:
         $:signupform.redirect.render()
         <fieldset>
         <legend>... or sign up to create one</legend>
-        <label>First name</label>
-        $:signupform.fname.render()
-        <label>Last name</label>
-        $:signupform.lname.render()
-        <label>Your email</label>
+        <table>
+        <tr><td><label for="fname">First name</label>$:signupform.fname.render()</td>
+        <td><label for="lname">Last name</label>$:signupform.lname.render()</td></tr>
+        </table>
+        <label>Enter your email</label>
         $:signupform.email.render()
-        <label>Password</label>
+        <label>Give it a password</label>
         $:signupform.password.render()
-        <label>Password again</label>
+        <label>Type the password again</label>
         $:signupform.password_again.render()
         <div><button type="submit">Sign up</button></div>
         </fieldset>

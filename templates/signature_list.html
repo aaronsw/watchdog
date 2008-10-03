@@ -1,6 +1,6 @@
 $def with (pid, ptitle, signs, is_author)
 
-$var title: Signatories for the petition - <a href='/c/$pid'>$ptitle</a>
+$var title: Signatories for <a href='/c/$pid'>$ptitle</a>
 
 $ sign_count = len(signs)
 
@@ -10,6 +10,8 @@ $ sign_count = len(signs)
 #text #signs li a { color: black; }
 #text #signs li .count { margin-right: 0.3em; }
 </style>
+
+<h2>Signatories for <a href='/c/$pid'>$ptitle</a></h2>
 
 <form method="get" action="/c/$pid#sign">
 

@@ -1,0 +1,3 @@
+[submodule "vendor/webpy"]
+	path = vendor/webpy
+	url = git://github.com/aaronsw/webpy.git

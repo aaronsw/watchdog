@@ -1,7 +1,7 @@
 import web
 from web import form
 from settings import db
-from zip2rep import getdists
+from wyrutils import getdists
 from auth import loginuser
 
 email_regex = r'[\w\.-]+@[\w\.-]+\.[a-zA-Z]{1,4}'
@@ -23,7 +23,7 @@ petitionform = form.Form(
       form.Textbox('pid', form.Validator("Address can't be blank", bool), form.Validator('ID already exists, Choose a different one.', petitionnotexists),
                     pre='http://watchdog.net/c/', description='URL:', size='30'),
       form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='20', cols='80'),
-      form.Checkbox('tocongress', value='off', description="Petition to Congress?"),
+      form.Checkbox('tocongress', value='', description="Petition to Congress?"),
       form.Hidden('userid')
       )
 
@@ -31,6 +31,7 @@ wyrform = form.Form(
       form.Dropdown('prefix', ['Mr.', 'Mrs.', 'Dr.', 'Ms.', 'Miss'],  description='Prefix'),
       form.Textbox('lname', form.Validator("Last name can't be blank", bool), description='Last Name'),
       form.Textbox('fname', form.Validator("First name can't be blank", bool), description='First Name'),
+      form.Textbox('email', form.notnull, form.regexp(email_regex, 'Please enter a valid email'), description='Email', size='30'),
       form.Textbox('addr1', form.Validator("Address can't be blank", bool), description='Address', size='20'),
       form.Textbox('addr2', description='Address', size='20'),
       form.Textbox('city', form.Validator("City can't be blank", bool), description='City'),
@@ -42,10 +43,12 @@ wyrform = form.Form(
                     description='Phone'),
       form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
       form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='20', cols='80'),
+      form.Textbox('captcha', pre='', description="Validation:"),
+      form.Hidden('signid'),
       validators = [form.Validator("Zipcode is shared between two districts. Enter zip4 too.",
                         lambda i: len(getdists(i.zipcode, i.zip4, i.addr1+i.addr2)) == 1 or i.zip4),
                     form.Validator("Couldn't find district for this address and zip.",
-                        lambda i: len(getdists(i.zipcode, i.zip4, i.addr1+i.addr2)) == 1 or not i.zip4) ]
+                        lambda i: len(getdists(i.zipcode, i.zip4, i.addr1+i.addr2)) == 1 or not i.zip4)]
       )
 
 captcha = form.Textbox('captcha',
@@ -63,17 +66,8 @@ signform = form.Form(
             description='Email:',
             post=' *',
             size='30'),
-    form.Dropdown('share_with',
-            [('N', 'Nobody'),
-             ('A', 'Author of this petition'),
-             ('E', 'Everybody')
-             ],
-             description='Share my email with:'),
-    form.Textarea('comment',
-            description='Comments:',
-            cols=70,
-            rows=5
-            )
+    form.Checkbox('share_with', value='off', description="Share my email with the author of this petition"),
+    form.Textarea('comment', form.notnull, description='Comments:', cols=70, rows=5)
     )
 
 passwordform = form.Form(
@@ -102,7 +96,7 @@ loadcontactsform = form.Form(
             description='Email:',
             size='15'),
     form.Dropdown('provider',
-            [('', 'Select Provider'), 
+            [('', 'Select Provider'),
             ('google', 'Google'),
             ('yahoo', 'Yahoo'),
             ('msn', 'MSN/Hotmail')],
@@ -119,7 +113,8 @@ signupform = form.Form(
             description='Email'),
     form.Password('password', form.notnull, description='Password'),
     form.Password('password_again', form.notnull, description='Password again'),
-    form.Hidden('redirect')
+    form.Hidden('redirect'),
+    validators = [form.Validator('Oops, passwords don\'t match', lambda i: i.password == i.password_again)]
     )
 
 loginform = form.Form(

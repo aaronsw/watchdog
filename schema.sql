@@ -16,6 +16,8 @@ DROP VIEW IF EXISTS census CASCADE;
 DROP TABLE IF EXISTS census_data CASCADE;
 DROP TABLE IF EXISTS census_meta CASCADE;
 DROP TABLE IF EXISTS soi CASCADE;
+DROP TABLE IF EXISTS pol_contacts CASCADE;
+
 
 CREATE TABLE state (
   -- index.json
@@ -271,8 +273,9 @@ CREATE TABLE expenditure(
   amount varchar(20)
 );
 
-CREATE TABLE wyr(
-    district varchar(6) references district,
+
+CREATE TABLE pol_contacts(
+    politician varchar(256) references politician,
     contact varchar(255),
     contacttype varchar(1),    -- E=email, W=wyr, I=ima, Z=zipauth
     captcha boolean
@@ -300,3 +303,4 @@ GRANT ALL on v_politician_name to watchdog;
 GRANT ALL on politician_fec_ids to watchdog;
 GRANT ALL on contribution to watchdog;
 GRANT ALL on expenditure to watchdog;
+GRANT ALL on pol_contacts to watchdog;

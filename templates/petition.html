@@ -1,14 +1,21 @@
-$def with (p, signform, useremail, isauthor, msg=None)
+$def with (p, signform, useremail, isauthor, wyrform=None, msg=None)
 
 $var title: $p.title
 
+<script type="text/javascript" src="/static/js/petition.js"></script>
+$if wyrform:
+    <script type="text/javascript" src="/static/js/wyr.js"></script>
+    
 <style>
-fieldset#signpetition input {
-    width: 500px;
-}
-fieldset#signpetition {
-    margin-top: 2em;
-}
+/*fieldset#signpetition input { width: 500px; }*/
+fieldset#signpetition { margin-top: 2em; }
+#text fieldset td { padding: 0; }
+#text fieldset #fname { margin-right: 7px; }
+#text fieldset #fname, #lname, #phone, #addr2 {width: 190px;}
+#text fieldset #addr1, #city { width: 250px; }
+#text fieldset #share_with { width: 13px; }
+#text fieldset #share_with_container { margin-top: 1em; background-color: #ffc; width: 23em;}
+#text fieldset #share_with_container label { display: inline; }
 </style>
 
 $if msg:
@@ -16,7 +23,7 @@ $if msg:
 
 <h2>$p.title</h2>
 
-<p>$:format(p.description)</p>
+$:format(p.description)
 
 <div id="upperbar">
 $if p.signatory_count == 0:
@@ -27,7 +34,6 @@ $else:
 	$else:
 		$ ppl = 'people</a></strong> have'
 	<h2> <strong><a href='/c/$p.id/signatories'>$p.signatory_count $:ppl signed this petition. </h2>
-
 <div id="uppermenu">
   <a href="/c/$p.id/share">Share</a>&nbsp;
 $if isauthor:
@@ -36,20 +42,49 @@ $if isauthor:
 </div>
 </div>
 
+<a name="sign"></a>
+
 <form name="sign" method="POST" action="/c/$p.id?m=sign">
-        $if not signform.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
+        $if (not signform.valid) or (wyrform and not wyrform.valid):
+            <p class="error">Please try again after fixing the errors highlighted below:</p>
         <fieldset id="signpetition">
             <legend>Sign this petition</legend>
-            <label for="fname">First name</label>
-            $:signform.fname.render()
-            <label for="lname">Last name</label>
-            $:signform.lname.render()
+            $if wyrform:
+                <p> When you sign this petition, your comments will be sent to your Representative too.</p>
+            <table>
+            <tr>
+            $if wyrform:
+                <td><label for="prefix">Prefix</label>$:wyrform.prefix.render()</td>
+            <td><label for="fname">First name</label>$:signform.fname.render()</td>
+            <td><label for="lname">Last name</label>$:signform.lname.render()</td></tr>
+            $if wyrform:
+                 <tr><td colspan=2><label for="addr1">Address</label>$:wyrform.addr1.render()</td>
+                 <td><label for="addr2">&nbsp;&nbsp;</label>$:wyrform.addr2.render()</td></tr>
+                 <tr><td colspan=2><label for="city">City</label>$:wyrform.city.render()</td>
+                 <td colspan=3><label for="zipcode">Zipcode</label>
+                     $:wyrform.zipcode.render()- $:wyrform.zip4.render()</td><td id="note_zipcode"></td></tr>
+            <tr><td colspan=2>         
             <label for="email">Email</label>
-            $:signform.email.render()
-            <label for="comment">Comment</label>
-            $:signform.comment.render()
+            $if useremail:
+                <div><strong>$useremail</strong></div>
+            $else:
+                $:signform.email.render()
+            $if wyrform:
+                <td><label for="phone">Phone</label>$:wyrform.phone.render()</td>
+            </tr>
+                
+            <tr><td colspan=3><label for="comment">Comment</label>
+            $:signform.comment.render()</td></tr>
+            
+            $if wyrform and wyrform.captcha.pre:
+                <tr><td colspan=3>
+                    <label for="captcha">Verification</label>$:wyrform.captcha.pre $:wyrform.captcha.render()
+                </td></tr>
+            </table>    
+            <div id="share_with_container">
+            $:signform.share_with.render() 
+            <label for="share_with">Do not share my email with the author of this petition</label>
+            </div>
         </fieldset>
     <p><button type="submit">Sign this petition</button></p>
 </form>
-
-

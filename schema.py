@@ -1,3 +1,4 @@
+import json
 import web
 import smartersql as sql
 
@@ -205,17 +206,28 @@ class Bill(sql.Table):
     sponsor = sql.Reference(Politician) #@@rename to sponsor_id
     summary = sql.String()
     maplightid = sql.String(10)
-
-    # computed from vote
-    yeas = sql.Number()
-    neas = sql.Number()
     
     interest_group_support = sql.Backreference('Interest_group_bill_support', 'bill', order='support desc')
     
     @property
+    def name(self):
+        typemap = {
+          'h': 'H.R.', 
+          's': 'S.', 
+          'hj': 'H.J.Res.', 
+          'sj': 'S.J.Res.',
+          'hc': 'H.Con.Res.',
+          'sc': 'S.Con.Res.',
+          'hr': 'H.Res.',
+          'sr': 'S.Res.'
+        }
+        
+        return typemap[self.type] + ' ' + str(self.number)
+    
+    @property
     def votes_by_party(self):
         """Get the votes of the political parties for a bill."""
-        result = db.select(['politician p, vote v'],
+        result = db.select(['politician p, position v'],
                 what="v.vote, count(v.vote), p.party",
                 where="v.politician_id = p.id and v.bill_id = $self.id "
                         "AND v.vote is not null",
@@ -229,8 +241,82 @@ class Bill(sql.Table):
             d[r.party][r.vote] = r.count
         return d
     
+    @property
+    def votes_by_caucus(self):
+        caucuses = json.load(file('import/load/manual/caucuses.json'))
+        members = sum([x['members'] for x in caucuses], [])
+        result = db.select(['position'],
+            where=web.sqlors('politician_id=', members) + 
+              'AND bill_id=' + web.sqlquote(self.id),
+            vars=locals()
+            ).list()
+        
+        if not result: return None
+        
+        votemap = dict((r.politician_id, r.vote) for r in result)
+        d = {}
+        for c in caucuses:
+            cdict = d[c['name']] = {}
+            for m in c['members']:
+                v = votemap.get(m)
+                cdict.setdefault(v, 0)
+                cdict[v] += 1
+        return d
 
-class Vote (sql.Table):
+class Roll(sql.Table):
+    id = sql.String(primary=True)
+    type = sql.String()
+    question = sql.String()
+    required = sql.String()
+    result = sql.String()
+    bill = sql.Reference(Bill)
+    
+    #@@@@@ DON'T REPEAT YOURSELF
+    @property
+    def votes_by_party(self):
+        """Get the votes of the political parties for a bill."""
+        result = db.select(['politician p, vote v'],
+                what="v.vote, count(v.vote), p.party",
+                where="v.politician_id = p.id and v.roll_id = $self.id "
+                        "AND v.vote is not null",
+                group="p.party, v.vote",
+                vars = locals()
+                ).list()
+
+        d = {}
+        for r in result:
+            d.setdefault(r.party, {})
+            d[r.party][r.vote] = r.count
+        return d
+    
+    @property
+    def votes_by_caucus(self):
+        caucuses = json.load(file('import/load/manual/caucuses.json'))
+        members = sum([x['members'] for x in caucuses], [])
+        result = db.select(['vote'],
+            where=web.sqlors('politician_id=', members) + 
+              'AND roll_id=' + web.sqlquote(self.id),
+            vars=locals()
+            ).list()
+        
+        if not result: return None
+        
+        votemap = dict((r.politician_id, r.vote) for r in result)
+        d = {}
+        for c in caucuses:
+            cdict = d[c['name']] = {}
+            for m in c['members']:
+                v = votemap.get(m)
+                cdict.setdefault(v, 0)
+                cdict[v] += 1
+        return d
+
+class Vote(sql.Table):
+    roll = sql.Reference(Roll, primary=True)
+    politician = sql.Reference(Politician, primary=True)
+    vote = sql.Int2()
+
+class Position(sql.Table):
     bill = sql.Reference(Bill, primary=True)
     politician = sql.Reference(Politician, primary=True)
     vote = sql.Int2()
@@ -344,21 +430,3 @@ class Census_data(sql.Table):
 
 #db.query("CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician)")
 #db.query("GRANT ALL on v_politician_name")
-
-# GRANT ALL on state TO watchdog;
-# GRANT ALL on district TO watchdog;
-# GRANT ALL ON zip TO watchdog;
-# GRANT ALL ON zip4 TO watchdog;
-# GRANT ALL on politician TO watchdog;
-# GRANT ALL on interest_group_rating TO watchdog;
-# GRANT ALL on interest_group TO watchdog;
-# GRANT ALL on bill TO watchdog;
-# GRANT ALL on vote TO watchdog;
-# GRANT ALL on interest_group_bill_support TO watchdog;
-# GRANT ALL on group_politician_similarity TO watchdog;
-# GRANT ALL on category TO watchdog;
-# GRANT ALL on wyr TO watchdog;
-# GRANT ALL on v_politician_name to watchdog;
-# GRANT ALL on politician_fec_ids to watchdog;
-# GRANT ALL on contribution to watchdog;
-# GRANT ALL on expenditure to watchdog;
