@@ -347,18 +347,19 @@ class petition:
 
     def POST_sign(self, pid):
         i = web.input()
-        auth.assert_login(i)
-        sform, wyrform = forms.signform(), forms.wyrform()
+        sform = forms.signform()
         tocongress = to_congress(pid)
                 
         if tocongress:
             p = get_petition_by_id(pid)
             i.pid, i.ptitle, i.msg = pid, p.title, p.description
+            wyrform = forms.wyrform()
             wyr_valid =  wyrform.validates(i)
         else:
-            wyr_valid = True
+            wyrform, wyr_valid = None, True
 
         if sform.validates(i) and wyr_valid:
+            auth.assert_login(i)
             user = helpers.get_user_by_email(i.email)
             signid = save_signature(i, pid, user.id, tocongress)
             if tocongress: 

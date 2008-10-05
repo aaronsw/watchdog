@@ -17,6 +17,9 @@ def emailnotexists(email):
     "Return True if account with email `email` does not exist"
     exists = bool(db.select('users', where='email=$email', vars=locals()))
     return not(exists)
+    
+def check_len(phone):
+    return len(web.numify(phone)) <= 10
 
 petitionform = form.Form(
       form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
@@ -39,8 +42,8 @@ wyrform = form.Form(
                     size='5', maxlength='5', description='Zip'),
       form.Textbox('zip4', form.regexp(r'^$|[0-9]{4}', 'Please Enter a valid zip'),
                     size='4', maxlength='4',description=''),
-      form.Textbox('phone', form.Validator("Phone can't be blank", bool), form.regexp(r'^[0-9-.]*$', 'Please enter a valid phone number'),
-                    description='Phone'),
+      form.Textbox('phone', form.Validator("Phone can't be blank", bool), form.regexp(r'^[0-9-. ]*$', 'Please enter a valid phone number'), 
+                    form.Validator('Please enter a valid phone number', check_len), description='Phone'),
       form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
       form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='20', cols='80'),
       form.Textbox('captcha', pre='', description="Validation:"),
@@ -114,6 +117,7 @@ signupform = form.Form(
     form.Password('password', form.notnull, description='Password'),
     form.Password('password_again', form.notnull, description='Password again'),
     form.Hidden('redirect'),
+    form.Hidden('state'),
     validators = [form.Validator('Oops, passwords don\'t match', lambda i: i.password == i.password_again)]
     )
 
@@ -124,6 +128,7 @@ loginform = form.Form(
             description='Email'),
     form.Password('password', form.notnull, description='Password'),
     form.Hidden('redirect'),
+    form.Hidden('state'),
     validators = [form.Validator('Oops, wrong email or password', lambda i: bool(loginuser(i.useremail, i.password)))]
     )
 
@@ -148,8 +153,8 @@ userinfo = form.Form(
                          size='5', maxlength='5', description='Zip', post='*'),
         form.Textbox('zip4', form.notnull, form.regexp(r'[0-9]{4}', 'Please Enter a valid zip'),
                          size='4', maxlength='4', description='Zip4'),
-        form.Textbox('phone', form.notnull, form.regexp(r'^[0-9-.]*$', 'Please enter a valid phone number'),
-                   description='Phone', post='*')
+        form.Textbox('phone', form.notnull, form.regexp(r'^[0-9-. ]*$', 'Please enter a valid phone number'),
+                    form.Validator('Please enter a valid phone number', check_len), maxlength='15', description='Phone', post='*')
         )
 
 change_password = form.Form(
