@@ -9,10 +9,19 @@ from pprint import pprint, pformat
 
 reps = web.storage((x.id, x) for x in db.select(['politician','congress'], where="politician_id = id AND congress_num='110'").list())
 hacks = dict()
+lastname2rep = {}
 
 # HACKs: hard-coding naming inconsistencies
-# Unusual name fixes
+hacks['jo_ann_davis'] = 'Davis, Jo Ann'
+hacks['g._k._butterfield'] = 'Butterfield.'
+hacks['cathy_mcmorris_rodgers'] = 'McMorris Rodger'
+lastname2rep['McMorris'.lower()] = 'cathy_mcmorris_rodgers'   # Ugg, she requires multiple hacks.
+# ambiguous fixes
+hacks['chet_edwards'] = 'Edwards' # I think this is the correct Edwards, donna_edwards has only been a member since june 2008?
+# Unusual name fixes (punctuation/spaces)
 hacks['bill_young'] = 'C.W. Bill'
+hacks['peter_defazio'] = 'De Fazio'
+hacks['sheila_jackson-lee'] = 'Jackson Lee'
 # Common name fixes
 hacks['mike_thompson'] = 'Mike'
 hacks['tim_f._murphy'] = 'Timothy'   #Tim is in there as BOTH Tim and Timothy
@@ -21,11 +30,13 @@ hacks['mike_j._rogers'] = 'Mike (MI)'
 hacks['mike_d._rogers'] = 'Mike (AL)'
 # Spelling
 hacks['corrine_brown'] = 'Corinne'
+hacks['rodney_frelinghuysen'] = 'Frelinghuyson'
+hacks['earl_blumenauer'] = 'Blumenaucr'
+hacks['eni_faleomavaega'] = 'Faleomavaeaga'
+hacks['tim_walberg'] = 'Walbergothy'
 
 # Force a few names into ambiguous mode
 ambiguous = ['neal', 'taylor', 'jones']
-
-lastname2rep = {}
 
 for repid, rep in reps.items():
     if not rep.lastname: continue
@@ -46,6 +57,8 @@ for repid, rep in reps.items():
             lastname2rep[lastname + ', ' + rep.nickname.lower()] = repid
         if repid in hacks:
             lastname2rep[lastname + ', ' + hacks[repid].lower()] = repid
+    if repid in hacks:
+        lastname2rep[hacks[repid].lower()] = repid
 
 def cleanrow(s):
     if isinstance(s, basestring):
