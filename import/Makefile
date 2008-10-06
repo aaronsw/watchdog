@@ -31,7 +31,7 @@ NJS=$(PARSE)/almanac.njs \
     $(PARSE)/soi.njs \
     $(PARSE)/voteview.njs
 
-LOADERS = .schema .json \
+LOADERS = .schema .manual \
           .almanac .centers .voteview .govtrack \
           .bills .interests .votesmart .photos .fec .census .soi .earmarks
 
@@ -56,15 +56,15 @@ database: $(LOADERS)
 	touch $@
 
 # not currently using .shapes
-.shapes: .json load/shapes.py parse/shapes.py
+.shapes: .manual load/shapes.py parse/shapes.py
 	$(PYTHON) load/shapes.py
 	touch $@
 
-.almanac: .json load/almanac.py parse/almanac.py
+.almanac: .manual load/almanac.py parse/almanac.py
 	$(PYTHON) load/almanac.py
 	touch $@
 
-.centers: .json load/govtrack_gis.py ../data/crawl/govtrack/gis/gmapdata/*
+.centers: .manual load/govtrack_gis.py ../data/crawl/govtrack/gis/gmapdata/*
 	$(PYTHON) load/govtrack_gis.py
 	touch $@
 
@@ -72,11 +72,11 @@ $(LOAD)/politicians/index.json: load/manual/politicians.json
 	mkdir -p $(LOAD)/politicians
 	cp $< $@
 
-.govtrack: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml .json
+.govtrack: load/govtrack.py parse/govtrack.py ../data/crawl/govtrack/us/110/repstats/*xml .manual
 	$(PYTHON) load/govtrack.py
 	touch $@
 
-.voteview: .json load/voteview.py parse/voteview.py ../data/crawl/voteview/
+.voteview: .manual load/voteview.py parse/voteview.py ../data/crawl/voteview/
 	$(PYTHON) load/voteview.py
 	touch $@
 
@@ -91,19 +91,19 @@ $(LOAD)/politicians/index.json: load/manual/politicians.json
 	$(PYTHON) load/maplight.py
 	touch $@
 
-.votesmart: .json .govtrack load/votesmart.py $(CRAWL)/votesmart/bios.json $(CRAWL)/votesmart/candidates.json
+.votesmart: .manual .govtrack load/votesmart.py $(CRAWL)/votesmart/bios.json $(CRAWL)/votesmart/candidates.json
 	$(PYTHON) load/votesmart.py
 	touch $@
 
-.photos: .json .votesmart load/photos.py
+.photos: .manual .votesmart load/photos.py
 	$(PYTHON) load/photos.py
 	touch $@
 
-.fec: .json
+.fec: .manual
 	$(PYTHON) load/fec.py
 	touch $@
 
-.zip4: $(LOAD)/zip4.tsv .json
+.zip4: $(LOAD)/zip4.tsv .manual
 	# NOTE: leaving the index on while loading the data is unbearably slow. If
 	#       the schema changes this makefile will need to be updated too.
 	#       Also, our districts table is missing MH-00 (Marshall Islands) and
@@ -116,14 +116,14 @@ ALTER TABLE zip4 ADD PRIMARY KEY (zip,plus4); \
 		" | $(DBCLIENT) $(WATCHDOG_TABLE)
 	touch $@
 
-.soi: .schema .json
+.soi: .schema .manual
 	$(PYTHON) load/soi.py
 	touch $@
 
 $(LOAD)/census_meta.tsv $(LOAD)/census_data.tsv: load/census.py parse/census.py
 	python load/census.py
 
-.census: $(LOAD)/census_meta.tsv $(LOAD)/census_data.tsv .schema .json
+.census: $(LOAD)/census_meta.tsv $(LOAD)/census_data.tsv .schema .manual
 	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/census_meta.tsv 
 	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/census_data.tsv 
 	touch $@
