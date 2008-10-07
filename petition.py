@@ -195,10 +195,11 @@ def save_signature(i, pid, uid, tocongress=False):
     signed = db.select('signatory', where=where, vars=locals())
     share_with = (i.get('share_with', 'off') == 'on' and 'N') or 'A'
     if not signed:
+        referrer = get_referrer(pid, uid)
         signid = db.insert('signatory', 
                 user_id=uid, share_with=share_with,
                 petition_id=pid, comment=i.get('comment'),
-                sent_to_congress=msg_status)
+                sent_to_congress=msg_status, referrer=referrer)
         
         helpers.set_msg("Thanks for your signing! Why don't you tell your friends about it now?")
         return signid 
@@ -252,6 +253,16 @@ class signatories:
         signs = get_signs(pid).list()
         return render.signature_list(pid, ptitle, signs, is_author(user_email, pid))
                         
+def set_referrer_cookie(tid, pid):
+    if helpers.check_trackid(tid, pid):
+        helpers.setcookie('tid', tid)
+
+def get_referrer(pid, uid):
+    tid = helpers.getcookie('tid')
+    referrer = helpers.check_trackid(tid, pid)
+    if referrer != uid:
+        return referrer
+
 class petition:
     def GET(self, pid, signform=None, wyrform=None):
         i = web.input()
@@ -272,7 +283,11 @@ class petition:
             wyrform = forms.wyrform()
             fill_user_details(wyrform)
             add_captcha(wyrform)
-                
+
+        if 'tid' in i: 
+            set_referrer_cookie(i.tid, pid)
+            raise web.seeother('/%s' % pid)
+            
         msg, msg_type = helpers.get_delete_msg()
         useremail = helpers.get_loggedin_email() or helpers.get_unverified_email()
         isauthor = is_author(useremail, pid)
@@ -458,7 +473,8 @@ class share:
 
         if not emailform:
             emailform = forms.emailform
-            msg = render_plain.share_petition_mail(petition)
+            track_id = helpers.get_trackid(user_id, pid)
+            msg = render_plain.share_petition_mail(petition, track_id)
             emailform.fill(subject=petition.title, body=msg)
             
         loadcontactsform = forms.loadcontactsform()    

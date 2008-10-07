@@ -43,6 +43,7 @@ CREATE TABLE signatory(
     signed timestamp default now(),
     deleted timestamp,
     sent_to_congress char(1) default 'N', --N=not to congress, S=sent to congress, D=due for sending
+    referrer int references users,
     UNIQUE (user_id, petition_id)
 );
 
