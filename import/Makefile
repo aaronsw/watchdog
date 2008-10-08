@@ -33,7 +33,7 @@ NJS=$(PARSE)/almanac.njs \
 
 LOADERS = .schema .manual \
           .almanac .centers .voteview .govtrack \
-          .bills .interests .votesmart .photos .fec .census .soi .earmarks
+          .bills .interests .votesmart .photos .fec .census .soi .earmarks .wyr
 
 all: database
 clean:
@@ -90,6 +90,10 @@ database: $(LOADERS)
 
 .votesmart: .manual load/votesmart.py $(CRAWL)/votesmart/bios.json $(CRAWL)/votesmart/candidates.json
 	$(PYTHON) load/votesmart.py
+	touch $@
+
+.wyr: load/wyr.py $(CRAWL)/votesmart/wyr.json
+	$(PYTHON) load/wyr.py
 	touch $@
 
 .photos: .manual .votesmart load/photos.py
