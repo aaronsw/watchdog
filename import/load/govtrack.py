@@ -30,8 +30,6 @@ mapping = {
 }
 
 
-ALL_PEOPLE_FILE = "../data/load/politicians/all_people.json"
-
 cong_terms = simplejson.load(file('load/manual/congress_terms.json'))
 def to_dt(s): return datetime.datetime(*(map(int,s.split('-'))))
 for t in cong_terms.values():
@@ -50,40 +48,9 @@ def cong_term_lookup(dstart,dend):
         #print n, t['startdate'], t['enddate'], '     ', dstart, dend
         ret.add(n)
     return ret
-        
-
-def generate_ids():
-    all_ids = {}
-    gt_to_wd = {}
-    for pol in govtrack.parse_basics():
-        watchdog_id = tools.getWatchdogID(pol.get('represents'),pol.lastname)
-        current_member = False
-        collision = False
-        # if not watchdog_id (past member/candidate), generate one.
-        if watchdog_id:
-            current_member = True
-        else:
-            watchdog_id = tools.id_ify(pol.get('firstname')+'_'+pol.get('lastname')+('_'+pol.get('namemod') if pol.get('namemod') else ''))
-            if watchdog_id in all_ids and all_ids[watchdog_id] != pol.id: 
-                collision = True
-        gt_to_wd[pol.id] = { 'wd_id': watchdog_id }
-        if current_member: gt_to_wd[pol.id]['current_member'] = True
-        if collision: 
-            gt_to_wd[pol.id]['collision'] = True 
-            gt_to_wd[all_ids[watchdog_id]]['collision'] = True # TODO: set collision on the first one with this id.
-        all_ids[watchdog_id] = pol.id
-
-    return gt_to_wd
-
-_gt_to_wd = None
-def get_wd_id(gt_id):
-    global _gt_to_wd
-    if not _gt_to_wd:
-        print "Loading ID mapping."
-        _gt_to_wd = simplejson.load(file(ALL_PEOPLE_FILE))
-    return _gt_to_wd[gt_id]
 
 
+from gen_ids import get_wd_id_GT as get_wd_id
 def combine():
     watchdog_map = {}
     govtrack_map = {}
@@ -91,12 +58,9 @@ def combine():
     print "Processing govtrack.us basics."
     for pol in govtrack.parse_basics():
         wd = get_wd_id(pol.id)
-        current_member = 'current_member' in wd and wd['current_member']
-        collision = 'collision' in wd and wd['collision']
-        watchdog_id = wd['wd_id']
-        if collision and not current_member: 
-            print "Collision(%s) not sure what to do." % watchdog_id
-            continue
+        if not wd: continue
+        current_member = wd.get('current_member')
+        watchdog_id = wd['watchdog_id']
 
         govtrack_map[pol.id] = watchdog_map[watchdog_id] = newpol = web.storage()
 
@@ -179,12 +143,6 @@ def main():
 
 
 if __name__ == "__main__": 
-    if not os.path.isfile(ALL_PEOPLE_FILE):
-        print "Generating govtrack to watchdog id mapping."
-        fd = open(ALL_PEOPLE_FILE,'w')
-        fd.write(simplejson.dumps(generate_ids(), indent=2, sort_keys=True))
-        fd.write('\n')
-        fd.close()
     main()
 
 

@@ -44,23 +44,19 @@ def filter_dict(f, d):
     elif isinstance(f, list):
         return dict([(x, d[x]) for x in d.keys() if x in f])
 
-def gen_pol_id(pol):
-    id = tools.id_ify(pol['firstName'].lower()+'_'+pol['lastName'].lower()+('_%s'%pol['suffix'] if pol['suffix'] else ''))
-    return id
 
-
+from gen_ids import get_wd_id_VS as get_wd_id
 def load_votesmart():
     # Candidates from votesmart
     for district, cands in votesmart.candidates():
         district=tools.fix_district_name(district)
         for pol in cands:
-            pol_cand = filter_dict(cand_mapping, pol)
-            
-            polid = tools.getWatchdogID(district, pol['lastName'])
-            if not polid:
-                polid = gen_pol_id(pol)
-
             vs_id=pol['candidateId']
+            wd = get_wd_id(vs_id)
+            if not wd: continue
+            polid = wd['watchdog_id']
+
+            pol_cand = filter_dict(cand_mapping, pol)
             if not db.select('politician', 
                     where='id=$polid', vars=locals()):
                 db.insert('politician', 
@@ -90,7 +86,9 @@ def load_votesmart():
             pol['gender']=pol['gender'][0]
         if pol['education']:
             pol['education'] = pol['education'].replace('\r\n', '\n')
-        polid = gen_pol_id(pol)
+        wd = get_wd_id(vs_id)
+        if not wd: continue
+        polid = wd['watchdog_id']
         pol_people = filter_dict(schema.Politician.columns.keys(),
                 filter_dict(bios_mapping, pol))
         if db.select('politician', where='votesmartid=$vs_id',vars=locals()):
