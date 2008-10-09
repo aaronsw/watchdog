@@ -3,14 +3,11 @@ load data from govtrack.us
 """
 from __future__ import with_statement
 import datetime
-import os
-
-import simplejson
+import json
 import web
 
-import tools
-import schema
 from parse import govtrack
+import schema
 from settings import db
 
 mapping = {
@@ -30,7 +27,7 @@ mapping = {
 }
 
 
-cong_terms = simplejson.load(file('load/manual/congress_terms.json'))
+cong_terms = json.load(file('load/manual/congress_terms.json'))
 def to_dt(s): return datetime.datetime(*(map(int,s.split('-'))))
 for t in cong_terms.values():
     t['startdate'] = to_dt(t['startdate'])
