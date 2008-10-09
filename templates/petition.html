@@ -67,6 +67,7 @@ $if isauthor:
             <label for="email">Email</label>
             $if useremail:
                 <div><strong>$useremail</strong></div>
+                <div style="display: none"> $:signform.email.render() </div>
             $else:
                 $:signform.email.render()
             $if wyrform:

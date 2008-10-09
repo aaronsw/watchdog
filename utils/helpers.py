@@ -22,6 +22,18 @@ def getcookie(name):
 def deletecookie(name):
     web.setcookie(name, expires=-1)
 
+def get_trackid(uid, pid):
+    uid = str(uid)
+    return '_'.join([uid, encrypt(uid+pid)])
+
+def check_trackid(tid, pid):
+    try:
+        uid, uid_pid = tid.split('_')
+    except TypeError:
+        return
+    if encrypt(uid+pid) == uid_pid:
+        return uid
+
 def set_msg(msg, msg_type=None):
     if msg_type == 'error':
         msg += '$ERR$'
