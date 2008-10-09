@@ -1,5 +1,5 @@
 import os, sys
-import simplejson
+import json
 import tools
 from parse import govtrack, votesmart
 
@@ -9,7 +9,7 @@ MANUAL_JSON = "./load/manual/all_people.json"
 def load_wd_mapping():
     print "Loading ID mapping."
     if os.path.isfile(MANUAL_JSON):
-        return simplejson.load(file(MANUAL_JSON)) # Load previous version of this generation
+        return json.load(file(MANUAL_JSON)) # Load previous version of this generation
     return {}
 def reverse_map(map, old_key, new_key):
     new_map = {}
@@ -94,6 +94,6 @@ if __name__ == "__main__":
     if not os.path.isfile(ALL_PEOPLE_FILE):
         print "Generating govtrack to watchdog id mapping."
         fd = open(ALL_PEOPLE_FILE,'w')
-        fd.write(simplejson.dumps(generate_ids(), indent=2, sort_keys=True))
+        fd.write(json.dumps(generate_ids(), indent=2, sort_keys=True))
         fd.write('\n')
         fd.close()

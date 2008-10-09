@@ -1,11 +1,11 @@
-import simplejson
+import json
 
 DATA_DIR='../data'
 
 
 def items(fname):
     print 'loading', fname
-    return simplejson.load(file(DATA_DIR + '/%s.json' % fname)).iteritems()
+    return json.load(file(DATA_DIR + '/%s.json' % fname)).iteritems()
 
 
 def candidates():
