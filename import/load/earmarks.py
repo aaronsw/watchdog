@@ -7,7 +7,7 @@ from parse import earmarks
 from settings import db
 from pprint import pprint, pformat
 
-reps = web.storage((x.id, x) for x in db.select('politician').list())
+reps = web.storage((x.id, x) for x in db.select(['politician','congress'], where="politician_id = id AND congress_num='110'").list())
 hacks = dict()
 
 # HACKs: hard-coding naming inconsistencies
