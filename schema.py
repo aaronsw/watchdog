@@ -76,6 +76,12 @@ class Zip4(sql.Table):
 #--alter table zip4 add constraint "zip4_district_fkey" FOREIGN KEY (district) REFERENCES district(name) #@@
 #--GRANT ALL ON zip4 TO watchdog;
 
+class GovtrackID(sql.String):
+    towhatever = lambda f: (lambda self, x: f(self, 
+      'http://www.govtrack.us/congress/person.xpd?id=' + x))
+    toxml = towhatever(sql.URL.toxml)
+    ton3 = towhatever(sql.URL.ton3)
+
 class Politician(sql.Table):
     @property
     def _uri_(self): return 'http://watchdog.net/p/%s#it' % self.id
@@ -88,7 +94,7 @@ class Politician(sql.Table):
     # govtrack.json --@@get from votesmart?
     bioguideid = sql.String()
     opensecretsid = sql.String()
-    govtrackid = sql.String()
+    govtrackid = GovtrackID()
     gender = sql.String(1)
     birthday = sql.String() #@@date
     firstname = sql.String()
