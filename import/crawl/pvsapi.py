@@ -1,4 +1,5 @@
-import urllib, json, pickle, os, sys
+import urllib, pickle, os, sys
+import simplejson as json
 
 def listify(x):
     if not isinstance(x, list):

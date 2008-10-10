@@ -3,7 +3,7 @@
 common tools for load scripts
 """
 import os, re
-import json
+import simplejson as json
 import web
 from settings import db
 

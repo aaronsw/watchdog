@@ -1,5 +1,5 @@
 import sys
-import json
+import simplejson as json
 from urllib2 import urlopen
 from ClientForm import ParseResponse, ControlNotFoundError, AmbiguityError
 from settings import db

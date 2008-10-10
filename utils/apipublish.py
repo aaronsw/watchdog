@@ -3,7 +3,7 @@ publish Python objects as various API formats
 """
 
 import datetime
-import json
+import simplejson as json
 import web
 
 API_PREFIX = "http://watchdog.net/about/api#"

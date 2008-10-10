@@ -10,7 +10,7 @@ to:   data/parse/politicians/photos.json
 """
 
 import os
-import json
+import simplejson as json
 from settings import db
 
 def govtrack_u(govtrackid):

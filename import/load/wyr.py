@@ -1,4 +1,4 @@
-import json
+import simplejson as json
 from settings import db
 
 wyr = json.load(file('../data/crawl/votesmart/wyr.json'))

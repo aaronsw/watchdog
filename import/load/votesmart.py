@@ -2,7 +2,7 @@
 Load Project Vote Smart data.
 """
 
-import json
+import simplejson as json
 import tools
 from settings import db
 

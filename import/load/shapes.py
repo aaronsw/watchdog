@@ -1,7 +1,7 @@
 """
 load district shapes
 """
-import json
+import simplejson as json
 import web
 import tools
 from settings import db

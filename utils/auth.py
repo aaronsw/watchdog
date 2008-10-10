@@ -1,4 +1,5 @@
-import urllib, random, hmac, datetime, json
+import urllib, random, hmac, datetime
+import simplejson as json
 from hashlib import sha1
 
 import web
