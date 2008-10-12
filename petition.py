@@ -480,13 +480,13 @@ class share:
                 contacts = filter(lambda c: not signed(c.email, pid), contacts)
                 page_or_petition = 'petition'
 
-            msg = render_plain.share_petition_mail(title, url, description, track_id)
+            msg = render_plain.share_mail(title, url, description, track_id)
             emailform.fill(subject=title, body=msg)
 
         loadcontactsform = loadcontactsform or forms.loadcontactsform()
 
         msg, msg_type = helpers.get_delete_msg()
-        return render.share_petition(title, url, emailform,
+        return render.share(title, url, emailform,
                             contacts, loadcontactsform, page_or_petition, msg)
 
     def POST(self):

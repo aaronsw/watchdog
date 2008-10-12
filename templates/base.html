@@ -61,9 +61,11 @@ $if page.get('sidebar', '').strip() != "None":
             </li>
             $ li_class = ""
         </ul>
-    <div class="postit">
-        <a href="/share?url=$getpath()&title=$:page.title"><strong>Share this page</strong></a>
-    </div>
+    $if getpath() != '/share':
+        <div class="postit">
+            <a href="/share?url=$getpath()&title=$:page.title"><strong>Share this page</strong></a>
+        </div>
+    
     </div>
 
 $:page.get('pretext')
