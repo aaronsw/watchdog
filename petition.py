@@ -3,7 +3,7 @@ from __future__ import with_statement
 
 import web
 from utils import forms, helpers, auth
-from settings import db, render, session
+from settings import db, render, render_plain, session
 from utils.auth import require_login
 from utils.users import fill_user_details
 import config
@@ -18,12 +18,9 @@ urls = (
   '/login', 'login',
   '/signup', 'signup',
   '/verify', 'checkID',
-  '/(.*)/share', 'share',
   '/(.*)/signatories', 'signatories',
   '/(.*)', 'petition'
 )
-
-render_plain = web.template.render('templates/') #without base, useful for sending mails
 
 class redir:
     def GET(self): raise web.seeother('/')
@@ -364,9 +361,9 @@ class petition:
         i = web.input()
         sform = forms.signform()
         tocongress = to_congress(pid)
+        p = get_petition_by_id(pid)
                 
         if tocongress:
-            p = get_petition_by_id(pid)
             i.pid, i.ptitle, i.msg = pid, p.title, p.description
             wyrform = forms.wyrform()
             wyr_valid =  wyrform.validates(i)
@@ -385,7 +382,7 @@ class petition:
                     return self.GET(pid, signform=sform, wyrform=wyrform)    
             if signid:
                 sendmail_to_signatory(user, pid)
-            raise web.seeother('/%s/share' % pid)
+            raise web.seeother('/share?url=/c/%s&title=%s' % (pid, p.title), absolute=True)
         else:
             return self.GET(pid, signform=sform, wyrform=wyrform)
 
@@ -459,42 +456,53 @@ def signed(email, pid):
         is_signatory = db.select('signatory', where='user_id=$user_id and petition_id=$pid', vars=locals())
         return bool(is_signatory)
 
+
 class share:
-    def GET(self, pid, emailform=None, loadcontactsform=None):
+    def GET(self, emailform=None, loadcontactsform=None):
         i = web.input()
+        url = i.get('url', '/')
+        title = i.get('title', 'The good government site with teeth')
+
         user_id = helpers.get_loggedin_userid()
         contacts = get_contacts(user_id)
         if (not contacts) and ('email' in session):
             contacts = get_contacts(session.get('email'), by='email')
 
-        contacts = filter(lambda c: not signed(c.email, pid), contacts)
-        petition = db.select('petition', where='id=$pid', vars=locals())[0]
-        petition.url = 'http://watchdog.net/c/%s' %(pid)
-
+        page_or_petition = 'page'    
         if not emailform:
-            emailform = forms.emailform
-            track_id = helpers.get_trackid(user_id, pid)
-            msg = render_plain.share_petition_mail(petition, track_id)
-            emailform.fill(subject=petition.title, body=msg)
-            
-        loadcontactsform = forms.loadcontactsform()    
-        
+            emailform = forms.emailform()
+            track_id, description = None, None
+            if url.startswith('/c/') and url != '/c/':
+                pid = web.lstrips(url, '/c/').rstrip('/')
+                p = get_petition_by_id(pid)
+                description = p and p.description
+                track_id = helpers.get_trackid(user_id, pid)
+                contacts = filter(lambda c: not signed(c.email, pid), contacts)
+                page_or_petition = 'petition'
+
+            msg = render_plain.share_petition_mail(title, url, description, track_id)
+            emailform.fill(subject=title, body=msg)
+
+        loadcontactsform = loadcontactsform or forms.loadcontactsform()
+
         msg, msg_type = helpers.get_delete_msg()
-        return render.share_petition(petition, emailform,
-                            contacts, loadcontactsform, msg)
+        return render.share_petition(title, url, emailform,
+                            contacts, loadcontactsform, page_or_petition, msg)
 
-    def POST(self, pid):
+    def POST(self):
         i = web.input()
-        emailform = forms.emailform()
+        emailform, loadcontactsform = forms.emailform(), forms.loadcontactsform()
         if emailform.validates(i):
-            pid, msg, subject = i.pid, i.body, i.subject
+            url, msg, subject = i.url, i.body, i.subject
             emails = [e.strip() for e in i.emails.strip(', ').split(',')]
-            web.sendmail(config.from_address, emails, subject, msg)
-            helpers.set_msg('Thanks for sharing this petition with your friends!')
-            raise web.seeother('/%s' % (pid))
+            u = helpers.get_user_by_email(helpers.get_loggedin_email())
+            from_address = u and "%s %s <%s>" % (u.fname, u.lname, u.email) or config.from_address
+            web.sendmail(from_address, emails, subject, msg)
+            page_or_petition = url.startswith('/c/') and 'petition' or 'page'
+            helpers.set_msg('Thanks for sharing this %s with your friends!' % page_or_petition)
+            raise web.seeother(url)
         else:
-            return self.GET(pid, emailform=emailform)
-
+            return self.GET(emailform=emailform, loadcontactsform=loadcontactsform)
 
 app = web.application(urls, globals())
 

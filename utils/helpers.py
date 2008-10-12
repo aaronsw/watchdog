@@ -23,6 +23,7 @@ def deletecookie(name):
     web.setcookie(name, expires=-1)
 
 def get_trackid(uid, pid):
+    if not uid: return
     uid = str(uid)
     return '_'.join([uid, encrypt(uid+pid)])
 
@@ -124,3 +125,4 @@ r_html = re.compile(r'<[^>]+?>')
 def striphtml(x):
     return r_html.sub('', x).replace('\n', ' ')
 g['striphtml'] = striphtml
+g['getpath'] = lambda : web.ctx.homepath + web.ctx.path

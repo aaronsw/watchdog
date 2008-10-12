@@ -51,7 +51,8 @@ class importcontacts:
         form = forms.loadcontactsform()
         if form.validates(i):
             session.email = email
-            session.pid = i.pid
+            session.url = i.url
+            session.title = i.title
             if i.provider == 'yahoo':
                 ylogin_url = yahooLoginURL(email, '/WSLogin/V1/wslogin')
                 raise web.seeother(ylogin_url)
@@ -130,7 +131,7 @@ class auth_yahoo:
         response = urllib2.urlopen(req).read()
         contacts = self.get_contacts(response)
         save_contacts(email, contacts, provider='YAHOO')
-        raise web.seeother('/c/%s/share' % (session.pid))
+        raise web.seeother('/share?url=%s&title=%s' % (session.url, session.title))
 
 def get_text(elem):
     #gets the text from XML DOM element `elem`
@@ -165,8 +166,8 @@ class auth_google:
         response = urllib2.urlopen(request)
         contacts = self.get_contacts(response)
         save_contacts(email, contacts, provider='GOOGLE')
-        raise web.seeother('/c/%s/share' % (session.pid))
-
+        raise web.seeother('/share?url=%s&title=%s' % (session.url, session.title))
+        
 class auth_msn:
     def get_consent(self, s):
         d = {}
@@ -204,4 +205,4 @@ class auth_msn:
             contacts = self.get_contacts(response)
             save_contacts(email, contacts, provider='MICROSOFT')
 
-        raise web.seeother('/c/%s/share' % (session.pid))
+        raise web.seeother('/share?url=%s&title=%s' % (session.url, session.title))

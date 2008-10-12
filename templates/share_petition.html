@@ -1,6 +1,6 @@
-$def with (petition, emailform, contacts, loadcontactsform=None, msg=None)
+$def with (title, url, emailform, contacts, loadcontactsform, petition_or_page, msg=None)
 
-$var title: Share your petition
+$var title: Share the $petition_or_page
 
 $if msg:
     $var msg: $:msg
@@ -48,9 +48,9 @@ $if msg:
 });
 </script>
 
-<h2>Share <a href='/c/$petition.id'>$petition.title</a> with your friends</h2>
+<h2>Share <a href='$url'>$:title</a> with your friends</h2>
 
-<form name='contactform' method='POST' action='/c/$petition.id/share'>
+<form name='contactform' method='POST' action='/share'>
 $if not emailform.valid: <p class="error">Please try again after fixing the problems highlighted below:</p>
 <fieldset id="sharepetition">
     <label for="emails">To:</label>
@@ -59,21 +59,21 @@ $if not emailform.valid: <p class="error">Please try again after fixing the prob
     $:emailform.subject.render()
     <label for="body">Message:</label>
     $:emailform.body.render()
-    <input type="hidden" name="pid" value="$petition.id">
+    <input type="hidden" name="url" value="$url">
     <button tabindex="4" type="submit">Send</button>
 </fieldset>
 </form>
 
-$var sidebar:
-    $if loadcontactsform:
-        <form id="loadcontacts" name="loadcontacts" method="POST" action='/u/import_contacts' >
-            <h2>Load contacts</h2>
-            <p>Enter your email address to load contacts.</p>
-            $:loadcontactsform.email.render()
-            $:loadcontactsform.provider.render()
-            <input type="hidden" name="pid" value="$petition.id">
-            <button type="submit">Load contacts</button>
-        </form>
+$def sidebar():
+    <form id="loadcontacts" name="loadcontacts" method="POST" action='/u/import_contacts' >
+        <h2>Load contacts</h2>
+        <p>Enter your email address to load contacts.</p>
+        $:loadcontactsform.email.render()
+        $:loadcontactsform.provider.render()
+        <input type="hidden" name="url" value="$url">
+        <input type="hidden" name="title" value="$title">
+        <button type="submit">Load contacts</button>
+    </form>
     $if contacts:
         <p class='select-all'>
             <input type="checkbox" id='selectall' name="selectall" value='all' />Select all ($len(contacts) contacts)</p>
@@ -83,4 +83,8 @@ $var sidebar:
                 <li><input type='checkbox' name='contacts' value='$c.email' /><b>$c.name</b></br> $c.email</li>
             </ul>    
         </div>
+
+$var sidebar: $:sidebar()
+
+
 </div>

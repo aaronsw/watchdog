@@ -33,6 +33,7 @@ urls = (
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
   r'/blog', blog.app,
+  r'/share', 'petition.share',
   r'/data/(.*)', 'staticdata',
   r'/bbauth/', 'contacts.auth_yahoo',
   r'/authsub', 'contacts.auth_google',
