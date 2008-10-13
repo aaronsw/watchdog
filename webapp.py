@@ -9,6 +9,7 @@ import petition
 import settings
 from settings import db, render
 import schema
+import config
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -337,6 +338,8 @@ class staticdata:
         return file('data/' + path).read()
 
 app = web.application(urls, globals())
+if config.production_site:
+    app.internalerror = web.emailerrors(config.send_errors_to, web.debugerror)
 settings.setup_session(app)
 
 if __name__ == "__main__": app.run()
