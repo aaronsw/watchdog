@@ -7,7 +7,7 @@ from utils import zip2rep, simplegraphs, apipublish, users, writerep
 import blog
 import petition
 import settings
-from settings import db, render
+from settings import db, render, production_mode
 import schema
 import config
 
@@ -338,7 +338,7 @@ class staticdata:
         return file('data/' + path).read()
 
 app = web.application(urls, globals())
-if config.production_site:
+if production_mode:
     app.internalerror = web.emailerrors(config.send_errors_to, web.debugerror)
 settings.setup_session(app)
 

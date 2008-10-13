@@ -126,11 +126,11 @@ class Form(object):
         return getattr(self.f, x)
 
     def production_click(self):
-        from writerep import PRODUCTION_MODE, TEST_MODE
-        if PRODUCTION_MODE:
+        from writerep import production_mode, test_mode
+        if production_mode:
             request = self.f.click()
             response = urlopen(request.get_full_url(), request.get_data())
-        elif TEST_MODE:
+        elif test_mode:
             self.f.action = web.ctx.homedomain + '/writerep/test'
             request = self.f.click() 
             response = urlopen(request.get_full_url(), request.get_data())
