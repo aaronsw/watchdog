@@ -79,9 +79,11 @@ def create_petition(i, email, wyrform):
     tocongress = i.get('tocongress', 'off') == 'on'
     i.pid = i.pid.replace(' ', '_')
     u = helpers.get_user_by_email(email)
-    
-    db.insert('petition', seqname=False, id=i.pid, title=i.ptitle, description=i.msg,
+    try:
+        db.insert('petition', seqname=False, id=i.pid, title=i.ptitle, description=i.msg,
                 owner_id=u.id, to_congress=tocongress)
+    except:
+        return
     signid = save_signature(i, i.pid, u.id, tocongress)            
 
     if tocongress and captcha_to_be_filled(i): wyrform.fill(signid=signid)
