@@ -333,7 +333,7 @@ class petition:
     def GET_delete(self, pid):
         user_email = helpers.get_loggedin_email()
         if is_author(user_email, pid):
-            msg = render_plain.confirm_deletion(pid)
+            msg = str(render_plain.confirm_deletion(pid))
             helpers.set_msg(msg)
         else:
             login_link = '<a href="/u/login">Login</a>'
@@ -475,7 +475,8 @@ class share:
             emailform = forms.emailform()
             track_id, description = None, None
             if url.startswith('/c/') and url != '/c/':
-                pid = web.lstrips(url, '/c/').rstrip('/')
+                url = url.rstrip('/')
+                pid = web.lstrips(url, '/c/')
                 p = get_petition_by_id(pid)
                 description = p and p.description
                 track_id = helpers.get_trackid(user_id, pid)
