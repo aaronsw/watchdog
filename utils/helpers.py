@@ -30,7 +30,7 @@ def get_trackid(uid, pid):
 def check_trackid(tid, pid):
     try:
         uid, uid_pid = tid.split('_')
-    except TypeError:
+    except:
         return
     if encrypt(uid+pid) == uid_pid:
         return uid
