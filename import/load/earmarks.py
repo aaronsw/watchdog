@@ -68,9 +68,9 @@ def cleanrow(s):
 
 def load():
     outdb = {}
+    done = set()
     with db.transaction():
         db.delete('earmark', '1=1')
-        done = set()
         for e in earmarks.parse_file(earmarks.EARMARK_FILE):
             de = dict(e)
             de['id'] = web.intget(de['id'])
@@ -96,9 +96,13 @@ def load():
                 if rep.lower() not in lastname2rep:
                     #@@ should work on improving quality
                     reps_not_found.add(rep)
-                    pass
                 else:
                     rep = lastname2rep[rep.lower()]
+                    if e.id in done: 
+                        try:
+                            db.insert('earmark_sponsor', seqname=False, earmark_id=e.id, politician_id=rep)
+                        except:
+                            print "Couldn't add %s as sponsor to earmark %d" %(rep, e.id)
                     outdb.setdefault(rep, {
                       'amt_earmark_requested': 0,
                       'n_earmark_requested': 0,

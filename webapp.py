@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import re
+import re, sys
 import web
 web.config.debug = True
 
@@ -24,6 +24,7 @@ urls = (
   r'/p/(.*?)/groups', 'politician_groups',
   r'/p/(.*?)/(\d+)', 'politician_group',
   r'/p/(.*?)%s?' % options, 'politician',
+  r'/e/(.*?)%s?' % options, 'earmark',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/r/us/(.*?)%s?' % options, 'roll',
   r'/c', petition.app,
@@ -214,6 +215,27 @@ class bill:
         if out: return out
         
         return render.bill(b)
+
+def earmark_list(format, page=0, limit=50):
+    earmarks = schema.Earmark.select(limit=limit, offset=page*limit, order='id')
+
+    out = apipublish.publish(earmarks, format)
+    if out: return out
+    #@@ add link to next page
+    return render.earmark_list(earmarks, limit)
+
+class earmark:
+    def GET(self, earmark_id, format=None):
+        if earmark_id == "" or earmark_id == "index":
+            # Show earmark list
+            i = web.input(page=0)
+            return earmark_list(format, int(i.page))
+        try:
+            em = schema.Earmark.where(id=earmark_id)[0]
+        except IndexError:
+            raise web.notfound
+        return render.earmark(em)
+
 
 class politician:
     def GET(self, polid, format=None):

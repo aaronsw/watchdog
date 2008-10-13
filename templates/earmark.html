@@ -1,0 +1,41 @@
+$def with (em)
+
+$var title: Earmark for: $em.description
+<br />  
+<!-- <br />  ID: $em.id -->
+<h2>\$$commify(em.final_amt) for $em.description</h2>
+<!-- Amounts -->
+$if em.prereduction_amt:
+	<br />  Pre-reduction amount: \$$commify(em.prereduction_amt)
+$if em.budget_request:
+	<br /> Budget Request: \$$commify(em.budget_request)
+$if em.senate_request:
+	<br /> Senate Request: \$$commify(em.senate_request)
+$if em.house_request:
+	<br />  House Request: \$$commify(em.house_request)
+$if em.presidential:
+	<br />  Presidential: \$$commify(em.presidential)
+<br />
+<!-- Sponsors -->
+$if em.sponsors:
+	<h3>Sponsors:</h3>
+	$for s in em.sponsors:
+		<a href="/p/$s.politician.id">$s.politician.title $s.politician.name</a><br /> 
+<!-- Where -->
+<br />  County: $em.county
+<br />  City: $em.city
+<!-- <br />  District: $em.district -->
+<br />
+<!-- Bill information for earmark -->
+<br />  Bill: $em.bill
+<br />  Bill Section: $em.bill_section
+<br />  Bill Sub-section: $em.bill_subsection
+<br />  Project Heading: $em.project_heading
+<br />  Notes: $em.notes
+<br />  Undisclosed: $em.undisclosed
+<br />
+<!-- Who's the benificary -->
+<!--
+<br />  Recipient stem: $em.recipient_stem
+<br />  Intended Recipient: $em.intended_recipient
+-->

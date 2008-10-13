@@ -161,6 +161,7 @@ class Politician(sql.Table):
     pct_pac_business = sql.Percentage()
     
     bills_sponsored = sql.Backreference('Bill', 'sponsor')
+    earmarks_sponsored = sql.Backreference('Earmark_sponsor', 'politician')
 
 class Politician_FEC_IDs(sql.Table):
     politician = sql.Reference(Politician, primary=True)
@@ -366,6 +367,11 @@ class Earmark(sql.Table):
     intended_recipient = sql.String()
     recipient_stem = sql.String()
     notes = sql.String()    
+    sponsors = sql.Backreference('Earmark_sponsor', 'earmark')
+
+class Earmark_sponsor(sql.Table):
+    earmark = sql.Reference(Earmark, primary=True)
+    politician = sql.Reference(Politician, primary=True)
 
 class Expenditure (sql.Table):
     id = sql.Serial(primary=True)
