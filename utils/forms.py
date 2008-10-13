@@ -99,10 +99,11 @@ loadcontactsform = form.Form(
             description='Email:',
             size='20'),
     form.Dropdown('provider',
-            [('', 'Select Provider'),
+            [(None, 'Select Provider'),
             ('google', 'Google'),
             ('yahoo', 'Yahoo'),
             ('msn', 'MSN/Hotmail')],
+            form.notnull,
             description='')
     )
 

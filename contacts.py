@@ -31,9 +31,9 @@ def gmailLoginURL(email):
     
 def msnLoginURL():
     url = "https://consent.live.com/Delegation.aspx?RU=%s&ps=%s&pl=%s"
-    return_url = urllib.quote('http://0.0.0.0:8080/auth/msn')
+    return_url = urllib.quote(web.ctx.homedomain + '/auth/msn')
     permissions = 'Contacts.View'
-    privacy_policy = urllib.quote('http://0.0.0.0:8080/privacy')
+    privacy_policy = urllib.quote(web.ctx.homedomain + '/privacy')
     url = url % (return_url, permissions, privacy_policy)
     #token = "appid=%s&ts=%s" % (getAppId(), time.time())
     #url = url + urllib.quote(token)
@@ -65,7 +65,8 @@ class importcontacts:
         else:
             import petition
             share_obj = petition.share()
-            return share_obj.GET(form)
+            emailform = forms.emailform()
+            return share_obj.GET(emailform, form)
             
 def save_contacts(email, contacts, provider):
     #Even if the user is not logged-in, but has an account with us, let him import contacts
