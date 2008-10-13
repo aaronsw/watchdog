@@ -25,7 +25,7 @@ petitionform = form.Form(
       form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
       form.Textbox('pid', form.Validator("Address can't be blank", bool), form.Validator('ID already exists, Choose a different one.', petitionnotexists),
                     pre='http://watchdog.net/c/', description='URL:', size='30'),
-      form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='20', cols='80'),
+      form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='15', cols='80'),
       form.Checkbox('tocongress', value='', description="Petition to Congress?"),
       form.Hidden('userid')
       )
@@ -45,7 +45,7 @@ wyrform = form.Form(
       form.Textbox('phone', form.Validator("Phone can't be blank", bool), form.regexp(r'^[0-9-. ]*$', 'Please enter a valid phone number'), 
                     form.Validator('Please enter a valid phone number', check_len), description='Phone'),
       form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
-      form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='20', cols='80'),
+      form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='15', cols='80'),
       form.Textbox('captcha', pre='', description="Validation:"),
       form.Hidden('signid'),
       validators = [form.Validator("Zipcode is shared between two districts. Enter zip4 too.",
@@ -70,7 +70,7 @@ signform = form.Form(
             post=' *',
             size='30'),
     form.Checkbox('share_with', value='off', description="Share my email with the author of this petition"),
-    form.Textarea('comment', form.notnull, description='Comments:', cols=70, rows=5)
+    form.Textarea('comment', form.notnull, description='Personal comment (explain how this affects you):', cols=70, rows=4)
     )
 
 passwordform = form.Form(
