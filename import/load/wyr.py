@@ -1,4 +1,4 @@
-import json
+import simplejson as json
 from settings import db
 
 wyr = json.load(file('../data/crawl/votesmart/wyr.json'))
@@ -14,14 +14,15 @@ def load_wyr():
                 contact = 'https://forms.house.gov/wyr/welcome.shtml'
             else:
                 contact = data['contact']    
-                
-            d = {'district':distname, 
+            
+            pol = db.select(politician, what='id', where='district_id=$distname', vars=locals())[0].id
+            d = {'politician':pol, 
                     'contact':contact,
                     'contacttype': types[data['contacttype']],
                     'captcha': data['captcha']
                    }
                    
-            db.insert('rep_contacts', seqname=False, **d)
+            db.insert('pol_contacts', seqname=False, **d)
            
 if __name__ == "__main__": 
     load_wyr()

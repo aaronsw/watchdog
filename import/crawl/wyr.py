@@ -1,5 +1,5 @@
 import sys
-import json
+import simplejson as json
 from urllib2 import urlopen
 from ClientForm import ParseResponse, ControlNotFoundError, AmbiguityError
 from settings import db
@@ -170,10 +170,10 @@ def get_manual_contacts(dists):
                 d[dist] = dict(contact=_url, contacttype=contacttype, captcha=captcha)
     return d        
         
-def main(fname='wyr.json'):
+def main(fname='../data/crawl/votesmart/wyr.json'):
     #@@@ PVS data has few false positives for WYR form. 
     # So, better get reps having wyr forms in house.gov and then proceed to PVS data and then to manually created json
-    all_dists = set(r.name for r in db.select('district', what='name'))
+    all_dists = set(r.name for r in db.select('district', what='name') if '-' in r.name)
     
     d = get_wyr_forms(all_dists)
     remaining_dists = list(all_dists - set(d.keys()))

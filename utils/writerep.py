@@ -294,9 +294,9 @@ class write_your_rep:
 
     def POST(self):
         i = web.input()
-        auth.assert_login(i)
         wyrform = forms.wyrform()
         if wyrform.validates(i):
+            auth.assert_login(i)
             try:
                 status = self.save_and_send_msg(i, wyrform)
             except CaptchaException:

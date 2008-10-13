@@ -1,5 +1,6 @@
-import time, hashlib, urllib, urllib2, string, json
+import time, hashlib, urllib, urllib2, string
 from xml.dom import minidom    
+import simplejson as json
 from BeautifulSoup import BeautifulSoup
 
 import web

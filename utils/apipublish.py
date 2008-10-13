@@ -3,7 +3,7 @@ publish Python objects as various API formats
 """
 
 import datetime
-import json
+import simplejson as json
 import web
 
 API_PREFIX = "http://watchdog.net/about/api#"
@@ -51,7 +51,7 @@ class SmartJSONEncoder(json.JSONEncoder):
         return getattr(obj, 'tojson', lambda: self._default(obj))()
 
 def tojson(x):
-    return simplejson.dumps(x, cls=SmartJSONEncoder)
+    return json.dumps(x, cls=SmartJSONEncoder)
 
 def publishjson(lst):
     out = ['[']

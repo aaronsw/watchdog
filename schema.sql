@@ -284,6 +284,7 @@ CREATE TABLE pol_contacts(
 
 -- Views
 CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician);
+GRANT ALL on v_politician_name to watchdog;
 
 -- Permissions
 GRANT ALL on state TO watchdog;

@@ -1,13 +1,10 @@
-import urllib
-import random
-import hmac
+import urllib, random, hmac, datetime
+import simplejson as json
 from hashlib import sha1
-import datetime
 
 import web
-import helpers, forms
+import helpers, forms, config
 from settings import db, render
-import config
 
 def get_hexdigest(key, s):
     return hmac.new(key, s, sha1).hexdigest()
@@ -38,7 +35,7 @@ def new_user(fname, lname, email, password):
     user_id = db.insert('users', fname=fname, lname=lname, email=email, password=password, verified=True)
     user = web.storage(id=user_id, email=email, password=password, verified=True)
     return user
-
+        
 class signup:
     def POST(self):
         i = web.input(redirect='/')
@@ -48,10 +45,28 @@ class signup:
             lf['redirect'].value = sf['redirect'].value = i.redirect
             sf.fill(i)
             return render.login(lf, sf, redirect=i.redirect)
-        user = new_user(i.email, i.password)
+        user = new_user(i.fname, i.lname, i.email, i.password)
         helpers.set_login_cookie(i.email)
         raise web.seeother(i.redirect, absolute=True)
+      
+def internal_redirect(path, method, query, data):
+    # does an internal redirect within the application
+    from webapp import app
+    env = web.ctx.env
+    env['REQUEST_METHOD'] = method
+    env['PATH_INFO'] = path
+    env['QUERY_STRING'] = web.utf8(query)
 
+    cookie_headers = [(k, v) for k, v in web.ctx.headers if k == 'Set-Cookie'] 
+    app.load(env)
+
+    env['HTTP_COOKIE'] = env.get('HTTP_COOKIE', '') + ';' + ";".join([v for (k, v) in cookie_headers])
+    web.ctx.headers = cookie_headers
+
+    if method == 'POST':
+        web.ctx.data = web.utf8(data)
+    return app.handle()
+         
 class login:
     def GET(self):
         referer = web.ctx.env.get('HTTP_REFERER', '/')
@@ -70,7 +85,13 @@ class login:
             lf['redirect'].value = sf['redirect'].value = i.redirect
             lf.fill(i)
             return render.login(lf, sf, redirect=i.redirect)
-        raise web.seeother(i.redirect, absolute=True)
+        else:
+            state = i.get('state')
+            if state:
+                state = json.loads(state)
+                return internal_redirect(state['redirect'], state['method'], state['query'], state['data'])
+            else:    
+                raise web.seeother(i.redirect, absolute=True)
 
 class logout:
     def GET(self):
@@ -173,25 +194,38 @@ watchdog.net
 """ % (url)
     web.sendmail(config.from_address, email, subject, msg)
 
-def assert_login(i):
-    #let unlogged in users also do actions like signing, wyr
+def assert_login(i=None):
+    # let unlogged in users also do actions like signing, wyr
     # if the email has verified account with us but not logged-in, redirect to login form
     # if the email has unverified account, make them login and send set password email
     # if the email has no account, set an unverified account and send set password email
-    uemail = helpers.get_loggedin_email() or helpers.get_unverified_email()
-    if uemail: 
-        email = i.email = uemail
-    else:
-        email = i.get('email')    
-    
-    if helpers.is_verified(email) and not helpers.get_loggedin_email():
-        d = dict(redirect=web.ctx.homepath + web.ctx.fullpath, useremail=email)
-        query = urllib.urlencode(d)
-        raise web.seeother("/u/login?%s" % (query), absolute=True)
+    i = i or web.input()
+    email = i.email
+    if helpers.get_loggedin_email():
+        pass
+    elif helpers.is_verified(email):
+        login_page = do_login(email, set_state())
+        raise web.webapi.HTTPError('200 OK', {}, data=str(login_page))
     else:
         helpers.unverified_login(email, i.get('fname'), i.get('lname'))
         send_mail_to_set_password(email)
 
+def set_state():
+    if web.ctx.method == 'POST':
+        data = web.data()
+    else:
+        data = None
+    query = web.ctx.env['QUERY_STRING']
+    redirect = web.ctx.homepath + web.ctx.path
+    method = web.ctx.method
+    return dict(redirect=redirect, query=query, method=method, data=data)
+    
+def do_login(email, state):
+    lf, sf = forms.loginform(), forms.signupform()
+    lf.fill(useremail=email, redirect=state['redirect'], state=json.dumps(state))
+    sf.fill(redirect=state['redirect'], state=state)
+    return render.login(lf, sf)
+    
 def require_login(f):
     def g(*a, **kw):
         if not helpers.get_loggedin_email():

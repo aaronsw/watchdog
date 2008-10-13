@@ -39,10 +39,10 @@ def numdists(zip5, zip4=None, address=None):
     return len(getdists(zip5, zip4, address))
 
 def getdists(zip5, zip4=None, address=None):
-    query = 'select distinct district from zip4 where zip=$zip5'
+    query = 'select distinct district_id from zip4 where zip=$zip5'
     if zip4: query += ' and plus4=$zip4'
     query += ' limit 2'     #just to see uniqness of districts
-    dists = [x.district for x in db.query(query, vars=locals())]
+    dists = [x.district_id for x in db.query(query, vars=locals())]
     if len(dists) != 1:
         try:
             dists = zip2dist(zip5, address and address.strip())

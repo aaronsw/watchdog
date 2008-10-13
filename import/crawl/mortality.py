@@ -1,4 +1,5 @@
-import os, urllib, json
+import os, urllib
+import simplejson as json
 
 DEBUG = True
 out_dir = '../data/crawl/mortality/%s.tsv'

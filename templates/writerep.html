@@ -32,6 +32,7 @@ $if msg:
         <tr><td colspan=2><label for="email">Email</label>
    $if useremail:
        <strong>$useremail</strong>
+       <div style="display: none"> $:form.email.render() </div>
    $else:
        $:form.email.render()
    </td>

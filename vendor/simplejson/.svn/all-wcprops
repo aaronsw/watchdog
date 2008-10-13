@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/139/tags/simplejson-2.0.2/simplejson
+END
+scanner.py
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/139/tags/simplejson-2.0.2/simplejson/scanner.py
+END
+tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/139/tags/simplejson-2.0.2/simplejson/tool.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/139/tags/simplejson-2.0.2/simplejson/__init__.py
+END
+encoder.py
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/139/tags/simplejson-2.0.2/simplejson/encoder.py
+END
+_speedups.c
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/139/tags/simplejson-2.0.2/simplejson/_speedups.c
+END
+decoder.py
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/139/tags/simplejson-2.0.2/simplejson/decoder.py
+END

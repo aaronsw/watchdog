@@ -26,8 +26,9 @@ $elif not signupform.valid:
 <table>
 <tr>
 <td class="login">
-    <form name="login" method="POST" action="login">
+    <form name="login" method="POST" action="/u/login">
         $:signupform.redirect.render()
+        $:loginform.state.render()
         <fieldset>
         <legend>Log in to your account</legend>
         <label>Enter your email</label>
@@ -40,8 +41,9 @@ $elif not signupform.valid:
     </form>
 </td>
 <td class="signup">
-    <form name="signup" method="POST" action="signup">
+    <form name="signup" method="POST" action="/u/signup">
         $:signupform.redirect.render()
+        $:signupform.state.render()
         <fieldset>
         <legend>... or sign up to create one</legend>
         <table>
