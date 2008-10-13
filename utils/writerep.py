@@ -236,7 +236,7 @@ class write_your_rep:
         if not self.dist:
             self.set_dist(i)
         self.pol = db.select('politician', what='id', 
-                                where='politician.district=$self.dist',
+                                where='politician.district_id=$self.dist',
                                 vars=locals())[0].id
                 
     def set_msg_id(self, msg_id, petition=False):
