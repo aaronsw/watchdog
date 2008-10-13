@@ -44,6 +44,9 @@ $if isauthor:
 
 <a name="sign"></a>
 
+$if useremail:
+    <form name="logout" action="/u/logout" method='POST' style="display: none;"></form>
+
 <form name="sign" method="POST" action="/c/$p.id?m=sign">
         $if (not signform.valid) or (wyrform and not wyrform.valid):
             <p class="error">Please try again after fixing the errors highlighted below:</p>
@@ -65,9 +68,10 @@ $if isauthor:
                      $:wyrform.zipcode.render()- $:wyrform.zip4.render()</td><td id="note_zipcode"></td></tr>
             <tr><td colspan=2>         
             <label for="email">Email</label>
-            $if useremail:
-                <div><strong>$useremail</strong></div>
-                <div style="display: none"> $:signform.email.render() </div>
+            $if useremail: 
+                <span><strong>$useremail</strong></span>
+                <span style="display: none"> $:signform.email.render() </span>
+                &nbsp;&nbsp;(not you? &nbsp;<b><a href="#" onclick="document.forms['logout'].submit()">logout</a></b>)
             $else:
                 $:signform.email.render()
             $if wyrform:
