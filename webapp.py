@@ -151,7 +151,13 @@ class district:
         out = apipublish.publish([d], format)
         if out: return out
         
-        return render.district(d)
+        pos = web.storage()
+        spark_keys = ['area_sqmi', 'est_population', 'poverty_pct', 'median_income']
+        for k in spark_keys:
+            pos[k] = sparkpos('district', k, district)
+            print >>sys.stderr, "Position of %s on %s is %d" %( district, k, pos[k])
+
+        return render.district(d, pos)
 
 def group_politician_similarity(politician_id, qmin=None):
     """Find the interest groups that vote most like a politician."""
@@ -300,7 +306,6 @@ class politician:
                 'n_bills_enacted', 'n_speeches', 'words_per_speech',
                 'nominate', 'predictability']
         for k in spark_keys:
-            print >>sys.stderr, "Position of %s on %s is %d" %( polid, k, sparkpos('politician', k, polid))
             pos[k] = sparkpos('politician',k,polid)
 
         return render.politician(p, pos)
@@ -361,9 +366,15 @@ class dproperty:
                 item.path = '/p/' + item.id
         return render.dproperty(items, what)
 
-def sparkpos(table, what, polid):
+def sparkpos(table, what, id):
+    if table == 'district':
+        id_col = 'name'
+        id = id.upper()
+    elif table == 'politician':
+        id_col= 'id'
+    else: return 0
     # @@TODO: make sure this is injection safe.
-    item = db.query("select count(*) as position from %(table)s, (select * from %(table)s where id='%(who)s') as a where %(table)s.%(what)s > a.%(what)s" %  {'table':table, 'what':what, 'who':polid})[0]
+    item = db.query("select count(*) as position from %(table)s, (select * from %(table)s where %(id_col)s='%(who)s') as a where %(table)s.%(what)s > a.%(what)s" %  {'table':table, 'what':what, 'who':id, 'id_col':id_col})[0]
     return item.position + 1 # '#1' looks better than '#0'
 
 class sparkdist:

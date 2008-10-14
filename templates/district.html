@@ -1,4 +1,4 @@
-$def with (d)
+$def with (d, pos)
 
 $var title: $d.name: $d.state.name’s $d.districtth
 
@@ -44,34 +44,39 @@ $else:
 $if d.cook_index:
     <tr class="even">
       <th>Cook <acronym title="Partisan Voting Index">PVI</acronym>:</th>
-      <td>$d.cook_index</td>
-      <td></td>
+      <td class="sparkdata">$d.cook_index</td>
+      <td class="sparkline"></td>
+      <td class="sparknum"></td>
     </tr>
   <tr class="odd">
     <th>Area:</th>
-    <td>$commify(d.area_sqmi) sq. mi.</td>
-    <td><a href="/us/by/area_sqmi#d$d.name"
+    <td class="sparkdata">$commify(d.area_sqmi) sq. mi.</td>
+    <td class="sparkline"><a href="/us/by/area_sqmi#d$d.name"
          ><img src="/us/by/area_sqmi/distribution.png?point=$d.area_sqmi"
                class="sparkline" /></a></td>
+    <td class="sparknum"><sup>(#${pos['area_sqmi']})</sup></td>
   </tr><tr class="even">
     <th>Population:</th>
-    <td>$commify(d.est_population) ($d.est_population_year est.)</td>
-    <td><a href="/us/by/est_population#d$d.name"
+    <td class="sparkdata">$commify(d.est_population) ($d.est_population_year est.)</td>
+    <td class="sparkline"><a href="/us/by/est_population#d$d.name"
          ><img 
            src="/us/by/est_population/distribution.png?point=$d.est_population"
            class="sparkline" /></a></td>
+    <td class="sparknum"><sup>(#${pos['est_population']})</sup></td>
   </tr><tr class="odd">
     <th>Poverty rate:</th>
-    <td>$d.poverty_pct%</td>
-    <td><a href="/us/by/poverty_pct#d$d.name"
+    <td class="sparkdata">$d.poverty_pct%</td>
+    <td class="sparkline"><a href="/us/by/poverty_pct#d$d.name"
          ><img src="/us/by/poverty_pct/distribution.png?point=$d.poverty_pct"
                class="sparkline" /></a></td>
+    <td class="sparknum"><sup>(#${pos['poverty_pct']})</sup></td>
   </tr><tr class="even">
     <th>Median household income:</th>
-    <td>\$$commify(d.median_income)</td>
-    <td><a href="/us/by/median_income#d$d.name"
+    <td class="sparkdata">\$$commify(d.median_income)</td>
+    <td class="sparkline"><a href="/us/by/median_income#d$d.name"
          ><img src="/us/by/median_income/distribution.png?point=$d.median_income"
                class="sparkline" /></a></td>
+    <td class="sparknum"><sup>(#${pos['median_income']})</sup></td>
   </tr>
 </tbody></table>
 </div>
