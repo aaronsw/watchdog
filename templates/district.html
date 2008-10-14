@@ -28,7 +28,7 @@ $var maxi: True
 <div id="mapinfo">
 <h2>$d.state.name’s $d.districtth congressional district.</h2>
 
-$if d.politician[0].id and d.politician[0].firstname:
+$if d.politician and d.politician[0].id and d.politician[0].firstname:
     $if d.politician[0].photo_path:
         <a href="/p/$d.politician[0].id"><img src="$d.politician[0].photo_path" 
           width="5em" alt="Headshot" class="smallheadshot" /></a>
