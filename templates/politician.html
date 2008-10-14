@@ -73,7 +73,7 @@ $else:
 
 <table class="charted structure"><tbody>
   <tr class="even">
-    $:spark('Requested', pol.n_earmark_requested, pol.id, 'n_earmark_requested')
+    $:spark('Requested', pol.n_earmark_requested, pol.id, 'n_earmark_requested', url='/e/'+pol.id)
   </tr><tr class="odd">
     $:spark('Total cost', pol.amt_earmark_requested, pol.id, 'amt_earmark_requested', '$')
   </tr><tr class="even">
@@ -91,7 +91,7 @@ $else:
     $:spark('Co-sponsored', pol.n_bills_cosponsored, pol.id, 'n_bills_cosponsored')
   </tr>
   <tr class="odd">
-    $:spark('Introduced', pol.n_bills_introduced, pol.id, 'n_bills_introduced', '', '/p/'+pol.id+'/introduced')
+    $:spark('Introduced', pol.n_bills_introduced, pol.id, 'n_bills_introduced', url='/p/'+pol.id+'/introduced')
   </tr>
   <tr class="even">
     $:spark('Debated', pol.n_bills_debated, pol.id, 'n_bills_debated')

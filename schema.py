@@ -112,6 +112,11 @@ class Politician(sql.Table):
     def fullname(self):
         return (self.firstname or '') + ' ' + (self.middlename or '') + ' ' + (self.lastname or '')
     
+    @property
+    def title(self):
+        dist = self.district_id
+        return 'Sen.' if State.where(code=dist) else 'Rep.'
+    
     officeurl = sql.URL()
     party = sql.String()
     religion = sql.String()

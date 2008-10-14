@@ -221,18 +221,34 @@ def earmark_list(format, page=0, limit=50):
 
     out = apipublish.publish(earmarks, format)
     if out: return out
-    #@@ add link to next page
+    return render.earmark_list(earmarks, limit)
+def earmark_pol_list(pol_id, format, page=0, limit=50):
+    earmarks = map(lambda x: x.earmark, schema.Politician.where(id=pol_id)[0].earmarks_sponsored)
+    out = apipublish.publish(earmarks, format)
+    if out: return out
     return render.earmark_list(earmarks, limit)
 
 class earmark:
     def GET(self, earmark_id, format=None):
+        # No earmark id, show list
         if earmark_id == "" or earmark_id == "index":
             # Show earmark list
             i = web.input(page=0)
             return earmark_list(format, int(i.page))
+        em = None
+        # Check if we were given a politician_id
         try:
-            em = schema.Earmark.where(id=earmark_id)[0]
+            em = schema.Politician.where(id=earmark_id)[0]
         except IndexError:
+            pass # not found
+        if em:
+            return earmark_pol_list(earmark_id, format)
+        # Display the specific earmark
+        try:
+            em = schema.Earmark.where(id=int(earmark_id))[0]
+        except IndexError:
+            raise web.notfound
+        except ValueError:
             raise web.notfound
         return render.earmark(em)
 
