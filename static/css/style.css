@@ -240,8 +240,6 @@ h2.repred { color: #EE4400; margin-bottom: 6px; }
 #loadcontacts #email { margin-bottom: 0.5em;}
 #loadcontacts #provider span { display: block; }
 
-.login { padding-right: 2em; border-right: 1px solid #ccc; }
-.signup { padding-left: 2em; }
 .login th, .signup th { font-weight: normal; }
 .login fieldset, .signup fieldset { width: 250px; }
 .login input, .signup input { width: 250px; }
