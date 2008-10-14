@@ -1,0 +1,18 @@
+$def with (earmarks, limit)
+
+$var title: Earmarks
+
+$for em in earmarks:
+    <p>\$$commify(em.final_amt) for <a href="/e/$em.id">$em.description</a></p>
+
+$ page = int(query_param("page", 0))
+
+$if page != 0:
+    &lt;&lt;<a href="$changequery(page=page - 1)">Prev</a>
+
+$if len(earmarks) == limit:
+     | <a href="$changequery(page=page + 1)">Next</a> &gt;&gt;
+
+<!--
+<p><strong>Developers:</strong> Get this page in <a href="index.n3?page=$page">N3</a>, <a href="index.xml?page=$page">XML</a>, or <a href="index.json?page=$page">JSON</a>.</p>
+-->

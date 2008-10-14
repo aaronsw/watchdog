@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import re
+import re, sys
 import web
 web.config.debug = True
 
@@ -25,6 +25,7 @@ urls = (
   r'/p/(.*?)/groups', 'politician_groups',
   r'/p/(.*?)/(\d+)', 'politician_group',
   r'/p/(.*?)%s?' % options, 'politician',
+  r'/e/(.*?)%s?' % options, 'earmark',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/r/us/(.*?)%s?' % options, 'roll',
   r'/c', petition.app,
@@ -152,7 +153,13 @@ class district:
         out = apipublish.publish([d], format)
         if out: return out
         
-        return render.district(d)
+        pos = web.storage()
+        spark_keys = ['area_sqmi', 'est_population', 'poverty_pct', 'median_income']
+        for k in spark_keys:
+            pos[k] = sparkpos('district', k, district)
+            print >>sys.stderr, "Position of %s on %s is %d" %( district, k, pos[k])
+
+        return render.district(d, pos)
 
 def group_politician_similarity(politician_id, qmin=None):
     """Find the interest groups that vote most like a politician."""
@@ -217,6 +224,48 @@ class bill:
         
         return render.bill(b)
 
+def earmark_list(format, page=0, limit=50):
+    earmarks = schema.Earmark.select(limit=limit, offset=page*limit, order='id')
+
+    out = apipublish.publish(earmarks, format)
+    if out: return out
+    return render.earmark_list(earmarks, limit)
+def earmark_pol_list(pol_id, format, page=0, limit=50):
+    p = schema.Politician.where(id=pol_id)[0].earmarks_sponsored
+    if p:
+        earmarks = map(lambda x: x.earmark, p)
+    else: 
+        # @@TODO: something better here. 
+        raise web.notfound
+    out = apipublish.publish(earmarks, format)
+    if out: return out
+    return render.earmark_list(earmarks, limit)
+
+class earmark:
+    def GET(self, earmark_id, format=None):
+        # No earmark id, show list
+        if earmark_id == "" or earmark_id == "index":
+            # Show earmark list
+            i = web.input(page=0)
+            return earmark_list(format, int(i.page))
+        em = None
+        # Check if we were given a politician_id
+        try:
+            em = schema.Politician.where(id=earmark_id)[0]
+        except IndexError:
+            pass # not found
+        if em:
+            return earmark_pol_list(earmark_id, format)
+        # Display the specific earmark
+        try:
+            em = schema.Earmark.where(id=int(earmark_id))[0]
+        except IndexError:
+            raise web.notfound
+        except ValueError:
+            raise web.notfound
+        return render.earmark(em)
+
+
 class politician:
     def GET(self, polid, format=None):
         if polid != polid.lower():
@@ -256,7 +305,17 @@ class politician:
         out = apipublish.publish([p], format)
         if out: return out
 
-        return render.politician(p)
+        pos = web.storage()
+        spark_keys = ['money_raised', 'pct_spent', 'pct_self', 'pct_indiv',
+                'pct_pac', 'n_earmark_requested', 'amt_earmark_requested',
+                'n_earmark_received', 'amt_earmark_received',
+                'n_bills_cosponsored', 'n_bills_introduced', 'n_bills_debated',
+                'n_bills_enacted', 'n_speeches', 'words_per_speech',
+                'nominate', 'predictability']
+        for k in spark_keys:
+            pos[k] = sparkpos('politician',k,polid)
+
+        return render.politician(p, pos)
 
 class politician_introduced:
     def GET(self, politician_id):
@@ -313,6 +372,17 @@ class dproperty:
                   (item.party or 'I')[0], item.district_id.split('-')[0])
                 item.path = '/p/' + item.id
         return render.dproperty(items, what)
+
+def sparkpos(table, what, id):
+    if table == 'district':
+        id_col = 'name'
+        id = id.upper()
+    elif table == 'politician':
+        id_col= 'id'
+    else: return 0
+    # @@TODO: make sure this is injection safe.
+    item = db.query("select count(*) as position from %(table)s, (select * from %(table)s where %(id_col)s='%(who)s') as a where %(table)s.%(what)s > a.%(what)s" %  {'table':table, 'what':what, 'who':id, 'id_col':id_col})[0]
+    return item.position + 1 # '#1' looks better than '#0'
 
 class sparkdist:
     def GET(self, table, what):
