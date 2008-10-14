@@ -269,7 +269,7 @@ class write_your_rep:
                         zipcode=i.zipcode, zip4=i.zip4,
                         phone=i.phone, email=email, subject=i.ptitle, msg=i.msg,
                         captcha=i.get('captcha', ''))
-        update_user_details(i)
+        if not pform: update_user_details(i)
         return msg_sent
 
     def save_and_send_msg(self, i, wyrform, pform=None):

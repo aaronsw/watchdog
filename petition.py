@@ -5,7 +5,7 @@ import web
 from utils import forms, helpers, auth
 from settings import db, render, render_plain, session
 from utils.auth import require_login
-from utils.users import fill_user_details
+from utils.users import fill_user_details, update_user_details
 import config
 from utils.wyrutils import CaptchaException, add_captcha
 
@@ -162,7 +162,7 @@ class signup:
             lf, pf = forms.loginform(), forms.petitionform()
             sf.fill(i), pf.fill(i), wf.fill(i)
             return render.petitionlogin(lf, sf, pf, wf)
-        user = auth.new_user( i.fname, i.lname, i.email, i.password)
+        user = auth.new_user(i.email, i.password)
         helpers.set_login_cookie(i.email)
         try:
             create_petition(i, i.email, wf)
@@ -199,7 +199,7 @@ def save_signature(i, pid, uid, tocongress=False):
                 user_id=uid, share_with=share_with,
                 petition_id=pid, comment=i.get('comment'),
                 sent_to_congress=msg_status, referrer=referrer)
-        
+        update_user_details(i)
         helpers.set_msg("Thanks for your signing! Why don't you tell your friends about it now?")
         return signid 
     else:
