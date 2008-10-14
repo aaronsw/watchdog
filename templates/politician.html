@@ -38,6 +38,8 @@ $if pol.education:
 
 $def spark(lable, data, polid, by, unit='', url=None):
     <th>$:lable</th>
+	$if not data: 
+		$ data = 0
     $ display = commify(data) + ' ' + unit
     $if unit == '$':
         $ display = unit + commify(data)

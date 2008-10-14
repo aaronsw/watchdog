@@ -229,7 +229,12 @@ def earmark_list(format, page=0, limit=50):
     if out: return out
     return render.earmark_list(earmarks, limit)
 def earmark_pol_list(pol_id, format, page=0, limit=50):
-    earmarks = map(lambda x: x.earmark, schema.Politician.where(id=pol_id)[0].earmarks_sponsored)
+    p = schema.Politician.where(id=pol_id)[0].earmarks_sponsored
+    if p:
+        earmarks = map(lambda x: x.earmark, p)
+    else: 
+        # @@TODO: something better here. 
+        raise web.notfound
     out = apipublish.publish(earmarks, format)
     if out: return out
     return render.earmark_list(earmarks, limit)
