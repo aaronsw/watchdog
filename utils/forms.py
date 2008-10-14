@@ -32,8 +32,8 @@ petitionform = form.Form(
 
 wyrform = form.Form(
       form.Dropdown('prefix', ['Mr.', 'Mrs.', 'Dr.', 'Ms.', 'Miss'],  description='Prefix'),
-      form.Textbox('lname', form.Validator("Last name can't be blank", bool), description='Last Name'),
-      form.Textbox('fname', form.Validator("First name can't be blank", bool), description='First Name'),
+      form.Textbox('lname', form.Validator("Last name can't be blank", bool), size='16', description='Last Name'),
+      form.Textbox('fname', form.Validator("First name can't be blank", bool),  size='16', description='First Name'),
       form.Textbox('email', form.notnull, form.regexp(email_regex, 'Please enter a valid email'), description='Email', size='30'),
       form.Textbox('addr1', form.Validator("Address can't be blank", bool), description='Address', size='20'),
       form.Textbox('addr2', description='Address', size='20'),
@@ -43,7 +43,7 @@ wyrform = form.Form(
       form.Textbox('zip4', form.regexp(r'^$|[0-9]{4}', 'Please Enter a valid zip'),
                     size='4', maxlength='4',description=''),
       form.Textbox('phone', form.Validator("Phone can't be blank", bool), form.regexp(r'^[0-9-. ]*$', 'Please enter a valid phone number'), 
-                    form.Validator('Please enter a valid phone number', check_len), description='Phone'),
+                    form.Validator('Please enter a valid phone number', check_len), size='15', description='Phone'),
       form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
       form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='15', cols='80'),
       form.Textbox('captcha', pre='', description="Validation:"),
