@@ -380,8 +380,13 @@ def sparkpos(table, what, id):
     elif table == 'politician':
         id_col= 'id'
     else: return 0
-    # @@TODO: make sure this is injection safe.
-    item = db.query("select count(*) as position from %(table)s, (select * from %(table)s where %(id_col)s='%(who)s') as a where %(table)s.%(what)s > a.%(what)s" %  {'table':table, 'what':what, 'who':id, 'id_col':id_col})[0]
+    assert table in table_map.values()
+    if not r_safeproperty.match(what): raise web.notfound
+    
+    item = db.query("select count(*) as position from %(table)s, \
+      (select * from %(table)s where %(id_col)s=$id) as a \
+      where %(table)s.%(what)s > a.%(what)s" % 
+      {'table':table, 'what':what, 'id_col':id_col}, vars={'id': id})[0]
     return item.position + 1 # '#1' looks better than '#0'
 
 class sparkdist:
