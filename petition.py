@@ -299,10 +299,9 @@ class petition:
             p = get_petition_by_id(pid)
             u = helpers.get_user_by_email(user_email)
             pform = forms.petitionform()
-            pform.fill(userid=u.id, email=user_email, pid=p.id, ptitle=p.title, msg=p.description)
+            pform.fill(userid=u.id, email=user_email, pid=p.id, ptitle=p.title, msg=p.description, tocongress=p.to_congress)
             cform = forms.wyrform()
-            cform.fill(prefix=u.prefix, fname=u.fname, lname=u.lname, addr1=u.addr1,
-                        addr2=u.addr2, city=u.city, zipcode=u.zip5, phone=u.phone)
+            fill_user_details(cform)
             title = "Edit your petition"
             return render.petitionform(pform, cform, title, target='/c/%s?m=edit' % (pid))
         else:
@@ -395,13 +394,13 @@ class petition:
         pform = forms.petitionform()
         pform.inputs = filter(lambda i: i.name != 'pid', pform.inputs)
         wyrform = forms.wyrform()
+        i.email = helpers.get_loggedin_email()
         wyr_valid = (not(tocongress) or wyrform.validates(i))
         if not pform.validates(i) or not wyr_valid:
             title = "Edit petition"
             return render.petitionform(pform, wyrform, title, target='/c/%s?m=edit' % (pid))
-        db.update('petition', where='id=$pid', title=i.ptitle, description=i.msg, vars=locals())
-        db.update('users', where='id=$i.userid', prefix=i.prefix, fname=i.fname, lname=i.lname,
-                  addr1=i.addr1, addr2=i.addr2, city=i.city, zip5=i.zipcode, phone=i.phone, vars=locals())
+        db.update('petition', where='id=$pid', title=i.ptitle, description=i.msg, to_congress=tocongress, vars=locals())
+        update_user_details(i)
         raise web.seeother('/%s' % pid)
 
     def POST_unsign(self, pid):
