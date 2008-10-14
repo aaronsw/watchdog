@@ -276,7 +276,18 @@ class politician:
         out = apipublish.publish([p], format)
         if out: return out
 
-        return render.politician(p)
+        pos = web.storage()
+        spark_keys = ['money_raised', 'pct_spent', 'pct_self', 'pct_indiv',
+                'pct_pac', 'n_earmark_requested', 'amt_earmark_requested',
+                'n_earmark_received', 'amt_earmark_received',
+                'n_bills_cosponsored', 'n_bills_introduced', 'n_bills_debated',
+                'n_bills_enacted', 'n_speeches', 'words_per_speech',
+                'nominate', 'predictability']
+        for k in spark_keys:
+            print >>sys.stderr, "Position of %s on %s is %d" %( polid, k, sparkpos('politician', k, polid))
+            pos[k] = sparkpos('politician',k,polid)
+
+        return render.politician(p, pos)
 
 class politician_introduced:
     def GET(self, politician_id):
@@ -333,6 +344,11 @@ class dproperty:
                   (item.party or 'I')[0], item.district_id.split('-')[0])
                 item.path = '/p/' + item.id
         return render.dproperty(items, what)
+
+def sparkpos(table, what, polid):
+    # @@TODO: make sure this is injection safe.
+    item = db.query("select count(*) as position from %(table)s, (select * from %(table)s where id='%(who)s') as a where %(table)s.%(what)s > a.%(what)s" %  {'table':table, 'what':what, 'who':polid})[0]
+    return item.position + 1 # '#1' looks better than '#0'
 
 class sparkdist:
     def GET(self, table, what):
