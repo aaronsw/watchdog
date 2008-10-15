@@ -48,11 +48,11 @@ cleanparse:
 database: $(LOADERS)
 
 .manual: .schema load/manual.py load/manual/*.json
-	python load/manual.py
+	$(PYTHON) load/manual.py
 	touch $@
 
 .schema: ../schema.py
-	python -c "import schema; schema.sql.recreate(); schema.sql.grantall('watchdog'); schema.init()"
+	$(PYTHON) -c "import schema; schema.sql.recreate(); schema.sql.grantall('watchdog'); schema.init()"
 	-rm .bills
 	touch $@
 
@@ -122,7 +122,7 @@ ALTER TABLE zip4 ADD PRIMARY KEY (zip,plus4); \
 	touch $@
 
 $(LOAD)/census_meta.tsv $(LOAD)/census_data.tsv: load/census.py parse/census.py
-	python load/census.py
+	$(PYTHON) load/census.py
 
 .census: $(LOAD)/census_meta.tsv $(LOAD)/census_data.tsv .schema .manual
 	$(DBCLIENT) $(WATCHDOG_TABLE) < $(LOAD)/census_meta.tsv 
