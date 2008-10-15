@@ -38,30 +38,55 @@ class Field:
     """
     A class that manifests a tiny DSEL for describing field mappings.
 
-    >>> Field().formatted_with(fixed_width.date) \
-               .aka('bob').get_from('dan', {'bob': '20080930'})
+    >>> Field(format=fixed_width.date,
+    ...       aka=['bob']).get_from('dan', {'bob': '20080930'})
     '2008-09-30'
-    >>> Field().formatted_with(fixed_width.date) \
-               .aka('bob').get_from('dan', {'dan': '20080830'})
+    >>> Field(format=fixed_width.date,
+    ...       aka=['bob']).get_from('dan', {'dan': '20080830'})
     '2008-08-30'
-    >>> Field().aka('bob').aka('fred').aliases()
+    >>> Field(aka=['bob', 'fred']).aliases()
     set(['bob', 'fred'])
     """
-    def __init__(self, aliases=set(), formatter=lambda x: x):
-        self._aliases = aliases
-        self._formatter = formatter
-    def formatted_with(self, formatter):
-        return Field(aliases=self._aliases, formatter=formatter)
-    def aka(self, alias):
-        return Field(aliases=self._aliases | set([alias]), formatter=self._formatter)
+    def __init__(self, aka=set(), format=lambda x: x):
+        self._aka = set(aka)
+        self._format = format
     def aliases(self):
-        return self._aliases
+        return self._aka
     def get_from(self, name, data):
         for k in [name] + list(self.aliases()):
             if k in data:
-                return self._formatter(data[k])
+                return self._format(data[k])
 
 field = Field()
+
+def map_fields(fields, data):
+    """
+    Maps fields according to a field-mapping specification.
+
+    Takes and returns a dict. The original dict comes out as a member
+    named 'original_data'; otherwise its members are only copied
+    across according to applicable field specs.
+
+    >>> mapped = map_fields(fields, {'date_received': '20081131',
+    ...                              'tran_id': '12345', 
+    ...                              'weird_field': 34, 
+    ...                              'amount_received': '123456'})
+    >>> sorted(mapped.keys())
+    ['amount', 'date', 'original_data', 'tran_id']
+    >>> mapped['date']
+    '2008-11-31'
+    >>> mapped['amount']
+    '1234.56'
+    >>> mapped['original_data']['weird_field']
+    34
+    >>> mapped['tran_id']
+    '12345'
+    """
+    rv = {'original_data': data}
+    for name, field in fields.items():
+        val = field.get_from(name, data)
+        if val is not None: rv[name] = val
+    return rv
 
 def strip(text):
     """
@@ -81,45 +106,45 @@ def amount(text):
     return text[:-2] + '.' + text[-2:]
 
 fields = {
-    'date': field.formatted_with(fixed_width.date).aka('date_received')
-                                                  .aka('contribution_date'),
-    'candidate_fec_id': field.formatted_with(strip)
-                             .aka('candidate_id_number')
-                             .aka('fec_candidate_id_number'),
-    'tran_id': field.aka('transaction_id_number'),
-    'occupation': field.aka('contributor_occupation'),
-    'contributor_org': field.aka('contributor_organization_name')
-                            .aka('contrib_organization_name'),
-    'employer': field.aka('contributor_employer'),
-    'amount': field.formatted_with(amount)
-                   .aka('contribution_amount')
-                   .aka('amount_received')
-                   .aka('expenditure_amount')
-                   .aka('amount_of_expenditure'),
+    'date': Field(format=fixed_width.date,
+                  aka=['date_received', 'contribution_date']),
+    'candidate_fec_id': Field(format=strip, aka=['candidate_id_number',
+                                                 'fec_candidate_id_number']),
+    'tran_id': Field(aka=['transaction_id_number']),
+    'occupation': Field(aka=['contributor_occupation', 'indocc']),
+    'contributor_org': Field(aka=['contributor_organization_name',
+                                  'contrib_organization_name']),
+    'employer': Field(aka=['contributor_employer', 'indemp']),
+    'amount': Field(format=amount,
+                    aka=['contribution_amount',
+                         'amount_received',
+                         'expenditure_amount',
+                         'amount_of_expenditure'])
 }
 
-def map_fields(fields, data):
+def _regrtest_fields():
     """
-    >>> mapped = map_fields(fields, {'date_received': '20081131', \
-                                     'tran_id': '12345', \
-                                     'weird_field': 34, \
-                                     'amount_received': '123456'})
-    >>> sorted(mapped.keys())
-    ['amount', 'date', 'original_data', 'tran_id']
-    >>> mapped['date']
-    '2008-11-31'
-    >>> mapped['amount']
-    '1234.56'
-    >>> mapped['original_data']['weird_field']
-    34
-    >>> mapped['tran_id']
-    '12345'
+    Regression tests for the `fields` table.
+    
+    >>> map_fields(fields, {'candidate_id_number': '12345'})
+    ... #doctest: +ELLIPSIS
+    {'candidate_fec_id': '12345', 'original_data': {...}}
+    >>> map_fields(fields, {'fec_candidate_id_number': '56789'})
+    ... #doctest: +ELLIPSIS
+    {'candidate_fec_id': '56789', 'original_data': {...}}
+    >>> map_fields(fields, {'transaction_id_number': '56789'})
+    ... #doctest: +ELLIPSIS
+    {'original_data': {...}, 'tran_id': '56789'}
+    >>> map_fields(fields, {'contributor_occupation': 'Consultant'})
+    ... #doctest: +ELLIPSIS
+    {'original_data': {...}, 'occupation': 'Consultant'}
+    >>> map_fields(fields, {'indocc': 'Private Investor'})
+    ... #doctest: +ELLIPSIS
+    {'original_data': {...}, 'occupation': 'Private Investor'}
+    >>> map_fields(fields, {'indemp': 'EEA Development'})
+    ... #doctest: +ELLIPSIS
+    {'original_data': {...}, 'employer': 'EEA Development'}
     """
-    rv = {'original_data': data}
-    for name, field in fields.items():
-        val = field.get_from(name, data)
-        if val is not None: rv[name] = val
-    return rv
 
 class header(csv.excel):
     delimiter = ';'
