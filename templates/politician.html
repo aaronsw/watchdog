@@ -75,7 +75,7 @@ $else:
 
 <table class="charted structure"><tbody>
   <tr class="even">
-    $:spark('Requested', pol.n_earmark_requested, pol.id, 'n_earmark_requested', url='/e/'+pol.id)
+    $:spark('Requested', pol.n_earmark_requested, pol.id, 'n_earmark_requested', url='/p/'+pol.id+'/earmarks')
   </tr><tr class="odd">
     $:spark('Total cost', pol.amt_earmark_requested, pol.id, 'amt_earmark_requested', '$')
   </tr><tr class="even">

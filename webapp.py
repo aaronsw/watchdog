@@ -21,6 +21,7 @@ urls = (
   r'/us/([a-z][a-z]-\d+)%s?' % options, 'district',
   r'/(us|p)/by/(.*)/distribution\.png', 'sparkdist',
   r'/(us|p)/by/(.*)', 'dproperty',
+  r'/p/(.*?)/earmarks', 'politician_earmarks',
   r'/p/(.*?)/introduced', 'politician_introduced',
   r'/p/(.*?)/groups', 'politician_groups',
   r'/p/(.*?)/(\d+)', 'politician_group',
@@ -241,6 +242,13 @@ def earmark_pol_list(pol_id, format, page=0, limit=50):
     if out: return out
     return render.earmark_list(earmarks, limit)
 
+class politician_earmarks:
+    def GET(self, polid, format=None):
+        try:
+            em = schema.Politician.where(id=polid)[0]
+        except IndexError:
+            raise web.notfound
+        return earmark_pol_list(polid, format)
 class earmark:
     def GET(self, earmark_id, format=None):
         # No earmark id, show list
@@ -248,14 +256,6 @@ class earmark:
             # Show earmark list
             i = web.input(page=0)
             return earmark_list(format, int(i.page))
-        em = None
-        # Check if we were given a politician_id
-        try:
-            em = schema.Politician.where(id=earmark_id)[0]
-        except IndexError:
-            pass # not found
-        if em:
-            return earmark_pol_list(earmark_id, format)
         # Display the specific earmark
         try:
             em = schema.Earmark.where(id=int(earmark_id))[0]
