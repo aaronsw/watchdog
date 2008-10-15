@@ -17,9 +17,9 @@ $elif not signupform.valid:
 <style>
 #text h2 { margin-bottom: 30px; }
 #text fieldset td { padding: 0; }
-#text fieldset #fname { margin-right: 7px; }
-#text fieldset #fname { width: 115px; }
-#text fieldset #lname { width: 115px; }
+.signup { padding-right: 2em; border-right: 1px solid #ccc; }
+.login { padding-left: 2em; }
+
 </style>
 
 
@@ -27,35 +27,6 @@ $elif not signupform.valid:
 
 <table>
 <tr>
-<td class="login">
-    <form name="login" method="POST" action="login">
-        <div style="display: none">
-            $:petitionform.ptitle.render()
-            $:petitionform.pid.render()
-            $:petitionform.msg.render()
-            $:petitionform.tocongress.render()
-            $:wyrform.prefix.render()
-            $:wyrform.fname.render()
-            $:wyrform.lname.render()
-            $:wyrform.addr1.render()
-            $:wyrform.addr2.render()
-            $:wyrform.city.render()
-            $:wyrform.zipcode.render()
-            $:wyrform.zip4.render()
-            $:wyrform.phone.render()
-        </div>
-        $:signupform.redirect.render()
-        <fieldset>
-        <legend>Log in to your account</legend>
-        <label>Enter your email</label>
-        $:loginform.useremail.render()
-        <label>And your password</label>
-        $:loginform.password.render()
-        <div><button type="submit">Log in</button></div>
-        <p><a href='/u/forgot_password'>Forgot your password?</a></p>
-        </fieldset>
-    </form>
-</td>
 <td class="signup">
     <form name="signup" method="POST" action="signup">
         <div style="display: none">
@@ -75,11 +46,7 @@ $elif not signupform.valid:
         </div>
         $:signupform.redirect.render()
         <fieldset>
-        <legend>... or sign up to create one</legend>
-        <table>
-        <tr><td><label for="fname">First name</label>$:signupform.fname.render()</td>
-        <td><label for="lname">Last name</label>$:signupform.lname.render()</td></tr>
-        </table>
+        <legend>Sign up to create one</legend>
         <label>Enter your email</label>
         $:signupform.email.render()
         <label>Give it a password</label>
@@ -87,6 +54,35 @@ $elif not signupform.valid:
         <label>Type the password again</label>
         $:signupform.password_again.render()
         <div><button type="submit">Sign up</button></div>
+        </fieldset>
+    </form>
+</td>
+<td class="login">
+    <form name="login" method="POST" action="login">
+        <div style="display: none">
+            $:petitionform.ptitle.render()
+            $:petitionform.pid.render()
+            $:petitionform.msg.render()
+            $:petitionform.tocongress.render()
+            $:wyrform.prefix.render()
+            $:wyrform.fname.render()
+            $:wyrform.lname.render()
+            $:wyrform.addr1.render()
+            $:wyrform.addr2.render()
+            $:wyrform.city.render()
+            $:wyrform.zipcode.render()
+            $:wyrform.zip4.render()
+            $:wyrform.phone.render()
+        </div>
+        $:signupform.redirect.render()
+        <fieldset>
+        <legend>... or log in to your account</legend>
+        <label>Enter your email</label>
+        $:loginform.useremail.render()
+        <label>And your password</label>
+        $:loginform.password.render()
+        <div><button type="submit">Log in</button></div>
+        <p><a href='/u/forgot_password'>Forgot your password?</a></p>
         </fieldset>
     </form>
 </td>

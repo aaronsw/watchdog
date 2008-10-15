@@ -61,14 +61,11 @@ $if page.get('sidebar', '').strip() != "None":
             </li>
             $ li_class = ""
         </ul>
-    <div class="postit">
-      <p><strong>Pardon the mess</strong> &mdash;<br />
-      we're building this site as you use it.
-      Expect things to break, fix, appear, and disappear.
-      We'd love your <a href="/about/#feedback">feedback</a> and your <a href="/about/#help">help</a>.</p>
-      
-      <p><a href="/about/#hiring" class="highlight">We're hiring!</a></p>
-    </div>
+    $if getpath() != '/share':
+        <div class="postit">
+            <a href="/share?url=$getpath()&title=$:page.title"><strong>Share this page</strong></a>
+        </div>
+    
     </div>
 
 $:page.get('pretext')

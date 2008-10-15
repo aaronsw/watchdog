@@ -22,14 +22,14 @@ def test(formtype=None):
         return dist_zip_dict[dist]
           
           
-    query = "select district from politician, pol_contacts" 
+    query = "select district_id from politician, pol_contacts" 
     query += " where pol_contacts.politician = politician.id " 
     if formtype == 'wyr':  query += "and contacttype='W'"
     elif formtype == 'ima': query += "and contacttype='I'"
     elif formtype == 'zipauth': query += "and contacttype='Z'"
     elif formtype =='email': query += "and contacttype='E'"
     
-    dists = [r.district for r in db.query(query + ' limit 2')]
+    dists = [r.district_id for r in db.query(query + ' limit 2')]
     for dist in dists:
         print dist,        
         zip5, zip4 = getzip(dist)

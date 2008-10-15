@@ -1,0 +1,24 @@
+$def with (title, url, description=None, track_id=None)
+
+Dear Friend,
+
+$if track_id:
+        $ full_url = "http://watchdog.net" + url + "?tid=" + track_id
+$else:
+        $ full_url = "http://watchdog.net" + url
+
+$if description:
+       I hope you'll join me in signing the petition "$:title". You can do so right now at:
+       
+       $full_url
+       
+       $:description
+       
+       $full_url
+$else:
+       I hope you'll find it interesting to visit "$:title" - $full_url.
+
+Thanks!
+
+-------------------------------------------------
+[ this message was sent by http://watchdog.net/ ]

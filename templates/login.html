@@ -9,9 +9,8 @@ $if msg:
 <style>
     #text h2 { margin-bottom: 30px; }
     #text fieldset td { padding: 0; }
-    #text fieldset #fname { margin-right: 7px; }
-    #text fieldset #fname { width: 115px; }
-    #text fieldset #lname { width: 115px; }
+    .login { padding-right: 2em; border-right: 1px solid #ccc; }
+    .signup { padding-left: 2em; }
 </style>    
 
 <p class="error">Sorry, logging in isn't supported quite yet. Please stay tuned.</p>
@@ -46,10 +45,6 @@ $elif not signupform.valid:
         $:signupform.state.render()
         <fieldset>
         <legend>... or sign up to create one</legend>
-        <table>
-        <tr><td><label for="fname">First name</label>$:signupform.fname.render()</td>
-        <td><label for="lname">Last name</label>$:signupform.lname.render()</td></tr>
-        </table>
         <label>Enter your email</label>
         $:signupform.email.render()
         <label>Give it a password</label>

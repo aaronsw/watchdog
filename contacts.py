@@ -31,9 +31,9 @@ def gmailLoginURL(email):
     
 def msnLoginURL():
     url = "https://consent.live.com/Delegation.aspx?RU=%s&ps=%s&pl=%s"
-    return_url = urllib.quote('http://0.0.0.0:8080/auth/msn')
+    return_url = urllib.quote(web.ctx.homedomain + '/auth/msn')
     permissions = 'Contacts.View'
-    privacy_policy = urllib.quote('http://0.0.0.0:8080/privacy')
+    privacy_policy = urllib.quote(web.ctx.homedomain + '/privacy')
     url = url % (return_url, permissions, privacy_policy)
     #token = "appid=%s&ts=%s" % (getAppId(), time.time())
     #url = url + urllib.quote(token)
@@ -51,7 +51,8 @@ class importcontacts:
         form = forms.loadcontactsform()
         if form.validates(i):
             session.email = email
-            session.pid = i.pid
+            session.url = i.url
+            session.title = i.title
             if i.provider == 'yahoo':
                 ylogin_url = yahooLoginURL(email, '/WSLogin/V1/wslogin')
                 raise web.seeother(ylogin_url)
@@ -64,7 +65,8 @@ class importcontacts:
         else:
             import petition
             share_obj = petition.share()
-            return share_obj.GET(form)
+            emailform = forms.emailform()
+            return share_obj.GET(emailform, form)
             
 def save_contacts(email, contacts, provider):
     #Even if the user is not logged-in, but has an account with us, let him import contacts
@@ -130,7 +132,7 @@ class auth_yahoo:
         response = urllib2.urlopen(req).read()
         contacts = self.get_contacts(response)
         save_contacts(email, contacts, provider='YAHOO')
-        raise web.seeother('/c/%s/share' % (session.pid))
+        raise web.seeother('/share?url=%s&title=%s' % (session.url, session.title))
 
 def get_text(elem):
     #gets the text from XML DOM element `elem`
@@ -165,8 +167,8 @@ class auth_google:
         response = urllib2.urlopen(request)
         contacts = self.get_contacts(response)
         save_contacts(email, contacts, provider='GOOGLE')
-        raise web.seeother('/c/%s/share' % (session.pid))
-
+        raise web.seeother('/share?url=%s&title=%s' % (session.url, session.title))
+        
 class auth_msn:
     def get_consent(self, s):
         d = {}
@@ -204,4 +206,4 @@ class auth_msn:
             contacts = self.get_contacts(response)
             save_contacts(email, contacts, provider='MICROSOFT')
 
-        raise web.seeother('/c/%s/share' % (session.pid))
+        raise web.seeother('/share?url=%s&title=%s' % (session.url, session.title))

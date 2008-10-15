@@ -25,14 +25,14 @@ def loginuser(useremail, password):
     else:
         return None
 
-def new_user(fname, lname, email, password):
+def new_user(email, password):
     token = get_secret_token(email)
     password = encrypt_password(password)
     exists = db.select('users', where='email=$email', vars=locals())
     if exists:
         return None
 
-    user_id = db.insert('users', fname=fname, lname=lname, email=email, password=password, verified=True)
+    user_id = db.insert('users', email=email, password=password, verified=True)
     user = web.storage(id=user_id, email=email, password=password, verified=True)
     return user
         
@@ -45,7 +45,7 @@ class signup:
             lf['redirect'].value = sf['redirect'].value = i.redirect
             sf.fill(i)
             return render.login(lf, sf, redirect=i.redirect)
-        user = new_user(i.fname, i.lname, i.email, i.password)
+        user = new_user(i.email, i.password)
         helpers.set_login_cookie(i.email)
         raise web.seeother(i.redirect, absolute=True)
       

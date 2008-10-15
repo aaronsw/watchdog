@@ -7,8 +7,9 @@ from utils import zip2rep, simplegraphs, apipublish, users, writerep
 import blog
 import petition
 import settings
-from settings import db, render
+from settings import db, render, production_mode
 import schema
+import config
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -35,6 +36,7 @@ urls = (
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
   r'/blog', blog.app,
+  r'/share', 'petition.share',
   r'/data/(.*)', 'staticdata',
   r'/bbauth/', 'contacts.auth_yahoo',
   r'/authsub', 'contacts.auth_google',
@@ -362,8 +364,13 @@ def sparkpos(table, what, id):
     elif table == 'politician':
         id_col= 'id'
     else: return 0
-    # @@TODO: make sure this is injection safe.
-    item = db.query("select count(*) as position from %(table)s, (select * from %(table)s where %(id_col)s='%(who)s') as a where %(table)s.%(what)s > a.%(what)s" %  {'table':table, 'what':what, 'who':id, 'id_col':id_col})[0]
+    assert table in table_map.values()
+    if not r_safeproperty.match(what): raise web.notfound
+    
+    item = db.query("select count(*) as position from %(table)s, \
+      (select * from %(table)s where %(id_col)s=$id) as a \
+      where %(table)s.%(what)s > a.%(what)s" % 
+      {'table':table, 'what':what, 'id_col':id_col}, vars={'id': id})[0]
     return item.position + 1 # '#1' looks better than '#0'
 
 class sparkdist:
@@ -390,6 +397,8 @@ class staticdata:
         return file('data/' + path).read()
 
 app = web.application(urls, globals())
+if production_mode:
+    app.internalerror = web.emailerrors(config.send_errors_to, web.debugerror)
 settings.setup_session(app)
 
 if __name__ == "__main__": app.run()

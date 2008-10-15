@@ -81,13 +81,13 @@ def set_captcha(wyrform, img_src):
 
 def pol2dist(pol):
     try:
-        return db.select('politician', what='district', where='politician.id=$pol', vars=locals())[0].district
+        return db.select('politician', what='district_id', where='politician.id=$pol', vars=locals())[0].district_id
     except KeyError:
         return
 
 def dist2pol(dist):
     try:
-        return db.select('politician', what='id', where='politician.district=$dist', vars=locals())[0].id
+        return db.select('politician', what='id', where='politician.district_id=$dist', vars=locals())[0].id
     except KeyError:
         return
 
@@ -126,11 +126,11 @@ class Form(object):
         return getattr(self.f, x)
 
     def production_click(self):
-        from writerep import PRODUCTION_MODE, TEST_MODE
-        if PRODUCTION_MODE:
+        from writerep import production_mode, test_mode
+        if production_mode:
             request = self.f.click()
             response = urlopen(request.get_full_url(), request.get_data())
-        elif TEST_MODE:
+        elif test_mode:
             self.f.action = web.ctx.homedomain + '/writerep/test'
             request = self.f.click() 
             response = urlopen(request.get_full_url(), request.get_data())

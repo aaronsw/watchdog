@@ -12,13 +12,12 @@ from StringIO import StringIO
 
 import web
 import captchasolver, forms, helpers, auth
-from settings import db, render
+from settings import db, render, production_mode
 from users import fill_user_details, update_user_details
 from wyrutils import * #@@@ put all the list here 
+from config import test_email
 
-PRODUCTION_MODE = False
-TEST_MODE = (not PRODUCTION_MODE) and True
-TEST_EMAIL = 'test@watchdog.net'
+test_mode = (not production_mode)
 
 urls = (
   '', 'redir',
@@ -57,10 +56,10 @@ def writerep_email(pol_email, pol, zipcode, state, prefix, fname, lname,
     name = '%s. %s %s' % (prefix, fname, lname)
     from_addr = '%s <%s>' % (name, email)
   
-    if PRODUCTION_MODE:
+    if production_mode:
         to_addr = pol_email.lstrip('mailto:')
-    elif TEST_MODE:
-        to_addr = TEST_EMAIL
+    elif test_mode:
+        to_addr = test_email
     #@@@@ msg has to be composed    
     web.sendmail(from_addr, to_addr, subject, msg)
     return True        
@@ -236,7 +235,7 @@ class write_your_rep:
         if not self.dist:
             self.set_dist(i)
         self.pol = db.select('politician', what='id', 
-                                where='politician.district=$self.dist',
+                                where='politician.district_id=$self.dist',
                                 vars=locals())[0].id
                 
     def set_msg_id(self, msg_id, petition=False):
@@ -270,7 +269,7 @@ class write_your_rep:
                         zipcode=i.zipcode, zip4=i.zip4,
                         phone=i.phone, email=email, subject=i.ptitle, msg=i.msg,
                         captcha=i.get('captcha', ''))
-        update_user_details(i)
+        if not pform: update_user_details(i)
         return msg_sent
 
     def save_and_send_msg(self, i, wyrform, pform=None):
@@ -318,7 +317,7 @@ class wyr_test:
                    return input.get(k)
     def POST(self):
         i = web.input()
-        to_addr = TEST_EMAIL
+        to_addr = test_email
         from_addr = self.get_from_input('email', i) or ''
         subject = self.get_from_input('issue', i) or ''
         msg = self.get_from_input('message', i) or ''

@@ -92,7 +92,7 @@ database: $(LOADERS)
 	$(PYTHON) load/votesmart.py
 	touch $@
 
-.wyr: .manual load/wyr.py $(CRAWL)/votesmart/wyr.json
+.wyr: .schema load/wyr.py $(CRAWL)/votesmart/wyr.json
 	$(PYTHON) load/wyr.py
 	touch $@
 

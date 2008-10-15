@@ -80,13 +80,13 @@ Here's an example using the command-line HTTP client <code>curl</code>:
 </p>
 
 <pre>
-  <strong>$ curl -s http://watchdog.net/us/ak-00 | head</strong>
+  <strong>\$ curl -s http://watchdog.net/us/ak-00 | head</strong>
   &lt;html>
   &lt;head>
     &lt;title>AK-00: Alaska’s at-large congressional district (watchdog.net)&lt/title>
   <em>[...]</em>
   
-  <strong>$ curl -s http://watchdog.net/us/ak-00.n3 | head</strong>
+  <strong>\$ curl -s http://watchdog.net/us/ak-00.n3 | head</strong>
   @prefix : &lt;http://watchdog.net/about/api#> .
 
   &lt;http://watchdog.net/us/AK-00> a :District;
@@ -94,7 +94,7 @@ Here's an example using the command-line HTTP client <code>curl</code>:
     :area_sqmi 663267;
   <em>[...]</em>
   
-  <strong>$ curl -s -H "Accept: application/json" http://watchdog.net/us/ak-00 | head</strong>
+  <strong>\$ curl -s -H "Accept: application/json" http://watchdog.net/us/ak-00 | head</strong>
   [
     {
       "almanac": "http://nationaljournal.com/pubs/almanac/2008/people/ak/rep_ak01.htm", 

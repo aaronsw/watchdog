@@ -7,11 +7,11 @@ var ptitle_event = function fillURL(){
     url = strip(this.value).toLowerCase().replace(/\s+/g, '-');
     url = remove_punctuation(url);
     $('#pid').val(url);
+    $('#pid').change();
     return;
 }
 
 $('#ptitle').change(ptitle_event);
-$('#ptitle').blur(ptitle_event);
 
 $('#pid').change( function checkID(){
     $.post('/c/verify', {pid: strip(this.value)},
