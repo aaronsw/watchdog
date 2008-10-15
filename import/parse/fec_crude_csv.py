@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import csv, sys, cgitb, re
+import csv, sys, cgitb, fixed_width
 """
 This is just some test code right now for exploring the space of
 parsing FEC CSV files in a relatively version-flexible way.
@@ -33,15 +33,16 @@ for expenditures:
     report_id
     amount
 """
-#assert __import__('import.parse.fixed_width').date('20081101') == '2008-11-01'
 
 class Field:
     """
     A class that manifests a tiny DSEL for describing field mappings.
 
-    >>> Field().formatted_with(date).aka('bob').get_from('dan', {'bob': '20080930'})
+    >>> Field().formatted_with(fixed_width.date) \
+               .aka('bob').get_from('dan', {'bob': '20080930'})
     '2008-09-30'
-    >>> Field().formatted_with(date).aka('bob').get_from('dan', {'dan': '20080830'})
+    >>> Field().formatted_with(fixed_width.date) \
+               .aka('bob').get_from('dan', {'dan': '20080830'})
     '2008-08-30'
     >>> Field().aka('bob').aka('fred').aliases()
     set(['bob', 'fred'])
@@ -62,13 +63,6 @@ class Field:
 
 field = Field()
 
-def date(text):
-    """
-    >>> date('20061211')
-    '2006-12-11'
-    """
-    return re.sub(r'^(\d\d\d\d)(\d\d)(\d\d)$', r'\1-\2-\3', text)
-
 def strip(text):
     """
     >>> strip(' s ')
@@ -87,8 +81,8 @@ def amount(text):
     return text[:-2] + '.' + text[-2:]
 
 fields = {
-    'date': field.formatted_with(date).aka('date_received')
-                                      .aka('contribution_date'),
+    'date': field.formatted_with(fixed_width.date).aka('date_received')
+                                                  .aka('contribution_date'),
     'candidate_fec_id': field.formatted_with(strip)
                              .aka('candidate_id_number')
                              .aka('fec_candidate_id_number'),
