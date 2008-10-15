@@ -78,6 +78,14 @@ $if d.cook_index:
                class="sparkline" /></a></td>
     <td class="sparknum"><sup>(#${pos('district','median_income',d.name)})</sup></td>
   </tr>
+  </tr><tr class="odd">
+    <th>Earmarks received per capita:</th>
+    <td class="sparkdata">\$$commify(int(d.earmark_per_capita))</td>
+    <td class="sparkline"><a href="/us/by/earmark_per_capita#d$d.name"
+         ><img src="/us/by/median_income/distribution.png?point=$d.earmark_per_capita"
+               class="sparkline" /></a></td>
+    <td class="sparknum"><sup>(#${pos('district','earmark_per_capita',d.name)})</sup></td>
+  </tr>
 </tbody></table>
 </div>
 
