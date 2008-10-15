@@ -8,7 +8,7 @@ import web
 from settings import db
 
 STATE_TABLE = 'load/manual/states.json'
-DISTRICT_TABLE = 'load/manual/states.json'
+DISTRICT_TABLE = 'load/manual/districts.json'
 POLITICIAN_TABLE = 'load/manual/politicians.json'
 
 _stripterms = ['the', 'corporation', 'corp', 'incorporated', 'inc']
@@ -35,9 +35,13 @@ def unfips(fipscode):
         
     return _unfipscache.get(fipscode)
 
+_districts = {}
 def fixdist(dist):
-    districts = json.load(file(DISTRICT_TABLE))
-    if dist.endswith('-01') and dist[:-1] + '0' in districts:
+    if not _districts:
+        districts = json.load(file(DISTRICT_TABLE))
+        for k, v in districts.iteritems():
+            _districts[k]=v
+    if dist.endswith('-01') and dist[:-1] + '0' in _districts:
         return dist[:-1] + '0'
     else:
         return dist
