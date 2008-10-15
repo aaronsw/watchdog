@@ -1,4 +1,4 @@
-$def with (pol)
+$def with (pol, pos)
 
 $var head: <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script> <script src="http://www.govtrack.us/scripts/gmap-wms.js"></script> <script src="/static/js/distmap.js"></script> <script type="text/javascript">distcenter('googlemap', '$pol.district.name.replace('-0', '').replace('-', '')', [$pol.district.center_lat, $pol.district.center_lng, $pol.district.zoom_level - 2])</script>
 
@@ -36,43 +36,36 @@ $if pol.education:
 <tr><td width="50%">
 <h2 class="rep">Money</h2>
 
+$def spark(lable, data, polid, by, unit='', url=None):
+    <th>$:lable</th>
+	$if not data: 
+		$ data = 0
+    $ display = commify(data) + ' ' + unit
+    $if unit == '$':
+        $ display = unit + commify(data)
+    $elif unit and unit[0] == '%':
+        $ display = '%d' % int(abs(data) * 100) + unit
+    $if url:
+        <td class="sparkdata"><a href="$url">$display</a></td>
+    $else:
+        <td class="sparkdata">$display</td>
+    <td class="sparkline"><a href="/p/by/$by#$polid"
+           ><img src="/p/by/$by/distribution.png?point=$data"
+                 class="sparkline" /></a></td>
+    <td class="sparknum"><sup>(#${pos[by]})</sup></td>
+
 <table class="structure charted"><tbody>
 $if pol.money_raised:
     <tr class="even">
-      <th>Raised</th>
-      <td>\$$commify(pol.money_raised)</a></td>
-      <td><a href="/p/by/money_raised#$pol.id"
-           ><img src="/p/by/money_raised/distribution.png?point=$pol.money_raised"
-                 class="sparkline" /></a></td>
+      $:spark('Raised', pol.money_raised, pol.id, 'money_raised', '$')
     </tr><tr class="odd">
-      <th>Spent</th>
-      <td>${int(pol.pct_spent * 100)}%</td>
-      <td><a href="/p/by/pct_spent#$pol.id"
-           ><img 
-             src="/p/by/pct_spent/distribution.png?point=$pol.pct_spent"
-             class="sparkline" /></a></td>
-    
+      $:spark('Spent', pol.pct_spent, pol.id, 'pct_spent', '%')
     </tr><tr class="even">
-      <th>From self</th>
-      <td>${int(pol.pct_self * 100)}%</td>
-      <td><a href="/p/by/pct_self#$pol.id"
-           ><img 
-             src="/p/by/pct_self/distribution.png?point=$pol.pct_self"
-             class="sparkline" /></a></td>
+      $:spark('From self', pol.pct_self, pol.id, 'pct_self', '%')</th>
     </tr><tr class="odd">
-      <th>From individuals</th>
-      <td>${int(pol.pct_indiv * 100)}%</td>
-      <td><a href="/p/by/pct_indiv#$pol.id"
-           ><img 
-             src="/p/by/pct_indiv/distribution.png?point=$pol.pct_indiv"
-             class="sparkline" /></a></td>
+      $:spark('From individuals', pol.pct_indiv, pol.id, 'pct_indiv', '%')</th>
     </tr><tr class="even">
-      <th>From <acronym title="Political Action Committees">PAC</acronym>s</th>
-      <td>${int(pol.pct_pac * 100)}%</td>
-      <td><a href="/p/by/pct_pac#$pol.id"
-           ><img 
-             src="/p/by/pct_pac/distribution.png?point=$pol.pct_pac"
-             class="sparkline" /></a></td>
+      $:spark('From <acronym title="Political Action Committees">PAC</acronym>s', pol.pct_pac, pol.id, 'pct_pac', '%')
     </tr>
 $else:
     <tr><th>No information available.</th></tr>
@@ -82,33 +75,13 @@ $else:
 
 <table class="charted structure"><tbody>
   <tr class="even">
-    <th>Requested</th>
-    <td>$commify(pol.n_earmark_requested)</td>
-    <td><a href="/p/by/n_earmark_requested#$pol.id"
-         ><img 
-           src="/p/by/n_earmark_requested/distribution.png?point=$pol.n_earmark_requested"
-           class="sparkline" /></a></td>
+    $:spark('Requested', pol.n_earmark_requested, pol.id, 'n_earmark_requested', url='/p/'+pol.id+'/earmarks')
   </tr><tr class="odd">
-    <th>Total cost</th>
-    <td>\$$commify(pol.amt_earmark_requested)</td>
-    <td><a href="/p/by/amt_earmark_requested#$pol.id"
-        ><img 
-            src="/p/by/amt_earmark_requested/distribution.png?point=$pol.amt_earmark_requested"
-            class="sparkline" /></a></td>
+    $:spark('Total cost', pol.amt_earmark_requested, pol.id, 'amt_earmark_requested', '$')
   </tr><tr class="even">
-    <th>Received</th>
-    <td>$commify(pol.n_earmark_received)</td>
-    <td><a href="/p/by/n_earmark_received#$pol.id"
-         ><img 
-           src="/p/by/n_earmark_received/distribution.png?point=$pol.n_earmark_received"
-           class="sparkline" /></a></td>
+    $:spark('Received', pol.n_earmark_received, pol.id, 'n_earmark_received')
   </tr><tr class="odd">
-    <th>Total cost</th>
-    <td>\$$commify(pol.amt_earmark_received)</td>
-    <td><a href="/p/by/amt_earmark_received#$pol.id"
-         ><img 
-           src="/p/by/amt_earmark_received/distribution.png?point=$pol.amt_earmark_received"
-           class="sparkline" /></a></td>
+    $:spark('Total cost', pol.amt_earmark_received, pol.id, 'amt_earmark_received', '$')
   </tr>
   <tr><th colspan="2">Data for fiscal year 2008</th></tr>
 </tbody></table>
@@ -117,36 +90,16 @@ $else:
 
 <table class="charted structure"><tbody>
   <tr class="even">
-    <th>Co-sponsored</th>
-    <td>$commify(pol.n_bills_cosponsored)</td>
-    <td><a href="/p/by/n_bills_cosponsored#$pol.id"
-         ><img 
-           src="/p/by/n_bills_cosponsored/distribution.png?point=$pol.n_bills_cosponsored"
-           class="sparkline" /></a></td>
+    $:spark('Co-sponsored', pol.n_bills_cosponsored, pol.id, 'n_bills_cosponsored')
   </tr>
   <tr class="odd">
-    <th>Introduced</th>
-    <td><a href="/p/$pol.id/introduced">$commify(pol.n_bills_introduced)</a></td>
-    <td><a href="/p/by/n_bills_introduced#$pol.id"
-         ><img 
-           src="/p/by/n_bills_introduced/distribution.png?point=$pol.n_bills_introduced"
-           class="sparkline" /></a></td>
+    $:spark('Introduced', pol.n_bills_introduced, pol.id, 'n_bills_introduced', url='/p/'+pol.id+'/introduced')
   </tr>
   <tr class="even">
-    <th>Debated</th>
-    <td>$commify(pol.n_bills_debated)</td>
-    <td><a href="/p/by/n_bills_debated#$pol.id"
-         ><img 
-           src="/p/by/n_bills_debated/distribution.png?point=$pol.n_bills_debated"
-           class="sparkline" /></a></td>
+    $:spark('Debated', pol.n_bills_debated, pol.id, 'n_bills_debated')
   </tr>
   <tr class="odd">
-    <th>Enacted</th>
-    <td>$commify(pol.n_bills_enacted)</td>
-    <td><a href="/p/by/n_bills_enacted#$pol.id"
-         ><img 
-           src="/p/by/n_bills_enacted/distribution.png?point=$pol.n_bills_enacted"
-           class="sparkline" /></a></td>
+    $:spark('Enacted', pol.n_bills_enacted, pol.id, 'n_bills_enacted')
   </tr>
 </tbody></table>
 </td><td width="50%" class="rule">
@@ -154,18 +107,9 @@ $else:
 
 <table class="charted structure"><tbody>
   <tr class="even">
-    <th>Spoke</th>
-    <td><a href="http://www.govtrack.us/congress/person.xpd?tab=speeches&amp;id=$pol.govtrackid">$commify(pol.n_speeches) times</a></td>
-    <td><a href="/p/by/n_speeches#$pol.id"
-         ><img src="/p/by/n_speeches/distribution.png?point=$pol.n_speeches"
-               class="sparkline" /></a></td>
+    $:spark('Spoke', pol.n_speeches, pol.id, 'n_speeches', 'times', 'http://www.govtrack.us/congress/person.xpd?tab=speeches&id='+pol.govtrackid)
   </tr><tr class="odd">
-    <th>Avg. length</th>
-    <td>$commify(pol.words_per_speech) words</td>
-    <td><a href="/p/by/words_per_speech#$pol.id"
-         ><img 
-           src="/p/by/words_per_speech/distribution.png?point=$pol.words_per_speech"
-           class="sparkline" /></a></td>
+    $:spark('Avg. length', pol.words_per_speech, pol.id, 'words_per_speech', 'words')
   </tr>
   <tr><th colspan="2">Data for 110th Congress</th></tr>
 </tbody></table>
@@ -175,26 +119,11 @@ $else:
 <table class="charted structure"><tbody>
 $if pol.nominate:
     <tr class="even">
-      <th>Ideology</th>
-      <td>
-      $if pol.nominate >= 0:
-          ${pol.nominate * 100}% right-wing
-      $else:
-          $abs(pol.nominate * 100)% left-wing
-      </td>
-      <td><a href="/p/by/nominate#$pol.id"
-           ><img 
-             src="/p/by/nominate/distribution.png?point=$pol.nominate"
-             class="sparkline" /></a></td>
+    $:spark('Ideology', pol.nominate, pol.id, 'nominate', '% right-wing' if pol.nominate >= 0 else '% left-wing')
     </tr>
 $if pol.predictability:
     <tr class="odd">
-      <th>Predictability</th>
-      <td>$int(pol.predictability * 100)%</td>
-      <td><a href="/p/by/predictability#$pol.id"
-           ><img 
-             src="/p/by/predictability/distribution.png?point=$pol.predictability"
-             class="sparkline" /></a></td>
+    $:spark('Predictability', pol.predictability, pol.id, 'predictability', '%')
     </tr>
 </tbody></table>
 
