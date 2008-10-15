@@ -76,7 +76,7 @@ class Zip4(sql.Table):
 #--alter table zip4 add constraint "zip4_district_fkey" FOREIGN KEY (district) REFERENCES district(name) #@@
 #--GRANT ALL ON zip4 TO watchdog;
 
-class GovtrackID(sql.String):
+class GovtrackID(sql.URL):
     towhatever = lambda f: (lambda self, x: f(self, 
       'http://www.govtrack.us/congress/person.xpd?id=' + x))
     toxml = towhatever(sql.URL.toxml)
