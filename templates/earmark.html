@@ -18,7 +18,7 @@ $if em.house_request:
 $if em.sponsors:
 	<h3>Sponsors:</h3>
 	$for s in em.sponsors:
-		<a href="/p/$s.politician.id">$s.politician.title $s.politician.name</a><br /> 
+		<a href="/p/$s.politician.id">$s.politician.title $s.politician.name</a> ($s.politician.district_id)<br /> 
 <!-- Where -->
 <br />  County: $em.county
 <br />  City: $em.city
