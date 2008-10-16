@@ -102,14 +102,19 @@ class Politician(sql.Table):
     lastname = sql.String()
     
     def xmllines(self):
-        return ['  <owl:sameAs xmlns:owl="http://www.w3.org/2002/07/owl#" \
-rdf:resource="http://www.rdfabout.com/rdf/usgov/congress/people/%s" />' 
-          % self.bioguideid]
+        sameas = lambda x: '  <owl:sameAs xmlns:owl="http://www.w3.org/2002/07/owl#" \
+rdf:resource="%s" />' % x
+        return [sameas(x) for x in self.akas()]
     
     def n3lines(self, indent):
-        return [indent + '<http://www.w3.org/2002/07/owl#sameAs> '
-          '<http://www.rdfabout.com/rdf/usgov/congress/people/%s>;' 
-          % self.bioguideid]
+        sameas = lambda x: indent + '<http://www.w3.org/2002/07/owl#sameAs> <%s>;' % x
+        return [sameas(x) for x in self.akas()]
+    
+    def akas(self):
+        if self.bioguideid:
+            yield 'http://www.rdfabout.com/rdf/usgov/congress/people/' + self.bioguideid
+        if self.wikipedia:
+            yield 'http://dbpedia.org/resource/' + self.wikipedia.split('/')[-1]
     
     @property
     def name(self):
