@@ -99,6 +99,7 @@ def publishn3(lst):
                 out.append(indent + 
                   ':%s %s;' % (k, n3ify(item, indent, c))
                 )
+        if hasattr(obj, 'n3lines'): out.extend(obj.n3lines(indent))
         out.append('.\n')
     return '\n'.join(out)
 
@@ -117,6 +118,7 @@ def publishxml(lst):
                 outline = '  <%s%s</%s>' % (k, c.toxml(item), k)
                 outline = outline.replace('></%s>' % k, ' />') # clean up empty values
                 out.append(outline)
+        if hasattr(obj, 'xmllines'): out.extend(obj.xmllines())
         out.append('</%s>' % objtype)
     out.append('</rdf:RDF>')
     return '\n'.join(out) + '\n'

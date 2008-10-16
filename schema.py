@@ -77,8 +77,8 @@ class Zip4(sql.Table):
 #--GRANT ALL ON zip4 TO watchdog;
 
 class GovtrackID(sql.URL):
-    towhatever = lambda f: (lambda self, x: f(self, 
-      'http://www.govtrack.us/congress/person.xpd?id=' + x))
+    towhatever = lambda f: (lambda self, x, *a: f(self, 
+      'http://www.govtrack.us/congress/person.xpd?id=' + x, *a))
     toxml = towhatever(sql.URL.toxml)
     ton3 = towhatever(sql.URL.ton3)
 
@@ -100,6 +100,16 @@ class Politician(sql.Table):
     firstname = sql.String()
     middlename = sql.String()
     lastname = sql.String()
+    
+    def xmllines(self):
+        return ['  <owl:sameAs xmlns:owl="http://www.w3.org/2002/07/owl#" \
+rdf:resource="http://www.rdfabout.com/rdf/usgov/congress/people/%s" />' 
+          % self.bioguideid]
+    
+    def n3lines(self, indent):
+        return [indent + '<http://www.w3.org/2002/07/owl#sameAs> '
+          '<http://www.rdfabout.com/rdf/usgov/congress/people/%s>;' 
+          % self.bioguideid]
     
     @property
     def name(self):
