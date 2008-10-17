@@ -54,7 +54,7 @@ $if d.cook_index:
     <td class="sparkline"><a href="/us/by/area_sqmi#d$d.name"
          ><img src="/us/by/area_sqmi/distribution.png?point=$d.area_sqmi"
                class="sparkline" /></a></td>
-    <td class="sparknum"><sup>(#${pos['area_sqmi']})</sup></td>
+    <td class="sparknum"><sup>(#${pos('district','area_sqmi',d.name)})</sup></td>
   </tr><tr class="even">
     <th>Population:</th>
     <td class="sparkdata">$commify(d.est_population) ($d.est_population_year est.)</td>
@@ -62,21 +62,29 @@ $if d.cook_index:
          ><img 
            src="/us/by/est_population/distribution.png?point=$d.est_population"
            class="sparkline" /></a></td>
-    <td class="sparknum"><sup>(#${pos['est_population']})</sup></td>
+    <td class="sparknum"><sup>(#${pos('district','est_population',d.name)})</sup></td>
   </tr><tr class="odd">
     <th>Poverty rate:</th>
     <td class="sparkdata">$d.poverty_pct%</td>
     <td class="sparkline"><a href="/us/by/poverty_pct#d$d.name"
          ><img src="/us/by/poverty_pct/distribution.png?point=$d.poverty_pct"
                class="sparkline" /></a></td>
-    <td class="sparknum"><sup>(#${pos['poverty_pct']})</sup></td>
+    <td class="sparknum"><sup>(#${pos('district','poverty_pct',d.name)})</sup></td>
   </tr><tr class="even">
     <th>Median household income:</th>
     <td class="sparkdata">\$$commify(d.median_income)</td>
     <td class="sparkline"><a href="/us/by/median_income#d$d.name"
          ><img src="/us/by/median_income/distribution.png?point=$d.median_income"
                class="sparkline" /></a></td>
-    <td class="sparknum"><sup>(#${pos['median_income']})</sup></td>
+    <td class="sparknum"><sup>(#${pos('district','median_income',d.name)})</sup></td>
+  </tr>
+  </tr><tr class="odd">
+    <th>Earmarks received per capita:</th>
+    <td class="sparkdata">\$$commify(int(d.earmark_per_capita))</td>
+    <td class="sparkline"><a href="/us/by/earmark_per_capita#d$d.name"
+         ><img src="/us/by/median_income/distribution.png?point=$d.earmark_per_capita"
+               class="sparkline" /></a></td>
+    <td class="sparknum"><sup>(#${pos('district','earmark_per_capita',d.name)})</sup></td>
   </tr>
 </tbody></table>
 </div>

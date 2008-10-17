@@ -13,14 +13,12 @@ $if em.senate_request:
 	<br /> Senate Request: \$$commify(em.senate_request)
 $if em.house_request:
 	<br />  House Request: \$$commify(em.house_request)
-$if em.presidential:
-	<br />  Presidential: \$$commify(em.presidential)
 <br />
 <!-- Sponsors -->
 $if em.sponsors:
 	<h3>Sponsors:</h3>
 	$for s in em.sponsors:
-		<a href="/p/$s.politician.id">$s.politician.title $s.politician.name</a><br /> 
+		<a href="/p/$s.politician.id">$s.politician.title $s.politician.name</a> ($s.politician.district_id)<br /> 
 <!-- Where -->
 <br />  County: $em.county
 <br />  City: $em.city
@@ -33,6 +31,7 @@ $if em.sponsors:
 <br />  Project Heading: $em.project_heading
 <br />  Notes: $em.notes
 <br />  Undisclosed: $em.undisclosed
+<br />  Presidential: $em.presidential
 <br />
 <!-- Who's the benificary -->
 <br />  Recipient stem: $em.recipient_stem

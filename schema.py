@@ -58,6 +58,8 @@ class District(sql.Table):
     center_lng = sql.Float()
     zoom_level = sql.Integer()
 
+    earmark_per_capita = sql.Float()
+
 class Zip(sql.Table):
     zip = sql.String(5, primary=True)
     city = sql.String()
