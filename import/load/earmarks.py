@@ -138,9 +138,7 @@ def calculate_per_capita():
         amount = float(e.final_amt)
         pop = 0
         sponsors = db.query("select district_id, state_id, id from politician, district, earmark_sponsor where politician.district_id = district.name and earmark_sponsor.politician_id = politician.id and earmark_id=$e.id",vars=locals()).list()
-        if not sponsors:
-            print "ODD, no sponsors for:",e.id
-            continue
+        if not sponsors: continue
         # Get the population for each district sponsoring 
         for p in sponsors:
             if p.district_id != p.state_id:
@@ -163,10 +161,9 @@ def calculate_per_capita():
         if d.name == d.state_id: continue # Don't set for states.
         congress_people = set()
         if d.state.senators:
-            congress_people = set([p.id for p in d.state.senators])
+            congress_people.update(p.id for p in d.state.senators)
         if d.politician:
-            for p in d.politician:
-                congress_people.add(p.id)
+            congress_people.update(p.id for p in d.politician)
         ems = db.select('earmark_sponsor', what='distinct(earmark_id)', where=web.sqlors('politician_id=',congress_people))
         empc = sum(map(lambda x: pc.get(x,0.0), set([ e.earmark_id for e in ems ])))
         #print d.name, empc
