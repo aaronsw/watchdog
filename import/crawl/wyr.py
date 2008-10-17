@@ -181,8 +181,7 @@ def main(fname='../data/crawl/votesmart/wyr.json'):
     d.update(get_votesmart_contacts(remaining_dists))
     remaining_dists = list(all_dists - set(d.keys()))
     
-    d.update(get_manual_contacts(remaining_dists))
-    remaining_dists = list(all_dists - set(d.keys()))
+    d.update(get_manual_contacts(all_dists))
     
     f = file(fname, 'w')
     json.dump(d, f, indent=2, sort_keys=True)                     

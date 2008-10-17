@@ -91,18 +91,13 @@ def dist2pol(dist):
     except KeyError:
         return
 
-def safe(f):
-    def g(*args, **kw):
-        try:
-            return f(*args, **kw)
-        except:
-            print >> sys.stderr, '%s Failed with %s, %s' % (f.__name__, args, kw)
-            return None
-    return g        
-
-@safe
-def urlopen(url, data=None):
-    return urllib2.urlopen(url, data)    
+def urlopen(*args):
+    try:
+        return urllib2.urlopen(*args)    
+    except Exception, details:
+        print details,
+        if isinstance(args[0], urllib2.Request): print args[0].get_full_url(),
+        else: print args[0],
 
 def first(seq):
     """returns first True element"""    
