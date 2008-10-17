@@ -1,6 +1,7 @@
 import web
 from settings import db
 from writerep import writerep
+from wyrutils import pol2dist
 
 def test(formtype=None):
     def getdistzipdict(zipdump):
@@ -19,23 +20,25 @@ def test(formtype=None):
        dist_zip_dict =  getdistzipdict(file(path + '/zip_per_dist.tsv').read())
 
     def getzip(dist):
-        return dist_zip_dict[dist]
+        try:
+            return dist_zip_dict[dist]
+        except KeyError:
+            return '', ''    
           
           
-    query = "select district_id from politician, pol_contacts" 
-    query += " where pol_contacts.politician = politician.id " 
-    if formtype == 'wyr':  query += "and contacttype='W'"
-    elif formtype == 'ima': query += "and contacttype='I'"
-    elif formtype == 'zipauth': query += "and contacttype='Z'"
-    elif formtype =='email': query += "and contacttype='E'"
-    
-    dists = [r.district_id for r in db.query(query + ' limit 2')]
-    for dist in dists:
-        print dist,        
-        zip5, zip4 = getzip(dist)
-        msg_sent = writerep(dist, zipcode=zip5, zip4=zip4, prefix='Mr.', 
+    query = "select politician from pol_contacts where contacttype='%s'" % formtype[0].upper() 
+    pols = [r.politician for r in db.query(query)]
+    for pol in pols:
+        print pol,        
+        zip5, zip4 = getzip(pol2dist(pol))
+        print zip5, zip4,
+        try:
+            msg_sent = writerep(pol, zipcode=zip5, zip4=zip4, prefix='Mr.', 
                     fname='watchdog', lname ='Tester', addr1='111 av', addr2='addr extn', city='test city', 
                     phone='001-001-001', email='test@watchdog.net', subject='general', msg='testing...')
+        except Exception, details:
+            print details,
+            msg_sent = False            
         print msg_sent and 'Success' or 'Failure'
     
 if __name__ == '__main__':

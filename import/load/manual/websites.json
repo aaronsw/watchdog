@@ -413,5 +413,50 @@
     "captcha": null, 
     "contact": "http://eshoo.house.gov/index.php?option=com_content&task=view&id=447&Itemid=",
     "contacttype": "ima"
+  },
+  "PA-03": {
+    "captcha": null,
+    "contact": "http://www.house.gov/english/zipauth.shtml",
+    "contacttype": "zipauth"
+  },
+  "UT-01": {
+    "captcha": null,
+    "contact": "http://robbishop.house.gov/ContactMe/",
+    "contacttype": "ima"
+  },
+  "NY-23": {
+    "captcha": null,
+    "contact": "http://mchugh.house.gov/Contact/write.htm",
+    "contacttype": "ima"
+  },
+  "AR-01": {
+    "captcha": null,
+    "contact": "http://www.house.gov/berry/messageform.html",
+    "contacttype": "ima"
+  },
+  "AZ-08": {
+    "captcha": null,
+    "contact": "http://giffords.house.gov/contact/email/",
+    "contacttype": "ima"
+  },
+  "OK-01": {
+    "captcha": null,
+    "contact": "http://sullivan.house.gov/Contact/write.htm",
+    "contacttype": "ima"
+  },
+  "MI-11": {
+    "captcha": null,
+    "contact": "http://mccotter.house.gov/HoR/MI11/Contact/Office+Contact+Information/Contact+Form.htm",
+    "contacttype": "ima"
+  },
+  "AL-01": {
+    "captcha": null,
+    "contact": "http://bonner.house.gov/HoR/AL01/Contact+Jo/Email+Jo/Contact+Me.htm",
+    "contacttype": "ima"
+  },
+  "NC-11": {
+    "captcha": null,
+    "contact": "http://shuler.house.gov/zipauth.htm",
+    "contacttype": "ima"
   }
 }
