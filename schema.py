@@ -182,6 +182,11 @@ rdf:resource="%s" />' % x
     # opensecrets
     pct_pac_business = sql.Percentage()
     
+    # almanac.json
+    n_vote_received = sql.Number()
+    pct_vote_received = sql.Percentage()
+    last_elected_year = sql.Number()
+
     bills_sponsored = sql.Backreference('Bill', 'sponsor')
     earmarks_sponsored = sql.Backreference('Earmark_sponsor', 'politician')
 

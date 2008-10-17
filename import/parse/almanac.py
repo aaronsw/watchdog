@@ -141,6 +141,7 @@ def scrape_by_headers(rv, fields, html):
     # more recent page elements ("Go Wireless") are #333366 even on old
     # pages, leading to a kind of inconsistent appearance.
     by_headers = re.split(r' color="#(?:6666CC|333366)"[^>]*>', html)
+    by_headers = by_headers + re.split(r'<h3>', html)    # ugg, some use h3 headers (CO-01 for instance)
 
     for item in by_headers:
         for key in fields.keys():

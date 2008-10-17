@@ -37,6 +37,7 @@ def unfips(fipscode):
 
 _districts = {}
 def fixdist(dist):
+    dist = dist.upper().replace('-SEN1','').replace('-SEN2','').replace('-S1','').replace('-S2','')
     if not _districts:
         districts = json.load(file(DISTRICT_TABLE))
         for k, v in districts.iteritems():

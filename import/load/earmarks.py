@@ -138,9 +138,7 @@ def calculate_per_capita():
         amount = float(e.final_amt)
         pop = 0
         sponsors = db.query("select district_id, state_id, id from politician, district, earmark_sponsor where politician.district_id = district.name and earmark_sponsor.politician_id = politician.id and earmark_id=$e.id",vars=locals()).list()
-        if not sponsors:
-            print "ODD, no sponsors for:",e.id
-            continue
+        if not sponsors: continue
         # Get the population for each district sponsoring 
         for p in sponsors:
             if p.district_id != p.state_id:
