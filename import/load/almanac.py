@@ -55,14 +55,17 @@ def load_election_results(d, distname):
 def demog_to_dist(demog, district):
     if demog:
         district.cook_index = get_int(demog, 'Cook Partisan Voting Index')
-        district.area_sqmi = cleanint(web.rstrips(demog['Area size'], ' sq. mi.'))
-        district.poverty_pct = get_int(demog, 'Poverty status')
-        district.median_income = get_int(demog, 'Median income')
+        district.area_sqmi = cleanint(web.rstrips(web.rstrips(demog['Area size'], ' sq. mi.'), ' square miles'))
+        district.poverty_pct = get_int(demog, 'Poverty status') or get_int(demog, 'Poverty status') 
+        district.median_income = get_int(demog, 'Median income') or get_int(demog, 'Median Income') 
         (district.est_population_year,
          district.est_population) = coalesce_population(demog, [
             (2006, 'Pop. 2006 (est)'),
             (2005, 'Pop. 2005 (est)'),
             (2000, 'Pop. 2000'),
+            (2006, 'Population 2006 (est)'),
+            (2005, 'Population 2005 (est)'),
+            (2000, 'Population 2000'),
         ])
 
 
@@ -70,7 +73,8 @@ def main():
     assert os.path.exists(ALMANAC_DIR), ALMANAC_DIR
     
     files = glob.glob(ALMANAC_DIR + 'people/*/rep_*.htm') + \
-            glob.glob(ALMANAC_DIR + 'people/*/*s[1-2].htm')
+            glob.glob(ALMANAC_DIR + 'people/*/*s[12].htm')
+    files.sort()
     for fn in files:
         district = web.storage()
         demog = None
@@ -86,13 +90,15 @@ def main():
         if 'demographics' in d:
             demog = d['demographics']
         elif distname[-2:] == '00' or '-' not in distname:   # if -00 then this district is the same as the state.
-            print "Using state file for:", distname
+            #print "Using state file for:", distname
             statefile = ALMANAC_DIR + 'states/%s/index.html' % diststate.lower()
             demog = almanac.scrape_state(statefile).get('state')
 
         demog_to_dist(demog, district)
+
         district.almanac = 'http://' + d['filename'][d['filename'].find('nationaljournal.com'):]
 
+        #print 'district:', distname, pformat(district)
         db.update('district', where='name=$distname', vars=locals(), **district)
 
 if __name__ == '__main__': main()
