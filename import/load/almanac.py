@@ -68,12 +68,12 @@ def demog_to_dist(demog, district):
 
 def main():
     assert os.path.exists(ALMANAC_DIR), ALMANAC_DIR
-    done_states = set(['AS','DC', 'PR', 'GU', 'VI'])
     
     files = glob.glob(ALMANAC_DIR + 'people/*/rep_*.htm') + \
             glob.glob(ALMANAC_DIR + 'people/*/*s[1-2].htm')
     for fn in files:
         district = web.storage()
+        demog = None
         
         dist = web.lstrips(web.rstrips(fn.split('/')[-1], '.htm'), 'rep_')
         diststate = dist[0:2].upper()
@@ -85,7 +85,8 @@ def main():
 
         if 'demographics' in d:
             demog = d['demographics']
-        elif distname[-2:] == '00':   # if -00 then this district is the same as the state.
+        elif distname[-2:] == '00' or '-' not in distname:   # if -00 then this district is the same as the state.
+            print "Using state file for:", distname
             statefile = ALMANAC_DIR + 'states/%s/index.html' % diststate.lower()
             demog = almanac.scrape_state(statefile).get('state')
 
@@ -93,14 +94,5 @@ def main():
         district.almanac = 'http://' + d['filename'][d['filename'].find('nationaljournal.com'):]
 
         db.update('district', where='name=$distname', vars=locals(), **district)
-
-        # Add info for states
-        if diststate not in done_states:
-            done_states.add(diststate)
-            district = web.storage()
-            statefile = ALMANAC_DIR + 'states/%s/index.html' % diststate.lower()
-            demog = almanac.scrape_state(statefile).get('state')
-            demog_to_dist(demog, district)
-            db.update('district', where='name=$diststate', vars=locals(), **district)
 
 if __name__ == '__main__': main()
