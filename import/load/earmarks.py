@@ -4,6 +4,7 @@ import sys
 import web
 import tools
 from parse import earmarks
+import schema
 from settings import db
 from pprint import pprint, pformat
 
@@ -123,5 +124,55 @@ def load():
     for rep, d in outdb.iteritems():
         db.update('politician', where='id=$rep', vars=locals(), **d)
 
+def calculate_per_capita():
+    """ """
+    print "Pre getting all populations per district..."
+    pop_dist = {}
+    for d in schema.District.select(where='est_population is not null'):
+        pop_dist[d.name] = d.est_population
 
-if __name__ == "__main__": load()
+    print "Calculate the per-capita impact of each earmark..."
+    pc = {}
+    for e in db.select('earmark', what='final_amt, id', order='id asc'):
+        done_states = set()
+        amount = float(e.final_amt)
+        pop = 0
+        sponsors = db.query("select district_id, state_id, id from politician, district, earmark_sponsor where politician.district_id = district.name and earmark_sponsor.politician_id = politician.id and earmark_id=$e.id",vars=locals()).list()
+        if not sponsors:
+            print "ODD, no sponsors for:",e.id
+            continue
+        # Get the population for each district sponsoring 
+        for p in sponsors:
+            if p.district_id != p.state_id:
+                done_states.add(p.state_id)
+                pop += pop_dist.get(p.district_id, 0)
+        # Get the population for state sponsoring unless a district has from
+        # within state also sponsors.
+        for p in sponsors:
+            if p.district_id == p.state_id:
+                if p.state_id in done_states: continue
+                done_states.add(p.state_id)
+                pop += pop_dist.get(p.district_id, 0)
+        if not pop:
+            pc[e.id] = 0.0
+        else:
+            pc[e.id] = amount / pop
+        #print e.id, pc[e.id], amount, pop
+    print "Aggregating per-capita impact to districts..."
+    for d in schema.District.select():
+        if d.name == d.state_id: continue # Don't set for states.
+        congress_people = set()
+        if d.state.senators:
+            congress_people = set([p.id for p in d.state.senators])
+        if d.politician:
+            for p in d.politician:
+                congress_people.add(p.id)
+        ems = db.select('earmark_sponsor', what='distinct(earmark_id)', where=web.sqlors('politician_id=',congress_people))
+        empc = sum(map(lambda x: pc.get(x,0.0), set([ e.earmark_id for e in ems ])))
+        #print d.name, empc
+        db.update('district',where='name=$d.name',earmark_per_capita=empc, vars=locals())
+
+if __name__ == "__main__": 
+    load()
+    calculate_per_capita()
+

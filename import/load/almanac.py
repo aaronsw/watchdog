@@ -52,9 +52,23 @@ def load_election_results(d, distname):
         else: print "Couldn't find an id for %s representing %s." % (d['name'], distname)
     else: print "Didn't find a recent election for %s representing %s." %(d['name'], distname) #, pformat(d['electionresults'])
 
+def demog_to_dist(demog, district):
+    if demog:
+        district.cook_index = get_int(demog, 'Cook Partisan Voting Index')
+        district.area_sqmi = cleanint(web.rstrips(demog['Area size'], ' sq. mi.'))
+        district.poverty_pct = get_int(demog, 'Poverty status')
+        district.median_income = get_int(demog, 'Median income')
+        (district.est_population_year,
+         district.est_population) = coalesce_population(demog, [
+            (2006, 'Pop. 2006 (est)'),
+            (2005, 'Pop. 2005 (est)'),
+            (2000, 'Pop. 2000'),
+        ])
+
 
 def main():
     assert os.path.exists(ALMANAC_DIR), ALMANAC_DIR
+    done_states = set(['AS','DC', 'PR', 'GU', 'VI'])
     
     files = glob.glob(ALMANAC_DIR + 'people/*/rep_*.htm') + \
             glob.glob(ALMANAC_DIR + 'people/*/*s[1-2].htm')
@@ -71,25 +85,22 @@ def main():
 
         if 'demographics' in d:
             demog = d['demographics']
-        else:
-            #@@ maybe only when ends with '-00'?
+        elif distname[-2:] == '00':   # if -00 then this district is the same as the state.
             statefile = ALMANAC_DIR + 'states/%s/index.html' % diststate.lower()
             demog = almanac.scrape_state(statefile).get('state')
 
-        if demog:
-            district.cook_index = get_int(demog, 'Cook Partisan Voting Index')
-            district.area_sqmi = cleanint(web.rstrips(demog['Area size'], ' sq. mi.'))
-            district.poverty_pct = get_int(demog, 'Poverty status')
-            district.median_income = get_int(demog, 'Median income')
-            (district.est_population_year,
-             district.est_population) = coalesce_population(demog, [
-                (2006, 'Pop. 2006 (est)'),
-                (2005, 'Pop. 2005 (est)'),
-                (2000, 'Pop. 2000'),
-            ])
-
+        demog_to_dist(demog, district)
         district.almanac = 'http://' + d['filename'][d['filename'].find('nationaljournal.com'):]
-        
+
         db.update('district', where='name=$distname', vars=locals(), **district)
+
+        # Add info for states
+        if diststate not in done_states:
+            done_states.add(diststate)
+            district = web.storage()
+            statefile = ALMANAC_DIR + 'states/%s/index.html' % diststate.lower()
+            demog = almanac.scrape_state(statefile).get('state')
+            demog_to_dist(demog, district)
+            db.update('district', where='name=$diststate', vars=locals(), **district)
 
 if __name__ == '__main__': main()
