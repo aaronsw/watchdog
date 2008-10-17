@@ -36,6 +36,7 @@ def unfips(fipscode):
     return _unfipscache.get(fipscode)
 
 def fixdist(dist):
+    dist = dist.upper().replace('-SEN1','').replace('-SEN2','').replace('-S1','').replace('-S2','')
     districts = json.load(file(DISTRICT_TABLE))
     if dist.endswith('-01') and dist[:-1] + '0' in districts:
         return dist[:-1] + '0'

@@ -30,6 +30,8 @@ $if pol.photo_path:
 
 $if pol.education:
     <p>Education: $pol.education</p>
+$if pol.last_elected_year:
+	<p>Last elected in $pol.last_elected_year receiving $commify(pol.n_vote_received) ($pol.pct_vote_received%) votes.</p>
 </td></tr></table>
 </div>
 <table class="structure">
