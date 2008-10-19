@@ -79,7 +79,7 @@ def _n3ify(obj, indent):
     elif isinstance(obj, (int, float)):
         return obj
     else:
-        return '"%s"' % str(obj).replace('"', r'\"')
+        return '"%s"' % unicode(obj).replace('"', r'\"')
 
 def n3ify(obj, indent, c=None):
     if hasattr(obj, 'ton3'):
