@@ -96,8 +96,10 @@ def publishn3(lst):
         out.append('<%s> a :%s;' % (obj._uri_, obj.__class__.__name__))
         for k, c, v in _getitems(obj):
             for item in v:
+                n3v = n3ify(item, indent, c)
+                if not n3v: continue
                 out.append(indent + 
-                  ':%s %s;' % (k, n3ify(item, indent, c))
+                  ':%s %s;' % (k, n3v)
                 )
         if hasattr(obj, 'n3lines'): out.extend(obj.n3lines(indent))
         out.append('.\n')
@@ -115,7 +117,9 @@ def publishxml(lst):
                 
         for k, c, v in _getitems(obj):
             for item in v:
-                outline = '  <%s%s</%s>' % (k, c.toxml(item), k)
+                xmlv = c.toxml(item)
+                if not xmlv: continue
+                outline = '  <%s%s</%s>' % (k, xmlv, k)
                 outline = outline.replace('></%s>' % k, ' />') # clean up empty values
                 out.append(outline)
         if hasattr(obj, 'xmllines'): out.extend(obj.xmllines())
