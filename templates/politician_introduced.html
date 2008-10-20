@@ -7,7 +7,8 @@ $var title: Bills introduced by $pol.name
 <ul>
 $for bill in pol.bills_sponsored:
     <li><a href="/b/$bill.id">$bill.type.upper(). $bill.number</a>: $bill.title</li>
-$else:
+
+$if not pol.bills_sponsored:
     <li><em>no bills sponsored</em></li>
 </ul>
 
