@@ -46,7 +46,11 @@ class SmartJSONEncoder(json.JSONEncoder):
                 try:
                     return json.dumps(obj)
                 except:
-                    return obj._uri_
+                    try:
+                        return obj._uri_
+                    except:
+                        return None
+    
     def default(self, obj):
         return getattr(obj, 'tojson', lambda: self._default(obj))()
 
