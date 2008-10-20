@@ -3,7 +3,7 @@ $def with (state)
 $var title: $state.name
 
 <ul>
-$for s in state.senators:
+$for s in (state.senators or []):
     <li><a href="/p/$s.id">$s.title $s.firstname $s.lastname</a></li>
 </ul>
 <ul>
