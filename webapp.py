@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import re, sys
 import web
-web.config.debug = True
 
 from utils import zip2rep, simplegraphs, apipublish, users, writerep
 import blog
@@ -10,6 +9,9 @@ import settings
 from settings import db, render, production_mode
 import schema
 import config
+
+if not production_mode:
+	web.config.debug = True
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -309,7 +311,8 @@ class politician_introduced:
 class politician_groups:
     def GET(self, politician_id):
         related = group_politician_similarity(politician_id, qmin=1)
-        return render.politician_groups(politician_id, related)
+        pol = schema.Politician.where(id=politician_id)[0]
+        return render.politician_groups(pol, related)
 
 class politician_group:
     def GET(self, politician_id, group_id):
