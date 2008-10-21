@@ -333,7 +333,13 @@ def_cm = [
   ("committee_type", 1, enum),
   ("committee_party", 3, enum),
   ("filing_frequency", 1, enum),
-  ("interest_group_category", 1, enum), #@@@@important enumeration
+  ("interest_group_category", 1, enum(
+    C='CORPORATION',
+    L='LABOR ORGANIZATION',
+    M='MEMBERSHIP ORGANIZATION',
+    T='TRADE ASSOCIATION',
+    V='COOPERATIVE',
+    W='CORPORATION WITHOUT CAPITAL STOCK')),
   ("connected_org_name", 38, string),
   ("candidate_id", 9, string),
   (None, 2, filler)

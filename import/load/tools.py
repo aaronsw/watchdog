@@ -96,6 +96,13 @@ def opensecretsp(opensecrets_id):
     if not _opensecretscache: _fill()
     return _opensecretscache.get(opensecrets_id)
 
+def fecp(fec_id):
+    x = db.where('politician_fec_ids', fec_id=fec_id)
+    if x:
+        return x[0].politician_id
+    else:
+        return None
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

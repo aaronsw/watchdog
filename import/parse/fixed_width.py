@@ -2,6 +2,11 @@
 Library for processing fixed-width files.
 """
 
+try:
+    from web import storage
+except ImportError:
+    storage = dict
+
 ## Types used in definitions
 
 def date(s):
@@ -54,7 +59,7 @@ FIELD_TYP = 2
 ## The functions you might want to call
 
 def parse_line(linedef, line):
-    out = {}
+    out = storage()
     n = 0
     for (k, l, t) in linedef:
         if l < 0 : # go back
