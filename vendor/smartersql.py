@@ -173,8 +173,8 @@ class Column(object):
     unique = False
     notnull = False
 
-    display = lambda self, x: str(x)
-    toxml = lambda self, obj: '>' + web.websafe(obj)
+    display = lambda self, x: unicode(x)
+    toxml = lambda self, obj: '>' + web.htmlquote(obj)
 
 class Reference (Column):
     def __init__(self, target, **kw):
