@@ -174,7 +174,7 @@ class Column(object):
     notnull = False
 
     display = lambda self, x: unicode(x)
-    toxml = lambda self, obj: '>' + web.htmlquote(obj)
+    toxml = lambda self, obj: '>' + web.htmlquote(unicode(obj))
 
 class Reference (Column):
     def __init__(self, target, **kw):
