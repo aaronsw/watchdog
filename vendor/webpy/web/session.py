@@ -160,7 +160,10 @@ class Store:
     def decode(self, session_data):
         """decodes the data to get back the session dict """
         pickled = base64.decodestring(session_data)
-        return pickle.loads(pickled)
+	try:
+	    return pickle.loads(pickled)
+        except:
+            return
 
 class DiskStore(Store):
     """Store for saving a session on disk
