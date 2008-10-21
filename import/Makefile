@@ -61,7 +61,7 @@ database: $(LOADERS)
 	$(PYTHON) load/shapes.py
 	touch $@
 
-.almanac: .manual load/almanac.py parse/almanac.py
+.almanac: .manual .govtrack load/almanac.py parse/almanac.py
 	$(PYTHON) load/almanac.py
 	touch $@
 
