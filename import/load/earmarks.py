@@ -135,7 +135,7 @@ def calculate_per_capita():
     pc = {}
     for e in db.select('earmark', what='final_amt, id', order='id asc'):
         done_states = set()
-        amount = float(e.final_amt)
+        amount = float(e.final_amt or 0)
         pop = 0
         sponsors = db.query("select district_id, state_id, id from politician, district, earmark_sponsor where politician.district_id = district.name and earmark_sponsor.politician_id = politician.id and earmark_id=$e.id",vars=locals()).list()
         if not sponsors: continue
