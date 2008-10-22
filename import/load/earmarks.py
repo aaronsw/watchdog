@@ -71,6 +71,7 @@ def load():
     outdb = {}
     done = set()
     with db.transaction():
+        db.delete('earmark_sponsor', '1=1')
         db.delete('earmark', '1=1')
         for e in earmarks.parse_file(earmarks.EARMARK_FILE):
             de = dict(e)
