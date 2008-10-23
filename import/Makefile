@@ -153,7 +153,7 @@ $(PARSE)/earmarks.njs: parse/earmarks.py $(CRAWL)/taxpayer/bigkahuna.xls
 	mv $@.tmp $@
 
 $(PARSE)/fec.njs: parse/fec.py $(CRAWL)/fec
-	$(PYTHON) parse/fec.py > $@.tmp
+	$(PYTHON) parse/fec_cobol.py > $@.tmp
 	mv $@.tmp $@
 
 $(PARSE)/govtrack.njs: parse/govtrack.py

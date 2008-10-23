@@ -573,7 +573,8 @@ def_cn = [
   ('zip', 5, string),
   ('principal_cmte_id', 9, string),
   ('election_year', 2, string),
-  ('current_district', 2, string)
+  ('current_district', 2, string),
+  (None, 2, filler)
 ]
 
 def parse_cansum():

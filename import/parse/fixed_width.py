@@ -2,6 +2,7 @@
 Library for processing fixed-width files.
 """
 
+import warnings
 try:
     from web import storage
 except ImportError:
@@ -29,7 +30,14 @@ def enum(s=None, **db):
         return string(s)
     else:
         if ' ' not in db: db[' '] = None
-        return lambda s: db[s]
+        def enumerate(s):
+            if s in db:
+                return db[s]
+            else:
+                warnings.warn('Expected one of %s in enumeration, but got %s' % 
+                  (list(db), repr(s)))
+                return None
+        return
 
 def table_lookup(table, preProcess=None):
     def get_from_table(d):
@@ -85,4 +93,5 @@ def parse_file(filedef, fh, f_whichdef=None):
     else:
         f_whichdef = lambda x: slice(None, None)
     for line in iter(lambda: fh.read(linelen), ''):
-        yield parse_line(filedef[f_whichdef(line)], line)
+        if line.replace('\x00', '').strip():
+            yield parse_line(filedef[f_whichdef(line)], line)
