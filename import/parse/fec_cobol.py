@@ -7,7 +7,7 @@ __author__ = [
   "Aaron Swartz <me@aaronsw.com>",
 ]
 
-import re, os, sys, gzip
+import re, os, sys, gzip, glob
 import web
 from fixed_width import get_len, enum, filler, parse_file
 
@@ -552,14 +552,48 @@ def_indiv = [
   (None, 2, filler)
 ]
 
-def parse_candidates():
+def_cn = [
+  ('_type', 0, lambda x: 'Candidate'),
+  ('candidate_id', 9, string),
+  ('candidate_name', 38, string),
+  ('party_desig_1', 3, string),
+  ('party_desig_2', 3, string),
+  ('party_desig_3', 3, string),
+  ('ico', 1, ico),
+  (None, 1, filler),
+  ('candidate_status', 1, enum(
+    C="STATUTORY CANDIDATE",
+    F="STATUTORY CANDIDATE FOR A FUTURE ELECTION",
+    N="NOT YET A STATUTORY CANDIDATE",
+    P="STATUTORY CANDIDATE IN PRIOR CYCLE")),
+  ('street_one', 34, string),
+  ('street_two', 34, string),
+  ('city', 18, string),
+  ('state', 2, string),
+  ('zip', 5, string),
+  ('principal_cmte_id', 9, string),
+  ('election_year', 2, string),
+  ('current_district', 2, string)
+]
+
+def parse_cansum():
     return parse_file(def_webl, file("../data/crawl/fec/2008/weball.dat"))
+def parse_candidates():
+    for fn in glob.glob('../data/crawl/fec/*/cn.dat'):
+        for elt in parse_file(def_cn, file(fn)):
+            yield elt
 def parse_committees():
-    return parse_file(def_cm, file("../data/crawl/fec/2008/cm.dat"))
+    for fn in glob.glob('../data/crawl/fec/*/cm.dat'):
+        for elt in parse_file(def_cm, file(fn)):
+            yield elt
 def parse_transfers():
-    return parse_file(def_pas2, file("../data/crawl/fec/2008/pas2.dat"))
+    for fn in glob.glob('../data/crawl/fec/*/pas2.dat'):
+        for elt in parse_file(def_pas2, file(fn)):
+            yield elt
 def parse_contributions():
-    return parse_file(def_indiv, gzip.open("../data/crawl/fec/2008/indiv.dat.gz"))
+    for fn in glob.glob('../data/crawl/fec/*/indiv.dat.gz'):
+        for elt in parse_file(def_indiv, gzip.open(fn)):
+            yield elt
 
 if __name__ == "__main__":
     import tools
