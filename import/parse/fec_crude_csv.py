@@ -50,14 +50,17 @@ class Field:
     >>> Field(aka=['bob', 'fred']).inverteds('ralph')['bob']({'bob': 39})
     ('ralph', 39)
     """
-    def __init__(self, aka=set(), format=lambda x: x):
+    def __init__(self, aka=set(), format=None):
         self._aka = set(aka)
         self._format = format
+    def format(self, datum):
+        if self._format: return self._format(datum)
+        else: return datum
     def get_from(self, name, data):
         # XXX only used for testing!
         for k in [name] + list(self._aka):
             if k in data:
-                return self._format(data[k])
+                return self.format(data[k])
     def inverteds(self, name):
         """Return a dictionary of ways to get this field’s value.
 
@@ -78,7 +81,10 @@ class Field:
             # k=k so each lambda has its own k instead of all sharing
             # the same k; it's not intended that callers will override
             # k!
-            rv[k] = lambda data, k=k: (name, self._format(data[k]))
+            if self._format:
+                rv[k] = lambda data, k=k: (name, self._format(data[k]))
+            else:
+                rv[k] = lambda data, k=k: (name, data[k])
         return rv
 
 field = Field()
