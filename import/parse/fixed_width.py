@@ -23,21 +23,25 @@ def string(s):
 def boolean(s):
     return {'Y': True, 'N': False, ' ': None}[s]
     
-filler = string
+def filler(required=None):
+    def filler_internal(s):
+        if required:
+            assert s == required, repr(s)
+    return filler_internal
 
 def enum(s=None, **db):
     if isinstance(s, basestring):
         return string(s)
     else:
         if ' ' not in db: db[' '] = None
-        def enumerate(s):
+        def enum_lookup(s):
             if s in db:
                 return db[s]
             else:
                 warnings.warn('Expected one of %s in enumeration, but got %s' % 
                   (list(db), repr(s)))
                 return None
-        return
+        return enum_lookup
 
 def table_lookup(table, preProcess=None):
     def get_from_table(d):
@@ -72,7 +76,9 @@ def parse_line(linedef, line):
     for (k, l, t) in linedef:
         if l < 0 : # go back
             out[k] = t(line[n+l:n])
-        if k is not None:
+        if k is None:
+            t(line[n:n+l])
+        else:
             out[k] = t(line[n:n+l])
         if l > 0: n += l
     return out
