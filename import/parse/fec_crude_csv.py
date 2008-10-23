@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 import csv, sys, cgitb, fixed_width
 """
 This is just some test code right now for exploring the space of
@@ -161,10 +162,18 @@ def findkey(hmap, key):
     while key:
         if key in hmap: return hmap[key]
         else: key = key[:-1]
+
+headers_cache = {}
+def headers_for_version(version):
+    "Memoize headers function, saving about 25–40% of run time."
+    if version not in headers_cache:
+        headers_cache[version] = \
+            headers('../data/crawl/fec/electronic/headers/%s.csv' % version)
+    return headers_cache[version]
 def readfile(filename):
     r = csv.reader(file(filename))
     headerline = r.next()
-    headermap = headers('../data/crawl/fec/electronic/headers/%s.csv' % headerline[2])
+    headermap = headers_for_version(headerline[2])
     in_text_field = False
     for line in r:
         if not line: continue         # FILPAC inserts random blank lines
