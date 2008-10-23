@@ -45,33 +45,55 @@ class Field:
     >>> Field(format=fixed_width.date,
     ...       aka=['bob']).get_from('dan', {'dan': '20080830'})
     '2008-08-30'
-    >>> Field(aka=['bob', 'fred']).aliases()
-    set(['bob', 'fred'])
+    >>> sorted(Field(aka=['bob', 'fred']).inverteds('ralph').keys())
+    ['bob', 'fred', 'ralph']
+    >>> Field(aka=['bob', 'fred']).inverteds('ralph')['bob']({'bob': 39})
+    ('ralph', 39)
     """
     def __init__(self, aka=set(), format=lambda x: x):
         self._aka = set(aka)
         self._format = format
-    def aliases(self):
-        return self._aka
     def get_from(self, name, data):
-        for k in [name] + list(self.aliases()):
+        # XXX only used for testing!
+        for k in [name] + list(self._aka):
             if k in data:
                 return self._format(data[k])
+    def inverteds(self, name):
+        """Return a dictionary of ways to get this field’s value.
+
+        The keys of the dictionary are the names of original source
+        fields that must be present for the function to be applicable;
+        the values are functions that take the original source data
+        dictionary.  Those functions are entitled to access other
+        fields in the dictionary, although they don’t yet.
+
+        This is an efficiency hack; the objective is that we can avoid
+        trying to look at fields that aren’t present at all in the
+        source data.  It saved only about 14% of user CPU time when I
+        tested it.
+
+        """
+        rv = {}
+        for k in [name] + list(self._aka):
+            # k=k so each lambda has its own k instead of all sharing
+            # the same k; it's not intended that callers will override
+            # k!
+            rv[k] = lambda data, k=k: (name, self._format(data[k]))
+        return rv
 
 field = Field()
 
-def map_fields(fields, data):
-    """
-    Maps fields according to a field-mapping specification.
+class FieldMapper:
+    """Maps fields according to a field-mapping specification.
 
-    Takes and returns a dict. The original dict comes out as a member
-    named 'original_data'; otherwise its members are only copied
-    across according to applicable field specs.
+    Takes and returns a dict. The original dict comes out as a
+    member named 'original_data'; otherwise its members are only
+    copied across according to applicable field specs.
 
-    >>> mapped = map_fields(fields, {'date_received': '20081131',
-    ...                              'tran_id': '12345', 
-    ...                              'weird_field': 34, 
-    ...                              'amount_received': '123456'})
+    >>> mapped = FieldMapper(fields).map({'date_received': '20081131',
+    ...                                   'tran_id': '12345', 
+    ...                                   'weird_field': 34, 
+    ...                                   'amount_received': '123456'})
     >>> sorted(mapped.keys())
     ['amount', 'date', 'original_data', 'tran_id']
     >>> mapped['date']
@@ -83,11 +105,25 @@ def map_fields(fields, data):
     >>> mapped['tran_id']
     '12345'
     """
-    rv = {'original_data': data}
-    for name, field in fields.items():
-        val = field.get_from(name, data)
-        if val is not None: rv[name] = val
-    return rv
+    def __init__(self, fields):
+        self.fields = fields
+        self.inverteds = {}
+        for name, field in self.fields.items():
+            self.inverteds.update(field.inverteds(name))
+        self.inverted_keys = set(self.inverteds.keys())
+    def map(self, data):
+        rv = {'original_data': data}
+        # Here we intersect the keys in the data with the keys we’re
+        # interested in, in order to avoid doing unnecessary work in
+        # Python.
+        for fieldname in set(data.keys()) & self.inverted_keys:
+            try:
+                k, v = self.inverteds[fieldname](data)
+            except KeyError:
+                pass
+            else:
+                rv[k] = v
+        return rv
 
 def strip(text):
     """
@@ -123,26 +159,28 @@ fields = {
                          'amount_of_expenditure'])
 }
 
+fieldmapper = FieldMapper(fields)
+
 def _regrtest_fields():
     """
     Regression tests for the `fields` table.
     
-    >>> map_fields(fields, {'candidate_id_number': '12345'})
+    >>> fieldmapper.map({'candidate_id_number': '12345'})
     ... #doctest: +ELLIPSIS
     {'candidate_fec_id': '12345', 'original_data': {...}}
-    >>> map_fields(fields, {'fec_candidate_id_number': '56789'})
+    >>> fieldmapper.map({'fec_candidate_id_number': '56789'})
     ... #doctest: +ELLIPSIS
     {'candidate_fec_id': '56789', 'original_data': {...}}
-    >>> map_fields(fields, {'transaction_id_number': '56789'})
+    >>> fieldmapper.map({'transaction_id_number': '56789'})
     ... #doctest: +ELLIPSIS
     {'original_data': {...}, 'tran_id': '56789'}
-    >>> map_fields(fields, {'contributor_occupation': 'Consultant'})
+    >>> fieldmapper.map({'contributor_occupation': 'Consultant'})
     ... #doctest: +ELLIPSIS
     {'original_data': {...}, 'occupation': 'Consultant'}
-    >>> map_fields(fields, {'indocc': 'Private Investor'})
+    >>> fieldmapper.map({'indocc': 'Private Investor'})
     ... #doctest: +ELLIPSIS
     {'original_data': {...}, 'occupation': 'Private Investor'}
-    >>> map_fields(fields, {'indemp': 'EEA Development'})
+    >>> fieldmapper.map({'indemp': 'EEA Development'})
     ... #doctest: +ELLIPSIS
     {'original_data': {...}, 'employer': 'EEA Development'}
     """
@@ -185,7 +223,7 @@ def readfile(fileobj):
             fieldnames = findkey(headermap, line[0])
             if not fieldnames:
                 raise "could not find field defs", (line[0], headermap.keys())
-            yield map_fields(fields, dict(zip(fieldnames, line)))
+            yield fieldmapper.map(dict(zip(fieldnames, line)))
         elif in_text_field:
             # XXX currently discard the contents of text fields
             if line[0].lower() == '[endtext]':
