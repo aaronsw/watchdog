@@ -1,61 +1,63 @@
 #TODO:
 #   - Detect dups in PAC table (capitalization, 'PAC' suffix, etc.)
+#   - Improve schema... need to figure out how we're to use this first.
+#   - Stable IDs for tables.
 from __future__ import with_statement
-from parse import lobbyists
-from pprint import pprint, pformat
-from settings import db
-import psycopg2
-import web
 import re
+from pprint import pprint, pformat
+
+import web
+
+from settings import db
+from parse import lobbyists
 
 
 lob_organization =  {
-'organizationName': 'name',
+    'organizationName': 'name',
 }
+
 lob_pac = {
-'name': 'name'
+    'name': 'name'
 }
+
 lob_person = {
-'lobbyistPrefix': 'prefix',
-'lobbyistFirstName': 'firstname',
-'lobbyistMiddleName': 'middlename',
-'lobbyistLastName': 'lastname',
-'lobbyistSuffix': 'suffix',
-'contactName': 'contact_name',
+    'lobbyistPrefix': 'prefix',
+    'lobbyistFirstName': 'firstname',
+    'lobbyistMiddleName': 'middlename',
+    'lobbyistLastName': 'lastname',
+    'lobbyistSuffix': 'suffix',
+    'contactName': 'contact_name',
 }
 
 lob_filing = {
-'senateRegID': 'senate_id',
-'houseRegID': 'house_id',
+    'senateRegID': 'senate_id',
+    'houseRegID': 'house_id',
 
-'filerType': 'filer_type',
+    'filerType': 'filer_type',
 
-'reportYear': 'year',
-'reportType': 'type',
-'amendment': 'amendment',
-'signedDate': 'signed_date',
-'certifiedcontent': 'certified',
-#'noContributions': None,
-'comments': 'comments',
+    'reportYear': 'year',
+    'reportType': 'type',
+    'amendment': 'amendment',
+    'signedDate': 'signed_date',
+    'certifiedcontent': 'certified',
+    #'noContributions': None,
+    'comments': 'comments',
 }
 
 lob_contribution = {
-# refrence to lob_filing
-'type': 'type',
-'contributorName': 'contributor',
-'payeeName': 'payee',
-'recipientName': 'recipient',
-'amount': 'amount',
-'date': 'date' 
+    'type': 'type',
+    'contributorName': 'contributor',
+    'payeeName': 'payee',
+    'recipientName': 'recipient',
+    'amount': 'amount',
+    'date': 'date' 
 }
 
 def load_house_lobbyists():
     print "Loading new lobbyist data."
     pac_id=[1]
     for i, x in enumerate(lobbyists.parse_house_lobbyists()):
-        per = {}
-        org = {}
-        fil = {}
+        (per, org, fil) = ({}, {}, {})
         #pprint(x)
         for z, val in x.items():
             if z in lob_person: per[lob_person[z]] = val
@@ -69,7 +71,6 @@ def load_house_lobbyists():
             if not person:
                 db.insert('lob_person', seqname=False, **per)
             else:
-                #print "dup person: ",pformat(per)
                 per = person[0]
 
         # lob_organization table
@@ -78,7 +79,6 @@ def load_house_lobbyists():
         if not organization:
             db.insert('lob_organization', seqname=False, **org)
         else: 
-            #print "dup org: ",pformat(org)
             org = organization[0]
 
         # lob_filing table
@@ -87,6 +87,7 @@ def load_house_lobbyists():
         fil['id'] = x['file_id']
         db.insert('lob_filing', seqname=False, **fil)
 
+        # lob_contribution table
         def insert_contribution(con):
             c = {}
             for z, val in con.items():
@@ -100,9 +101,10 @@ def load_house_lobbyists():
             else: 
                 insert_contribution(x['contributions'])
 
+        # lob_pac table
         def insert_pac(pac):
             pac_id[0] += 1
-            pa = {'id':pac_id[0]}
+            pa = {'id':pac_id[0]}  #@@ stable ids
             for z, val in pac.items():
                 if z in lob_pac: pa[lob_pac[z]] = val
             db_pac = db.select('lob_pac', where='name='+web.sqlquote(pa['name']))

@@ -33,7 +33,8 @@ NJS=$(PARSE)/almanac.njs \
 
 LOADERS = .schema .manual \
           .almanac .centers .voteview .govtrack \
-          .bills .interests .votesmart .photos .fec .census .soi .earmarks .wyr
+          .bills .interests .votesmart .photos .lobbyist \
+		  .fec .census .soi .earmarks .wyr
 
 all: database
 clean:
@@ -98,6 +99,10 @@ database: $(LOADERS)
 
 .photos: .manual .votesmart load/photos.py
 	$(PYTHON) load/photos.py
+	touch $@
+
+.lobbyist: load/lobbyists.py parse/lobbyists.py $(CRAWL)/house/lobby/2008_MidYear_XML.zip
+	$(PYTHON) load/lobbyists.py
 	touch $@
 
 .fec: .manual

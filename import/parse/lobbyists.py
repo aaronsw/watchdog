@@ -4,6 +4,7 @@ from pprint import pprint, pformat
 
 import web
 
+ZIPFILE='../data/crawl/house/lobby/2008_MidYear_XML.zip'
 HOUSE_FILES='../data/crawl/house/lobby/*.xml'
 
 def cleanint(n):
@@ -77,9 +78,15 @@ def _parse_house_lobbyist(node, sch):
 fileid_regex = re.compile(r'.*?([0-9]*)\.xml')
 def parse_house_lobbyists():
     files = glob.glob(HOUSE_FILES)
+    parse = lambda f: minidom.parse(f)
+    if not files:
+        import zipfile
+        zf = zipfile.ZipFile(ZIPFILE)
+        files = zf.namelist()
+        parse = lambda f: minidom.parseString(zf.read(f))
     for f in files:
         print f
-        dom = minidom.parse(f)
+        dom = parse(f)
         out = _parse_house_lobbyist(dom, xml_schema)
         out['file_id'] = fileid_regex.match(f).group(1)
         yield out
