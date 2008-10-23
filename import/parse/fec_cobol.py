@@ -714,8 +714,8 @@ def parse_others():
 
 if __name__ == "__main__":
     import tools
-    #tools.export(parse_candidates())
-    #tools.export(parse_committees())
-    #tools.export(parse_transfers())
-    #tools.export(parse_contributions())
+    tools.export(parse_candidates())
+    tools.export(parse_committees())
+    tools.export(parse_transfers())
+    tools.export(parse_contributions())
     tools.export(parse_others())
