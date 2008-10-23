@@ -213,7 +213,7 @@ class Interest_group_rating(sql.Table):
 class Bill(sql.Table):
     @property
     def _uri_(self):
-        return 'http://watchdog.net/b/%s' % self.id
+        return 'http://watchdog.net/b/%s#it' % self.id
     
     id = sql.String(primary=True)
     session = sql.Integer()

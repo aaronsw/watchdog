@@ -133,7 +133,10 @@ class Session(utils.ThreadedDict):
  
     def kill(self):
         """Kill the session, make it no longer available"""
-        del self.store[self.session_id]
+        try:
+            del self.store[self.session_id]
+        except KeyError:
+            pass
         self._killed = True
 
 class Store:
@@ -160,7 +163,10 @@ class Store:
     def decode(self, session_data):
         """decodes the data to get back the session dict """
         pickled = base64.decodestring(session_data)
-        return pickle.loads(pickled)
+        try:
+            return pickle.loads(pickled)
+        except:
+            return {}
 
 class DiskStore(Store):
     """Store for saving a session on disk
