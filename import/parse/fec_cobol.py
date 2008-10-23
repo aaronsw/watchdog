@@ -28,6 +28,10 @@ def integer(d):
 def string(d):
     return d.decode('cp1251').rstrip()
 
+def date99(d):
+    """where `d` is like MMDDYY"""
+    return '19' + d[4:6] + "-" + d[0:2] + "-" + d[2:4]
+
 def date(d):
     """where `d` is like MMDDYYYY"""
     return d[4:8] + "-" + d[0:2] + "-" + d[2:4]
@@ -95,7 +99,7 @@ def_webl = [
   ("end_date", 8, date),
   ("refunds_to_indiv", 10, integer),
   ("refunds_to_commit", 10, integer),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 # Supports files for CANSUM04 CANSUM02 CANSUM00 CANSUM98 CANSUM96
@@ -149,7 +153,7 @@ def_cansum = [
   ("spec_elec_cand", 1, string),
   ("party_coord_exp", 10, integer),
   ("party_indep_exp", 10, integer),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 # Supports format CANSUM94 CANSUM92
@@ -200,7 +204,7 @@ def_cansum92 = [
   ("runoff_elec_status", 1, string),
   ("gen_elec_status", 7, string),
   ("spec_elec_cand", 1, string),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 def_cansum90 = [
@@ -251,7 +255,7 @@ def_cansum90 = [
   ("runoff_elec_status", 1, string),
   ("gen_elec_status", 1, string),
   ("spec_elec_cand", 1, string),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 def_cansum88 = [
@@ -300,7 +304,7 @@ def_cansum88 = [
   ("runoff_elec_status", 1, string),
   ("gen_elec_status", 1, string),
   ("spec_elec_cand", 1, string),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 def_pas2 = [
@@ -316,8 +320,17 @@ def_pas2 = [
   ("to_other_id", 9, string),
   ("to_candidate_id", 9, string),
   ("fec_record_id", 7, string),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
+
+def_pas2_80 = def_pas2[:-2] + [def_pas2[-1]]
+def_pas2_80[7] = ("date", 6, date99)
+def_pas2_80[8] = ("amount", 6, integer)
+def_pas2_90 = def_pas2_80[:]
+def_pas2_90[8] = ("amount", 7, integer)
+def_pas2_94 = def_pas2[:]
+def_pas2_94[7] = ("date", 6, date99)
+def_pas2_96 = def_pas2[:]
 
 def_cm = [
   ('_type', 0, lambda x: 'Committee'),
@@ -342,8 +355,10 @@ def_cm = [
     W='CORPORATION WITHOUT CAPITAL STOCK')),
   ("connected_org_name", 38, string),
   ("candidate_id", 9, string),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
+
+def_cm80 = def_cm[:-2] + [def_cm[-1]]
 
 def_webk = [
   ('_type', 0, lambda x: 'PAC/PARTY'),
@@ -376,7 +391,7 @@ def_webk = [
   ("month", 2, integer),
   ("day", 2, integer),
   ("year", 4, integer),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 #Supporst PACSUM[92-04]
@@ -423,7 +438,7 @@ def_pacsum = [
   ("house_opn_contrib", 10, integer),
   ("non_federal_trans", 10, integer),
   ("non_federal_expend", 10, integer),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 # Supports PACSUM[84-90]
@@ -468,7 +483,7 @@ def_pacsum90 = [
   ("house_inc_contrib", 12, integer),
   ("house_cha_contrib", 12, integer),
   ("house_opn_contrib", 12, integer),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 
@@ -529,7 +544,7 @@ def_pacsum82 = [
   ("senate_house_inc_contrib", 9, integer),
   ("senate_house_cha_contrib", 9, integer),
   ("senate_house_opn_contrib", 9, integer),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 def_indiv = [
@@ -540,17 +555,24 @@ def_indiv = [
   ('primary_general', 1, enum),
   ('microfilm_loc', 11, string),
   ('transaction_type', 3, enum), #@@important enumeration
-  ('src_name', 34, string),
-  ('src_city', 18, string),
-  ('src_state', 2, string),
-  ('src_zip', 5, string),
-  ('src_occupation', 35, string),
+  ('name', 34, string),
+  ('street', 34, string),
+  ('city', 18, string),
+  ('state', 2, string),
+  ('zip', 5, string),
+  ('occupation', 35, string),
   ('date', 8, date),
   ('amount', 7, integer),
-  ('src_id', 9, string),
+  ('from_id', 9, string),
   ('fec_record_id', 7, string),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
+
+def_indiv_80 = def_indiv[:-2] + [(None, 3, filler), def_indiv[-1]]
+def_indiv_80[13] = ('date', 6, date)
+def_indiv_80[14] = ('amount', 6, integer)
+def_indiv_90 = def_indiv[:7] + def_indiv[8:]
+def_indiv_90[12] = ('date', 6, date)
 
 def_cn = [
   ('_type', 0, lambda x: 'Candidate'),
@@ -574,26 +596,63 @@ def_cn = [
   ('principal_cmte_id', 9, string),
   ('election_year', 2, string),
   ('current_district', 2, string),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
+def fix80(fh, line_def):
+    line_len = sum(x[1] for x in line_def)
+    def internal():
+        for line in fh:
+            line_diff = line_len - len(line)
+            if line_diff:
+                line = line[:-2] + ' ' * line_diff + line[-2:]
+            yield line
+    out = web.storage()
+    internal = internal()
+    def read(leng):
+        assert leng == line_len
+        return internal.next()
+    out.read = read
+    return out
+
+import sys
 def parse_cansum():
     return parse_file(def_webl, file("../data/crawl/fec/2008/weball.dat"))
 def parse_candidates():
     for fn in glob.glob('../data/crawl/fec/*/cn.dat'):
+        print>>sys.stderr, fn
         for elt in parse_file(def_cn, file(fn)):
             yield elt
 def parse_committees():
     for fn in glob.glob('../data/crawl/fec/*/cm.dat'):
-        for elt in parse_file(def_cm, file(fn)):
+        print>>sys.stderr, fn
+        fh = file(fn)
+        if '1980' in fn:
+            fh = fix80(fh, def_cm)
+        for elt in parse_file(def_cm, fh):
             yield elt
 def parse_transfers():
-    for fn in glob.glob('../data/crawl/fec/*/pas2.dat'):
-        for elt in parse_file(def_pas2, file(fn)):
+    cur_def = def_pas2_80
+    for fn in sorted(glob.glob('../data/crawl/fec/*/pas2.dat')):
+        print>>sys.stderr, fn
+        fh = file(fn)
+        if '1980' in fn:
+            cur_def = def_pas2_80
+            fh = fix80(fh, def_pas2_80)
+        if '1990' in fn: cur_def = def_pas2_90
+        if '1994' in fn: cur_def = def_pas2_94
+        if '1996' in fn: cur_def = def_pas2_96
+        for elt in parse_file(cur_def, fh):
             yield elt
 def parse_contributions():
     for fn in glob.glob('../data/crawl/fec/*/indiv.dat.gz'):
-        for elt in parse_file(def_indiv, gzip.open(fn)):
+        print>>sys.stderr, fn
+        fh = gzip.open(fn)
+        if '1980' in fn:
+            cur_def = def_indiv_80
+            fh = fix80(fh, cur_def)
+        if '1990' in fn: cur_def = def_indiv_90
+        for elt in parse_file(cur_def, fh):
             yield elt
 
 if __name__ == "__main__":
