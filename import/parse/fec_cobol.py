@@ -619,12 +619,12 @@ import sys
 def parse_cansum():
     return parse_file(def_webl, file("../data/crawl/fec/2008/weball.dat"))
 def parse_candidates():
-    for fn in glob.glob('../data/crawl/fec/*/cn.dat'):
+    for fn in sorted(glob.glob('../data/crawl/fec/*/cn.dat')):
         print>>sys.stderr, fn
         for elt in parse_file(def_cn, file(fn)):
             yield elt
 def parse_committees():
-    for fn in glob.glob('../data/crawl/fec/*/cm.dat'):
+    for fn in sorted(glob.glob('../data/crawl/fec/*/cm.dat')):
         print>>sys.stderr, fn
         fh = file(fn)
         if '1980' in fn:
@@ -645,7 +645,7 @@ def parse_transfers():
         for elt in parse_file(cur_def, fh):
             yield elt
 def parse_contributions():
-    for fn in glob.glob('../data/crawl/fec/*/indiv.dat.gz'):
+    for fn in sorted(glob.glob('../data/crawl/fec/*/indiv.dat.gz')):
         print>>sys.stderr, fn
         fh = gzip.open(fn)
         if '1980' in fn:
