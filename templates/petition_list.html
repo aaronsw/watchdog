@@ -7,11 +7,11 @@ $if msg:
 
 <p><a href="/c/new" class="action">Start a new petition</a></p>
 
-<ul class="chartlist">
+<table border='0'>
+<ul>
 $for p in petitions:
-    <li>
-        <a href="/c/$p.id">$p.title</a> 
-        <span class="count"> $p.signature_count</span>
-    </li>
+        <tr><td><li><a href="/c/$p.id">$p.title</a></td></li>
+        <td style="color: #888;"> $p.signature_count</td></tr>
 </ul>
+</table>
 <p><a href="/c/new" class="action">Start a new petition</a></p>
