@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import csv, sys, cgitb, fixed_width
+import csv, sys, cgitb, fixed_width, zipfile, StringIO
 """
 This is just some test code right now for exploring the space of
 parsing FEC CSV files in a relatively version-flexible way.
@@ -170,8 +170,8 @@ def headers_for_version(version):
         headers_cache[version] = \
             headers('../data/crawl/fec/electronic/headers/%s.csv' % version)
     return headers_cache[version]
-def readfile(filename):
-    r = csv.reader(file(filename))
+def readfile(fileobj):
+    r = csv.reader(fileobj)
     headerline = r.next()
     headermap = headers_for_version(headerline[2])
     in_text_field = False
@@ -191,7 +191,20 @@ def readfile(filename):
             if line[0].lower() == '[endtext]':
                 in_text_field = False
 
+def readfile_zip(filename):
+    zf = zipfile.ZipFile(filename)
+    for name in zf.namelist():
+        for record in readfile(StringIO.StringIO(zf.read(name))):
+            yield record
+
+def readfile_generic(filename):
+    if filename.endswith('.zip'):
+        return readfile_zip(filename)
+    else:
+        return readfile(file(filename))
+
+
 if __name__ == '__main__':
     cgitb.enable(format='text')
     for filename in sys.argv[1:]:
-        for line in readfile(filename): print line
+        for line in readfile_generic(filename): print line
