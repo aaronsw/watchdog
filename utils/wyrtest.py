@@ -35,7 +35,7 @@ def test(formtype=None):
         try:
             msg_sent = writerep(pol, zipcode=zip5, zip4=zip4, prefix='Mr.', 
                     fname='watchdog', lname ='Tester', addr1='111 av', addr2='addr extn', city='test city', 
-                    phone='001-001-001', email='test@watchdog.net', subject='general', msg='testing...')
+                    phone='0010010010', email='test@tryitout.net', subject='general', msg='testing...')
         except Exception, details:
             print details,
             msg_sent = False            
