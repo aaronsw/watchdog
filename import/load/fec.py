@@ -24,7 +24,7 @@ def load_fec_ids():
                   fec_id=fec_id)
 
 def load_fec_cans():
-    for can in fec_cobol.parse_candidates():
+    for can in fec_cobol.parse_cansum():
         can = web.storage(can)
         if can.candidate_id in fec2pol:
             pol_id = fec2pol[can.candidate_id]
