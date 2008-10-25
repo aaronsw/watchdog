@@ -282,7 +282,7 @@ class write_your_rep:
                         prefix=i.prefix, lname=i.lname, fname=i.fname,
                         addr1=i.addr1, addr2=i.addr2, city=i.city,
                         zipcode=i.zipcode, zip4=i.zip4,
-                        phone=i.phone, email=email, subject=i.ptitle, msg=i.msg,
+                        phone=web.numify(i.phone), email=email, subject=i.ptitle, msg=i.msg,
                         captcha=i.get('captcha', ''))
         except:
             msg_sent = False

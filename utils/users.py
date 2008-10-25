@@ -43,6 +43,7 @@ def update_user_details(i):
     user = helpers.get_user_by_email(i.get('email'))
     userid = user and user.id
     i['zip5'] = i.get('zipcode')
+    i['phone'] = web.numify(i.get('phone'))
     details = ['prefix', 'lname', 'fname', 'addr1', 'addr2', 'city', 'zip5', 'zip4', 'phone']
     
     d = {}

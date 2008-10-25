@@ -19,7 +19,7 @@ def emailnotexists(email):
     return not(exists)
     
 def check_len(phone):
-    return len(web.numify(phone)) <= 10
+    return len(web.numify(phone)) <= 15
 
 petitionform = form.Form(
       form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
