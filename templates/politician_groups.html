@@ -1,21 +1,29 @@
 $def with (polid, related)
 
+$var width: 90%
+$var color: white
+
 $var title: Interest Group Alignment
 
-<table>
-<tr><th>Group</th><th>Agreement</th></tr>
+<style>
+.header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
+</style>
+
+<h1>Interest Group Alignment</h1>
+
+<table class="structure" width="100%">
+<tr><td class="header">Group</td><td class="header">Agreement</td></tr>
+$ trclass = "odd"
 $for group in related:
-    <tr>
-      <td>$group.longname</td>
-      <td>$int(group.agreement * 100)% (<a href="/p/$polid/$group.id">$group.agreed/$group.total votes</a>)</td>
-    </tr>
+    $if trclass == "odd":
+        $ trclass = "even"
+    $else:
+        $ trclass = "odd"
+    <tr class="$trclass"><td>$group.longname</td><td>$int(group.agreement * 100)% (<a href="/p/$polid/$group.id">$group.agreed/$group.total votes</a>)</td></tr>
+    
 </table>
 
 <div class="sources">
-  Bill data comes from <a 
-    href="http://www.govtrack.us/"
-  >GovTrack</a>.
-  Interest group data comes from
-  <a href="http://maplight.org/map/us/"
-  >MAPLight.org</a>.
+  Bill data comes from <nobr><img src="/static/images/icons/link_out.gif" width="16" height="16" /> <a href="http://www.govtrack.us/">GovTrack</a>.</nobr>
+  Interest group data comes from <nobr><img src="/static/images/icons/link_out.gif" width="16" height="16" /> <a href="http://maplight.org/map/us/">MAPLight.org</a>.</nobr>
 </div>

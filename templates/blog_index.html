@@ -1,16 +1,24 @@
 $def with (posts)
 
-$var title: Blog
+$var title: Watchdog.net Blog
 $var blog_class: select
+
+$var width: 782px
+$var color: white
 
 $var head:
 	  <link rel="alternate" type="application/rss+xml" title="RSS" href="feed" />
 
 $var sidebar:
-    <p class="bigintro"><strong>Welcome to the Watchdog blog.</strong> We post about site changes, relevant news, and other interesting bits of gossip. (Want to stay up-to-date? Subscribe to our <a href="feed">feed</a> or our <a href="http://groups.google.com/group/watchdog-announce/subscribe">very low-volume announcement list</a>.)</p>
-    
-    <p><a href="feed"><img src="/static/images/feed-icon-28x28.png" alt="RSS" height="28" width="28" /></a> <a href="http://groups.google.com/group/watchdog-announce/subscribe"><img src="/static/images/mail-icon-32x32.png" height="28" width="28" /></a></p>
+<div id="sidebar">
+<a href="http://watchdog.net/blog/feed"><img src="/static/images/rss.png" style="float: left; padding-right: 5px;" border="0" alt="RSS Feeds" /></a>
+<a href="http://groups.google.com/group/watchdog-announce/subscribe"><img src="/static/images/google.png" style="float: left; padding-right: 20px;" border="0" alt="Google Groups" /></a>
+This is where we post about
+site changes, relevant news, and other interesting bits of gossip.
+(Want to stay up-to-date? Subscribe to our <a href="http://watchdog.net/blog/feed">feed</a> or our <a href="http://groups.google.com/group/watchdog-announce/subscribe">very low-volume announcement list</a>.)
+</div>
 
+	<h1>Watchdog Blog</h1>
 
 $for post in posts:
     <h2><a href="$post.slug">$post.title</a></h2>

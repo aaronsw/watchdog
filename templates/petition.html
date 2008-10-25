@@ -1,5 +1,8 @@
 $def with (p, signform, useremail, isauthor, wyrform=None, msg=None)
 
+$var width: 90%
+$var color: white
+
 $var title: $p.title
 
 <script type="text/javascript" src="/static/js/petition.js"></script>
@@ -14,18 +17,18 @@ fieldset#signpetition { margin-top: 2em; }
 #text fieldset #fname, #lname, #phone, #addr2 {width: 190px;}
 #text fieldset #addr1, #city { width: 250px; }
 #text fieldset #share_with { width: 13px; }
-#text fieldset #share_with_container { margin-top: 1em; background-color: #ffc; width: 23em;}
+#text fieldset #share_with_container { margin-top: 1em; background-color: #ffc; width: 23em; }
 #text fieldset #share_with_container label { display: inline; }
 </style>
 
 $if msg:
     $var msg: $:msg
 
-<h2>$p.title</h2>
+<h1>$p.title</h1>
 
 $:format(p.description)
 
-<h2>$p.title</h2>
+<!-- <h2>$p.title</h2> -->
 
 <div id="upperbar">
 $if p.signatory_count == 0:
@@ -88,10 +91,11 @@ $if useremail:
                     <label for="captcha">Verification</label>$:wyrform.captcha.pre $:wyrform.captcha.render()
                 </td></tr>
             </table>    
-            <div id="share_with_container">
-            $:signform.share_with.render() 
+            <div id="share_with_container" style="margin: 3px;"><div style="float: left; padding-right: 12px;">
+            $:signform.share_with.render()
+            </div>
             <label for="share_with">Do not share my email with the author of this petition</label>
             </div>
+    <p><button type="submit" class="red">Sign this petition</button></p>
         </fieldset>
-    <p><button type="submit">Sign this petition</button></p>
 </form>

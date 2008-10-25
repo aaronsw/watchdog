@@ -1,38 +1,49 @@
 $def with (pid, ptitle, signs, is_author)
 
-$var title: Signatories for <a href='/c/$pid'>$ptitle</a>
+$var width: 90%
+$var color: white
+
+$var title: Signatories for: $ptitle
 
 $ sign_count = len(signs)
 
 <style>
 #text #signs { margin: 0; padding: 0; }
-#text #signs li { list-style: none; border-bottom: 1px solid #ddd; padding: 6px 0; line-height: 14px; background: none; }
-#text #signs li a { color: black; }
-#text #signs li .count { margin-right: 0.3em; }
+#text #signs { list-style: none; border-bottom: 1px solid #ddd; padding: 6px 0; line-height: 14px; background: none; }
+#text #signs a { color: black; }
+#text #signs .count { margin-right: 0.3em; }
+.header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
 </style>
 
-<h2>Signatories for <a href='/c/$pid'>$ptitle</a></h2>
+<h1>Signatories for <a href='/c/$pid'>$ptitle</a></h1>
 
 <form method="get" action="/c/$pid#sign">
 
-<p><button type="submit">Sign this petition</button></p>
+<!-- <p><button type="submit" class="action">Sign this petition</button></p> -->
 
-<ul id="signs">
+<table class="structure" width="100%">
+<tr><td class="header"></td><td class="header">Who</td><td class="header" style="padding-left: 12px">When</td><td class="header" style="padding-left: 12px; border-left: 1px solid #999;">Comment</td></tr>
+$ trclass = "odd"
 $for i, sign in enumerate(signs):
-        <li><p>
-        <span class="count">${sign_count - i}.</span>
+    $if trclass == "odd":
+        $ trclass = "even"
+    $else:
+        $ trclass = "odd"
+    <tr class="$trclass"><td style="text-align: right; padding: 3px;  color: #EE4400; padding: 4px; font-weight: bold;">
+        <span class="count">${sign_count - i}.</span></td><td style="padding: 3px; white-space: nowrap">
         <strong>
         $if is_author and (sign.share_with != 'N'):
                 <a href='mailto:$sign.email'>$sign.fname $sign.lname</a>
         $else:
             $sign.fname $sign.lname
-        </strong>
-        $:datestr(sign.signed)</p>
-        $if sign.comment:
-                <p>$:sign.comment</p>
-        </li>
-</ul>
+        </strong></td><td style="padding: 3px 12px 3px 12px; white-space: nowrap; border-right: 1px solid #999;">
+        $:datestr(sign.signed)
+                </td><td style="padding: 3px 3px 3px 12px; width: 100%; color: #999;">$:sign.comment
+	</td></tr>
 
-<p><button type="submit">Sign this petition</button></p>
+<tr><td style="border-bottom: 1px solid #999;" colspan="4"></td></tr>
+</table>
+
+<p><button type="submit" class="red">Sign this petition</button></p>
 
 </form>

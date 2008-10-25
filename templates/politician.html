@@ -6,18 +6,21 @@ $var title: $pol.firstname $pol.middlename $pol.lastname
 
 $var sidebar: None
 
-$var pretext: <div id="sidebarmap" style="clear: right;"><div id="googlemap" class="sidemap"></div><!--<input type="text" name="zip" class="zipcode" value="Enter your zip" />--><div class="postit"><a href="/share?url=$getpath()&title=$pol.firstname $pol.middlename $pol.lastname"><strong>Share this page</strong></a></div></div>
+$var pretext: <div id="sidebarmap"  style="clear: right; margin-top: -24px;"><div id="googlemap" class="sidemap"></div><!--<input type="text" name="zip" class="zipcode" value="Enter your zip" />--><div class="postit" style="margin: 10px 0px 10px 0px !important; text-align: center; padding: 3px;"><a href="/share?url=$getpath()&title=$pol.firstname $pol.middlename $pol.lastname"><strong>Share this page</strong></a></div></div>
     
+$var width: 90%
+$var color: white
+
 <div class="rep-info">
+<h1 style="padding-top: 0; margin-top: 0">$pol.firstname $pol.middlename $pol.lastname</h1>
+
 <table class="structure"><tr>
 
 $if pol.photo_path:
-    <td><a href="$pol.photo_path"><img src="$pol.photo_path" alt="Headshot" class="headshot" /></a></td>
+    <td style="padding-right: 10px;"><a href="http://watchdog.net$pol.photo_path"><img src="http://watchdog.net$pol.photo_path" alt="Headshot" class="headshot" style="padding: 7px; border: 1px solid #999;" /></a></td>
 
 <td>
-<h2 style="padding-top: 0; margin-top: 0">$pol.firstname $pol.middlename $pol.lastname</h2>
 
-<p>
   $if pol.nickname: known as "$pol.nickname"<br />
   $if pol.birthday:
       b. $pol.birthday\
@@ -26,7 +29,6 @@ $if pol.photo_path:
   represents <a href="/us/$pol.district.name">$pol.district.name</a><br />
   $pol.party, $pol.religion<br />
   <a href="$pol.officeurl">Official website</a>
-</p>
 
 $if pol.education:
     <p>Education: $pol.education</p>
@@ -37,7 +39,7 @@ $if pol.education:
 <h2 class="rep">Money</h2>
 
 $def spark(lable, data, polid, by, unit='', url=None):
-    <th>$:lable</th>
+    <th style="white-space:nowrap">$:lable</th>
 	$if not data: 
 		$ data = 0
     $ display = commify(data) + ' ' + unit
@@ -48,7 +50,7 @@ $def spark(lable, data, polid, by, unit='', url=None):
     $if url:
         <td class="sparkdata"><a href="$url">$display</a></td>
     $else:
-        <td class="sparkdata">$display</td>
+        <td class="sparkdata" style="width: 100%">$display</td>
     <td class="sparkline"><a href="/p/by/$by#$polid"
            ><img src="/p/by/$by/distribution.png?point=$data"
                  class="sparkline" /></a></td>
@@ -113,10 +115,15 @@ $else:
   </tr>
   <tr><th colspan="2">Data for 110th Congress</th></tr>
 </tbody></table>
-</td></tr></table>
-<h2 class="rep">Voting Analysis</h2>
+</td></tr>
 
-<table class="charted structure"><tbody>
+<tr>
+</td><td width="50%" class="rule">
+
+
+<h2 class="rep" style="clear: both;">Voting Analysis</h2>
+
+<table class="charted structure" width="50%"><tbody>
 $if pol.nominate:
     <tr class="even">
     $:spark('Ideology', pol.nominate, pol.id, 'nominate', '% right-wing' if pol.nominate >= 0 else '% left-wing')
@@ -126,6 +133,10 @@ $if pol.predictability:
     $:spark('Predictability', pol.predictability, pol.id, 'predictability', '%')
     </tr>
 </tbody></table>
+
+</td><td></td>
+
+</tr><td colspan="2">
 
 <h2 class="rep">Interest Group Alignment</h2>
 
@@ -143,30 +154,28 @@ $for group in pol.related_groups:
         $ trclass = "odd"
 </tbody></table>
 
-<p><a href="/p/$pol.id/groups">More...</a></p>
+<p><a href="/p/$pol.id/groups" class="footer">More...</a></p>
+
+</td></tr></table>
 
 <div class="sources">
-  Money data from <a href="http://www.fec.gov/">the FEC</a>.
+  Money data from <nobr><a href="http://www.fec.gov/" class="external">the FEC</a>.</nobr>
   Politician information from 
   $if pol.votesmartid:
-      <a href="http://votesmart.org/bio.php?can_id=$pol.votesmartid"
-      >Project Vote Smart</a>,
-  <a href="$pol.wikipedia">Wikipedia</a>, 
-  and <a 
-    href="http://www.govtrack.us/congress/person.xpd?id=$pol.govtrackid"
-  >GovTrack</a>.
-  Earmark information from <a 
-    href="http://taxpayer.net/earmarks.php"
-  >Taxpayers for Common Sense</a>.
-  Interest group alignment from 
-  <a href="http://maplight.org/map/us/legislator">MAPLight.org</a>.
-  Ideology and predictability from
-  <a href="http://voteview.com/">VoteView</a>.
+      <a href="http://votesmart.org/bio.php?can_id=$pol.votesmartid" class="external">Project Vote Smart</a>,
+      <a href="$pol.wikipedia" class="external">Wikipedia</a>, and 
+      <a href="http://www.govtrack.us/congress/person.xpd?id=$pol.govtrackid" class="external">GovTrack</a>.
+      Earmark information from 
+      <a href="http://taxpayer.net/earmarks.php" class="external">Taxpayers for Common Sense</a>.
+      Interest group alignment from 
+      <a href="http://maplight.org/map/us/legislator" class="external">MAPLight.org</a>.
+      Ideology and predictability from
+      <a href="http://voteview.com/" class="external">VoteView</a>.
   $if pol.photo_credit_text:
-      Photo from <a href="$pol.photo_credit_url">$pol.photo_credit_text</a>.
-  Some campaign finance information from <a 
-    href="http://opensecrets.org/politicians/summary.asp?CID=$pol.opensecretsid"
-  >Open Secrets</a>. 
+      Photo from 
+      <a href="$pol.photo_credit_url" class="external">$pol.photo_credit_text</a>.
+      Some campaign finance information from 
+      <a href="http://opensecrets.org/politicians/summary.asp?CID=$pol.opensecretsid" class="external">Open Secrets</a>.
 </div>
 
 <p><strong>Developers:</strong> Get this page in <a href="${pol.id.lower()}.n3">N3</a>, <a href="${pol.id.lower()}.xml">XML</a>, or <a href="${pol.id.lower()}.json">JSON</a>.</p>
