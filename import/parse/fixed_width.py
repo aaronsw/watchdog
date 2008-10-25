@@ -2,6 +2,12 @@
 Library for processing fixed-width files.
 """
 
+import warnings
+try:
+    from web import storage
+except ImportError:
+    storage = dict
+
 ## Types used in definitions
 
 def date(s):
@@ -17,14 +23,25 @@ def string(s):
 def boolean(s):
     return {'Y': True, 'N': False, ' ': None}[s]
     
-filler = string
+def filler(required=None):
+    def filler_internal(s):
+        if required:
+            assert s == required, repr(s)
+    return filler_internal
 
 def enum(s=None, **db):
     if isinstance(s, basestring):
         return string(s)
     else:
         if ' ' not in db: db[' '] = None
-        return lambda s: db[s]
+        def enum_lookup(s):
+            if s in db:
+                return db[s]
+            else:
+                warnings.warn('Expected one of %s in enumeration, but got %s' % 
+                  (list(db), repr(s)))
+                return None
+        return enum_lookup
 
 def table_lookup(table, preProcess=None):
     def get_from_table(d):
@@ -54,12 +71,14 @@ FIELD_TYP = 2
 ## The functions you might want to call
 
 def parse_line(linedef, line):
-    out = {}
+    out = storage()
     n = 0
     for (k, l, t) in linedef:
         if l < 0 : # go back
             out[k] = t(line[n+l:n])
-        if k is not None:
+        if k is None:
+            t(line[n:n+l])
+        else:
             out[k] = t(line[n:n+l])
         if l > 0: n += l
     return out
@@ -80,4 +99,5 @@ def parse_file(filedef, fh, f_whichdef=None):
     else:
         f_whichdef = lambda x: slice(None, None)
     for line in iter(lambda: fh.read(linelen), ''):
-        yield parse_line(filedef[f_whichdef(line)], line)
+        if line.replace('\x00', '').strip():
+            yield parse_line(filedef[f_whichdef(line)], line)

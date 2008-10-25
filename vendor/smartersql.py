@@ -173,8 +173,8 @@ class Column(object):
     unique = False
     notnull = False
 
-    display = lambda self, x: str(x)
-    toxml = lambda self, obj: '>' + web.websafe(obj)
+    display = lambda self, x: unicode(x)
+    toxml = lambda self, obj: '>' + web.htmlquote(unicode(obj))
 
 class Reference (Column):
     def __init__(self, target, **kw):
@@ -188,8 +188,16 @@ class Reference (Column):
         self.sql_type = self.target_column.sql_type + ' REFERENCES ' + target.sql_name
         self._sql_name_ = lambda k: k + '_id'
     
-    toxml = lambda self, obj: ' rdf:resource="%s">' % web.websafe(obj._uri_)
-    ton3 = lambda self, obj, indent: '<%s>' % obj._uri_
+    def toxml(self, obj):
+        if hasattr(obj, '_uri_'):
+            return ' rdf:resource="%s">' % web.websafe(obj._uri_)
+        else:
+            return None
+    def ton3(self, obj, indent):
+        if hasattr(obj, '_uri_'):
+            return '<%s>' % obj._uri_
+        else:
+            return None
 
 class Backreference (Reference):
     def __init__(self, target, target_column, plural=True, order=None):

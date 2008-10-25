@@ -6,7 +6,7 @@ Write Your Representative
 """
 import sys
 import urllib2
-from ClientForm import ParseFile, ParseError
+from ClientForm import ParseFile, ParseError, XHTMLCompatibleFormParser
 from BeautifulSoup import BeautifulSoup
 from StringIO import StringIO
 
@@ -41,15 +41,21 @@ def has_message(soup, msg, tags='b'):
     return False
 
 def get_forms(url, data=None, headers={}):    
+    def signup_or_search(u):
+        return ('signup' in u) or ('search' in u) or ('thomas.loc.gov' in u)
+
     req = urllib2.Request(url, data, headers)
     response = urlopen(req)
     if response: response = response.read()
     try:
         forms = ParseFile(StringIO(response), url, backwards_compat=False)
+    except ParseError:
+        forms = ParseFile(StringIO(response), url, backwards_compat=False, form_parser_class=XHTMLCompatibleFormParser)
     except:
         forms = []
-
-    return [Form(f) for f in forms], response or ''
+    
+    forms = [Form(f) for f in filter(lambda x: not signup_or_search(x.action), forms)]
+    return forms, response or ''
 
 def writerep_email(pol_email, pol, zipcode, state, prefix, fname, lname,
             addr1, city, phone, email, subject, msg, addr2='', addr3='', zip4=''):
@@ -58,7 +64,7 @@ def writerep_email(pol_email, pol, zipcode, state, prefix, fname, lname,
     from_addr = '%s <%s>' % (name, email)
   
     if production_mode:
-        to_addr = pol_email.lstrip('mailto:')
+        to_addr = web.lstrips(pol_email, 'mailto:')
     elif test_mode:
         to_addr = test_email
     #@@@@ msg has to be composed    
@@ -150,7 +156,8 @@ def writerep_ima(ima_link, pol, zipcode, state, prefix, fname,
         f = forms[0]
         f.fill_name(prefix, fname, lname)
         f.fill_address(addr1, addr2, addr3)
-        f.fill_all(city=city, state=state.upper(), zipcode=zipcode, zip4=zip4, email=email, phone=phone, issue=['GEN', 'OTH'])
+        f.fill_all(city=city, state=state.upper(), zipcode=zipcode, zip4=zip4, email=email, issue=['GEN', 'OTH'])
+        f.fill_phone(phone)
         f.fill(type='textarea', value=msg)
         f.fill_all(captcha=captcha)
         return f.production_click()
@@ -164,7 +171,10 @@ def writerep_zipauth(zipauth_link, pol, zipcode, state, prefix, fname,
     def zipauth_step1(f):    
         f.fill_name(prefix, fname, lname)
         f.fill_address(addr1, addr2, addr3)
-        f.fill_all(email=email, zipcode=zipcode, zip4=zip4, phone=phone, city=city)
+        f.fill_all(email=email, zipcode=zipcode, zip4=zip4, city=city)
+        f.fill_phone(phone)
+        if 'lamborn.house.gov' in zipauth_link:
+            f.f.action = urljoin(zipauth_link, '/Contact/ContactForm.htm') #@@ they do it in ajax
         print 'step1 done',
         return f.click()
         
@@ -177,7 +187,8 @@ def writerep_zipauth(zipauth_link, pol, zipcode, state, prefix, fname,
             f = forms[0]
             f.fill_name(prefix, fname, lname)
             f.fill_address(addr1, addr2, addr3)
-            f.fill_all(city=city, zip=zipcode, email=email, phone=phone, issue=['GEN', 'OTH'])
+            f.fill_all(city=city, zip=zipcode, email=email, issue=['GEN', 'OTH'])
+            f.fill_phone(phone)
             f.fill(type='textarea', value=msg)
             print 'step2 done',
             return f.production_click()

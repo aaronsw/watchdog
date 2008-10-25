@@ -141,6 +141,7 @@ def scrape_by_headers(rv, fields, html):
     # more recent page elements ("Go Wireless") are #333366 even on old
     # pages, leading to a kind of inconsistent appearance.
     by_headers = re.split(r' color="#(?:6666CC|333366)"[^>]*>', html)
+    by_headers = by_headers + re.split(r'<h3>', html)    # ugg, some use h3 headers (CO-01 for instance)
 
     for item in by_headers:
         for key in fields.keys():
@@ -176,15 +177,19 @@ def scrape_person(fname):
 
     return rv
 
+from pprint import pprint, pformat
 def scrape_state_demographics(rv, html):
-    income_section = re.search(r'<b>Household Income: </b>(.*\&middot.*?)<LI>', html)
-    if not income_section: return
-    items = income_section.group(1)
+    median = re.search(r'Median Household Income: .*?\$([0-9,.]*)', html)
+    if not median: return
     rv.setdefault('state', {})
-    median = re.search(r'Median:&nbsp;(\$[\d,]+) ', items)
     if median: rv['state']['Median income'] = median.group(1)
-    poverty = re.search(r'Poverty status:&nbsp;([\d.]+%)', items)
+    poverty = re.search(r'([\d.]*%) are below the poverty line', html)
     if poverty: rv['state']['Poverty status'] = poverty.group(1)
+    population = re.search(r'Population in (\d{4})( \(est\))?.*?([\d,.]+)', html.replace('\n',' ') )
+    if population: rv['state']['Pop. %s%s'%(population.group(1),population.group(2))] = population.group(3)
+    area = re.search(r'Area Size: .*? ([\d,]*) square miles', html.replace('\n',' '))
+    if area: rv['state']['Area size'] = area.group(1)
+    
 
 def scrape_state(fname):
     fo = file(fname)

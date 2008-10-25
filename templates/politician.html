@@ -32,6 +32,8 @@ $if pol.photo_path:
 
 $if pol.education:
     <p>Education: $pol.education</p>
+$if pol.last_elected_year:
+	<p>Last elected in $pol.last_elected_year receiving $commify(pol.n_vote_received) ($pol.pct_vote_received%) votes.</p>
 </td></tr></table>
 </div>
 <table class="structure">
@@ -54,7 +56,7 @@ $def spark(lable, data, polid, by, unit='', url=None):
     <td class="sparkline"><a href="/p/by/$by#$polid"
            ><img src="/p/by/$by/distribution.png?point=$data"
                  class="sparkline" /></a></td>
-    <td class="sparknum"><sup>(#${pos[by]})</sup></td>
+    <td class="sparknum"><sup>(#${pos('politician',by,polid)})</sup></td>
 
 <table class="structure charted"><tbody>
 $if pol.money_raised:

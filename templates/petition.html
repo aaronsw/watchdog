@@ -49,9 +49,6 @@ $if isauthor:
 
 <a name="sign"></a>
 
-$if useremail:
-    <form name="logout" action="/u/logout" method='POST' style="display: none;"></form>
-
 <form name="sign" method="POST" action="/c/$p.id?m=sign">
         $if (not signform.valid) or (wyrform and not wyrform.valid):
             <p class="error">Please try again after fixing the errors highlighted below:</p>

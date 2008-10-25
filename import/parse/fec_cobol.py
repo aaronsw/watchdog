@@ -7,7 +7,7 @@ __author__ = [
   "Aaron Swartz <me@aaronsw.com>",
 ]
 
-import re, os, sys, gzip
+import re, os, sys, gzip, glob
 import web
 from fixed_width import get_len, enum, filler, parse_file
 
@@ -26,7 +26,12 @@ def integer(d):
         return int(d)
 
 def string(d):
-    return d.decode('cp1251').rstrip()
+    # \x98 seems to be a typo
+    return d.replace('\x98', '').decode('cp1251').rstrip()
+
+def date99(d):
+    """where `d` is like MMDDYY"""
+    return '19' + d[4:6] + "-" + d[0:2] + "-" + d[2:4]
 
 def date(d):
     """where `d` is like MMDDYYYY"""
@@ -37,10 +42,30 @@ def date2(d):
     return d[6:10] + "-" + d[4:6] + "-" + d[2:4]
 
 party = enum(**{"1": "Democratic", "2": "Republican", "3": "Other"})
-
 ico = enum(**{" ": " ", "I": "Incumbent", "C": "Challenger", "O": "Open Seat"})
+pgi = enum(**{
+  'C': "CONVENTION", 
+  'G': "GENERAL", 
+  'P': "PRIMARY", 
+  'R': "RUNOFF", 
+  'S': "SPECIAL",
+  '0': '0',
+  '2': '2',
+  '4': '4',
+  '5': '5',
+  '6': '6',
+  '8': '8'
+})
+filing_freq = enum(M="MONTHLY", Q="QUARTERLY", T="TERMINATED")
 
-filing_freq = enum(M="Monthly", Q="Quarterly", T="Terminated")
+amendment = enum(
+  A="AMENDMENT", 
+  C="CONSOLIDATED", 
+  M="MULTI-CANDIDATE", 
+  N="NEW", 
+  S="SECONDARY", 
+  T="TERMINATED"
+)
 
 cmte_type = enum(
     C="COMMUNICATION COST",
@@ -86,7 +111,7 @@ def_webl = [
   ("state_code", 2, string),
   ("district", 2, string),
   ("spec_elec_status", 1, enum),
-  ("primary_elec_status", 1, enum),
+  ("primary_elec_status", 1, enum), #@@primary_general?
   ("runoff_elec_status", 1, enum),
   ("general_elec_status", 1, enum),
   ("general_elec_pct", 3, string),
@@ -95,7 +120,7 @@ def_webl = [
   ("end_date", 8, date),
   ("refunds_to_indiv", 10, integer),
   ("refunds_to_commit", 10, integer),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 # Supports files for CANSUM04 CANSUM02 CANSUM00 CANSUM98 CANSUM96
@@ -142,14 +167,14 @@ def_cansum = [
   ("state_code", 2, string),
   ("district", 2, string),
   ("spec_elec_status", 1, string),
-  ("primary_elec_status", 1, string),
+  ("primary_elec_status", 1, string), #@@primary_general?
   ("runoff_elec_status", 1, string),
   ("gen_elec_status", 1, string),
   ("gen_elec_pct", 7, integer),
   ("spec_elec_cand", 1, string),
   ("party_coord_exp", 10, integer),
   ("party_indep_exp", 10, integer),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 # Supports format CANSUM94 CANSUM92
@@ -196,11 +221,11 @@ def_cansum92 = [
   ("state_code", 2, string),
   ("district", 2, string),
   ("spec_elec_status", 1, string),
-  ("primary_elec_status", 1, string),
+  ("primary_elec_status", 1, string), #@@primary_general?
   ("runoff_elec_status", 1, string),
   ("gen_elec_status", 7, string),
   ("spec_elec_cand", 1, string),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 def_cansum90 = [
@@ -247,11 +272,11 @@ def_cansum90 = [
   ("state_code", 2, string),
   ("district", 2, string),
   ("spec_elec_status", 1, string),
-  ("primary_elec_status", 1, string),
+  ("primary_elec_status", 1, string), #@@primary_general?
   ("runoff_elec_status", 1, string),
   ("gen_elec_status", 1, string),
   ("spec_elec_cand", 1, string),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 def_cansum88 = [
@@ -296,47 +321,11 @@ def_cansum88 = [
   ("state_code", 2, string),
   ("district", 2, string),
   ("spec_elec_status", 1, string),
-  ("primary_elec_status", 1, string),
+  ("primary_elec_status", 1, string), #@@primary_general?
   ("runoff_elec_status", 1, string),
   ("gen_elec_status", 1, string),
   ("spec_elec_cand", 1, string),
-  (None, 2, filler)
-]
-
-def_pas2 = [
-  ('_type', 0, lambda x: 'Transfer'),
-  ("from_committee_id", 9, string),
-  ("amendment_status", 1, enum),
-  ("report_type", 3, enum),
-  ("primary_general", 1, enum),
-  ("microfilm_loc", 11, string),
-  ("type", 3, enum), #@@@@ important enumeration
-  ("date", 8, date),
-  ("amount", 7, integer),
-  ("to_other_id", 9, string),
-  ("to_candidate_id", 9, string),
-  ("fec_record_id", 7, string),
-  (None, 2, filler)
-]
-
-def_cm = [
-  ('_type', 0, lambda x: 'Committee'),
-  ("committee_id", 9, string),
-  ("committee_name", 90, string),
-  ("treasurer_name", 38, string),
-  ("street_one", 34, string),
-  ("street_two", 34, string),
-  ("city", 18, string),
-  ("state", 2, string),
-  ("zip", 5, string),
-  ("committee_designation", 1, enum),
-  ("committee_type", 1, enum),
-  ("committee_party", 3, enum),
-  ("filing_frequency", 1, enum),
-  ("interest_group_category", 1, enum), #@@@@important enumeration
-  ("connected_org_name", 38, string),
-  ("candidate_id", 9, string),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 def_webk = [
@@ -370,7 +359,7 @@ def_webk = [
   ("month", 2, integer),
   ("day", 2, integer),
   ("year", 4, integer),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 #Supporst PACSUM[92-04]
@@ -417,7 +406,7 @@ def_pacsum = [
   ("house_opn_contrib", 10, integer),
   ("non_federal_trans", 10, integer),
   ("non_federal_expend", 10, integer),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 # Supports PACSUM[84-90]
@@ -462,7 +451,7 @@ def_pacsum90 = [
   ("house_inc_contrib", 12, integer),
   ("house_cha_contrib", 12, integer),
   ("house_opn_contrib", 12, integer),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
 
@@ -523,37 +512,206 @@ def_pacsum82 = [
   ("senate_house_inc_contrib", 9, integer),
   ("senate_house_cha_contrib", 9, integer),
   ("senate_house_opn_contrib", 9, integer),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
+
+def_cm = [
+  ('_type', 0, lambda x: 'Committee'),
+  ("committee_id", 9, string),
+  ("committee_name", 90, string),
+  ("treasurer_name", 38, string),
+  ("street_one", 34, string),
+  ("street_two", 34, string),
+  ("city", 18, string),
+  ("state", 2, string),
+  ("zip", 5, string),
+  ("committee_desig", 1, enum),
+  ("committee_type", 1, enum),
+  ("committee_party", 3, enum),
+  ("filing_frequency", 1, enum),
+  ("interest_group_category", 1, enum(
+    C='CORPORATION',
+    L='LABOR ORGANIZATION',
+    M='MEMBERSHIP ORGANIZATION',
+    T='TRADE ASSOCIATION',
+    V='COOPERATIVE',
+    W='CORPORATION WITHOUT CAPITAL STOCK')),
+  ("connected_org_name", 38, string),
+  ("candidate_id", 9, string),
+  (None, 2, filler('\r\n'))
+]
+
+def_cm80 = def_cm[:-2] + [def_cm[-1]]
+def_cn = [
+  ('_type', 0, lambda x: 'Candidate'),
+  ('candidate_id', 9, string),
+  ('candidate_name', 38, string),
+  ('party_desig_1', 3, string),
+  ('party_desig_2', 3, string),
+  ('party_desig_3', 3, string),
+  ('ico', 1, ico),
+  (None, 1, filler),
+  ('candidate_status', 1, enum(
+    C="STATUTORY CANDIDATE",
+    F="STATUTORY CANDIDATE FOR A FUTURE ELECTION",
+    N="NOT YET A STATUTORY CANDIDATE",
+    P="STATUTORY CANDIDATE IN PRIOR CYCLE")),
+  ('street_one', 34, string),
+  ('street_two', 34, string),
+  ('city', 18, string),
+  ('state', 2, string),
+  ('zip', 5, string),
+  ('principal_committee_id', 9, string),
+  ('election_year', 2, string),
+  ('current_district', 2, string),
+  (None, 2, filler('\r\n'))
+]
+def_pas2 = [
+  ('_type', 0, lambda x: 'Transfer'),
+  ("from_committee_id", 9, string),
+  ("amendment_status", 1, amendment),
+  ("report_type", 3, enum),
+  ("primary_general", 1, pgi),
+  ("microfilm_loc", 11, string),
+  ("transaction_type", 3, enum),
+  ("date", 8, date),
+  ("amount", 7, integer),
+  ("to_other_id", 9, string),
+  ("to_candidate_id", 9, string),
+  ("fec_record_id", 7, string),
+  (None, 2, filler('\r\n'))
+]
+
+def_pas2_80 = def_pas2[:-2] + [def_pas2[-1]]
+def_pas2_80[7] = ("date", 6, date99)
+def_pas2_80[8] = ("amount", 6, integer)
+def_pas2_90 = def_pas2_80[:]
+def_pas2_90[8] = ("amount", 7, integer)
+def_pas2_94 = def_pas2[:]
+def_pas2_94[7] = ("date", 6, date99)
+def_pas2_96 = def_pas2[:]
+
+def_oth = [
+  ('_type', 0, lambda x: 'Other Transfers'),
+  ('filer_id', 9, string),
+  ('amendment_status', 1, amendment),
+  ('report_type', 3, enum),
+  ('primary_general', 1, pgi),
+  ('microfilm_loc', 11, string),
+  ('transaction_type', 3, enum),
+  ('name', 34, string),
+  ('city', 18, string),
+  ('state', 2, string),
+  ('zip', 5, string),
+  ('occupation', 35, string),
+  ('date', 8, date),
+  ('amount', 7, integer),
+  ('from_id', 9, string),
+  ('fec_record_id', 7, string),
+  (None, 2, filler('\r\n'))
+]
+def_oth_86 = def_oth[:7] + [('street', 34, string)] + def_oth[7:]
+def_oth_86[13] = ('date', 6, date99)
+def_oth_86[14] = ('amount', 6, integer)
+def_oth_86[16] = (None, 3, filler)
+def_oth_90 = def_oth[:]
+def_oth_90[12] = ('date', 6, date99)
+def_oth_96 = def_oth[:]
 
 def_indiv = [
   ('_type', 0, lambda x: 'Individual Contribution'),
   ('filer_id', 9, string),
-  ('amendment_type', 1, enum),
+  ('amendment_type', 1, amendment),
   ('report_type', 3, enum),
-  ('primary_general', 1, enum),
+  ('primary_general', 1, pgi),
   ('microfilm_loc', 11, string),
   ('transaction_type', 3, enum), #@@important enumeration
-  ('src_name', 34, string),
-  ('src_city', 18, string),
-  ('src_state', 2, string),
-  ('src_zip', 5, string),
-  ('src_occupation', 35, string),
+  ('name', 34, string),
+  ('street', 34, string),
+  ('city', 18, string),
+  ('state', 2, string),
+  ('zip', 5, string),
+  ('occupation', 35, string),
   ('date', 8, date),
   ('amount', 7, integer),
-  ('src_id', 9, string),
+  ('from_id', 9, string),
   ('fec_record_id', 7, string),
-  (None, 2, filler)
+  (None, 2, filler('\r\n'))
 ]
 
-def parse_candidates():
+def_indiv_80 = def_indiv[:-2] + [(None, 3, filler), def_indiv[-1]]
+def_indiv_80[13] = ('date', 6, date99)
+def_indiv_80[14] = ('amount', 6, integer)
+def_indiv_90 = def_indiv[:7] + def_indiv[8:]
+def_indiv_90[12] = ('date', 6, date99)
+def_indiv_96 = def_indiv[:7] + def_indiv[8:]
+
+def fix80(line_def, fh):
+    line_len = sum(x[1] for x in line_def)
+    def internal():
+        for line in fh:
+            line_diff = line_len - len(line)
+            if line_diff:
+                line = line[:-2] + ' ' * line_diff + line[-2:]
+            yield line
+    out = web.storage()
+    internal = internal()
+    def read(leng):
+        assert leng == line_len
+        return internal.next()
+    out.read = read
+    return out
+
+import sys
+def parse_cansum():
     return parse_file(def_webl, file("../data/crawl/fec/2008/weball.dat"))
+def parse_candidates():
+    for fn in sorted(glob.glob('../data/crawl/fec/*/cn.dat')):
+        print>>sys.stderr, fn
+        for elt in parse_file(def_cn, file(fn)):
+            yield elt
 def parse_committees():
-    return parse_file(def_cm, file("../data/crawl/fec/2008/cm.dat"))
+    for fn in sorted(glob.glob('../data/crawl/fec/*/cm.dat')):
+        print>>sys.stderr, fn
+        fh = file(fn)
+        if '1980' in fn:
+            fh = fix80(def_cm, fh)
+        for elt in parse_file(def_cm, fh):
+            yield elt
 def parse_transfers():
-    return parse_file(def_pas2, file("../data/crawl/fec/2008/pas2.dat"))
+    cur_def = def_pas2_80
+    for fn in sorted(glob.glob('../data/crawl/fec/*/pas2.dat')):
+        print>>sys.stderr, fn
+        fh = file(fn)
+        if '1980' in fn:
+            cur_def = def_pas2_80
+            fh = fix80(def_pas2_80, fh)
+        if '1990' in fn: cur_def = def_pas2_90
+        if '1994' in fn: cur_def = def_pas2_94
+        if '1996' in fn: cur_def = def_pas2_96
+        for elt in parse_file(cur_def, fh):
+            yield elt
 def parse_contributions():
-    return parse_file(def_indiv, gzip.open("../data/crawl/fec/2008/indiv.dat.gz"))
+    for fn in sorted(glob.glob('../data/crawl/fec/*/indiv.dat.gz')):
+        print>>sys.stderr, fn
+        fh = gzip.open(fn)
+        if '1980' in fn:
+            cur_def = def_indiv_80
+            fh = fix80(cur_def, fh)
+        if '1990' in fn: cur_def = def_indiv_90
+        if '1996' in fn: cur_def = def_indiv_96
+        if '2004' not in fn: continue
+        for elt in parse_file(cur_def, fh):
+            yield elt
+def parse_others():
+    cur_def = def_oth_86
+    for fn in sorted(glob.glob('../data/crawl/fec/*/oth.dat')):
+        print>>sys.stderr, fn
+        fh = file(fn)
+        if '1990' in fn: cur_def = def_oth_90
+        if '1996' in fn: cur_def = def_oth_96
+        for elt in parse_file(cur_def, fh):
+            yield elt
 
 if __name__ == "__main__":
     import tools
@@ -561,3 +719,4 @@ if __name__ == "__main__":
     tools.export(parse_committees())
     tools.export(parse_transfers())
     tools.export(parse_contributions())
+    tools.export(parse_others())

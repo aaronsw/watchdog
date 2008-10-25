@@ -232,7 +232,7 @@ table.interest_group_support td, th { text-align: left; }
 
 .infoblock { float: left; padding-top: 0; margin-top: 0; margin-right: 3em;}
 .charted th { text-align: left; padding-right: 2em; padding-left: 3px; whte-space: nowrap; }
-.charted td { text-align: right; }
+.charted td { text-align: right; padding-left: 3px; }
 .charted th[colspan='2'] { font-weight: normal; font-style: italic; text-align: center; color: #666; }
 table.charted img { border: 0; float: right; }
 table.charted { padding-bottom: 20px; width: 100%; }

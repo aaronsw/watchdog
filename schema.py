@@ -58,6 +58,8 @@ class District(sql.Table):
     center_lng = sql.Float()
     zoom_level = sql.Integer()
 
+    earmark_per_capita = sql.Float()
+
 class Zip(sql.Table):
     zip = sql.String(5, primary=True)
     city = sql.String()
@@ -180,6 +182,11 @@ rdf:resource="%s" />' % x
     # opensecrets
     pct_pac_business = sql.Percentage()
     
+    # almanac.json
+    n_vote_received = sql.Number()
+    pct_vote_received = sql.Percentage()
+    last_elected_year = sql.Number()
+
     bills_sponsored = sql.Backreference('Bill', 'sponsor')
     earmarks_sponsored = sql.Backreference('Earmark_sponsor', 'politician')
 
@@ -206,7 +213,7 @@ class Interest_group_rating(sql.Table):
 class Bill(sql.Table):
     @property
     def _uri_(self):
-        return 'http://watchdog.net/b/%s' % self.id
+        return 'http://watchdog.net/b/%s#it' % self.id
     
     id = sql.String(primary=True)
     session = sql.Integer()
@@ -444,6 +451,9 @@ class Census_data(sql.Table):
 
 def init():
     db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
-    db.query("GRANT ALL on census TO watchdog")
     db.query("CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician)")
-    db.query("GRANT ALL on v_politician_name TO watchdog")
+    try:
+        db.query("GRANT ALL on census TO watchdog")
+        db.query("GRANT ALL on v_politician_name TO watchdog")
+    except:
+        pass # user doesn't exist

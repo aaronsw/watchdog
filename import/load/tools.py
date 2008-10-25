@@ -8,7 +8,7 @@ import web
 from settings import db
 
 STATE_TABLE = 'load/manual/states.json'
-DISTRICT_TABLE = 'load/manual/states.json'
+DISTRICT_TABLE = 'load/manual/districts.json'
 POLITICIAN_TABLE = 'load/manual/politicians.json'
 
 _stripterms = ['the', 'corporation', 'corp', 'incorporated', 'inc']
@@ -35,9 +35,14 @@ def unfips(fipscode):
         
     return _unfipscache.get(fipscode)
 
+_districts = {}
 def fixdist(dist):
-    districts = json.load(file(DISTRICT_TABLE))
-    if dist.endswith('-01') and dist[:-1] + '0' in districts:
+    dist = dist.upper().replace('-SEN1','').replace('-SEN2','').replace('-S1','').replace('-S2','')
+    if not _districts:
+        districts = json.load(file(DISTRICT_TABLE))
+        for k, v in districts.iteritems():
+            _districts[k]=v
+    if dist.endswith('-01') and dist[:-1] + '0' in _districts:
         return dist[:-1] + '0'
     else:
         return dist
@@ -90,6 +95,13 @@ def opensecretsp(opensecrets_id):
     """
     if not _opensecretscache: _fill()
     return _opensecretscache.get(opensecrets_id)
+
+def fecp(fec_id):
+    x = db.where('politician_fec_ids', fec_id=fec_id)
+    if x:
+        return x[0].politician_id
+    else:
+        return None
 
 if __name__ == "__main__":
     import doctest

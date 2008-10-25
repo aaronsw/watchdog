@@ -302,7 +302,7 @@ class feed:
     def GET(self):
         web.header('content-type', 'application/atom+xml')
         lastupdate = max(x.updated for x in content)
-        return render._do('blog_feed')(content, lastupdate)
+        return render._template('blog_feed')(content, lastupdate)
 
 class post:
     def GET(self, name):

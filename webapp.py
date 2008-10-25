@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import re, sys
 import web
-web.config.debug = True
 
 from utils import zip2rep, simplegraphs, apipublish, users, writerep
 import blog
@@ -10,6 +9,9 @@ import settings
 from settings import db, render, production_mode
 import schema
 import config
+
+if not production_mode:
+	web.config.debug = True
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -164,13 +166,7 @@ class district:
         out = apipublish.publish([d], format)
         if out: return out
         
-        pos = web.storage()
-        spark_keys = ['area_sqmi', 'est_population', 'poverty_pct', 'median_income']
-        for k in spark_keys:
-            pos[k] = sparkpos('district', k, district)
-            print >>sys.stderr, "Position of %s on %s is %d" %( district, k, pos[k])
-
-        return render.district(d, pos)
+        return render.district(d, sparkpos)
 
 def group_politician_similarity(politician_id, qmin=None):
     """Find the interest groups that vote most like a politician."""
@@ -315,17 +311,7 @@ class politician:
         out = apipublish.publish([p], format)
         if out: return out
 
-        pos = web.storage()
-        spark_keys = ['money_raised', 'pct_spent', 'pct_self', 'pct_indiv',
-                'pct_pac', 'n_earmark_requested', 'amt_earmark_requested',
-                'n_earmark_received', 'amt_earmark_received',
-                'n_bills_cosponsored', 'n_bills_introduced', 'n_bills_debated',
-                'n_bills_enacted', 'n_speeches', 'words_per_speech',
-                'nominate', 'predictability']
-        for k in spark_keys:
-            pos[k] = sparkpos('politician',k,polid)
-
-        return render.politician(p, pos)
+        return render.politician(p, sparkpos)
 
 class politician_introduced:
     def GET(self, politician_id):
@@ -335,7 +321,8 @@ class politician_introduced:
 class politician_groups:
     def GET(self, politician_id):
         related = group_politician_similarity(politician_id, qmin=1)
-        return render.politician_groups(politician_id, related)
+        pol = schema.Politician.where(id=politician_id)[0]
+        return render.politician_groups(pol, related)
 
 class politician_group:
     def GET(self, politician_id, group_id):

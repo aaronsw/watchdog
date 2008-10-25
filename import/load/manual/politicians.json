@@ -415,6 +415,10 @@
     "district_id": "WA-04", 
     "wikipedia": "http://en.wikipedia.org/wiki/Doc_Hastings"
   }, 
+  "don_cazayoux": {
+    "district_id": "LA-06",
+    "wikipedia": "http://en.wikipedia.org/wiki/Don_Cazayoux"
+  },
   "don_young": {
     "district_id": "AK-00", 
     "wikipedia": "http://en.wikipedia.org/wiki/Don_Young"
@@ -2159,3 +2163,4 @@
 	  "wikipedia":"http://en.wikipedia.org//wiki/John_Barrasso"
   }
 }
+

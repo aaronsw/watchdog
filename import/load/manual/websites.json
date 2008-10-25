@@ -458,5 +458,15 @@
     "captcha": null,
     "contact": "http://shuler.house.gov/zipauth.htm",
     "contacttype": "ima"
+  },
+  "LA-01": {
+     "captcha": null,
+     "contact": "http://www.scalise.house.gov/contactform_zipcheck.shtml",
+     "contacttype": "zipauth"
+  },
+  "SC-06": {
+     "captcha": null,
+     "contact": "http://clyburn.house.gov/constituents-casework-form.cfm?CFID=2673188&CFTOKEN=3628927",
+     "contacttype": "ima"
   }
 }
