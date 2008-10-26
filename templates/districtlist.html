@@ -1,14 +1,20 @@
 $def with (dists)
 
+$var width: 90%
+$var color: white
+
 $var title: The United States
+
+
+<h1>Multiple districts</h1>
 
 <ul>
 $for d in dists:
 	$if d.politician: 
 		$for p in d.politician:
-			<li><a href="/us/$d.name.lower()">$d.name</a> (<a href="/p/$p.id">$p.title $p.name</a>)
+			<li><a href="/us/$d.name.lower()">$d.name</a> (<a href="/p/$p.id" class="secondary">$p.title $p.name</a>)
 	$else:
-		<li><a href="/us/$d.name.lower()">$d.name</a>
+		<li><a href="/us/$d.name.lower()">$d.name</a> 
     </li>
 </ul>
 

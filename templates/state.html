@@ -1,6 +1,11 @@
 $def with (state)
 
+$var width: 90%
+$var color: white
+
 $var title: $state.name
+
+<h1>More about $state.name</h1>
 
 <ul>
 $for s in (state.senators or []):
