@@ -1,5 +1,9 @@
 $def with (title, url, emailform, contacts, loadcontactsform, petition_or_page, msg=None)
 
+$var width: 90%
+$var color: white
+$var feedback_class: select
+
 $var title: Share the $petition_or_page
 
 $if msg:
@@ -48,11 +52,17 @@ $if msg:
 });
 </script>
 
-<h2>Share <a href='$url'>$:title</a> with your friends</h2>
+<table cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr>
+<td colspan="3" class="infochart">
+
+<h1>Share this page</h1>
+
 
 <form name='contactform' method='POST' action='/share'>
 $if not emailform.valid: <p class="error">Please try again after fixing the problems highlighted below:</p>
 <fieldset id="sharepetition">
+	<legend>Send information about <a href='$url'>$:title</a> to your friends</legend>
     <label for="emails">To:</label>
     $:emailform.emails.render()
     <label for="subject">Subject:</label>
@@ -60,12 +70,13 @@ $if not emailform.valid: <p class="error">Please try again after fixing the prob
     <label for="body">Message:</label>
     $:emailform.body.render()
     <input type="hidden" name="url" value="$url">
-    <button tabindex="4" type="submit">Send</button>
+    <button tabindex="4" type="submit" style="margin-top: 20px;">Send</button>
 </fieldset>
 </form>
 
-$def sidebar():
-    <form id="loadcontacts" name="loadcontacts" method="POST" action='/u/import_contacts' >
+
+<div class="postit" style="width: 525px;">
+<form id="loadcontacts" name="loadcontacts" method="POST" action='/u/import_contacts' >
         <h2>Load contacts</h2>
         <p>Enter your email address to load contacts.</p>
         $:loadcontactsform.email.render()
@@ -83,8 +94,11 @@ $def sidebar():
                 <li><input type='checkbox' name='contacts' value='$c.email' /><b>$c.name</b></br> $c.email</li>
             </ul>    
         </div>
+</div>
 
-$var sidebar: $:sidebar()
+
+</td></tr></table>
+
 
 
 </div>

@@ -1,12 +1,18 @@
 $def with (items, what)
 
+$var width: 90%
+$var color: white
+
 $var title: Distribution of $what
 
-<ul class="chartlist">
+
+<h1>Distribution of $what</h1>
+
+<ol class="chartlist">
 $for item in items:
     <li id="$item.id">
       <a href="$item.path">$item.name</a>
       <span class="count">$item[what]</span>
-      <span class="index" style="width: $abs(int(item.pct))%">$int(item.pct)%</span>
+      <span class="index" style="width: $abs(int(item.pct))%"></span>
     </li>
-</ul>
+</ol>

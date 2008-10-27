@@ -1,9 +1,28 @@
 $def with (earmarks, limit)
 
+$var width: 90%
+$var color: white
+
 $var title: Earmarks
 
+<style>
+.header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
+</style>
+
+
+<h1>Earmarks</h1>
+
+<table class="structure" width="100%">
+<tr><td class="header">Amount</td><td class="header" colspan="2">Earmark</td></tr>
+$ trclass = "odd"
 $for em in earmarks:
-    <p>\$$commify(em.final_amt) for <a href="/e/$em.id">$em.description</a></p>
+    $if trclass == "odd":
+        $ trclass = "even"
+    $else:
+        $ trclass = "odd"
+    <tr class="$trclass"><td style="padding: 3px;"><a href="/e/$em.id"><b>\$$commify(em.final_amt)</b></a></td><td style="color: #999; padding-left: 6px; padding-right: 8px;">for</td><td> $em.description </td></tr>
+
+</table>
 
 $ page = int(query_param("page", 0))
 
