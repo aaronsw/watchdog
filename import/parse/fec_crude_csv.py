@@ -57,27 +57,27 @@ for expenditures:
 # D add top-level as_field() function
 # D call it in the field mapper
 # D use it to simplify the existing mappings
-# - add syntactic sugar for multiple-input fields
+# D add syntactic sugar for multiple-input fields
+# - use CompositeField to simplify Field
 
 class Field:
-    """
-    A class that manifests a tiny DSEL for describing field mappings.
+    """A class that manifests a tiny DSEL for describing field mappings.
 
     >>> Field(format=fixed_width.date,
-    ...       aka=['bob']).get_from({'bob': '20080930'})
+    ...       source=['bob']).get_from({'bob': '20080930'})
     '2008-09-30'
     >>> Field(format=fixed_width.date,
-    ...       aka=['bob']).get_from({'dan': '20080830'})
+    ...       source=['bob']).get_from({'dan': '20080830'})
 
     Note that the above test failed to return anything.
 
-    >>> sorted(Field(aka=['bob', 'fred']).inverteds().keys())
+    >>> sorted(Field(source=['bob', 'fred']).inverteds().keys())
     ['bob', 'fred']
-    >>> Field(aka=['bob', 'fred']).inverteds()['bob']({'bob': 39})
+    >>> Field(source=['bob', 'fred']).inverteds()['bob']({'bob': 39})
     39
     """
-    def __init__(self, aka=set(), format=None):
-        self._aka = set(aka)
+    def __init__(self, source=set(), format=None):
+        self._source = set(source)
         self._format = format
     def format(self, datum):
         if self._format: return self._format(datum)
@@ -102,7 +102,7 @@ class Field:
 
         """
         rv = {}
-        for k in self._aka:
+        for k in self._source:
             # k=k so each lambda has its own k instead of all sharing
             # the same k; it's not intended that callers will override
             # k!
@@ -138,7 +138,7 @@ class MultiInputField:
 class CompositeField:
     """A field with more than one possible source for its data.
 
-    >>> f = CompositeField([Field(aka=['a']), Field(aka=['b'], format=len)])
+    >>> f = CompositeField([Field(source=['a']), Field(source=['b'], format=len)])
     >>> sorted(f.inverteds().keys())
     ['a', 'b']
     >>> f.inverteds()['a']({'a': '90210'})
@@ -161,7 +161,7 @@ def as_field(obj):
     if hasattr(obj, 'inverteds'):
         return obj
     elif isinstance(obj, basestring):
-        return Field(aka=[obj])
+        return Field(source=[obj])
     elif isinstance(obj, types.ListType):
         return CompositeField([as_field(x) for x in obj])
     elif isinstance(obj, types.FunctionType):
@@ -178,9 +178,9 @@ class FieldMapper:
     If the field’s output name is not specifically mentioned among a
     field’s aliases, it isn’t included in the fields to copy from:
 
-    >>> FieldMapper({'a': Field(aka=['b'])}).map({'a': 3})
+    >>> FieldMapper({'a': Field(source=['b'])}).map({'a': 3})
     {'original_data': {'a': 3}}
-    >>> FieldMapper({'a': Field(aka=['a', 'b'])}).map({'a': 3})
+    >>> FieldMapper({'a': Field(source=['a', 'b'])}).map({'a': 3})
     {'a': 3, 'original_data': {'a': 3}}
 
     >>> mapped = FieldMapper(fields).map({'date_received': '20081131',
@@ -239,10 +239,10 @@ def amount(text):
 
 fields = {
     'date': Field(format=fixed_width.date,
-                  aka=['date', 'date_received', 'contribution_date']),
-    'candidate_fec_id': Field(format=strip, aka=['candidate_fec_id',
-                                                 'candidate_id_number',
-                                                 'fec_candidate_id_number']),
+                  source=['date', 'date_received', 'contribution_date']),
+    'candidate_fec_id': Field(format=strip, source=['candidate_fec_id',
+                                                    'candidate_id_number',
+                                                    'fec_candidate_id_number']),
     'tran_id': ['tran_id', 'transaction_id_number'],
     'occupation': ['occupation', 'contributor_occupation', 'indocc'],
     'contributor_org': ['contributor_org',
@@ -250,11 +250,11 @@ fields = {
                         'contrib_organization_name'],
     'employer': ['employer', 'contributor_employer', 'indemp'],
     'amount': Field(format=amount,
-                    aka=['amount',
-                         'contribution_amount',
-                         'amount_received',
-                         'expenditure_amount',
-                         'amount_of_expenditure']),
+                    source=['amount',
+                            'contribution_amount',
+                            'amount_received',
+                            'expenditure_amount',
+                            'amount_of_expenditure']),
     'address': (lambda street__1, street__2, city, state, zip:
                 ' '.join([street__1, street__2, city, state, zip])),
 }
