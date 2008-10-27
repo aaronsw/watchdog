@@ -53,10 +53,10 @@ for expenditures:
 # D make tests demand code ignores passed-in name
 # D add multiple-input fields
 # D use one in `fields` and test it
-# - add top-level inverteds() function
-# - call it in the field mapper
+# D add a CompositeField
+# D add top-level as_field() function
+# D call it in the field mapper
 # - use it to simplify the existing mappings
-# - add a CompositeField
 # - add syntactic sugar for multiple-input fields
 
 class Field:
@@ -135,6 +135,34 @@ class MultiInputField:
             return self.function(*[data[k] for k in self.names])
         return {self.names[0]: getter}
 
+class CompositeField:
+    """A field with more than one possible source for its data.
+
+    >>> f = CompositeField([Field(aka=['a']), Field(aka=['b'], format=len)])
+    >>> sorted(f.inverteds().keys())
+    ['a', 'b']
+    >>> f.inverteds()['a']({'a': '90210'})
+    '90210'
+    >>> f.inverteds()['b']({'b': '90210'})
+    5
+    """
+    def __init__(self, fields):
+        self.fields = fields
+    def inverteds(self):
+        rv = {}
+        for field in self.fields: rv.update(field.inverteds())
+        return rv
+
+def as_field(obj):
+    """Coerce obj to some kind of field."""
+    if hasattr(obj, 'inverteds'):
+        return obj
+    elif isinstance(obj, basestring):
+        return Field(aka=[obj])
+    elif isinstance(obj, types.ListType):
+        return CompositeField([inverteds(x) for x in obj])
+    raise "can't coerce to a field", obj
+
 class FieldMapper:
     """Maps fields according to a field-mapping specification.
 
@@ -166,9 +194,9 @@ class FieldMapper:
     '12345'
     """
     def __init__(self, fields):
-        self.fields = fields
         self.inverteds = {}
-        for name, field in self.fields.items():
+        for name, field in fields.items():
+            field = as_field(field)
             self.inverteds.update(dict((k, (name, v))
                                        for k, v in field.inverteds().items()))
         self.inverted_keys = set(self.inverteds.keys())
