@@ -35,6 +35,8 @@ urls = (
   r'/u', users.app,
   r'/writerep', writerep.app,
   r'/about(/?)', 'about',
+  r'/about/team', 'aboutteam',
+  r'/about/help', 'abouthelp',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
   r'/blog', blog.app,
@@ -58,9 +60,17 @@ class aboutapi:
     def GET(self):
         return render.about_api()
 
+class aboutteam:
+    def GET(self):
+        return render.about_team()
+
+class abouthelp:
+    def GET(self):
+        return render.about_help()
+
 class feedback:
     def GET(self):
-        raise web.seeother('/about')
+        raise web.seeother('/about/help')
 
     def POST(self):
         i = web.input(email='info@watchdog.net')
@@ -400,6 +410,11 @@ class staticdata:
         return file('data/' + path).read()
 
 app = web.application(urls, globals())
+def notfound():
+    web.ctx.status = '404 Not Found'
+    return getattr(render, '404')()
+
+app.notfound = notfound
 if production_mode:
     app.internalerror = web.emailerrors(config.send_errors_to, web.debugerror)
 settings.setup_session(app)
