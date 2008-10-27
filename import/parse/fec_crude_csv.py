@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import csv, sys, cgitb, fixed_width, zipfile, StringIO
+import csv, sys, cgitb, fixed_width, zipfile, StringIO, types
 """
 This is just some test code right now for exploring the space of
 parsing FEC CSV files in a relatively version-flexible way.
@@ -56,7 +56,7 @@ for expenditures:
 # D add a CompositeField
 # D add top-level as_field() function
 # D call it in the field mapper
-# - use it to simplify the existing mappings
+# D use it to simplify the existing mappings
 # - add syntactic sugar for multiple-input fields
 
 class Field:
@@ -160,7 +160,7 @@ def as_field(obj):
     elif isinstance(obj, basestring):
         return Field(aka=[obj])
     elif isinstance(obj, types.ListType):
-        return CompositeField([inverteds(x) for x in obj])
+        return CompositeField([as_field(x) for x in obj])
     raise "can't coerce to a field", obj
 
 class FieldMapper:
@@ -238,12 +238,12 @@ fields = {
     'candidate_fec_id': Field(format=strip, aka=['candidate_fec_id',
                                                  'candidate_id_number',
                                                  'fec_candidate_id_number']),
-    'tran_id': Field(aka=['tran_id', 'transaction_id_number']),
-    'occupation': Field(aka=['occupation', 'contributor_occupation', 'indocc']),
-    'contributor_org': Field(aka=['contributor_org',
-                                  'contributor_organization_name',
-                                  'contrib_organization_name']),
-    'employer': Field(aka=['employer', 'contributor_employer', 'indemp']),
+    'tran_id': ['tran_id', 'transaction_id_number'],
+    'occupation': ['occupation', 'contributor_occupation', 'indocc'],
+    'contributor_org': ['contributor_org',
+                        'contributor_organization_name',
+                        'contrib_organization_name'],
+    'employer': ['employer', 'contributor_employer', 'indemp'],
     'amount': Field(format=amount,
                     aka=['amount',
                          'contribution_amount',
