@@ -51,10 +51,12 @@ for expenditures:
 # D change get_from() to not take it either
 # D fix tests to not care about passed-in name
 # D make tests demand code ignores passed-in name
-# - add multiple-input fields
+# D add multiple-input fields
+# - use one in `fields` and test it
 # - add top-level inverteds() function
 # - call it in the field mapper
 # - use it to simplify the existing mappings
+# - add a CompositeField
 # - add syntactic sugar for multiple-input fields
 
 class Field:
@@ -109,6 +111,29 @@ class Field:
             else:
                 rv[k] = lambda data, k=k: data[k]
         return rv
+
+class MultiInputField:
+    """A field whose value is computed from more than one input field.
+
+    Its `inverteds()` includes only one of the input fields, currently
+    the shortest one.  That’s because there’s no reason to call it
+    repeatedly; if one of the other input fields is missing, it will
+    fail harmlessly with a KeyError.
+
+    >>> f = MultiInputField(('a', 'b'), lambda a, b: a + ': ' + b)
+    >>> f.inverteds().keys()
+    ['a']
+
+    >>> ffunc = f.inverteds().values()[0]
+    >>> ffunc({'a': 'foo', 'b': 'bar'})
+    'foo: bar'
+    """
+    def __init__(self, names, function):
+        self.names, self.function = names, function
+    def inverteds(self):
+        def getter(data):
+            return self.function(*[data[k] for k in self.names])
+        return {self.names[0]: getter}
 
 class FieldMapper:
     """Maps fields according to a field-mapping specification.
