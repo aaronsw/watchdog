@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import csv, sys, cgitb, fixed_width, zipfile, StringIO, types
 """
 This is just some test code right now for exploring the space of
 parsing FEC CSV files in a relatively version-flexible way.
@@ -10,6 +9,7 @@ that was chewing through 300 kilobytes per second on my 700MHz
 dinosaur --- now it's doing 210 kilobytes per second.
 
 """
+import csv, sys, cgitb, fixed_width, zipfile, StringIO, types
 
 fields_from_fec_csv_py = """
 type ('contribution')
@@ -59,45 +59,25 @@ for expenditures:
 # D use it to simplify the existing mappings
 # D add syntactic sugar for multiple-input fields
 # D use CompositeField to simplify Field
-# - rename Field to Transform or something
-# - make a BaseField
-
-class InputField:
-    """
-    >>> f = InputField('bob')
-    >>> f.inverteds().keys()
-    ['bob']
-    >>> f.inverteds()['bob']({'bob': 4, 'mel': 5})
-    4
-    """
-    def __init__(self, name): self.name = name
-    def inverteds(self):
-        name = self.name
-        return {name: lambda data: data[name]}
-
+# D rename Field to Reformat
+# D make a Field base class
 
 class Field:
-    """A class that manifests a tiny DSEL for describing field mappings.
+    """Represents a field in the output data, and knows how to compute it.
 
-    >>> Field(format=fixed_width.date,
-    ...       source=['bob']).get_from({'bob': '20080930'})
-    '2008-09-30'
-    >>> Field(format=fixed_width.date,
-    ...       source=['bob']).get_from({'dan': '20080830'})
+    This is an abstract base class; most concrete subclasses can be
+    constructed most conveniently with the factory function
+    `as_field`, which creates a sort of tiny DSEL for describing field
+    mappings.
 
-    Note that the above test failed to return anything.
+    Two of the concrete subclasses can contain Fields themselves;
+    CompositeField contains a list of Fields any of which can supply
+    its value, and Transform contains a single Field whose value it
+    transforms.
 
-    >>> f = Field(format=lambda x: x, source=['bob', 'fred'])
-    >>> sorted(f.inverteds().keys())
-    ['bob', 'fred']
-    >>> f.inverteds()['bob']({'bob': 39})
-    39
     """
-    def __init__(self, source, format):
-        self._source = as_field(source)
-        self._format = format
     def get_from(self, data):
-        # XXX only used for testing!
+        "Simple method for testing."
         for key, func in self.inverteds().items():
             if key in data: return func(data)
     def inverteds(self):
@@ -115,6 +95,42 @@ class Field:
         tested it.
 
         """
+
+class InputField(Field):
+    """
+    >>> f = InputField('bob')
+    >>> f.inverteds().keys()
+    ['bob']
+    >>> f.inverteds()['bob']({'bob': 4, 'mel': 5})
+    4
+    """
+    def __init__(self, name): self.name = name
+    def inverteds(self):
+        name = self.name
+        return {name: lambda data: data[name]}
+
+
+class Reformat(Field):
+    """Changes the format of data in a field.
+
+    >>> Reformat(format=fixed_width.date,
+    ...          source=['bob']).get_from({'bob': '20080930'})
+    '2008-09-30'
+    >>> Reformat(format=fixed_width.date,
+    ...          source=['bob']).get_from({'dan': '20080830'})
+
+    Note that the above test failed to return anything.
+
+    >>> f = Reformat(format=lambda x: x, source=['bob', 'fred'])
+    >>> sorted(f.inverteds().keys())
+    ['bob', 'fred']
+    >>> f.inverteds()['bob']({'bob': 39})
+    39
+    """
+    def __init__(self, source, format):
+        self._source = as_field(source)
+        self._format = format
+    def inverteds(self):
         rv = {}
         format = self._format
         for k, v in self._source.inverteds().items():
@@ -124,7 +140,7 @@ class Field:
             rv[k] = lambda data, v=v: format(v(data))
         return rv
 
-class MultiInputField:
+class MultiInputField(Field):
     """A field whose value is computed from more than one input field.
 
     Its `inverteds()` includes only one of the input fields, currently
@@ -141,16 +157,18 @@ class MultiInputField:
     'foo: bar'
     """
     def __init__(self, names, function):
+        "`names` are the field names from which to get `function`'s args."
         self.names, self.function = names, function
     def inverteds(self):
+        names = self.names
         def getter(data):
-            return self.function(*[data[k] for k in self.names])
+            return self.function(*[data[k] for k in names])
         return {self.names[0]: getter}
 
-class CompositeField:
+class CompositeField(Field):
     """A field with more than one possible source for its data.
 
-    >>> f = CompositeField([InputField('a'), Field(source=['b'], format=len)])
+    >>> f = CompositeField(['a', Reformat(source=['b'], format=len)])
     >>> sorted(f.inverteds().keys())
     ['a', 'b']
     >>> f.inverteds()['a']({'a': '90210'})
@@ -162,10 +180,11 @@ class CompositeField:
         self.fields = fields
     def inverteds(self):
         rv = {}
-        for field in self.fields: rv.update(field.inverteds())
+        for field in self.fields: rv.update(as_field(field).inverteds())
         return rv
 
 def argnames(func):
+    "Compute a list of the names of the arguments of a Python function."
     return func.func_code.co_varnames[:func.func_code.co_argcount]
 
 def as_field(obj):
@@ -175,7 +194,7 @@ def as_field(obj):
     elif isinstance(obj, basestring):
         return InputField(obj)
     elif isinstance(obj, types.ListType):
-        return CompositeField([as_field(x) for x in obj])
+        return CompositeField(obj)
     elif isinstance(obj, types.FunctionType):
         return MultiInputField(argnames(obj), obj)
     raise "can't coerce to a field", obj
@@ -250,23 +269,23 @@ def amount(text):
     return text[:-2] + '.' + text[-2:]
 
 fields = {
-    'date': Field(format=fixed_width.date,
-                  source=['date', 'date_received', 'contribution_date']),
-    'candidate_fec_id': Field(format=strip, source=['candidate_fec_id',
-                                                    'candidate_id_number',
-                                                    'fec_candidate_id_number']),
+    'date': Reformat(format=fixed_width.date,
+                     source=['date', 'date_received', 'contribution_date']),
+    'candidate_fec_id': Reformat(format=strip, source=['candidate_fec_id',
+                                                       'candidate_id_number',
+                                                       'fec_candidate_id_number']),
     'tran_id': ['tran_id', 'transaction_id_number'],
     'occupation': ['occupation', 'contributor_occupation', 'indocc'],
     'contributor_org': ['contributor_org',
                         'contributor_organization_name',
                         'contrib_organization_name'],
     'employer': ['employer', 'contributor_employer', 'indemp'],
-    'amount': Field(format=amount,
-                    source=['amount',
-                            'contribution_amount',
-                            'amount_received',
-                            'expenditure_amount',
-                            'amount_of_expenditure']),
+    'amount': Reformat(format=amount,
+                       source=['amount',
+                               'contribution_amount',
+                               'amount_received',
+                               'expenditure_amount',
+                               'amount_of_expenditure']),
     'address': (lambda street__1, street__2, city, state, zip:
                 ' '.join([street__1, street__2, city, state, zip])),
 }
@@ -318,6 +337,9 @@ def headers(filename):
         rv[key] = [name.strip().lower().replace(' ', '_') for name in line[1:]]
     return rv
 def findkey(hmap, key):
+    """Find the base schedule or form number,
+    given the first field from an FEC filing record.
+    """
     while key:
         if key in hmap: return hmap[key]
         else: key = key[:-1]
