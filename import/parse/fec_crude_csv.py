@@ -58,7 +58,23 @@ for expenditures:
 # D call it in the field mapper
 # D use it to simplify the existing mappings
 # D add syntactic sugar for multiple-input fields
-# - use CompositeField to simplify Field
+# D use CompositeField to simplify Field
+# - rename Field to Transform or something
+# - make a BaseField
+
+class InputField:
+    """
+    >>> f = InputField('bob')
+    >>> f.inverteds().keys()
+    ['bob']
+    >>> f.inverteds()['bob']({'bob': 4, 'mel': 5})
+    4
+    """
+    def __init__(self, name): self.name = name
+    def inverteds(self):
+        name = self.name
+        return {name: lambda data: data[name]}
+
 
 class Field:
     """A class that manifests a tiny DSEL for describing field mappings.
@@ -71,17 +87,15 @@ class Field:
 
     Note that the above test failed to return anything.
 
-    >>> sorted(Field(source=['bob', 'fred']).inverteds().keys())
+    >>> f = Field(format=lambda x: x, source=['bob', 'fred'])
+    >>> sorted(f.inverteds().keys())
     ['bob', 'fred']
-    >>> Field(source=['bob', 'fred']).inverteds()['bob']({'bob': 39})
+    >>> f.inverteds()['bob']({'bob': 39})
     39
     """
-    def __init__(self, source=set(), format=None):
-        self._source = set(source)
+    def __init__(self, source, format):
+        self._source = as_field(source)
         self._format = format
-    def format(self, datum):
-        if self._format: return self._format(datum)
-        else: return datum
     def get_from(self, data):
         # XXX only used for testing!
         for key, func in self.inverteds().items():
@@ -102,14 +116,12 @@ class Field:
 
         """
         rv = {}
-        for k in self._source:
-            # k=k so each lambda has its own k instead of all sharing
-            # the same k; it's not intended that callers will override
-            # k!
-            if self._format:
-                rv[k] = lambda data, k=k: self._format(data[k])
-            else:
-                rv[k] = lambda data, k=k: data[k]
+        format = self._format
+        for k, v in self._source.inverteds().items():
+            # v=v so each lambda has its own v instead of all sharing
+            # the same v; it's not intended that callers will override
+            # v!
+            rv[k] = lambda data, v=v: format(v(data))
         return rv
 
 class MultiInputField:
@@ -138,7 +150,7 @@ class MultiInputField:
 class CompositeField:
     """A field with more than one possible source for its data.
 
-    >>> f = CompositeField([Field(source=['a']), Field(source=['b'], format=len)])
+    >>> f = CompositeField([InputField('a'), Field(source=['b'], format=len)])
     >>> sorted(f.inverteds().keys())
     ['a', 'b']
     >>> f.inverteds()['a']({'a': '90210'})
@@ -161,7 +173,7 @@ def as_field(obj):
     if hasattr(obj, 'inverteds'):
         return obj
     elif isinstance(obj, basestring):
-        return Field(source=[obj])
+        return InputField(obj)
     elif isinstance(obj, types.ListType):
         return CompositeField([as_field(x) for x in obj])
     elif isinstance(obj, types.FunctionType):
@@ -178,9 +190,9 @@ class FieldMapper:
     If the field’s output name is not specifically mentioned among a
     field’s aliases, it isn’t included in the fields to copy from:
 
-    >>> FieldMapper({'a': Field(source=['b'])}).map({'a': 3})
+    >>> FieldMapper({'a': 'b'}).map({'a': 3})
     {'original_data': {'a': 3}}
-    >>> FieldMapper({'a': Field(source=['a', 'b'])}).map({'a': 3})
+    >>> FieldMapper({'a': ['a', 'b']}).map({'a': 3})
     {'a': 3, 'original_data': {'a': 3}}
 
     >>> mapped = FieldMapper(fields).map({'date_received': '20081131',
