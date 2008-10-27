@@ -48,7 +48,7 @@ for expenditures:
 # So, with that in mind, the first refactoring is probably to make that change:
 # D add aliases explicitly to the fields table
 # D change inverteds() to not take or return the output field name
-# - change get_from() to not take it either
+# D change get_from() to not take it either
 # - fix tests to not care about passed-in name
 # - make tests demand ignore passed-in name
 # - add top-level inverteds() function
@@ -59,11 +59,13 @@ class Field:
     A class that manifests a tiny DSEL for describing field mappings.
 
     >>> Field(format=fixed_width.date,
-    ...       aka=['bob']).get_from('dan', {'bob': '20080930'})
+    ...       aka=['bob']).get_from({'bob': '20080930'})
     '2008-09-30'
     >>> Field(format=fixed_width.date,
-    ...       aka=['bob']).get_from('dan', {'dan': '20080830'})
-    '2008-08-30'
+    ...       aka=['bob']).get_from({'dan': '20080830'})
+
+    Note that the above test failed to return anything.
+
     >>> sorted(Field(aka=['bob', 'fred']).inverteds().keys())
     ['bob', 'fred']
     >>> Field(aka=['bob', 'fred']).inverteds()['bob']({'bob': 39})
@@ -75,11 +77,10 @@ class Field:
     def format(self, datum):
         if self._format: return self._format(datum)
         else: return datum
-    def get_from(self, name, data):
+    def get_from(self, data):
         # XXX only used for testing!
-        for k in [name] + list(self._aka):
-            if k in data:
-                return self.format(data[k])
+        for key, func in self.inverteds().items():
+            if key in data: return func(data)
     def inverteds(self):
         """Return a dictionary of ways to get this field’s value.
 
