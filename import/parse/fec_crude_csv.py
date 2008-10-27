@@ -35,33 +35,6 @@ for expenditures:
     amount
 """
 
-# μTODO:
-# The idea is that you can use a variety of things as a "field source" that can produce an "inverteds" map.
-# I want the getter function to not have to worry about where the value is going.
-# So that I can use it either in the top-level context 'tran_id': ['tran_id', 'transaction_id']
-# or inside of a Composite that does some kind of transform 'amount': Field(['amount', 'expenditure_amount'], format=amount)
-# This latter case makes me think that I want an inverteds map that looks like
-{'expenditure_amount': lambda data: amount(data['expenditure_amount'])}
-# and merge all of the child nodes’ maps together to get a single map.
-# Then at the last step, I want to associate an “output field name” with the functions.
-# Maybe self.inverteds.update(dict((k, (n, v)) for k, v in child_inverteds.items()))?
-# So, with that in mind, the first refactoring is probably to make that change:
-# D add aliases explicitly to the fields table
-# D change inverteds() to not take or return the output field name
-# D change get_from() to not take it either
-# D fix tests to not care about passed-in name
-# D make tests demand code ignores passed-in name
-# D add multiple-input fields
-# D use one in `fields` and test it
-# D add a CompositeField
-# D add top-level as_field() function
-# D call it in the field mapper
-# D use it to simplify the existing mappings
-# D add syntactic sugar for multiple-input fields
-# D use CompositeField to simplify Field
-# D rename Field to Reformat
-# D make a Field base class
-
 class Field:
     """Represents a field in the output data, and knows how to compute it.
 
@@ -87,7 +60,8 @@ class Field:
         fields that must be present for the function to be applicable;
         the values are functions that take the original source data
         dictionary.  Those functions are entitled to access other
-        fields in the dictionary, although they don’t yet.
+        fields in the dictionary, and to throw a KeyError if they want
+        to fail.
 
         This is an efficiency hack; the objective is that we can avoid
         trying to look at fields that aren’t present at all in the
