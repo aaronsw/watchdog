@@ -62,14 +62,6 @@ def cleanPacName(name):
         name = r.sub('', name)
     return name
 
-def findPac(raw_name):
-    db_pac = db.select('lob_pac', where='LOWER(name)='+web.sqlquote(raw_name.lower()))
-    if not db_pac:
-        db_pac = db.select('lob_pac', where='name ilike '+web.sqlquote('%'+cleanPacName(raw_name)+'%') )
-    #print raw_name, "-->", name
-    if db_pac and len(db_pac) == 1:
-        return db_pac[0].id
-
 def cleanName(name):
     rs = [ re.compile(x,re.IGNORECASE) for x in [r'^U.S. ', r'^Rep\.', r'^Sen\.', r'^Representative', r'^Senator', r'^Congressman', r'^Congresswoman', r'for Congress$', r'\(R-..\)', r'\(D-..\)', r'^Candidate', r'^Honerable']]
     for r in rs:
@@ -146,7 +138,6 @@ def load_house_lobbyists():
                 if z == 'amount': val = int(float(val))
                 if z in lob_contribution: c[lob_contribution[z]] = val
                 if z == 'recipientName': c['politician_id']=findPol(val)
-                if z == 'contributorName': c['pac_id']=findPac(val)
             db.insert('lob_contribution', seqname=False, filing_id=x['file_id'], **c)
         if 'contributions' in x:
             if isinstance(x['contributions'], list):
