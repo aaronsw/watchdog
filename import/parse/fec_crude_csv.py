@@ -214,9 +214,18 @@ def headers_for_version(version):
         headers_cache[version] = \
             headers('../data/crawl/fec/electronic/headers/%s.csv' % version)
     return headers_cache[version]
+
+class ascii28separated(csv.excel):
+    delimiter = chr(28)
+
 def readfile(fileobj):
     r = csv.reader(fileobj)
     headerline = r.next()
+    if chr(28) in headerline[0]:
+        # it must be in the new FS-separated format
+        fileobj.seek(0)
+        r = csv.reader(fileobj, dialect=ascii28separated)
+        headerline = r.next()
     headermap = headers_for_version(headerline[2])
     in_text_field = False
     for line in r:
