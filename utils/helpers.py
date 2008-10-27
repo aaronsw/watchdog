@@ -1,5 +1,6 @@
 import os
 import hmac
+import base64
 
 import web
 from config import secret_key
@@ -17,7 +18,6 @@ def getcookie(name):
     value, encrypt_value = encoded.split('#@#')
     if encrypt(value) == encrypt_value:
         return value
-    return None
 
 def deletecookie(name):
     web.setcookie(name, expires=-1)
@@ -25,14 +25,16 @@ def deletecookie(name):
 def get_trackid(uid, pid):
     if not uid: return
     uid = str(uid)
-    return '_'.join([uid, encrypt(uid+pid)])
+    uid_pid = base64.urlsafe_b64encode(uid+pid[:10])
+    return ':'.join([uid, uid_pid])
 
 def check_trackid(tid, pid):
     try:
-        uid, uid_pid = tid.split('_')
+        uid, uid_pid = tid.split(':')
+        uid_pid = base64.urlsafe_b64decode(str(uid_pid))
     except:
         return
-    if encrypt(uid+pid) == uid_pid:
+    if uid_pid == uid + pid[:10]:
         return uid
 
 def set_msg(msg, msg_type=None):
