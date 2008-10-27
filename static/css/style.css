@@ -88,7 +88,7 @@ input.highlight:focus { background-color: #fdf6c5; border: 1px solid #EE4400;  }
 
 
 /* fieldsets */
-fieldset { width: 510px; border: 1px solid #ccc; background: #F5F5FD; padding: 0 2em 2em 2em; margin: 0 0 2em 0; }
+fieldset { width: 535px; border: 1px solid #ccc; background: #F5F5FD; padding: 0 2em 2em 2em; margin: 0 0 2em 0; }
 legend { font-weight: bold; font-size: 1.2em; padding: 0 0.5em; color:#EE4400; }
 fieldset label { display: block; font-size: 0.95em; margin: 0.5em 0 0 0; color: #023; }
 fieldset input { padding: 0.3em; font-weight: bold; font-size: 1.1em; max-width: 500px; margin: 0; color: #023; }

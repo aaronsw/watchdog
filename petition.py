@@ -219,6 +219,11 @@ def is_author(email, pid):
     where = 'id=$pid and owner_id=$user.id and deleted is null'
     return user and bool(db.select('petition', where=where, vars=locals()))
 
+def is_signatory(email, pid):
+    user = email and helpers.get_user_by_email(email)
+    where = 'petition_id=$pid and user_id=$user.id'
+    return user and bool(db.select('signatory', where=where, vars=locals()))
+    
 def get_signs(pid):
     where = "petition_id=$pid AND users.id=user_id AND sent_to_congress !='T' AND deleted is null"          
     return db.select(['signatory', 'users'],
@@ -290,7 +295,8 @@ class petition:
         msg, msg_type = helpers.get_delete_msg()
         useremail = helpers.get_loggedin_email() or helpers.get_unverified_email()
         isauthor = is_author(useremail, pid)
-        return render.petition(p, signform, useremail, isauthor, wyrform, msg)
+        issignatory = is_signatory(useremail, pid)
+        return render.petition(p, signform, useremail, isauthor, issignatory, wyrform, msg)
 
     @auth.require_login
     def GET_edit(self, pid):

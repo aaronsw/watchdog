@@ -36,6 +36,7 @@ def fill_user_details(form, fillings=['email', 'name', 'contact']):
                 details['zipcode'] = user.zip5
                 details['zip4'] = user.zip4
                 details['phone'] = user.phone
+                details['state'] = user.state
 
         form.fill(**details)
     
@@ -43,7 +44,8 @@ def update_user_details(i):
     user = helpers.get_user_by_email(i.get('email'))
     userid = user and user.id
     i['zip5'] = i.get('zipcode')
-    details = ['prefix', 'lname', 'fname', 'addr1', 'addr2', 'city', 'zip5', 'zip4', 'phone']
+    i['phone'] = web.numify(i.get('phone'))
+    details = ['prefix', 'lname', 'fname', 'addr1', 'addr2', 'city', 'zip5', 'zip4', 'phone', 'state']
     
     d = {}
     for (k, v) in i.items():
