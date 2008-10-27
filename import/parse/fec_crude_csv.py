@@ -50,14 +50,17 @@ class Field:
     >>> Field(aka=['bob', 'fred']).inverteds('ralph')['bob']({'bob': 39})
     ('ralph', 39)
     """
-    def __init__(self, aka=set(), format=lambda x: x):
+    def __init__(self, aka=set(), format=None):
         self._aka = set(aka)
         self._format = format
+    def format(self, datum):
+        if self._format: return self._format(datum)
+        else: return datum
     def get_from(self, name, data):
         # XXX only used for testing!
         for k in [name] + list(self._aka):
             if k in data:
-                return self._format(data[k])
+                return self.format(data[k])
     def inverteds(self, name):
         """Return a dictionary of ways to get this field’s value.
 
@@ -78,7 +81,10 @@ class Field:
             # k=k so each lambda has its own k instead of all sharing
             # the same k; it's not intended that callers will override
             # k!
-            rv[k] = lambda data, k=k: (name, self._format(data[k]))
+            if self._format:
+                rv[k] = lambda data, k=k: (name, self._format(data[k]))
+            else:
+                rv[k] = lambda data, k=k: (name, data[k])
         return rv
 
 field = Field()
@@ -208,9 +214,18 @@ def headers_for_version(version):
         headers_cache[version] = \
             headers('../data/crawl/fec/electronic/headers/%s.csv' % version)
     return headers_cache[version]
+
+class ascii28separated(csv.excel):
+    delimiter = chr(28)
+
 def readfile(fileobj):
     r = csv.reader(fileobj)
     headerline = r.next()
+    if chr(28) in headerline[0]:
+        # it must be in the new FS-separated format
+        fileobj.seek(0)
+        r = csv.reader(fileobj, dialect=ascii28separated)
+        headerline = r.next()
     headermap = headers_for_version(headerline[2])
     in_text_field = False
     for line in r:
