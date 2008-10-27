@@ -87,8 +87,6 @@ class Field:
                 rv[k] = lambda data, k=k: (name, data[k])
         return rv
 
-field = Field()
-
 class FieldMapper:
     """Maps fields according to a field-mapping specification.
 
