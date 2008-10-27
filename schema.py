@@ -443,6 +443,8 @@ class lob_contribution(sql.Table):
     payee = sql.String()
     recipient = sql.String()
     amount = sql.Dollars()
+    politician = sql.Reference(politician)
+    pac = sql.Reference(lob_pac)  # it *looks* like the contributor feild can be linked to the lob_pac table?
 
 class lob_pac_filings(sql.Table):
     pac = sql.Reference(lob_pac)
