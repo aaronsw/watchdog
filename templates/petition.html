@@ -1,4 +1,4 @@
-$def with (p, signform, useremail, isauthor, wyrform=None, msg=None)
+$def with (p, signform, useremail, isauthor, issignatory, wyrform=None, msg=None)
 
 $var width: 90%
 $var color: white
@@ -37,7 +37,12 @@ $else:
 		$ ppl = 'person</a></strong> has'
 	$else:
 		$ ppl = 'people</a></strong> have'
-	<h2> <strong><a href='/c/$p.id/signatories'>$p.signatory_count $:ppl signed this petition. </h2>
+	$if issignatory:
+	    $ signed = ', including <i>yourself</i>'
+	$else:
+	    $ signed = ''
+	<h2> <strong><a href='/c/$p.id/signatories'>$p.signatory_count $:ppl signed this petition$:signed.</h2>
+
 <div id="uppermenu">
   <a href="/share?url=/c/$p.id/&title=$p.title">Share</a>&nbsp;
 $if isauthor:
