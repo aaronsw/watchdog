@@ -35,6 +35,25 @@ for expenditures:
     amount
 """
 
+# μTODO:
+# The idea is that you can use a variety of things as a "field source" that can produce an "inverteds" map.
+# I want the getter function to not have to worry about where the value is going.
+# So that I can use it either in the top-level context 'tran_id': ['tran_id', 'transaction_id']
+# or inside of a Composite that does some kind of transform 'amount': Field(['amount', 'expenditure_amount'], format=amount)
+# This latter case makes me think that I want an inverteds map that looks like
+{'expenditure_amount': lambda data: amount(data['expenditure_amount'])}
+# and merge all of the child nodes’ maps together to get a single map.
+# Then at the last step, I want to associate an “output field name” with the functions.
+# Maybe self.inverteds.update(dict((k, (n, v)) for k, v in child_inverteds.items()))?
+# So, with that in mind, the first refactoring is probably to make that change:
+# D add aliases explicitly to the fields table
+# D change inverteds() to not take or return the output field name
+# - change get_from() to not take it either
+# - fix tests to not care about passed-in name
+# - make tests demand ignore passed-in name
+# - add top-level inverteds() function
+# - call it in the field mapper
+
 class Field:
     """
     A class that manifests a tiny DSEL for describing field mappings.
@@ -45,10 +64,10 @@ class Field:
     >>> Field(format=fixed_width.date,
     ...       aka=['bob']).get_from('dan', {'dan': '20080830'})
     '2008-08-30'
-    >>> sorted(Field(aka=['bob', 'fred']).inverteds('ralph').keys())
-    ['bob', 'fred', 'ralph']
-    >>> Field(aka=['bob', 'fred']).inverteds('ralph')['bob']({'bob': 39})
-    ('ralph', 39)
+    >>> sorted(Field(aka=['bob', 'fred']).inverteds().keys())
+    ['bob', 'fred']
+    >>> Field(aka=['bob', 'fred']).inverteds()['bob']({'bob': 39})
+    39
     """
     def __init__(self, aka=set(), format=None):
         self._aka = set(aka)
@@ -61,7 +80,7 @@ class Field:
         for k in [name] + list(self._aka):
             if k in data:
                 return self.format(data[k])
-    def inverteds(self, name):
+    def inverteds(self):
         """Return a dictionary of ways to get this field’s value.
 
         The keys of the dictionary are the names of original source
@@ -77,14 +96,14 @@ class Field:
 
         """
         rv = {}
-        for k in [name] + list(self._aka):
+        for k in self._aka:
             # k=k so each lambda has its own k instead of all sharing
             # the same k; it's not intended that callers will override
             # k!
             if self._format:
-                rv[k] = lambda data, k=k: (name, self._format(data[k]))
+                rv[k] = lambda data, k=k: self._format(data[k])
             else:
-                rv[k] = lambda data, k=k: (name, data[k])
+                rv[k] = lambda data, k=k: data[k]
         return rv
 
 class FieldMapper:
@@ -113,7 +132,8 @@ class FieldMapper:
         self.fields = fields
         self.inverteds = {}
         for name, field in self.fields.items():
-            self.inverteds.update(field.inverteds(name))
+            self.inverteds.update(dict((k, (name, v))
+                                       for k, v in field.inverteds().items()))
         self.inverted_keys = set(self.inverteds.keys())
     def map(self, data):
         rv = {'original_data': data}
@@ -121,12 +141,13 @@ class FieldMapper:
         # interested in, in order to avoid doing unnecessary work in
         # Python.
         for fieldname in set(data.keys()) & self.inverted_keys:
+            name, func = self.inverteds[fieldname]
             try:
-                k, v = self.inverteds[fieldname](data)
+                v = func(data)
             except KeyError:
                 pass
             else:
-                rv[k] = v
+                rv[name] = v
         return rv
 
 def strip(text):
@@ -148,16 +169,19 @@ def amount(text):
 
 fields = {
     'date': Field(format=fixed_width.date,
-                  aka=['date_received', 'contribution_date']),
-    'candidate_fec_id': Field(format=strip, aka=['candidate_id_number',
+                  aka=['date', 'date_received', 'contribution_date']),
+    'candidate_fec_id': Field(format=strip, aka=['candidate_fec_id',
+                                                 'candidate_id_number',
                                                  'fec_candidate_id_number']),
-    'tran_id': Field(aka=['transaction_id_number']),
-    'occupation': Field(aka=['contributor_occupation', 'indocc']),
-    'contributor_org': Field(aka=['contributor_organization_name',
+    'tran_id': Field(aka=['tran_id', 'transaction_id_number']),
+    'occupation': Field(aka=['occupation', 'contributor_occupation', 'indocc']),
+    'contributor_org': Field(aka=['contributor_org',
+                                  'contributor_organization_name',
                                   'contrib_organization_name']),
-    'employer': Field(aka=['contributor_employer', 'indemp']),
+    'employer': Field(aka=['employer', 'contributor_employer', 'indemp']),
     'amount': Field(format=amount,
-                    aka=['contribution_amount',
+                    aka=['amount',
+                         'contribution_amount',
                          'amount_received',
                          'expenditure_amount',
                          'amount_of_expenditure'])
