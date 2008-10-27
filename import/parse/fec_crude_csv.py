@@ -49,10 +49,13 @@ for expenditures:
 # D add aliases explicitly to the fields table
 # D change inverteds() to not take or return the output field name
 # D change get_from() to not take it either
-# - fix tests to not care about passed-in name
-# - make tests demand ignore passed-in name
+# D fix tests to not care about passed-in name
+# D make tests demand code ignores passed-in name
+# - add multiple-input fields
 # - add top-level inverteds() function
 # - call it in the field mapper
+# - use it to simplify the existing mappings
+# - add syntactic sugar for multiple-input fields
 
 class Field:
     """
@@ -113,6 +116,14 @@ class FieldMapper:
     Takes and returns a dict. The original dict comes out as a
     member named 'original_data'; otherwise its members are only
     copied across according to applicable field specs.
+
+    If the field’s output name is not specifically mentioned among a
+    field’s aliases, it isn’t included in the fields to copy from:
+
+    >>> FieldMapper({'a': Field(aka=['b'])}).map({'a': 3})
+    {'original_data': {'a': 3}}
+    >>> FieldMapper({'a': Field(aka=['a', 'b'])}).map({'a': 3})
+    {'a': 3, 'original_data': {'a': 3}}
 
     >>> mapped = FieldMapper(fields).map({'date_received': '20081131',
     ...                                   'tran_id': '12345', 
