@@ -12,14 +12,16 @@ def petitionnotexists(pid):
     exists = bool(db.select('petition', where='id=$pid', vars=locals()))
     return pid != 'new' and not(exists)
 
-
+def getstates():
+    return [(s.code, s.name) for s in db.select('state', what='code, name', order='name')]
+    
 def emailnotexists(email):
     "Return True if account with email `email` does not exist"
     exists = bool(db.select('users', where='email=$email', vars=locals()))
     return not(exists)
     
 def check_len(phone):
-    return len(web.numify(phone)) <= 10
+    return len(web.numify(phone)) <= 15
 
 petitionform = form.Form(
       form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
@@ -38,6 +40,7 @@ wyrform = form.Form(
       form.Textbox('addr1', form.Validator("Address can't be blank", bool), description='Address', size='20'),
       form.Textbox('addr2', description='Address', size='20'),
       form.Textbox('city', form.Validator("City can't be blank", bool), description='City'),
+      form.Dropdown('state', getstates(), form.Validator("State can't be blank", bool), description='State'),
       form.Textbox('zipcode', form.Validator("Zip code can't be blank", bool), form.regexp(r'^[0-9]{5}$', 'Please enter a valid zip'),
                     size='5', maxlength='5', description='Zip'),
       form.Textbox('zip4', form.regexp(r'^$|[0-9]{4}', 'Please Enter a valid zip'),
@@ -61,8 +64,8 @@ captcha = form.Textbox('captcha',
     )
 
 signform = form.Form(
-    form.Textbox('fname', form.notnull, description='First Name:', post=' *', size='30'),
-    form.Textbox('lname', form.notnull, description='Last Name:', post=' *', size='30'),
+    form.Textbox('fname', form.notnull, description='First Name:', post=' *', size='17'),
+    form.Textbox('lname', form.notnull, description='Last Name:', post=' *', size='17'),
     form.Textbox('email',
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
@@ -148,6 +151,7 @@ userinfo = form.Form(
         form.Textbox('addr1', form.notnull, description='Address Line1', size='20', post='*'),
         form.Textbox('addr2', description='Address Line2', size='20'),
         form.Textbox('city', form.notnull, description='City', post='*'),
+        form.Dropdown('state', getstates(), form.notnull, description='State'),
         form.Textbox('zip5', form.notnull, form.regexp(r'[0-9]{5}', 'Please enter a valid zip'),
                          size='5', maxlength='5', description='Zip', post='*'),
         form.Textbox('zip4', form.notnull, form.regexp(r'[0-9]{4}', 'Please Enter a valid zip'),
