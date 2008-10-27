@@ -153,6 +153,9 @@ class CompositeField:
         for field in self.fields: rv.update(field.inverteds())
         return rv
 
+def argnames(func):
+    return func.func_code.co_varnames[:func.func_code.co_argcount]
+
 def as_field(obj):
     """Coerce obj to some kind of field."""
     if hasattr(obj, 'inverteds'):
@@ -161,6 +164,8 @@ def as_field(obj):
         return Field(aka=[obj])
     elif isinstance(obj, types.ListType):
         return CompositeField([as_field(x) for x in obj])
+    elif isinstance(obj, types.FunctionType):
+        return MultiInputField(argnames(obj), obj)
     raise "can't coerce to a field", obj
 
 class FieldMapper:
@@ -250,17 +255,8 @@ fields = {
                          'amount_received',
                          'expenditure_amount',
                          'amount_of_expenditure']),
-    'address': MultiInputField(('street__1',
-                                'street__2',
-                                'city',
-                                'state',
-                                'zip'),
-                               lambda street__1, street__2, city, state, zip:
-                               ' '.join([street__1,
-                                         street__2,
-                                         city,
-                                         state,
-                                         zip])),
+    'address': (lambda street__1, street__2, city, state, zip:
+                ' '.join([street__1, street__2, city, state, zip])),
 }
 
 fieldmapper = FieldMapper(fields)
