@@ -321,9 +321,12 @@ class write_your_rep:
                 return render.writerep(wyrform, msg)
             else:
                 if status:
-                    helpers.set_msg('Your message has been sent.')
+                    p = db.select('politician', what='firstname, middlename, lastname',
+                                    where='id=$self.pol', vars=locals())[0]
+                    polstr = '<a href="/p/%s">%s %s %s</a>' % (self.pol, p.firstname, p.middlename, p.lastname)  
+                    helpers.set_msg('Your message has been sent to %s.' % polstr)
                 else:
-                    helpers.set_msg('Your message has NOT been sent.', 'error')
+                    helpers.set_msg('Sorry, your message has NOT been sent.', 'error')
             raise web.seeother('/')
         else:
             return self.GET(wyrform)
