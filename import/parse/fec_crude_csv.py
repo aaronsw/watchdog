@@ -52,7 +52,7 @@ for expenditures:
 # D fix tests to not care about passed-in name
 # D make tests demand code ignores passed-in name
 # D add multiple-input fields
-# - use one in `fields` and test it
+# D use one in `fields` and test it
 # - add top-level inverteds() function
 # - call it in the field mapper
 # - use it to simplify the existing mappings
@@ -221,7 +221,18 @@ fields = {
                          'contribution_amount',
                          'amount_received',
                          'expenditure_amount',
-                         'amount_of_expenditure'])
+                         'amount_of_expenditure']),
+    'address': MultiInputField(('street__1',
+                                'street__2',
+                                'city',
+                                'state',
+                                'zip'),
+                               lambda street__1, street__2, city, state, zip:
+                               ' '.join([street__1,
+                                         street__2,
+                                         city,
+                                         state,
+                                         zip])),
 }
 
 fieldmapper = FieldMapper(fields)
@@ -248,6 +259,15 @@ def _regrtest_fields():
     >>> fieldmapper.map({'indemp': 'EEA Development'})
     ... #doctest: +ELLIPSIS
     {'original_data': {...}, 'employer': 'EEA Development'}
+
+    >>> fieldmapper.map({'street__1': '2531 Falcon Way',
+    ...                  'street__2': '#400',
+    ...                  'city': 'Concord',
+    ...                  'state': 'TX',
+    ...                  'zip': '20036'})
+    ... #doctest: +ELLIPSIS
+    {...'address': '2531 Falcon Way #400 Concord TX 20036'...}
+
     """
 
 class header(csv.excel):
