@@ -17,6 +17,14 @@ def fixbool(x):
     elif x == 'false': x = False
     return x
 
+# HACK: There is only one invalid date (02/31/2008) in the current data set.
+#       Lets just set it to Null for now. A beter solution might be to parse
+#       the dates here and check that set ones that don't parse to None.
+def fixdate(x):
+    if '02/31/2008' in x:
+        return None
+    return x
+
 xml_schema = {
     'filerType': None,
     'organizationName': None,
@@ -31,7 +39,7 @@ xml_schema = {
     'reportYear': None,
     'reportType': None,
     'amendment': fixbool,
-    'signedDate': None,
+    'signedDate': fixdate,
     'certifiedcontent': fixbool,
     'noContributions': fixbool,
     'comments': None,
@@ -46,7 +54,7 @@ xml_schema = {
             'payeeName': None, 
             'recipientName': None, 
             'amount': cleanint, 
-            'date': None
+            'date': fixdate
     } },
 }
 

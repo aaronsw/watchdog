@@ -445,7 +445,7 @@ class lob_filing(sql.Table):
 
 class lob_contribution(sql.Table):
     filing = sql.Reference(lob_filing)
-    date = sql.String() #date = sql.Date()  # Ugg, there are contributions on invalid dates (2/31/2008 for instance).
+    date = sql.Date()
     type = sql.String()
     contributor = sql.String()
     payee = sql.String()
