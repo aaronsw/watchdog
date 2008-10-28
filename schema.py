@@ -405,6 +405,7 @@ class Earmark_sponsor(sql.Table):
 class lob_organization(sql.Table):
     id = sql.Number(primary=True)  #@@TODO: design stable ids
     name = sql.String()
+    filings = sql.Backreference('lob_filing', 'org')
 
 class lob_person(sql.Table):
     id = sql.Number(primary=True)  #@@TODO: design stable ids
@@ -414,10 +415,12 @@ class lob_person(sql.Table):
     lastname = sql.String()
     suffix = sql.String()
     contact_name = sql.String()
+    filings = sql.Backreference('lob_filing', 'lobbyist')
 
 class lob_pac(sql.Table):
     id = sql.Number(primary=True)  #@@TODO: design stable ids
     name = sql.String()
+    filings = sql.Backreference('lob_pac_filings', 'pac')
 
 class lob_filing(sql.Table):
     id = sql.Number(primary=True)  #Uses xml file number as a stable id.
@@ -434,6 +437,11 @@ class lob_filing(sql.Table):
 
     lobbyist = sql.Reference(lob_person)
     org = sql.Reference(lob_organization)
+    pacs = sql.Backreference('lob_pac_filings', 'filing')
+    contributions = sql.Backreference('lob_contribution', 'filing', order='amount asc')
+    @property
+    def house_url(self):
+        return "http://disclosures.house.gov/lc/xmlform.aspx?id=%d" % self.id
 
 class lob_contribution(sql.Table):
     filing = sql.Reference(lob_filing)
@@ -443,7 +451,7 @@ class lob_contribution(sql.Table):
     payee = sql.String()
     recipient = sql.String()
     amount = sql.Dollars()
-    politician = sql.Reference(politician)
+    politician = sql.Reference(Politician)
 
 class lob_pac_filings(sql.Table):
     pac = sql.Reference(lob_pac)
