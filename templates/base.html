@@ -37,7 +37,7 @@ $if page.get('front'):
             
           ><a href="/about/" class="$page.get('about_class', 'footer')">about</a
           ><a href="/blog/" class="$page.get('blog_class', 'footer')">blog</a
-          ><a href="/about/#feedback" class="footer">feedback</a>
+          ><a href="/about/feedback" class="footer">feedback</a>
         </div>
             <a href="/"><img class="logo" src="/static/images/watchdog.slogan.twolines.gif" alt="Watchdog. The good government site with teeth." /></a>
         </div>
@@ -77,7 +77,7 @@ $if page.get('front'):
         <td width="28"  style="background: transparent"><img src="/static/images/box/right.bottom.curve.${page.get('color')}.png" border="0" width="28" height="28" /></td>
         </form>
         </tr></table>
-        <div id="left_footer_base"><a href="/blog/" class="footer">What's New?</a></div>
+        <div id="left_footer_base"><a href="/about/" class="footer">About us...</a></div>
         <div style="text-align: right; margin-top: -4px; width: 450px;"><img src="/static/images/${page.get('color')}.talkbubble.png" width="103" height="135" alt="Talk Bubble" /><a href="/" class="logo"><img src="/static/images/watchdog.talk.gif" width="255" height="135" alt="Watchdog sez -" /></a></div>        
 $else:
             <form name="logout" action="/u/logout" method='POST' style="display: none;"></form>
@@ -92,7 +92,7 @@ $else:
     <div id="footer\
     $if not page.get('front'):-leaf\
     ">
-	<div id="left_footer">What do you think? <a href="/about/help"><strong>Send us your feedback.</strong></a></div>
+	<div id="left_footer">What do you think? <a href="/about/feedback"><strong>Send us your feedback.</strong></a></div>
     <div style="text-align: right; margin-top: -4px; width: 100%;"><img src="/static/images/${page.get('color')}.talkbubble.png" width="103" height="135" alt="Talk Bubble" /><a href="/" class="logo"><img src="/static/images/watchdog.talk.gif" width="255" height="135" alt="Watchdog sez -" /></a></div>
 </div></div><!-- /footer -->
 </div>

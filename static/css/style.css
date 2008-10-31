@@ -161,6 +161,7 @@ td.frontbox-white {
 a.yellow {background-color: #FFF399; border: 1px solid #EE4400; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px; text-decoration: none;}
 a.yellow:hover {background-color: #EE4400; border: 1px solid #EE4400; color: #FFF399; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px; text-decoration: none;}
 a.highlight {background-color: #EE4400; border: 1px solid #fff; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px; text-decoration: none;}
+a.actionhighlight { background-color: #0f5b89;}
 a.highlight:hover {background-color: #fff; border: 1px solid #83b3d0; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px; text-decoration: none;}
 a.select {background-color: #eee; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; border-bottom: 5px solid #ccc; border-top: 1px solid #ccc; margin-right: 1px;  text-decoration: none;}
 a.watchdog {border: 1px solid #0f5b89; background-color: #0f5b89; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px; text-decoration: none;}
