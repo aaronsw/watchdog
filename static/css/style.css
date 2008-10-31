@@ -88,7 +88,7 @@ input.highlight:focus { background-color: #fdf6c5; border: 1px solid #EE4400;  }
 
 
 /* fieldsets */
-fieldset { width: 510px; border: 1px solid #ccc; background: #F5F5FD; padding: 0 2em 2em 2em; margin: 0 0 2em 0; }
+fieldset { width: 535px; border: 1px solid #ccc; background: #F5F5FD; padding: 0 2em 2em 2em; margin: 0 0 2em 0; }
 legend { font-weight: bold; font-size: 1.2em; padding: 0 0.5em; color:#EE4400; }
 fieldset label { display: block; font-size: 0.95em; margin: 0.5em 0 0 0; color: #023; }
 fieldset input { padding: 0.3em; font-weight: bold; font-size: 1.1em; max-width: 500px; margin: 0; color: #023; }
@@ -161,6 +161,7 @@ td.frontbox-white {
 a.yellow {background-color: #FFF399; border: 1px solid #EE4400; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px; text-decoration: none;}
 a.yellow:hover {background-color: #EE4400; border: 1px solid #EE4400; color: #FFF399; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px; text-decoration: none;}
 a.highlight {background-color: #EE4400; border: 1px solid #fff; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px; text-decoration: none;}
+a.actionhighlight { background-color: #0f5b89;}
 a.highlight:hover {background-color: #fff; border: 1px solid #83b3d0; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px; text-decoration: none;}
 a.select {background-color: #eee; color: #EE4400; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; border-bottom: 5px solid #ccc; border-top: 1px solid #ccc; margin-right: 1px;  text-decoration: none;}
 a.watchdog {border: 1px solid #0f5b89; background-color: #0f5b89; color: #fff; font-size:14px; font-family:"Georgia"; padding: 4px 6px 4px 6px; margin-right: 4px; text-decoration: none;}

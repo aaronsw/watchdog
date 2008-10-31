@@ -17,9 +17,10 @@ CREATE TABLE users(
     addr1 varchar(64),
     addr2 varchar(64),
     city varchar(64),
+    state varchar(2) references state,
     zip5 varchar(5),
     zip4 varchar(4),
-    phone varchar(10),
+    phone varchar(15),
     
     verified boolean default false -- done verified activity at least once
 );

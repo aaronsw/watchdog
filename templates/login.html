@@ -18,7 +18,7 @@ $if msg:
 
 <h1 style="text-align: center">Please log in to Watchdog.net</h1>
 
-<!-- <p class="error">Sorry, logging in isn't supported quite yet. Please stay tuned.</p>  -->
+$if not cookies_on(): <p style="text-align: center"><b>Please turn on cookies for login to work. You can enable them via your browser's preference settings.</b></p>
 
 $if not loginform.valid:
     $if loginform.note: <p class="error">$loginform.note</p>
