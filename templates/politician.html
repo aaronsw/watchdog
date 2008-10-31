@@ -41,7 +41,7 @@ $if pol.last_elected_year:
 <h2 class="rep">Money</h2>
 
 $def spark(lable, data, polid, by, unit='', url=None):
-    <th style="white-space:nowrap">$:lable</th>
+    <th style="white-space:nowrap; padding-left: 6px;">$:lable</th>
 	$if not data: 
 		$ data = 0
     $ display = commify(data) + ' ' + unit
@@ -147,7 +147,7 @@ $if pol.predictability:
 $ trclass = "odd"
 $for group in pol.related_groups:
     <tr class="$trclass">
-      <td>$group.longname</td>
+      <td style="padding-left: 6px;">$group.longname</td>
       <td>$int(group.agreement * 100)% (<a href="/p/$pol.id/$group.id">$group.agreed/$group.total votes</a>)</td>
     </tr>
     $if trclass == "odd":
