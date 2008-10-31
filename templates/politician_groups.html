@@ -22,7 +22,7 @@ $for group in related:
         $ trclass = "even"
     $else:
         $ trclass = "odd"
-    <tr class="$trclass"><td>$group.longname</td><td>$int(group.agreement * 100)% (<a href="/p/$polid/$group.id">$group.agreed/$group.total votes</a>)</td></tr>
+    <tr class="$trclass"><td>$group.longname</td><td>$int(group.agreement * 100)% (<a href="/p/$pol.id/$group.id">$group.agreed/$group.total votes</a>)</td></tr>
    
 </table>
 
