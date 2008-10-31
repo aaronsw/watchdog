@@ -8,7 +8,7 @@ $var title: $d.name: $d.state.name’s $d.districtth
 $var head:
     <link rel="alternate" href="${d.name}.xml" type="application/rdf+xml" />
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script>
-    <script src="http://www.govtrack.us/scripts/gmap-wms.js"></script>
+    <script src="/static/js/gmap-wms.js"></script>
     <script src="/static/js/distmap.js"></script>
     
     <script type="text/javascript">
@@ -93,9 +93,9 @@ $if d.cook_index:
 
 <div class="sources">
   District information from 
-  <cite><nobr><img src="/static/images/icons/link_out.gif" width="13" height="10" /><a href="$d.almanac" class="external">The Almanac of American Politics 2008</a></nobr></cite>. 
-  Maps from the <nobr><img src="/static/images/icons/link_out.gif" width="13" height="10" /><a href="http://www.census.gov/geo/www/cob/cd110.html" class="external">US Census Bureau</a></nobr>
-  and <nobr><img src="/static/images/icons/link_out.gif" width="13" height="10" /><a href="http://www.govtrack.us/congress/findyourreps.xpd?state=$d.state&amp;district=$d.district" class="external">GovTrack</a>.</nobr>
+  <cite><a href="$d.almanac" class="external">The Almanac of American Politics 2008</a></cite>. 
+  Maps from the <a href="http://www.census.gov/geo/www/cob/cd110.html" class="external">US Census Bureau</a>
+  and <a href="http://www.govtrack.us/congress/findyourreps.xpd?state=$d.state&amp;district=$d.district" class="external">GovTrack</a>.
 </div>
 
 <p><strong>Developers:</strong> Get this page in <a href="${d.name.lower()}.n3">N3</a>, <a href="${d.name.lower()}.xml">XML</a>, or <a href="${d.name.lower()}.json">JSON</a>.</p>

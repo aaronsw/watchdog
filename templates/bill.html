@@ -82,9 +82,9 @@ $if bill.votes_by_caucus:
 
 
 <div class="sources">
-  Bill data comes from <img src="/static/images/icons/link_out.gif" width="13" height="10" /> <a href="http://www.govtrack.us/congress/bill.xpd?bill=$bill.type$bill.session-$bill.number" class="external">GovTrack</a>.
+  Bill data comes from <a href="http://www.govtrack.us/congress/bill.xpd?bill=$bill.type$bill.session-$bill.number" class="external">GovTrack</a>.
   $if bill.maplightid:
-      Interest group data comes from <img src="/static/images/icons/link_out.gif" width="13" height="10" /> <a href="http://maplight.org/map/us/bill/$bill.maplightid/default" class="external">MAPLight.org</a>.  
+      Interest group data comes from <a href="http://maplight.org/map/us/bill/$bill.maplightid/default" class="external">MAPLight.org</a>.  
 </div>
 
 <p><strong>Developers:</strong> Get this page in <a href="/b/${bill.id}.n3">N3</a>, <a href="/b/${bill.id}.xml">XML</a>, or <a href="/b/${bill.id}.json">JSON</a>.</p>

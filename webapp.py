@@ -70,7 +70,7 @@ class abouthelp:
 
 class feedback:
     def GET(self):
-        raise web.seeother('/about/help')
+        return render.feedback()
 
     def POST(self):
         i = web.input(email='info@watchdog.net')
