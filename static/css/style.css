@@ -37,7 +37,7 @@ body {margin:0; font-size:12px; line-height:20px; font-family:Arial, Helvetica, 
 #header { background:url(/static/images/main_bkg.png) center -74px no-repeat; height: 70px; }
 #header-leaf {  }
 
-#main {margin:0px 0px 0px 0px; float:left; background-color:transparent; display:inline; clear: both; width: 100%; padding-bottom: 25px; }
+#main {margin:0px 0px 0px 0px; float:left; background-color:transparent; display:inline; clear: both; width: 100%; }
 
 #text {margin: 50px 280px 0 40px;}
 #text ul {padding:0; margin:10px 0 10px 40px;}
@@ -212,9 +212,9 @@ table.signs td.count { font-weight: bold }
 /* rep and district pages */
 td { vertical-align: top;}
 th { text-align: left;}
-table.structure, table.structure td, table.structure tr { margin: 0; padding-left: 0; border-collapse: collapse; border-spacing: 0;}
+table.structure, table.structure td, table.structure tr { margin: 0; border-collapse: collapse; border-spacing: 0;}
 .structure td { padding-right: 2em;}
-tr.odd {background-color: #eee;}
+tr.odd {background-color: #eee; }
 tr.even { }
 
 table.interest_group_ratings { margin: 0; padding-left: 0; border-collapse: collapse; border-spacing: 0; }
@@ -242,7 +242,7 @@ table.charted { padding-bottom: 20px; width: 100%; }
 .sparkline { height: 1em; }
 td.sparkline { padding-right: 3px; width: 35px; }
 td.sparkdata { padding-right: 3px; }
-td.sparknum { color: #999; text-align: left; }
+td.sparknum { color: #EE4400; text-align: left; }
 .sidemap  { width: 220px; height: 420px; margin-top: 0; margin-left: -20px; }
 #sidebarmap {float:right; padding:20px 20px 0 20px; padding-top: 0; width:180px; border: 1px solid #ccc; background-color: #99b3cc; margin-right: 20px; overflow: hidden;}
 .headshot, .smallheadshot { padding-right: 1em; border: 0;}

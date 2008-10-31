@@ -9,7 +9,6 @@ $var title: $bill.name
 .header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
 </style>
 
-
 <h1>$bill.title</h1>
 
 <p>(Introduced on $bill.introduced in the ${bill.session}th Congress.)</p>
@@ -22,7 +21,7 @@ $if bill.sponsor:
 $ support_decode = {1: 'Support', 0: 'Abstain', -1: 'Oppose', None: 'Unknown'}
 
 <table class="structure" width="100%">
-<tr><td width="50%" style="padding-right: 50px;">
+<tr><td width="50%" style="padding-right: 25px;">
 
 $if bill.interest_group_support:
     <h2 class="rep">Interest Group Support</h2>
@@ -42,7 +41,7 @@ $if bill.interest_group_support:
     </table>
     
     
-</td><td width="50%">
+</td><td width="50%" style="padding-left: 25px;">
 
 $if bill.votes_by_party:
     <h2 class="rep">Votes</h2>
