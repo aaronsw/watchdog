@@ -239,7 +239,7 @@ together, let's build something great.
     slug = 'launch',
     title = 'Welcome to watchdog.net!',
     author = 'Aaron Swartz',
-    updated = '2008-04-14T00:00:00:00Z',
+    updated = '2008-04-14T00:00:00Z',
     body = """
 <p>
 It's a big election year in the US, 
