@@ -1,0 +1,28 @@
+$var front: True
+$var width: 400px
+$var color: blue
+$var title: File Not Found
+
+
+<form action="/us/" method="get">
+      <h1>File Not Found!</h1>
+      
+      <p>
+        <strong>Name or ZIP:</strong>
+        <input type="text" class="white" name="zip" />
+        <button type="submit" />Search</button>
+      </p>
+      
+      <p class="explain">
+        <em>Districts:</em> 
+        Enter a zip code, 
+        like <a href="/us/?zip=90210">90210</a> 
+        or <a href="/us/?zip=02138">02138</a><br />
+        
+        <em>Politicians:</em> 
+        Enter a name, 
+        like <a href="/p/nancy_pelosi">Pelosi</a> 
+        or <a href="/p/ron_paul">Ron Paul</a>
+      </p>
+</form>
+

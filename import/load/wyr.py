@@ -9,7 +9,7 @@ types = dict(email='E', wyr='W', ima='I', zipauth='Z')
 def load_wyr():
     with db.transaction():
         db.delete('pol_contacts', where='1=1')
-        for distname, data in wyr.iteritems():
+        for pol, data in wyr.iteritems():
                 if data['contacttype'] not in types.keys(): 
                     continue
 
@@ -18,7 +18,6 @@ def load_wyr():
                 else:
                     contact = data['contact']    
             
-                pol = db.select('politician', what='id', where='district_id=$distname', vars=locals())[0].id
                 d = {'politician':pol, 
                         'contact':contact,
                         'contacttype': types[data['contacttype']],

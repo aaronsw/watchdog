@@ -21,6 +21,12 @@ def has_textarea(f):
     else:
         return True    
 
+def pol2dist(pol):
+    try:
+        return db.select('politician', what='district_id', where='politician.id=$pol', vars=locals())[0].district_id
+    except KeyError:
+        return
+
 def has(f, s):
     for c in f.controls:
         if c.name and s in c.name.lower():
@@ -66,7 +72,10 @@ def getzip(dist):
     except:
         return '', ''    
 
-def has_wyr(dist):
+def has_wyr(pol):
+    dist = pol2dist(pol)
+    if len(dist) == 2: return False # senators don't have forms in WYR system
+
     try:
         response = urlopen("https://forms.house.gov/wyr/welcome.shtml")
         form = ParseResponse(response, backwards_compat=False)[1] #first form is of search
@@ -90,11 +99,11 @@ def has_wyr(dist):
     else:    
         return len(forms) == 2       
 
-def get_wyr_forms(dists):
+def get_wyr_forms(pols):
     d = {}
     wyr_url = 'https://forms.house.gov/wyr/welcome.shtml'
-    for dist in filter(has_wyr, dists):
-        d[dist] = dict(contact=wyr_url, contacttype='wyr', captcha=False)
+    for pol in filter(has_wyr, pols):
+        d[pol] = dict(contact=wyr_url, contacttype='wyr', captcha=False)
     return d    
             
 def getformtype(url):
@@ -130,15 +139,14 @@ def getformtype(url):
     return None, None        
             
         
-def get_votesmart_contacts(dists):
+def get_votesmart_contacts(pols):
     d = {}
     websites = json.load(file(votesmart_websites))
-    dists = tuple(dists)
-    rs = db.select('politician', what='district_id, votesmartid',
-                where='district_id in $dists', vars=locals())
+    pols = tuple(pols)
+    rs = db.select('politician', what='id, votesmartid', where='id in $pols', vars=locals())
     
     for r in rs:
-        _url = None
+        _url, contacttype = None, None
         contact = websites.get(r.votesmartid, {})
         if 'office' in contact.keys():
             for addr in contact['office']:
@@ -152,14 +160,14 @@ def get_votesmart_contacts(dists):
 						
             if contacttype and contacttype != 'wyr':
                 captcha = (contacttype == 'ima') and has_captcha(url)
-                d[r.district_id] = dict(contact=_url, contacttype=contacttype, captcha=captcha)    
+                d[r.id] = dict(contact=_url, contacttype=contacttype, captcha=captcha)    
     return d
 
-def get_manual_contacts(dists):
+def get_manual_contacts(pols):
     d = {}
     items = json.load(file(manual_websites))
-    for dist in dists:
-        url = items.get(dist, dict(contact=''))['contact']
+    for pol in pols:
+        url = items.get(pol, dict(contact=''))['contact']
         if url:
             if is_email(url):
                 _url, contacttype = 'mailto:' + url, 'email'
@@ -167,21 +175,21 @@ def get_manual_contacts(dists):
                 _url, contacttype = getformtype(url)
             if contacttype:
                 captcha = (contacttype == 'ima') and has_captcha(_url)
-                d[dist] = dict(contact=_url, contacttype=contacttype, captcha=captcha)
+                d[pol] = dict(contact=_url, contacttype=contacttype, captcha=captcha)
     return d        
         
 def main(fname='../data/crawl/votesmart/wyr.json'):
     #@@@ PVS data has few false positives for WYR form. 
     # So, better get reps having wyr forms in house.gov and then proceed to PVS data and then to manually created json
-    all_dists = set(r.name for r in db.select('district', what='name') if '-' in r.name)
+    all_pols = set(r.id for r in db.select('politician', what='id'))
     
-    d = get_wyr_forms(all_dists)
-    remaining_dists = list(all_dists - set(d.keys()))
+    d = get_wyr_forms(all_pols)
+    remaining_pols = list(all_pols - set(d.keys()))
 
-    d.update(get_votesmart_contacts(remaining_dists))
-    remaining_dists = list(all_dists - set(d.keys()))
+    d.update(get_votesmart_contacts(remaining_pols))
+    remaining_pols = list(all_pols - set(d.keys()))
     
-    d.update(get_manual_contacts(all_dists))
+    d.update(get_manual_contacts(all_pols))
     
     f = file(fname, 'w')
     json.dump(d, f, indent=2, sort_keys=True)                     

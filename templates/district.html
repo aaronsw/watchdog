@@ -1,5 +1,8 @@
 $def with (d, pos)
 
+$var width: 90%
+$var color: white
+
 $var title: $d.name: $d.state.name’s $d.districtth
 
 $var head:
@@ -22,23 +25,22 @@ $var head:
 $var sidebar: None
 $var maxi: True
 
+<h1 style="padding-top: 0px; margin-top: 0px">$d.state.name’s $d.districtth congressional district</h1>
+
 <div id="googlemap" class="bigmap">
 </div>
 
 <div id="mapinfo">
-<h2>$d.state.name’s $d.districtth congressional district.</h2>
-
 $if d.politician and d.politician[0].id and d.politician[0].firstname:
     $if d.politician[0].photo_path:
-        <a href="/p/$d.politician[0].id"><img src="$d.politician[0].photo_path" 
-          width="5em" alt="Headshot" class="smallheadshot" /></a>
+        <div style="float: left; padding-right: 12px; padding-bottom: 12px;"><a href="/p/$d.politician[0].id"><img src="http://watchdog.net$d.politician[0].photo_path" 
+          width="5em" style="margin: 0em; padding: 5px; border: 1px solid #666;" alt="Headshot" class="smallheadshot" /></a></div>
     
-    <p><br />Represented by <a href="/p/$d.politician[0].id">$d.politician[0].name</a>.<br />
+    <div class="subhead-blue">Represented by <a href="/p/$d.politician[0].id">$d.politician[0].name</a>.</div>
 $else:
-    <p><br /><br />
+    <br /><br />
 
 <a href="/us/${d.state.code.lower()}">More about $d.state.name...</a>
-</p>
 <br clear="both" />
 <table class="charted" cellpadding="0" cellspacing="0" border="0"><tbody>
 $if d.cook_index:
@@ -91,12 +93,9 @@ $if d.cook_index:
 
 <div class="sources">
   District information from 
-  <cite><a href="$d.almanac">The Almanac of American Politics 2008</a></cite>. 
-  Maps from the 
-  <a href="http://www.census.gov/geo/www/cob/cd110.html">US Census Bureau</a>
-  and
-  <a href="http://www.govtrack.us/congress/findyourreps.xpd?state=$d.state&amp;district=$d.district"
-  >GovTrack</a>.
+  <cite><nobr><img src="/static/images/icons/link_out.gif" width="13" height="10" /><a href="$d.almanac" class="external">The Almanac of American Politics 2008</a></nobr></cite>. 
+  Maps from the <nobr><img src="/static/images/icons/link_out.gif" width="13" height="10" /><a href="http://www.census.gov/geo/www/cob/cd110.html" class="external">US Census Bureau</a></nobr>
+  and <nobr><img src="/static/images/icons/link_out.gif" width="13" height="10" /><a href="http://www.govtrack.us/congress/findyourreps.xpd?state=$d.state&amp;district=$d.district" class="external">GovTrack</a>.</nobr>
 </div>
 
 <p><strong>Developers:</strong> Get this page in <a href="${d.name.lower()}.n3">N3</a>, <a href="${d.name.lower()}.xml">XML</a>, or <a href="${d.name.lower()}.json">JSON</a>.</p>

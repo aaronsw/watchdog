@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import csv, sys, cgitb, fixed_width, zipfile, StringIO
 """
 This is just some test code right now for exploring the space of
 parsing FEC CSV files in a relatively version-flexible way.
@@ -10,6 +9,7 @@ that was chewing through 300 kilobytes per second on my 700MHz
 dinosaur --- now it's doing 210 kilobytes per second.
 
 """
+import csv, sys, cgitb, fixed_width, zipfile, StringIO, types
 
 fields_from_fec_csv_py = """
 type ('contribution')
@@ -36,36 +36,32 @@ for expenditures:
 """
 
 class Field:
-    """
-    A class that manifests a tiny DSEL for describing field mappings.
+    """Represents a field in the output data, and knows how to compute it.
 
-    >>> Field(format=fixed_width.date,
-    ...       aka=['bob']).get_from('dan', {'bob': '20080930'})
-    '2008-09-30'
-    >>> Field(format=fixed_width.date,
-    ...       aka=['bob']).get_from('dan', {'dan': '20080830'})
-    '2008-08-30'
-    >>> sorted(Field(aka=['bob', 'fred']).inverteds('ralph').keys())
-    ['bob', 'fred', 'ralph']
-    >>> Field(aka=['bob', 'fred']).inverteds('ralph')['bob']({'bob': 39})
-    ('ralph', 39)
+    This is an abstract base class; most concrete subclasses can be
+    constructed most conveniently with the factory function
+    `as_field`, which creates a sort of tiny DSEL for describing field
+    mappings.
+
+    Two of the concrete subclasses can contain Fields themselves;
+    CompositeField contains a list of Fields any of which can supply
+    its value, and Transform contains a single Field whose value it
+    transforms.
+
     """
-    def __init__(self, aka=set(), format=lambda x: x):
-        self._aka = set(aka)
-        self._format = format
-    def get_from(self, name, data):
-        # XXX only used for testing!
-        for k in [name] + list(self._aka):
-            if k in data:
-                return self._format(data[k])
-    def inverteds(self, name):
+    def get_from(self, data):
+        "Simple method for testing."
+        for key, func in self.inverteds().items():
+            if key in data: return func(data)
+    def inverteds(self):
         """Return a dictionary of ways to get this field’s value.
 
         The keys of the dictionary are the names of original source
         fields that must be present for the function to be applicable;
         the values are functions that take the original source data
         dictionary.  Those functions are entitled to access other
-        fields in the dictionary, although they don’t yet.
+        fields in the dictionary, and to throw a KeyError if they want
+        to fail.
 
         This is an efficiency hack; the objective is that we can avoid
         trying to look at fields that aren’t present at all in the
@@ -73,15 +69,109 @@ class Field:
         tested it.
 
         """
+
+class InputField(Field):
+    """
+    >>> f = InputField('bob')
+    >>> f.inverteds().keys()
+    ['bob']
+    >>> f.inverteds()['bob']({'bob': 4, 'mel': 5})
+    4
+    """
+    def __init__(self, name): self.name = name
+    def inverteds(self):
+        name = self.name
+        return {name: lambda data: data[name]}
+
+
+class Reformat(Field):
+    """Changes the format of data in a field.
+
+    >>> Reformat(format=fixed_width.date,
+    ...          source=['bob']).get_from({'bob': '20080930'})
+    '2008-09-30'
+    >>> Reformat(format=fixed_width.date,
+    ...          source=['bob']).get_from({'dan': '20080830'})
+
+    Note that the above test failed to return anything.
+
+    >>> f = Reformat(format=lambda x: x, source=['bob', 'fred'])
+    >>> sorted(f.inverteds().keys())
+    ['bob', 'fred']
+    >>> f.inverteds()['bob']({'bob': 39})
+    39
+    """
+    def __init__(self, source, format):
+        self._source = as_field(source)
+        self._format = format
+    def inverteds(self):
         rv = {}
-        for k in [name] + list(self._aka):
-            # k=k so each lambda has its own k instead of all sharing
-            # the same k; it's not intended that callers will override
-            # k!
-            rv[k] = lambda data, k=k: (name, self._format(data[k]))
+        format = self._format
+        for k, v in self._source.inverteds().items():
+            # v=v so each lambda has its own v instead of all sharing
+            # the same v; it's not intended that callers will override
+            # v!
+            rv[k] = lambda data, v=v: format(v(data))
         return rv
 
-field = Field()
+class MultiInputField(Field):
+    """A field whose value is computed from more than one input field.
+
+    Its `inverteds()` includes only one of the input fields, currently
+    the shortest one.  That’s because there’s no reason to call it
+    repeatedly; if one of the other input fields is missing, it will
+    fail harmlessly with a KeyError.
+
+    >>> f = MultiInputField(('a', 'b'), lambda a, b: a + ': ' + b)
+    >>> f.inverteds().keys()
+    ['a']
+
+    >>> ffunc = f.inverteds().values()[0]
+    >>> ffunc({'a': 'foo', 'b': 'bar'})
+    'foo: bar'
+    """
+    def __init__(self, names, function):
+        "`names` are the field names from which to get `function`'s args."
+        self.names, self.function = names, function
+    def inverteds(self):
+        names = self.names
+        def getter(data):
+            return self.function(*[data[k] for k in names])
+        return {self.names[0]: getter}
+
+class CompositeField(Field):
+    """A field with more than one possible source for its data.
+
+    >>> f = CompositeField(['a', Reformat(source=['b'], format=len)])
+    >>> sorted(f.inverteds().keys())
+    ['a', 'b']
+    >>> f.inverteds()['a']({'a': '90210'})
+    '90210'
+    >>> f.inverteds()['b']({'b': '90210'})
+    5
+    """
+    def __init__(self, fields):
+        self.fields = fields
+    def inverteds(self):
+        rv = {}
+        for field in self.fields: rv.update(as_field(field).inverteds())
+        return rv
+
+def argnames(func):
+    "Compute a list of the names of the arguments of a Python function."
+    return func.func_code.co_varnames[:func.func_code.co_argcount]
+
+def as_field(obj):
+    """Coerce obj to some kind of field."""
+    if hasattr(obj, 'inverteds'):
+        return obj
+    elif isinstance(obj, basestring):
+        return InputField(obj)
+    elif isinstance(obj, types.ListType):
+        return CompositeField(obj)
+    elif isinstance(obj, types.FunctionType):
+        return MultiInputField(argnames(obj), obj)
+    raise "can't coerce to a field", obj
 
 class FieldMapper:
     """Maps fields according to a field-mapping specification.
@@ -89,6 +179,14 @@ class FieldMapper:
     Takes and returns a dict. The original dict comes out as a
     member named 'original_data'; otherwise its members are only
     copied across according to applicable field specs.
+
+    If the field’s output name is not specifically mentioned among a
+    field’s aliases, it isn’t included in the fields to copy from:
+
+    >>> FieldMapper({'a': 'b'}).map({'a': 3})
+    {'original_data': {'a': 3}}
+    >>> FieldMapper({'a': ['a', 'b']}).map({'a': 3})
+    {'a': 3, 'original_data': {'a': 3}}
 
     >>> mapped = FieldMapper(fields).map({'date_received': '20081131',
     ...                                   'tran_id': '12345', 
@@ -106,10 +204,11 @@ class FieldMapper:
     '12345'
     """
     def __init__(self, fields):
-        self.fields = fields
         self.inverteds = {}
-        for name, field in self.fields.items():
-            self.inverteds.update(field.inverteds(name))
+        for name, field in fields.items():
+            field = as_field(field)
+            self.inverteds.update(dict((k, (name, v))
+                                       for k, v in field.inverteds().items()))
         self.inverted_keys = set(self.inverteds.keys())
     def map(self, data):
         rv = {'original_data': data}
@@ -117,12 +216,13 @@ class FieldMapper:
         # interested in, in order to avoid doing unnecessary work in
         # Python.
         for fieldname in set(data.keys()) & self.inverted_keys:
+            name, func = self.inverteds[fieldname]
             try:
-                k, v = self.inverteds[fieldname](data)
+                v = func(data)
             except KeyError:
                 pass
             else:
-                rv[k] = v
+                rv[name] = v
         return rv
 
 def strip(text):
@@ -143,20 +243,25 @@ def amount(text):
     return text[:-2] + '.' + text[-2:]
 
 fields = {
-    'date': Field(format=fixed_width.date,
-                  aka=['date_received', 'contribution_date']),
-    'candidate_fec_id': Field(format=strip, aka=['candidate_id_number',
-                                                 'fec_candidate_id_number']),
-    'tran_id': Field(aka=['transaction_id_number']),
-    'occupation': Field(aka=['contributor_occupation', 'indocc']),
-    'contributor_org': Field(aka=['contributor_organization_name',
-                                  'contrib_organization_name']),
-    'employer': Field(aka=['contributor_employer', 'indemp']),
-    'amount': Field(format=amount,
-                    aka=['contribution_amount',
-                         'amount_received',
-                         'expenditure_amount',
-                         'amount_of_expenditure'])
+    'date': Reformat(format=fixed_width.date,
+                     source=['date', 'date_received', 'contribution_date']),
+    'candidate_fec_id': Reformat(format=strip, source=['candidate_fec_id',
+                                                       'candidate_id_number',
+                                                       'fec_candidate_id_number']),
+    'tran_id': ['tran_id', 'transaction_id_number'],
+    'occupation': ['occupation', 'contributor_occupation', 'indocc'],
+    'contributor_org': ['contributor_org',
+                        'contributor_organization_name',
+                        'contrib_organization_name'],
+    'employer': ['employer', 'contributor_employer', 'indemp'],
+    'amount': Reformat(format=amount,
+                       source=['amount',
+                               'contribution_amount',
+                               'amount_received',
+                               'expenditure_amount',
+                               'amount_of_expenditure']),
+    'address': (lambda street__1, street__2, city, state, zip:
+                ' '.join([street__1, street__2, city, state, zip])),
 }
 
 fieldmapper = FieldMapper(fields)
@@ -183,6 +288,15 @@ def _regrtest_fields():
     >>> fieldmapper.map({'indemp': 'EEA Development'})
     ... #doctest: +ELLIPSIS
     {'original_data': {...}, 'employer': 'EEA Development'}
+
+    >>> fieldmapper.map({'street__1': '2531 Falcon Way',
+    ...                  'street__2': '#400',
+    ...                  'city': 'Concord',
+    ...                  'state': 'TX',
+    ...                  'zip': '20036'})
+    ... #doctest: +ELLIPSIS
+    {...'address': '2531 Falcon Way #400 Concord TX 20036'...}
+
     """
 
 class header(csv.excel):
@@ -197,6 +311,9 @@ def headers(filename):
         rv[key] = [name.strip().lower().replace(' ', '_') for name in line[1:]]
     return rv
 def findkey(hmap, key):
+    """Find the base schedule or form number,
+    given the first field from an FEC filing record.
+    """
     while key:
         if key in hmap: return hmap[key]
         else: key = key[:-1]
@@ -208,9 +325,18 @@ def headers_for_version(version):
         headers_cache[version] = \
             headers('../data/crawl/fec/electronic/headers/%s.csv' % version)
     return headers_cache[version]
+
+class ascii28separated(csv.excel):
+    delimiter = chr(28)
+
 def readfile(fileobj):
     r = csv.reader(fileobj)
     headerline = r.next()
+    if chr(28) in headerline[0]:
+        # it must be in the new FS-separated format
+        fileobj.seek(0)
+        r = csv.reader(fileobj, dialect=ascii28separated)
+        headerline = r.next()
     headermap = headers_for_version(headerline[2])
     in_text_field = False
     for line in r:

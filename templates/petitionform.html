@@ -1,5 +1,8 @@
 $def with (pform, cform, title="Create a new petition", target="/c/new", msg=None)
 
+$var width: 90%
+$var color: white
+
 $var title: $title
 
 $if msg:
@@ -9,7 +12,7 @@ $if msg:
 <script type="text/javascript" src="/static/js/wyr.js"></script>
 
 <style>
-#text fieldset #addr1, #city { width: 205px; }
+#text fieldset #addr1 { width: 205px; }
 #text fieldset #addr2, #phone { width: 140px;}
 fieldset label {margin: 1em 0pt 0pt 0pt;}
 table label {margin: 0.5em 0pt 0pt 0pt;}
@@ -18,6 +21,7 @@ fieldset #tocongresscheck input, fieldset #tocongresscheck label { display: inli
 fieldset #pid { margin-right: 0.3em; font-size: 0.9em; width: 130px; }
 </style>
 
+<h1>Create a new petition</h1>
 
 $if target != '/c/new': <h2>Edit <a href='/c/$pform.pid.value'>$pform.ptitle.value</a></h2>
 
@@ -27,7 +31,7 @@ $if target != '/c/new': <h2>Edit <a href='/c/$pform.pid.value'>$pform.ptitle.val
 
 <fieldset id="petition">
     $if title == 'Edit your petition': <legend>Title and description</legend>
-    $else: <legend>Create your petition</legend>
+    $else: <legend>Please fill out the following fields</legend>
     <label for="ptitle">Name your petition</label>
     $:pform.ptitle.render()
     
@@ -62,10 +66,11 @@ $if target != '/c/new': <h2>Edit <a href='/c/$pform.pid.value'>$pform.ptitle.val
     </tr></table>
     <table><tr>
         <td><label for='city'>City</label>$:cform.city.render()</td>
-        <td><label for='phone'>Phone</label>$:cform.phone.render()</td>
+        <td><label for='state'>State</label>$:cform.state.render()</td>
+        <td><label for='zipcode'>Zip code</label>$:cform.zipcode.render()-$:cform.zip4.render()</td><span id="note_zipcode"></span>        
     </tr></table>
     <table><tr>
-        <td><label for='zipcode'>Zip code</label>$:cform.zipcode.render()-$:cform.zip4.render()</td><span id="note_zipcode"></span>
+        <td><label for='phone'>Phone</label>$:cform.phone.render()</td>
     $if cform.captcha.pre:
         $:cform.signid.render()
         <td><label for='captcha'>Validation</label>$:cform.captcha.pre $:cform.captcha.render()</td>

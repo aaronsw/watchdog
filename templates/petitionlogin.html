@@ -1,5 +1,8 @@
 $def with (loginform, signupform, petitionform, wyrform, msg=None, redirect="")
 
+$var width: 90%
+$var color: white
+
 $var title: Log in or sign up
 $var login_class: select
 
@@ -24,6 +27,8 @@ $elif not signupform.valid:
 
 
 <h2>You just need an account now...</h2>
+
+$if not cookies_on(): <p><b>Please turn on cookies for login to work. You can enable them via your browser's preference settings.</b></p>
 
 <table>
 <tr>
