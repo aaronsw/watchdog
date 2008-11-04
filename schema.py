@@ -449,6 +449,12 @@ class Census_data(sql.Table):
     census_type = sql.Integer(primary=True)
     value = sql.Float()
 
+class Pol_contacts(sql.Table):
+    politician = sql.Reference(Politician, primary=True)
+    contact = sql.String(255)
+    contacttype = sql.String(1)     # E=email, W=wyr, I=ima, Z=zipauth
+    captcha = sql.Boolean()
+
 def init():
     db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
     db.query("CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician)")

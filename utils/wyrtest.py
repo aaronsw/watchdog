@@ -26,8 +26,8 @@ def test(formtype=None):
             return '', ''    
           
           
-    query = "select politician from pol_contacts where contacttype='%s'" % formtype[0].upper() 
-    pols = [r.politician for r in db.query(query)]
+    query = "select politician_id from pol_contacts where contacttype='%s'" % formtype[0].upper() 
+    pols = [r.politician_id for r in db.query(query)]
     for pol in pols:
         print pol,        
         zip5, zip4 = getzip(pol2dist(pol))

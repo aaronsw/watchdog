@@ -18,7 +18,7 @@ def load_wyr():
                 else:
                     contact = data['contact']    
             
-                d = {'politician':pol, 
+                d = {'politician_id':pol,
                         'contact':contact,
                         'contacttype': types[data['contacttype']],
                         'captcha': data['captcha']

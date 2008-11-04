@@ -207,7 +207,7 @@ def writerep_zipauth(zipauth_link, pol, zipcode, state, prefix, fname,
         return        
     
 def getcontact(pol):
-    r = db.select('pol_contacts', what='contact, contacttype', where='politician=$pol', vars=locals())
+    r = db.select('pol_contacts', what='contact, contacttype', where='politician_id=$pol', vars=locals())
     if r: 
         r = r[0]                
         return r.contact, r.contacttype
