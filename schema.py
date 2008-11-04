@@ -400,6 +400,64 @@ class Earmark_sponsor(sql.Table):
     earmark = sql.Reference(Earmark, primary=True)
     politician = sql.Reference(Politician, primary=True)
 
+
+## Lobbyiest stuff:
+class lob_organization(sql.Table):
+    id = sql.Number(primary=True)  #@@TODO: design stable ids
+    name = sql.String()
+    filings = sql.Backreference('lob_filing', 'org')
+
+class lob_person(sql.Table):
+    id = sql.Number(primary=True)  #@@TODO: design stable ids
+    prefix = sql.String()
+    firstname = sql.String()
+    middlename = sql.String()
+    lastname = sql.String()
+    suffix = sql.String()
+    contact_name = sql.String()
+    filings = sql.Backreference('lob_filing', 'lobbyist')
+
+class lob_pac(sql.Table):
+    id = sql.Number(primary=True)  #@@TODO: design stable ids
+    name = sql.String()
+    filings = sql.Backreference('lob_pac_filings', 'pac')
+
+class lob_filing(sql.Table):
+    id = sql.Number(primary=True)  #Uses xml file number as a stable id.
+    year = sql.Year()
+    type = sql.String()
+    signed_date = sql.Date()
+    amendment = sql.Boolean()
+    certified = sql.Boolean()
+    comments = sql.String()
+
+    senate_id = sql.Number()
+    house_id = sql.Number()
+    filer_type = sql.String(1)
+
+    lobbyist = sql.Reference(lob_person)
+    org = sql.Reference(lob_organization)
+    pacs = sql.Backreference('lob_pac_filings', 'filing')
+    contributions = sql.Backreference('lob_contribution', 'filing', order='amount asc')
+    @property
+    def house_url(self):
+        return "http://disclosures.house.gov/lc/xmlform.aspx?id=%d" % self.id
+
+class lob_contribution(sql.Table):
+    filing = sql.Reference(lob_filing)
+    date = sql.Date()
+    type = sql.String()
+    contributor = sql.String()
+    payee = sql.String()
+    recipient = sql.String()
+    amount = sql.Dollars()
+    politician = sql.Reference(Politician)
+
+class lob_pac_filings(sql.Table):
+    pac = sql.Reference(lob_pac)
+    filing = sql.Reference(lob_filing)
+
+
 class Expenditure (sql.Table):
     id = sql.Serial(primary=True)
     candidate_name = sql.String()
