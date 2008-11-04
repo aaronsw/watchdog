@@ -13,15 +13,18 @@ def attrget(obj, attr, value=None):
     return value
 
 class Form:
+    r"""HTML form.
+    
+        >>> f = Form(Textbox("x"))
+        >>> f.render()
+        '<table>\n    <tr><th><label for="x">x</label></th><td><input type="text" name="x" id="x" /></td></tr>\n</table>'
+    """
     def __init__(self, *inputs, **kw):
         self.inputs = inputs
         self.valid = True
         self.note = None
         self.validators = kw.pop('validators', [])
 
-        for i in inputs:
-            setattr(self, i.name, i)
-                    
     def __call__(self, x=None):
         o = copy.deepcopy(self)
         if x: o.validates(x)
@@ -32,16 +35,15 @@ class Form:
         out += self.rendernote(self.note)
         out += '<table>\n'
         for i in self.inputs:
-            out += '   <tr><th><label for="%s">%s</label></th>' % (i.id, net.websafe(i.description))
-            out += "<td>"+i.pre+i.render()+i.post+"</td>"
-            out += '<td id="note_%s">%s</td></tr>\n' % (i.id, self.rendernote(i.note))
+            out += '    <tr><th><label for="%s">%s</label></th>' % (i.id, net.websafe(i.description))
+            out += "<td>"+i.pre+i.render()+i.post+"</td></tr>\n"
         out += "</table>"
         return out
-    
+
     def rendernote(self, note):
         if note: return '<strong class="wrong">%s</strong>' % net.websafe(note)
         else: return ""
-
+    
     def validates(self, source=None, _validate=True, **kw):
         source = source or kw or web.input()
         out = True
@@ -71,10 +73,17 @@ class Form:
         for x in self.inputs:
             if x.name == i: return x
         raise KeyError, i
+
+    def __getattr__(self, name):
+        # don't interfere with deepcopy
+        inputs = self.__dict__.get('inputs') or []
+        for x in inputs:
+            if x.name == name: return x
+        raise AttributeError, name
     
     def get(self, i, default=None):
         try:
-            return self.__getitem__(i)
+            return self[i]
         except KeyError:
             return default
             
@@ -98,7 +107,6 @@ class Input(object):
         self.value = value
         for v in self.validators:
             if not v.valid(value):
-                print '------', self.name, self.value
                 self.note = v.msg
                 return False
         return True
@@ -237,3 +245,7 @@ class regexp(Validator):
     
     def valid(self, value):
         return bool(self.rexp.match(value))
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
