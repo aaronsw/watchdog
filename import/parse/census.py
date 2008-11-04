@@ -39,6 +39,8 @@ US_GEO_FORMAT='usgeo.uf%(type)d'
 #CONGRESS_GEO_FORMAT='sl500-in-sl040-%(state)sgeo.%(type_c)s10'
 CONGRESS_DAT_FORMAT='%(state)s000%(table)02d_%(type_c)s10'
 CONGRESS_GEO_FORMAT='%(state)sgeo_%(type_c)s10'
+REDISTRICT_DAT_FORMAT='%(state)s000%(table)02d.upl'
+REDISTRICT_GEO_FORMAT='%(state)sgeo.upl'
 ALL_TABLES = { 1: range(1,40), 3: range(1,77) }
 _text_encoding = 'latin-1' #'utf-8'
 
@@ -60,6 +62,7 @@ SUMLEVs = {
     '101':'BLOCK',      # BLOCK for sf1
 #    '090':'BLKGRP',     # BLKGRP for sf3
     '091':'BLKGRP',     # BLKGRP for sf1
+    '750':'BLOCK',      # BLOCK for Redistricting files
 }
 
 ##TODO: some of these should be procesed as types other than strings.
@@ -242,6 +245,14 @@ def parse_congress_file(type, table, state, layout):
             {'type_c':type_c[type], 'state':state, 'table':table}
     geo_fn = DATA_DIR + 'congress/' + CONGRESS_GEO_FORMAT % \
             {'type_c':type_c[type], 'state':state, 'table':table}
+    return _parse_sum_file(dat_fn, geo_fn, FIELDs)
+
+def parse_redistrict_file(type, table, state, layout):
+    FIELDs = layout[0]
+    dat_fn = DATA_DIR + 'Redistrict/' + REDISTRICT_DAT_FORMAT % \
+            {'state':state, 'table':table}
+    geo_fn = DATA_DIR + 'Redistrict/' + REDISTRICT_GEO_FORMAT % \
+            {'state':state, 'table':table}
     return _parse_sum_file(dat_fn, geo_fn, FIELDs)
 
 def parse_sum_file(type, table, layout):
