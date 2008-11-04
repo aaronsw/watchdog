@@ -410,12 +410,6 @@ class Expenditure (sql.Table):
     report_id = sql.Integer()
     amount = sql.String(20)
 
-class WYR(sql.Table):
-    district = sql.Reference(District)
-    contact = sql.String()
-    contacttype = sql.String(1) # E=email, W=wyr, I=ima, Z=zipauth
-    captcha = sql.Boolean()
-
 class SOI(sql.Table):
     #district_id = sql.String(10, primary=True) 
     district = sql.Reference(District, primary=True)
@@ -451,7 +445,7 @@ class Census_data(sql.Table):
 
 class Pol_contacts(sql.Table):
     politician = sql.Reference(Politician, primary=True)
-    contact = sql.String(255)
+    contact = sql.String()
     contacttype = sql.String(1)     # E=email, W=wyr, I=ima, Z=zipauth
     captcha = sql.Boolean()
 
