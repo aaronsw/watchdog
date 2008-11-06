@@ -1,0 +1,41 @@
+$def with (people, limit)
+
+$var width: 90%
+$var color: white
+
+$var title: Lobbyist
+
+<table class="structure" width=100%>
+<tr>
+<th class="header">name</th>
+<th class="header">filings</th>
+</tr>
+$def fixcase(n):
+	$n[0].upper()$n[1::].lower()
+$for p in people:
+	<tr>
+	<td>
+	$if p.prefix: $p.prefix
+	$if p.firstname: $fixcase(p.firstname)
+	$if p.middlename: $fixcase(p.middlename)
+	$if p.lastname: $fixcase(p.lastname)
+	$if p.suffix: $p.suffix
+	$if p.contact_name: $p.contact_name (contact)
+	</td>
+	<td>
+		$for f in p.filings:
+			<a href="/l/f/$f.id">$f.id</a><br>
+	</td>
+	</tr>
+</tr>
+</table>
+
+$ page = int(query_param("page", 0))
+
+$if page != 0:
+    &lt;&lt;<a href="$changequery(page=page - 1)">Prev</a>
+
+$if len(people) == limit:
+     | <a href="$changequery(page=page + 1)">Next</a> &gt;&gt;
+
+

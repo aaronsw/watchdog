@@ -1,0 +1,73 @@
+$def with (filings, limit)
+
+$var width: 90%
+$var color: white
+
+$var title: Lobbyist Filings
+$def lobLink(f):
+	$if f.lobbyist.contact_name:
+		<a href="/l/pe/$f.lobbyist_id">$f.lobbyist.contact_name</a>
+	$else:
+		<a href="/l/pe/$f.lobbyist_id">$f.lobbyist.prefix $f.lobbyist.firstname $f.lobbyist.lastname $f.lobbyist.suffix</a>
+
+<table class="structure" width=100%>
+	<tr>
+	<th class="header">id</th>
+	<th class="header">amendment</th>
+	<th class="header">year</th>
+	<th class="header">signed_date</th>
+	<th class="header">lobbyist_id</th>
+	<th class="header">house_id</th>
+	<th class="header">senate_id</th>
+	<th class="header">filer_type</th>
+	<th class="header">type</th>
+	<th class="header">org_id</th>
+	<th class="header">certified</th>
+	<th class="header">comments</th>
+	<th class="header">pacs</th>
+	<th class="header">contributions</th>
+	</tr>
+$for i,f in enumerate(filings):
+	<tr class="${'odd' if i%2 else 'even'}">
+	<td><a href="$f.house_url">$f.id</a></td>
+	<td>$f.amendment</td>
+	<td>$f.year</td>
+	<td>$f.signed_date</td>
+	<td>
+		$if f.lobbyist: 
+			$:lobLink(f)
+	</td>
+	<td>$f.house_id</td>
+	<td>$f.senate_id</td>
+	<td>$f.filer_type</td>
+	<td>$f.type</td>
+	<td>
+		$if f.org:
+			<a href="/l/o/$f.org_id">$f.org.name</a>
+	</td>
+	<td>$f.certified</td>
+	<td>$f.comments</td>
+	<td>
+		$if f.pacs:
+			<a href="/l/pa/?filing_id=$f.id">Pacs</a>
+		$#	$for p in f.pacs: 
+		$#		<a href="/l/pa/$p.pac.id">$p.pac.name</a><br>
+	</td>
+	<td>
+	$if f.contributions:
+		<a href="/l/c/$f.id">Contributions</a>
+		$#	$for c in f.contributions: 
+		$#		\$$commify(c.amount)<br>
+	</td>
+	</tr>
+</table>
+
+$ page = int(query_param("page", 0))
+
+$if page != 0:
+    &lt;&lt;<a href="$changequery(page=page - 1)">Prev</a>
+
+$if len(filings) == limit:
+     | <a href="$changequery(page=page + 1)">Next</a> &gt;&gt;
+
+
