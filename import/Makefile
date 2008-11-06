@@ -18,6 +18,8 @@ CRAWL=../data/crawl
 PARSE=../data/parse
 LOAD=../data/load
 
+USERDATA=usersdump$(shell date +"_%b_%d_%Y").sql
+
 TSVS=$(LOAD)/bill.tsv \
 	 $(LOAD)/vote.tsv \
 	 $(LOAD)/zip4.tsv \
@@ -34,7 +36,7 @@ NJS=$(PARSE)/almanac.njs \
 LOADERS = .schema .manual \
           .almanac .centers .voteview .govtrack \
           .bills .interests .votesmart .photos .lobbyist \
-		  .fec .census .soi .earmarks .wyr
+		  .fec .census .soi .earmarks .wyr .saveusers .restoreusers
 
 all: database
 clean:
@@ -52,10 +54,19 @@ database: $(LOADERS)
 	$(PYTHON) load/manual.py
 	touch $@
 
-.schema: ../schema.py
+.schema: .saveusers ../schema.py
 	$(PYTHON) -c "import schema; schema.sql.recreate(); schema.sql.grantall('watchdog'); schema.init()"
 	-rm .bills
 	touch $@
+
+.saveusers:	../save_usertables.sh
+	../save_usertables.sh $(WATCHDOG_TABLE) $(USERDATA)
+	touch $@
+
+.restoreusers:	.saveusers ../restore_usertables.sh
+	../restore_usertables.sh $(WATCHDOG_TABLE) $(USERDATA)
+	touch $@
+
 
 # not currently using .shapes
 .shapes: .manual load/shapes.py parse/shapes.py
