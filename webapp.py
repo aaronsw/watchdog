@@ -23,6 +23,7 @@ urls = (
   r'/us/([a-z][a-z]-\d+)%s?' % options, 'district',
   r'/(us|p)/by/(.*)/distribution\.png', 'sparkdist',
   r'/(us|p)/by/(.*)', 'dproperty',
+  r'/p/(.*?)/lobby', 'politician_lobby',
   r'/p/(.*?)/earmarks', 'politician_earmarks',
   r'/p/(.*?)/introduced', 'politician_introduced',
   r'/p/(.*?)/groups', 'politician_groups',
@@ -318,6 +319,15 @@ class politician:
 
         return render.politician(p, sparkpos)
 
+class politician_lobby:
+    def GET(self, polid, format=None):
+        limit = 50
+        page = int(web.input(page=0).page)
+        #c = schema.lob_contribution.select(where='politician_id=$polid', limit=limit, offset=page*limit, order='amount desc', vars=locals())
+        c = db.select(['lob_organization', 'lob_filing', 'lob_contribution', 'lob_person'], 
+                where="politician_id = $polid and lob_filing.id = filing_id and lob_organization.id = org_id and lob_person.id = lobbyist_id", 
+                order='amount desc;', vars=locals())
+        return render.politician_lobby(c, limit)
 class lob_filing:
     def GET(self, filing_id):
         limit = 50
