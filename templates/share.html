@@ -75,9 +75,9 @@ $if not emailform.valid: <p class="error">Please try again after fixing the prob
 </form>
 
 
-<div class="postit" style="width: 525px;">
-<form id="loadcontacts" name="loadcontacts" method="POST" action='/u/import_contacts' >
-        <h2>Load contacts</h2>
+<fieldset class="postit2" style="width: 525px;">
+  <legend>Load contacts</legend>
+  <form id="loadcontacts" name="loadcontacts" method="POST" action='/u/import_contacts' >
         <p>Enter your email address to load contacts.</p>
         $:loadcontactsform.email.render()
         $:loadcontactsform.provider.render()
