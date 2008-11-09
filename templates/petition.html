@@ -54,8 +54,6 @@ $if isauthor:
 <a name="sign"></a>
 
 <form name="sign" method="POST" action="/c/$p.id?m=sign">
-        $if (not signform.valid) or (wyrform and not wyrform.valid):
-            <p class="error">Please try again after fixing the errors highlighted below:</p>
         <fieldset id="signpetition">
             $if issignatory:
                 <legend>Change your signature</legend>
@@ -63,6 +61,14 @@ $if isauthor:
                 <legend>Sign this petition</legend>
             $if wyrform:
                 <p> When you sign this petition, your comments will be sent to your Representative too.</p>
+
+            $if not signform.valid:
+                $if signform.note: <p class="error">$signform.note</p>
+                $else: <p class="error">Please try again after fixing the problems highlighted below:</p>
+            $elif wyrform and not wyrform.valid:
+                $if wyrform.note: <p class="error">$wyrform.note</p>
+                $else: <p class="error">Please try again after fixing the errors highlighted below:</p>
+
             <table>
             <tr>
             $if wyrform:
