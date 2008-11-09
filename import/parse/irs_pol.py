@@ -1,3 +1,6 @@
+"""
+Parse IRS' political organizations' form download.
+"""
 import warnings
 import web
 from fixed_width import string, integer, date, filler, enum
@@ -167,5 +170,5 @@ def parse_doc(doc):
     for line in doc: yield parse_line(line)
 
 if __name__ == "__main__":
-    for x in parse_doc(file('/Users/aaronsw/Code/watchdog/data/crawl/irs/pol/FullDataFile.txt')):
-        print x
+    import tools
+    tools.export(parse_doc(file('../data/crawl/irs/pol/FullDataFile.txt')))
