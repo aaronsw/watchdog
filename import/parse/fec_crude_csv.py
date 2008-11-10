@@ -9,7 +9,7 @@ that was chewing through 300 kilobytes per second on my 700MHz
 dinosaur --- now it's doing 210 kilobytes per second.
 
 """
-import csv, sys, cgitb, fixed_width, zipfile, StringIO, types
+import csv, sys, cgitb, fixed_width, zipfile, cStringIO, types
 
 fields_from_fec_csv_py = """
 type ('contribution')
@@ -358,7 +358,7 @@ def readfile(fileobj):
 def readfile_zip(filename):
     zf = zipfile.ZipFile(filename)
     for name in zf.namelist():
-        for record in readfile(StringIO.StringIO(zf.read(name))):
+        for record in readfile(cStringIO.StringIO(zf.read(name))):
             yield record
 
 def readfile_generic(filename):
