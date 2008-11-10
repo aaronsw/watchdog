@@ -76,7 +76,7 @@ def writerep_wyr(wyr_link, pol, zipcode, state, prefix, fname, lname,
           
     def wyr_step1(url):
         forms, response = get_forms(url)
-        form = forms[1]
+        form = forms[0]
         # state names are in form: "PRPuerto Rico"
         state_options = form.find_control_by_name('state').items
         state_l = [s.name for s in state_options if s.name[:2] == state]
@@ -95,17 +95,16 @@ def writerep_wyr(wyr_link, pol, zipcode, state, prefix, fname, lname,
         url, data = request.get_full_url(), request.get_data() 
         forms, response = get_forms(url, data)
         soup = BeautifulSoup(response)    
-        if len(forms) < 2:
+        if len(forms) < 1:
             if has_message(soup, "is shared by more than one"): raise ZipShared
             elif has_message(soup, "not correct for the selected State"): raise ZipIncorrect
             elif has_message(soup, "was not found in our database."): raise ZipNotFound
             elif has_message(soup, "Use your web browser's <b>BACK</b> capability "): raise WyrError
-            elif forms and 'search' not in forms[0].action.lower(): return forms[0]  
             else: raise NoForm
         else:
             challenge = get_challenge(soup)
             if challenge:
-                form = forms[1]
+                form = forms[0]
                 try:
                     solution = captchasolver.solve(challenge)
                 except Exception, detail:
@@ -117,7 +116,7 @@ def writerep_wyr(wyr_link, pol, zipcode, state, prefix, fname, lname,
                     form = get_wyr_form2(request)
                     return form
             else:
-                return forms[1]
+                return forms[0]
         
     def wyr_step2(request):
         if not request: return
