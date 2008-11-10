@@ -1,16 +1,16 @@
-from fixed_width import integer, string, date, filler, parse_file, enum
+from fixed_width import integer, string, date, filler, parse_file, enum, state, digits
 
 def integer2(s): return integer(s[-1] + s[:-1])
 
 def_eo = [
   ('_type', 0, lambda s: 'Exempt Organization'),
-  ('ein', 9-0, string),
+  ('ein', 9-0, digits),
   ('primary_name', 79-9, string),
   ('careof_name', 114-79, string),
   ('street', 149-114, string),
   ('city', 171-149, string),
-  ('state', 173-171, string),
-  ('zip', 183-173, string),
+  ('state', 173-171, state),
+  ('zip', 183-173, digits),
   ('group_exemption_num', 187-183, integer),
   ('subsection_code', 189-187, string),
   ('affiliation', 1, enum),
