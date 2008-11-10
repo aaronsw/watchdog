@@ -242,9 +242,31 @@ def amount(text):
     if '.' in text: return text
     return text[:-2] + '.' + text[-2:]
 
+def namecombo(first, middle, last):
+    """
+    >>> namecombo('John', '', 'Smith')
+    'John Smith'
+    >>> namecombo('John', 'Buckminster', 'Smith')
+    'John Buckminster Smith'
+    >>> namecombo('John', 'B', 'Smith')
+    'John B. Smith'
+    """
+    if len(middle) == 1: middle += '.'
+    return ' '.join(filter(None, [first, middle, last]))
+
+
+def schedule_type(form_type):
+    """Is this a contribution, an expenditure, or neither?"""
+    if form_type.startswith('SA'): return 'contribution'
+    if form_type.startswith('SB'): return 'expenditure'
+
 fields = {
     'date': Reformat(format=fixed_width.date,
-                     source=['date', 'date_received', 'contribution_date']),
+                     source=['date',
+                             'date_received',
+                             'contribution_date',
+                             'expenditure_date',
+                             'date_of_expenditure']),
     'candidate_fec_id': Reformat(format=strip, source=['candidate_fec_id',
                                                        'candidate_id_number',
                                                        'fec_candidate_id_number']),
@@ -253,15 +275,26 @@ fields = {
     'contributor_org': ['contributor_org',
                         'contributor_organization_name',
                         'contrib_organization_name'],
+    'contributor': ['contributor_name',
+                    lambda contributor_first_name,
+                           contributor_middle_name,
+                           contributor_last_name:
+                        namecombo(contributor_first_name,
+                                  contributor_middle_name,
+                                  contributor_last_name),
+                    ], 
+    'recipient': ['payee_organization_name', 'recipient_name'],
     'employer': ['employer', 'contributor_employer', 'indemp'],
     'amount': Reformat(format=amount,
                        source=['amount',
+                               # XXX 6.x contribution_amount: different format
                                'contribution_amount',
                                'amount_received',
-                               'expenditure_amount',
+                               'expenditure_amount', # also 6.x
                                'amount_of_expenditure']),
     'address': (lambda street__1, street__2, city, state, zip:
                 ' '.join([street__1, street__2, city, state, zip])),
+    'type': schedule_type,
 }
 
 fieldmapper = FieldMapper(fields)
