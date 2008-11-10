@@ -42,8 +42,8 @@ $if pol.last_elected_year:
 
 $def spark(lable, data, polid, by, unit='', url=None):
     <th style="white-space:nowrap; padding-left: 6px;">$:lable</th>
-	$if not data: 
-		$ data = 0
+    $if not data: 
+        $ data = 0
     $ display = commify(data) + ' ' + unit
     $if unit == '$':
         $ display = unit + commify(data)
