@@ -42,8 +42,8 @@ $if pol.last_elected_year:
 
 $def spark(lable, data, polid, by, unit='', url=None):
     <th style="white-space:nowrap; padding-left: 6px;">$:lable</th>
-	$if not data: 
-		$ data = 0
+    $if not data:
+        $ data = 0
     $ display = commify(data) + ' ' + unit
     $if unit == '$':
         $ display = unit + commify(data)
@@ -111,7 +111,7 @@ $else:
 
 <table class="charted structure"><tbody>
   <tr class="even">
-    $:spark('Spoke', pol.n_speeches, pol.id, 'n_speeches', 'times', 'http://www.govtrack.us/congress/person.xpd?tab=speeches&id='+pol.govtrackid)
+    $:spark('Spoke', pol.n_speeches, pol.id, 'n_speeches', 'times', 'http://www.govtrack.us/congress/person.xpd?tab=speeches&id='+(pol.govtrackid or ''))
   </tr><tr class="odd">
     $:spark('Avg. length', pol.words_per_speech, pol.id, 'words_per_speech', 'words')
   </tr>
