@@ -49,8 +49,8 @@ cleanparse:
 	rm $(NJS)
 
 ../se: database
-    $(PYTHON) load/se.py
-    touch $@
+	$(PYTHON) load/se.py
+	touch $@
 
 database: $(LOADERS)
 
