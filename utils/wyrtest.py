@@ -23,7 +23,10 @@ def test(formtype=None):
         try:
             return dist_zip_dict[dist]
         except KeyError:
-            return '', ''    
+            for d in dist_zip_dict.keys():
+                if d.startswith(dist+'-'):
+                    return dist_zip_dict[d]
+        return '', ''
           
           
     query = "select politician_id from pol_contacts where contacttype='%s'" % formtype[0].upper() 
