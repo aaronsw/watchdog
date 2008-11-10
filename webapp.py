@@ -473,6 +473,5 @@ def notfound():
 app.notfound = notfound
 if production_mode:
     app.internalerror = web.emailerrors(config.send_errors_to, web.debugerror)
-settings.setup_session(app)
 
 if __name__ == "__main__": app.run()

@@ -4,63 +4,60 @@ import simplejson as json
 from BeautifulSoup import BeautifulSoup
 
 import web
-from settings import db, render, session
+from settings import db, render
 from utils import helpers, forms
 
-def yahooLoginURL(email, url, token=None):
+def yahooLoginURL(email, url, token=None, share_url='/', title=''):
     email = urllib.quote(email)
     lines = open('/home/watchdog/certs/yauth', 'r').readlines()
     appid = lines[0].rstrip()
     secret = lines[1].rstrip()
     ts = time.time()
-    appdata = email
+    appdata = '|'.join([email, share_url, title])
     yurl = 'https://api.login.yahoo.com'
-    purl = '%s?appid=%s&appdata=%s&ts=%s' % (url,appid, appdata, ts)
+    purl = '%s?appid=%s&appdata=%s&ts=%s' % (url, appid, appdata, ts)
     surl ='%s%s' % (purl, secret)
     sig = hashlib.md5(surl).hexdigest()
     furl = '%s%s&sig=%s' % (yurl, purl, sig)
     if token: furl = '%s&token=%s' % ( furl, token)
     return  furl
 
-def gmailLoginURL(email):
-    url = 'https://www.google.com/accounts/AuthSubRequest?'
+def gmailLoginURL(email, share_url='/', title=''):
+    gurl = 'https://www.google.com/accounts/AuthSubRequest?'
     scope = urllib2.quote('http://www.google.com/m8/feeds/')
-    next = urllib2.quote('http://watchdog.net/authsub')
-    url += 'scope='+scope+'&session=1&secure=0&next='+ next
-    return url
+    next = urllib2.quote(web.ctx.homedomain + '/authsub?email=%s&url=%s&title=%s' %(email, share_url, title))
+    gurl += 'scope='+scope+'&session=1&secure=0&next='+ next
+    return gurl
     
-def msnLoginURL():
-    url = "https://consent.live.com/Delegation.aspx?RU=%s&ps=%s&pl=%s"
-    return_url = urllib.quote(web.ctx.homedomain + '/auth/msn')
+def msnLoginURL(email, share_url='/', title=''):
+    murl = "https://consent.live.com/Delegation.aspx?RU=%s&ps=%s&pl=%s"
+    appdata = '|'.join([email, share_url, title])
+    return_url = urllib.quote(web.ctx.homedomain + '/auth/msn?appdata=%s' % appdata)
     permissions = 'Contacts.View'
     privacy_policy = urllib.quote(web.ctx.homedomain + '/privacy')
-    url = url % (return_url, permissions, privacy_policy)
+    murl = murl % (return_url, permissions, privacy_policy)
     #token = "appid=%s&ts=%s" % (getAppId(), time.time())
-    #url = url + urllib.quote(token)
-    return url
+    #murl = murl + urllib.quote(token)
+    return murl
     
 class importcontacts:
-
     def GET(self):
         msg, msg_type = helpers.get_delete_msg()
         return render.import_contacts(msg)
 
     def POST(self):
         i = web.input()
-        email = i.get('email')
+        email, url, title = i.get('email', ''), i.get('url', '/'), i.get('title', '')
         form = forms.loadcontactsform()
         if form.validates(i):
-            session.email = email
-            session.url = i.url
-            session.title = i.title
             if i.provider == 'yahoo':
-                ylogin_url = yahooLoginURL(email, '/WSLogin/V1/wslogin')
+                ylogin_url = yahooLoginURL(email, '/WSLogin/V1/wslogin', share_url=url, title=title)
                 raise web.seeother(ylogin_url)
-            elif i.provider == 'google': 
-                glogin_url = gmailLoginURL(email)
+            elif i.provider == 'google':
+                glogin_url = gmailLoginURL(email, url, title)
                 raise web.seeother(glogin_url)
-            elif i.provider == 'msn':    
-                mlogin_url = msnLoginURL()
+            elif i.provider == 'msn':
+                mlogin_url = msnLoginURL(email, url, title)
                 raise web.seeother(mlogin_url)
         else:
             import petition
@@ -109,16 +106,23 @@ class auth_yahoo:
 
     def GET(self):
         i = web.input()
-        appid = i.get('appid').rstrip()        
-        appdata = i.get('appdata')        
+        appid = i.get('appid').rstrip()
+        email, url, title = i.get('appdata', '||').split('|')
         userhash = i.get('userhash')        
         ts = i.get('ts')        
         token = i.get('token')        
-        email = session.email        
-        #XXX: security verification etc..         
+        query = urllib.urlencode(dict(url=url, title=title))
+        if not token:
+            raise web.seeother('/share?%s' % query)
+        #XXX: security verification etc..
         url = yahooLoginURL(email, '/WSLogin/V1/wspwtoken_login', token)
-        resp = urllib2.urlopen(url)        
-        content = resp.read()        
+        try:
+            resp = urllib2.urlopen(url)
+        except:
+            helpers.set_msg('Authorization Failed.')
+            raise web.seeother('/share?%s' % query)
+
+        content = resp.read()
         soup = BeautifulSoup(content)        
         aurl = 'http://address.yahooapis.com/v1/searchContacts?format=json'
         wssid = soup.findAll('wssid')[0].contents[0]        
@@ -132,7 +136,7 @@ class auth_yahoo:
         response = urllib2.urlopen(req).read()
         contacts = self.get_contacts(response)
         save_contacts(email, contacts, provider='YAHOO')
-        raise web.seeother('/share?url=%s&title=%s' % (session.url, session.title))
+        raise web.seeother('/share?%s' % query)
 
 def get_text(elem):
     #gets the text from XML DOM element `elem`
@@ -158,16 +162,23 @@ class auth_google:
 
     def GET(self):
         i = web.input()
+        query = urllib.urlencode(dict(url=i.get('url'), title=i.get('title')))
         authToken = i.get('token')
-        email = session.email
-        emailq = urllib2.quote(email)
+        if not authToken:
+            raise web.seeother('/share?%s' % query)
+        email = i.get('email')
+        emailq = urllib2.quote(email, '')
         url = ("http://www.google.com/m8/feeds/contacts/%s/full?max-results=999" % emailq)
         headers = { 'Authorization' : 'AuthSub token="%s"' % authToken.strip() }
         request = urllib2.Request(url, None, headers)
-        response = urllib2.urlopen(request)
-        contacts = self.get_contacts(response)
-        save_contacts(email, contacts, provider='GOOGLE')
-        raise web.seeother('/share?url=%s&title=%s' % (session.url, session.title))
+        try:
+            response = urllib2.urlopen(request)
+        except:
+            helpers.set_msg('Authorization Failed.')
+        else:        
+            contacts = self.get_contacts(response)
+            save_contacts(email, contacts, provider='GOOGLE')
+        raise web.seeother('/share?%s' % query)
         
 class auth_msn:
     def get_consent(self, s):
@@ -192,7 +203,8 @@ class auth_msn:
 
     def POST(self):
         i = web.input()
-        email = session.email
+        appdata = i.get('appdata', '||')
+        email, share_url, title = appdata.split('|')
         if i.get('ResponseCode', '') == 'RequestApproved':
             consent = self.get_consent(i.ConsentToken)
             lid = consent.get('lid')
@@ -202,8 +214,13 @@ class auth_msn:
             request = urllib2.Request(url)
             request.add_header('Content-Type', 'application/xml; charset=utf-8')
             request.add_header('Authorization', 'DelegatedToken dt="%s"' % delegatedToken)
-            response = urllib2.urlopen(request)
-            contacts = self.get_contacts(response)
-            save_contacts(email, contacts, provider='MICROSOFT')
+            try:
+                response = urllib2.urlopen(request)
+            except:
+                helpers.set_msg('Authorization Failed.')
+            else:        
+                contacts = self.get_contacts(response)
+                save_contacts(email, contacts, provider='MICROSOFT')
 
-        raise web.seeother('/share?url=%s&title=%s' % (session.url, session.title))
+        query = urllib.urlencode(dict(url=share_url, title=title))
+        raise web.seeother('/share?%s' % query)
