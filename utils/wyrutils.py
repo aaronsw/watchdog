@@ -51,12 +51,12 @@ def getdists(zip5, zip4=None, address=None):
     return dists
 
 def has_captcha(pol):
-    r = db.select('pol_contacts', what='contact', where="politician=$pol and captcha='t'", vars=locals())
+    r = db.select('pol_contacts', what='contact', where="politician_id=$pol and captcha='t'", vars=locals())
     return bool(r)
         
 def get_captcha_src(pol):
     if has_captcha(pol):
-        r = db.select('pol_contacts', what='contact', where="politician=$pol", vars=locals())
+        r = db.select('pol_contacts', what='contact', where="politician_id=$pol", vars=locals())
         url = r[0].contact
         response = urlopen(url)
         if response: 

@@ -103,6 +103,11 @@ def query_param(param, default_value):
     i = web.input(**d)
     return i.get(param)
 
+def get_user_name():
+    email = get_loggedin_email() or get_unverified_email()
+    user = get_user_by_email(email)
+    return (user.fname or email[:email.index('@')]) if user else ''
+
 g = web.template.Template.globals
 g['slice'] = slice
 g['commify'] = web.commify
@@ -129,3 +134,5 @@ def striphtml(x):
 g['striphtml'] = striphtml
 g['getpath'] = lambda : web.ctx.homepath + web.ctx.path
 g['cookies_on'] = lambda : bool(web.cookies().get('webpy_session_id'))
+g['get_user_id'] = lambda: get_loggedin_userid() or get_unverified_userid()
+g['get_user_name'] = get_user_name

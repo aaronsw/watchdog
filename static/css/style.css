@@ -42,7 +42,7 @@ body {margin:0; font-size:12px; line-height:20px; font-family:Arial, Helvetica, 
 #text {margin: 50px 280px 0 40px;}
 #text ul {padding:0; margin:10px 0 10px 40px;}
 #text li {list-style:none; padding-left:15px; background:url(/static/images/li.gif) no-repeat 0px 6px;}
-h1 {margin:20px 0 20px 0; font-weight: normal; color:#EE4400; font-family:"Georgia"; font-size:26px; line-height: 30px; }
+h1 {margin:0 0 20px 0; font-weight: normal; color:#EE4400; font-family:"Georgia"; font-size:26px; line-height: 30px; }
 #text p {margin:10px 0;}
 
 #footer {padding:30px 10px 0px 10px; height:169px; clear:both; background:url(/static/images/footer_bkg.png) center top no-repeat; }
@@ -73,7 +73,7 @@ img { border:none }
 
 
 /* form elements */
-textarea { background-color: #fff; border: 1px solid #0f5b89; color: #999; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin: 10px 4px 0px 0px; }
+textarea { background-color: #fff; border: 1px solid #0f5b89; color: #444; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin: 10px 4px 0px 0px; }
 textarea:focus { background-color: #f0faff; border: 1px solid #EE4400; color: #000; }
 input { background-color: #d9eefa; border: 1px solid #83b3d0; color: #999; font-size:14px; font-family:"Georgia"; padding: 5px 6px 5px 6px; margin-right: 4px; }
 input:focus { color: #000; background-color: #f0faff;  }
@@ -188,6 +188,7 @@ table.signs td.count { font-weight: bold }
 
 /* alerts */
 .postit {border: 4px solid #fff; background-color: #FFF399; padding: 1em; margin-right: auto; margin-top: 20px; line-height: 16px; margin-bottom: 30px; }
+.postit2 {border: 1px solid #ccc; background-color: #FFF399; padding: 1em; margin-right: auto; margin-top: 20px; line-height: 16px; margin-bottom: 30px; }
 .postit-top {border: 4px solid #fff; background-color: #FFF399; padding: 1em; margin-right: auto; margin-top: 20px; line-height: 16px; margin-bottom: 30px; }
 .signatories { text-align: center; border: 1px solid #ccc; padding: 1em; font-size: larger; width: 20em; background-color: #eee; margin-top: 80px;  }
 #personalize { margin-right: auto; line-height: 16px; font-size: 9px; position: absolute; right: 35px; top: 10px; white-space: nowrap; }

@@ -36,6 +36,11 @@ urls = (
   r'/fec/(.*?)%s?' % options, 'committee_summary',
   r'/c', petition.app,
   r'/u', users.app,
+  r'/l/c/?(.*?)', 'lob_contrib',
+  r'/l/f/?(.*?)', 'lob_filing',
+  r'/l/o/?(.*?)', 'lob_org',
+  r'/l/pa/?(.*?)', 'lob_pac',
+  r'/l/pe/?(.*?)', 'lob_person',
   r'/writerep', writerep.app,
   r'/about(/?)', 'about',
   r'/about/team', 'aboutteam',
@@ -376,6 +381,57 @@ class politician:
         if out: return out
 
         return render.politician(p, sparkpos)
+
+class lob_filing:
+    def GET(self, filing_id):
+        limit = 50
+        page = int(web.input(page=0).page)
+        if filing_id:
+            f = schema.lob_filing.select(where='id=$filing_id', limit=limit, offset=page*limit, vars=locals())
+        else:
+            f = schema.lob_filing.select(limit=limit, offset=page*limit)
+        return render.lob_filings(f,limit)
+class lob_contrib:
+    def GET(self, filing_id):
+        limit = 50
+        page = int(web.input(page=0).page)
+        if filing_id:
+            c = schema.lob_contribution.select(where='filing_id=$filing_id', limit=limit, offset=page*limit, order='amount desc', vars=locals())
+        else:
+            c = schema.lob_contribution.select(limit=limit, offset=page*limit, order='amount desc')
+        return render.lob_contributions(c, limit)
+class lob_pac:
+    def GET(self, pac_id):
+        limit = 50
+        i = web.input(page=0)
+        page = int(i.page)
+        if 'filing_id' in i:
+            p = [x.pac for x in schema.lob_pac_filings.select(where='filing_id=$i.filing_id',limit=limit, offset=page*limit, vars=locals())]
+        elif pac_id:
+            p = schema.lob_pac.select(where='id=$pac_id',limit=limit, offset=page*limit, vars=locals())
+        else:
+            p = schema.lob_pac.select(limit=limit, offset=page*limit)
+        return render.lob_pacs(p,limit)
+class lob_org:
+    def GET(self, org_id):
+        limit = 50
+        i = web.input(page=0)
+        page = int(i.page)
+        if org_id:
+            o = schema.lob_organization.select(where='id=$org_id', limit=limit, offset=page*limit, order='name asc', vars=locals())
+        else:
+            o = schema.lob_organization.select(limit=limit, offset=page*limit, order='name asc')
+        return render.lob_orgs(o,limit)
+class lob_person:
+    def GET(self, person_id):
+        limit = 50
+        i = web.input(page=0)
+        page = int(i.page)
+        if person_id:
+            p = schema.lob_person.select(where='id=$person_id', limit=limit, offset=page*limit, order='lastname asc', vars=locals())
+        else:
+            p = schema.lob_person.select(limit=limit, offset=page*limit, order='lastname asc')
+        return render.lob_person(p,limit)
 
 class politician_introduced:
     def GET(self, politician_id):

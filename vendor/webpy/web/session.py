@@ -65,7 +65,11 @@ class Session(utils.ThreadedDict):
         cookie_name = self._config.cookie_name
         cookie_domain = self._config.cookie_domain
         self.session_id = web.cookies().get(cookie_name)
-        
+
+        # protection against session_id tampering
+        if self.session_id and not self._valid_session_id(self.session_id):
+            self.session_id = None
+
         self._check_expiry()
         if self.session_id:
             d = self.store[self.session_id]
@@ -110,22 +114,26 @@ class Session(utils.ThreadedDict):
         """Generate a random id for session"""
 
         while True:
-            rand = random.random()
+            rand = os.urandom(16)
             now = time.time()
             secret_key = self._config.secret_key
-            session_id = sha1("%s%s%s%s" %(rand, now, web.ctx.ip, secret_key))
+            session_id = sha1("%s%s%s%s" %(rand, now, utils.safestr(web.ctx.ip), secret_key))
             session_id = session_id.hexdigest()
             if session_id not in self.store:
                 break
         return session_id
+
+    def _valid_session_id(self, session_id):
+        rx = utils.re_compile('^[0-9a-fA-F]+$')
+        return rx.match(session_id)
         
     def _cleanup(self):
         """Cleanup the stored sessions"""
         current_time = time.time()
         timeout = self._config.timeout
-        if self._last_cleanup_time + timeout > current_time:
+        if current_time - self._last_cleanup_time > timeout:
             self.store.cleanup(timeout)
-            self._last_cleanup_time = current_time
+            self.__dict__['_last_cleanup_time'] = current_time
 
     def expired(self):
         """Called when an expired session is atime"""
@@ -189,13 +197,18 @@ class DiskStore(Store):
         if not os.path.exists(root):
             os.mkdir(root)
         self.root = root
+
+    def _get_path(self, key):
+        if os.path.sep in key: 
+            raise ValueError, "Bad key: %s" % repr(key)
+        return os.path.join(self.root, key)
     
     def __contains__(self, key):
-        path = os.path.join(self.root, key)
+        path = self._get_path(key)
         return os.path.exists(path)
 
     def __getitem__(self, key):
-        path = os.path.join(self.root, key)
+        path = self._get_path(key)
         if os.path.exists(path): 
             pickled = open(path).read()
             return self.decode(pickled)
@@ -203,8 +216,8 @@ class DiskStore(Store):
             raise KeyError, key
 
     def __setitem__(self, key, value):
+        path = self._get_path(key)
         pickled = self.encode(value)    
-        path = os.path.join(self.root, key)
         try:
             f = open(path, 'w')
             try:
@@ -215,14 +228,14 @@ class DiskStore(Store):
             pass
 
     def __delitem__(self, key):
-        path = os.path.join(self.root, key)
+        path = self._get_path(key)
         if os.path.exists(path):
             os.remove(path)
     
     def cleanup(self, timeout):
         now = time.time()
         for f in os.listdir(self.root):
-            path = os.path.join(self.root, f)
+            path = self._get_path(f)
             atime = os.stat(path).st_atime
             if now - atime > timeout :
                 os.remove(path)

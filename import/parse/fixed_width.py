@@ -12,7 +12,12 @@ except ImportError:
 
 def date(s):
     """where `s` is YYYYMMDD"""
-    return s[0:4] + '-' + s[4:6] + '-' + s[6:8]
+    out = s[0:4] + '-' + s[4:6]
+    if s[6:8]:
+        out += '-' + s[6:8]
+    elif out == '0000-00':
+        out = None
+    return out
 
 def year(s):
     return '20' + s
@@ -80,6 +85,7 @@ def parse_line(linedef, line):
             t(line[n:n+l])
         else:
             out[k] = t(line[n:n+l])
+            #DEBUG: print k, repr(line[n:n+l])
         if l > 0: n += l
     return out
 

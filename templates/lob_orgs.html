@@ -1,0 +1,33 @@
+$def with (orgs, limit)
+
+$var width: 90%
+$var color: white
+
+$var title: Lobbyist Organizations
+
+
+<table class="structure" width=100%>
+<tr>
+	<th class="header">name</th>
+	<th class="header">filings</th>
+</tr>
+$for i, o in enumerate(orgs):
+	<tr class="${'odd' if i%2 else 'even'}">
+	<td>$o.name</td>
+	<td>
+		$for f in o.filings:
+			<a href="/l/f/$f.id">$f.id</a><br>
+	</td>
+	</tr>
+</tr>
+</table>
+
+$ page = int(query_param("page", 0))
+
+$if page != 0:
+    &lt;&lt;<a href="$changequery(page=page - 1)">Prev</a>
+
+$if len(orgs) == limit:
+     | <a href="$changequery(page=page + 1)">Next</a> &gt;&gt;
+
+

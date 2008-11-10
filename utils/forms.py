@@ -14,7 +14,24 @@ def petitionnotexists(pid):
 
 def getstates():
     return [(s.code, s.name) for s in db.select('state', what='code, name', order='name')]
+
+class ZipValidator:
+    def valid(self, i):
+        dists = getdists(i.zipcode, i.zip4, i.addr1+i.addr2)
+        msg = ''
+        if len(dists) > 1 and not i.zip4:
+            msg = "Zipcode is shared between two districts. Enter zip4 too."
+        elif len(dists) != 1:
+            msg = "Couldn't find district for this address and zip"
+        elif not dists[0].startswith(i.state):
+            msg = "Zipcode and address doesn't fall in the selected state"
+        web.ctx.zip_validator_msg = msg
+        return False if msg else True
     
+    def get_msg(self):
+        return web.ctx.get('zip_validator_msg', '')
+    msg = property(get_msg)
+
 def emailnotexists(email):
     "Return True if account with email `email` does not exist"
     exists = bool(db.select('users', where='email=$email', vars=locals()))
@@ -51,10 +68,7 @@ wyrform = form.Form(
       form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='15', cols='80'),
       form.Textbox('captcha', pre='', description="Validation:"),
       form.Hidden('signid'),
-      validators = [form.Validator("Zipcode is shared between two districts. Enter zip4 too.",
-                        lambda i: len(getdists(i.zipcode, i.zip4, i.addr1+i.addr2)) == 1 or i.zip4),
-                    form.Validator("Couldn't find district for this address and zip.",
-                        lambda i: len(getdists(i.zipcode, i.zip4, i.addr1+i.addr2)) == 1 or not i.zip4)]
+      validators = [ZipValidator()]
       )
 
 captcha = form.Textbox('captcha',
@@ -73,7 +87,7 @@ signform = form.Form(
             post=' *',
             size='30'),
     form.Checkbox('share_with', value='off', description="Share my email with the author of this petition"),
-    form.Textarea('comment', form.notnull, description='Personal comment (explain how this affects you):', cols=70, rows=4)
+    form.Textarea('comment', description='Personal comment (explain how this affects you):', cols=70, rows=4)
     )
 
 passwordform = form.Form(
