@@ -250,6 +250,16 @@ def name_combo(first, middle, last):
     'John Buckminster Smith'
     >>> name_combo('John', 'B', 'Smith')
     'John B. Smith'
+
+    This is probably incorrectly filed, but comes from a filing on
+    2006-04-12.  Should we fix it?
+    >>> name_combo('Richard E', '', 'Williams')
+    'Richard E Williams'
+
+    This is from a filing from 2005-04-12.
+    >>> name_combo(' JOE ', '', 'CAPPETTI ')
+    ' JOE  CAPPETTI '
+
     """
     if len(middle) == 1: middle += '.'
     return ' '.join(filter(None, [first, middle, last]))
@@ -326,8 +336,14 @@ fields = {
                                'amount_received',
                                'expenditure_amount', # also 6.x
                                'amount_of_expenditure']),
-    'address': (lambda street__1, street__2, city, state, zip:
-                ' '.join([street__1, street__2, city, state, zip])),
+    'address': [lambda street__1, street__2, city, state, zip:
+                ' '.join([street__1, street__2, city, state, zip]),
+                lambda contributor_street__1, contributor_street__2,
+                       contributor_city, contributor_state, contributor_zip:
+                ' '.join([contributor_street__1, contributor_street__2,
+                          contributor_city, contributor_state, contributor_zip])
+                ],
+    
     'type': schedule_type,
 }
 
