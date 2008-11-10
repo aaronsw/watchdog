@@ -38,7 +38,7 @@ LOADERS = .schema .manual \
           .bills .interests .votesmart .photos .lobbyist \
 		  .fec .census .soi .earmarks .wyr .saveusers .restoreusers
 
-all: database
+all: database .se
 clean:
 	rm $(LOADERS)
 
@@ -47,6 +47,10 @@ cleanload:
 
 cleanparse:
 	rm $(NJS)
+
+../se: database
+    $(PYTHON) load/se.py
+    touch $@
 
 database: $(LOADERS)
 
