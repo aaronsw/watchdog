@@ -111,7 +111,7 @@ $else:
 
 <table class="charted structure"><tbody>
   <tr class="even">
-    $:spark('Spoke', pol.n_speeches, pol.id, 'n_speeches', 'times', 'http://www.govtrack.us/congress/person.xpd?tab=speeches&id='+pol.govtrackid)
+    $:spark('Spoke', pol.n_speeches, pol.id, 'n_speeches', 'times', 'http://www.govtrack.us/congress/person.xpd?tab=speeches&id='+(pol.govtrackid or ''))
   </tr><tr class="odd">
     $:spark('Avg. length', pol.words_per_speech, pol.id, 'words_per_speech', 'words')
   </tr>
