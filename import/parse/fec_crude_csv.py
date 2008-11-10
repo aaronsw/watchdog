@@ -9,31 +9,7 @@ that was chewing through 300 kilobytes per second on my 700MHz
 dinosaur --- now it's doing 210 kilobytes per second.
 
 """
-import csv, sys, cgitb, fixed_width, zipfile, cStringIO, types
-
-fields_from_fec_csv_py = """
-type ('contribution')
-for contributions:
-    candidate_fec_id
-    candidate (first and last name)
-    committee
-    date
-    contributor_org
-    contributor
-    occupation
-    employer
-    filer_id
-    report_id
-    amount
-for expenditures:
-    candidate
-    committee
-    date
-    recipient
-    filer_id
-    report_id
-    amount
-"""
+import csv, sys, cgitb, fixed_width, zipfile, cStringIO, types, os
 
 class Field:
     """Represents a field in the output data, and knows how to compute it.
@@ -404,9 +380,10 @@ def findkey(hmap, key):
 headers_cache = {}
 def headers_for_version(version):
     "Memoize headers function, saving about 25–40% of run time."
+    headerdir = os.path.split(__file__)[0]
     if version not in headers_cache:
         headers_cache[version] = \
-            headers('../data/crawl/fec/electronic/headers/%s.csv' % version)
+            headers(os.path.join(headerdir, 'fec_headers', '%s.csv' % version))
     return headers_cache[version]
 
 class ascii28separated(csv.excel):
