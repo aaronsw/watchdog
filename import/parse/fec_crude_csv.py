@@ -242,18 +242,51 @@ def amount(text):
     if '.' in text: return text
     return text[:-2] + '.' + text[-2:]
 
-def namecombo(first, middle, last):
+def name_combo(first, middle, last):
     """
-    >>> namecombo('John', '', 'Smith')
+    >>> name_combo('John', '', 'Smith')
     'John Smith'
-    >>> namecombo('John', 'Buckminster', 'Smith')
+    >>> name_combo('John', 'Buckminster', 'Smith')
     'John Buckminster Smith'
-    >>> namecombo('John', 'B', 'Smith')
+    >>> name_combo('John', 'B', 'Smith')
     'John B. Smith'
     """
     if len(middle) == 1: middle += '.'
     return ' '.join(filter(None, [first, middle, last]))
 
+def caret_separated_name(name):
+    """
+    Examples from `FEC_v300.rtf`.
+    >>> caret_separated_name('Smith^John W.^Dr.^Jr.')
+    'Dr. John W. Smith, Jr.'
+    >>> caret_separated_name('Smith^John W.^^Jr.')
+    'John W. Smith, Jr.'
+    >>> caret_separated_name('Smith Medical Corporation')
+    'Smith Medical Corporation'
+    >>> caret_separated_name('Smith-Reilly^Jennifer T.^Ms.')
+    'Ms. Jennifer T. Smith-Reilly'
+
+    Other examples from data:
+    >>> caret_separated_name('Field^Tracy C.^^')
+    'Tracy C. Field'
+    >>> caret_separated_name('Thomson^Linda^Mrs.^')
+    'Mrs. Linda Thomson'
+    >>> caret_separated_name('Elrod^Adrienne')
+    'Adrienne Elrod'
+
+    Should we downcase/titlecase this one?
+    >>> caret_separated_name('LOVE^KARA^^')
+    'KARA LOVE'
+    """
+    fields = name.split('^')
+    while len(fields) < 4: fields.append('')
+
+    lastname, firstname, prefix, suffix = fields
+    if prefix: prefix += ' '
+    if firstname: firstname += ' '
+    if suffix: suffix = ', ' + suffix
+
+    return ''.join([prefix, firstname, lastname, suffix])
 
 def schedule_type(form_type):
     """Is this a contribution, an expenditure, or neither?"""
@@ -275,13 +308,14 @@ fields = {
     'contributor_org': ['contributor_org',
                         'contributor_organization_name',
                         'contrib_organization_name'],
-    'contributor': ['contributor_name',
+    'contributor': [Reformat(format=caret_separated_name,
+                             source=['contributor_name']),
                     lambda contributor_first_name,
                            contributor_middle_name,
                            contributor_last_name:
-                        namecombo(contributor_first_name,
-                                  contributor_middle_name,
-                                  contributor_last_name),
+                        name_combo(contributor_first_name,
+                                   contributor_middle_name,
+                                   contributor_last_name),
                     ], 
     'recipient': ['payee_organization_name', 'recipient_name'],
     'employer': ['employer', 'contributor_employer', 'indemp'],
@@ -370,11 +404,12 @@ def readfile(fileobj):
         fileobj.seek(0)
         r = csv.reader(fileobj, dialect=ascii28separated)
         headerline = r.next()
-    headermap = headers_for_version(headerline[2])
+    version = headerline[2]
+    headermap = headers_for_version(version)
     in_text_field = False
     for line in r:
         if not line: continue         # FILPAC inserts random blank lines
-        if line[0].lower() == '[begintext]':
+        if line[0].lower() in ('[begintext]', '[begin text]'):
             # see e.g. "New F99 Filing Type for unstructured, formatted text"
             # in FEC_v300.rtf
             in_text_field = True
@@ -382,10 +417,12 @@ def readfile(fileobj):
             fieldnames = findkey(headermap, line[0])
             if not fieldnames:
                 raise "could not find field defs", (line[0], headermap.keys())
-            yield fieldmapper.map(dict(zip(fieldnames, line)))
+            rv = fieldmapper.map(dict(zip(fieldnames, line)))
+            rv['format_version'] = version # for debugging
+            yield rv
         elif in_text_field:
             # XXX currently discard the contents of text fields
-            if line[0].lower() == '[endtext]':
+            if line[0].lower() in ('[endtext]', '[end text]'):
                 in_text_field = False
 
 def readfile_zip(filename):
