@@ -12,7 +12,7 @@ $var width: 90%
 $var color: white
 
 <div class="rep-info">
-<h1 style="padding-top: 0; margin-top: 0">$pol.firstname $pol.middlename $pol.lastname</h1>
+<h1>$pol.firstname $pol.middlename $pol.lastname</h1>
 
 <table class="structure"><tr>
 
@@ -42,8 +42,8 @@ $if pol.last_elected_year:
 
 $def spark(lable, data, polid, by, unit='', url=None):
     <th style="white-space:nowrap; padding-left: 6px;">$:lable</th>
-	$if not data: 
-		$ data = 0
+    $if not data:
+        $ data = 0
     $ display = commify(data) + ' ' + unit
     $if unit == '$':
         $ display = unit + commify(data)
@@ -111,7 +111,7 @@ $else:
 
 <table class="charted structure"><tbody>
   <tr class="even">
-    $:spark('Spoke', pol.n_speeches, pol.id, 'n_speeches', 'times', 'http://www.govtrack.us/congress/person.xpd?tab=speeches&id='+pol.govtrackid)
+    $:spark('Spoke', pol.n_speeches, pol.id, 'n_speeches', 'times', 'http://www.govtrack.us/congress/person.xpd?tab=speeches&id='+(pol.govtrackid or ''))
   </tr><tr class="odd">
     $:spark('Avg. length', pol.words_per_speech, pol.id, 'words_per_speech', 'words')
   </tr>
@@ -120,20 +120,20 @@ $else:
 </td></tr>
 
 <tr>
-</td><td width="50%" class="rule">
-
-
+<td class="rule">
 <h2 class="rep" style="clear: both;">Voting Analysis</h2>
 
-<table class="charted structure" width="50%"><tbody>
+<table class="charted structure" style="width: 100%"><tbody>
 $if pol.nominate:
     <tr class="even">
     $:spark('Ideology', pol.nominate, pol.id, 'nominate', '% right-wing' if pol.nominate >= 0 else '% left-wing')
     </tr>
 $if pol.predictability:
     <tr class="odd">
-    $:spark('Predictability', pol.predictability, pol.id, 'predictability', '%')
+    $:spark('Predictable', pol.predictability, pol.id, 'predictability', '%')
     </tr>
+    <tr><th colspan="2">Unpredictable equals maverick</th></tr>
+    
 </tbody></table>
 
 </td><td></td>

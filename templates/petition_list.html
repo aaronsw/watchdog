@@ -3,7 +3,7 @@ $def with (petitions, msg=None)
 $var width: 90%
 $var color: white
 
-$var title: Top signed petitions
+$var title: Causes
 
 $if msg:
     $var msg: $:msg
@@ -16,12 +16,12 @@ $if msg:
 .header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
 </style>
 
-<h1>Top Signed Petitions</h1>
+<h1>Causes</h1>
 
-<p><a href="/c/new" class="action">Start a new petition</a></p>
+<p><strong>Get involved!</strong> Don't just sit on the sidelines &mdash; pick an issue you care about and do something about it. You can sign a petition (and maybe write your Congressperson) for any of the issues below. Then ask all your friends to join you. Or, do even more by <a href="/c/new">starting a petition of your own</a>.</p.>
 
-<table class="structure" width="100%">
-<tr><td class="header">Name of petition</td><td class="header" style="text-align: right;">No. of Signatories</td></tr>
+<table class="structure" width="100%" style="margin-top: 1em">
+<tr><td class="header">Name of petition</td><td class="header" style="text-align: right;">No. of signatures</td></tr>
 $ trclass = "odd"
 $for p in petitions:
     $if trclass == "odd":

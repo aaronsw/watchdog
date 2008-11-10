@@ -509,9 +509,7 @@ class Pol_contacts(sql.Table):
 
 def init():
     db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
-    db.query("CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician)")
     try:
         db.query("GRANT ALL on census TO watchdog")
-        db.query("GRANT ALL on v_politician_name TO watchdog")
     except:
         pass # user doesn't exist

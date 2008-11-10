@@ -3,7 +3,7 @@ from __future__ import with_statement
 
 import web
 from utils import forms, helpers, auth
-from settings import db, render, render_plain, session
+from settings import db, render, render_plain
 from utils.auth import require_login
 from utils.users import fill_user_details, update_user_details
 import config
@@ -472,8 +472,6 @@ class share:
 
         user_id = helpers.get_loggedin_userid()
         contacts = get_contacts(user_id)
-        if (not contacts) and ('email' in session):
-            contacts = get_contacts(session.get('email'), by='email')
 
         page_or_petition = 'page'    
         if not emailform:

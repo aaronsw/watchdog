@@ -2,7 +2,10 @@ $def with (page)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>$:page.title.strip() (watchdog.net)</title>
+  $if page.get('front'):
+      <title>watchdog.net: $:page.title.strip()</title>
+  $else:
+      <title>$:page.title.strip() (watchdog.net)</title>
   <link href="/static/css/style.css" type="text/css" rel="stylesheet" />
   <script type="text/javascript" src="/static/js/jquery.js"></script>
   <script type="text/javascript" src="/static/js/slicker.js"></script>
