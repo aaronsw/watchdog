@@ -31,6 +31,9 @@ urls = (
   r'/e/(.*?)%s?' % options, 'earmark',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/r/us/(.*?)%s?' % options, 'roll',
+  r'/fec/(?:index%s)?' % options, 'fec_index',
+  r'/fec/contributors/(.*?)%s?' % options, 'fec_contributions',
+  r'/fec/(.*?)%s?' % options, 'committee_summary',
   r'/c', petition.app,
   r'/u', users.app,
   r'/writerep', writerep.app,
@@ -147,10 +150,71 @@ class state:
         except IndexError:
             raise web.notfound
 
+        #         state.__dict__  = {'status': u'state',
+        #                            'code': u'NM',
+        #                            'name': u'New Mexico',
+        #                            'wikipedia': u'http://en.wikipedia.org/wiki/New_Mexico',
+        #                            '_objs': [<schema.State object at 0xb6f896cc>],
+        #                            'fipscode': u'35'}
         out = apipublish.publish([state], format)
         if out: return out
 
         return render.state(state)
+
+
+### FEC stuff
+
+def committee_data(fec_id = None):
+    conds = {}
+    if fec_id is not None:
+        conds['where'] = 'filer_id = $fec_id'
+    return db.select('contribution',
+                     group='filer_id',
+                     what="filer_id as fec_id, min(committee) as name, count(*) as number_of_contributions, sum(to_number(amount, '99999999999999.99')) as contribution_total",
+                     order='contribution_total desc',
+                     vars=locals(),
+                     **conds)
+
+def dollars(number):
+    if number is None: return ''
+    number = str(number)
+    if '.' in number:
+        dollars, cents = number.split('.')
+    else:
+        dollars, cents = number, '00'
+    return '$%s.%s' % (web.commify(dollars), cents)
+
+class fec_index:
+    def GET(self, format=None):
+        committees = committee_data()
+
+        out = apipublish.publish(committees, format)
+        if out: return out
+
+        return render.fec_index(web.storage(committees=committees), dollars)
+
+class committee_summary:
+    def GET(self, fec_id, format=None):
+        committee = committee_data(fec_id)[0]
+
+        out = apipublish.publish([committee], format)
+        if out: return out
+
+        return render.committee_summary(committee, dollars)
+
+class fec_contributions:
+    def GET(self, fec_id, format=None):
+        committee = committee_data(fec_id)[0]
+        committee.contributions = schema.Contribution.select(
+                where='filer_id = $fec_id',
+                vars=locals())
+
+        out = apipublish.publish([committee], format)
+        if out: return out
+
+        return render.fec_contributions(committee, dollars)
+
+### end of FEC stuff
 
 class redistrict:
     def GET(self, district):

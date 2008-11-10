@@ -1,0 +1,18 @@
+$def with (committee, dollars)
+
+$var width: 90%
+$var color: white
+
+$var title: FEC data for $committee.name
+
+<h1>FEC data for $committee.name</h1>
+
+<p>During the time for which FEC data is available, $committee.name has 
+raised <a href="contributors/${committee.fec_id}.html"
+>$dollars(committee.contribution_total) in
+$committee.number_of_contributions contributions</a>.</p>
+
+<p><i>Perhaps here I should display the top 20 contributors, and a
+graph of contributions by year.</i></p>
+
+<p><strong>Developers:</strong> Get this page in <a href="${committee.fec_id}.n3">N3</a>, <a href="${committee.fec_id}.xml">XML</a>, or <a href="${committee.fec_id}.json">JSON</a>.</p>
