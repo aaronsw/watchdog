@@ -21,7 +21,7 @@ a.external:hover  {color: #355321; text-decoration:underline; background-color: 
 a.logo:hover { background-color: transparent; }
 
 /* core styles */
-html {background:url(/static/images/bkg.png); background-color: #002233; }
+html {background:url(/static/images/bkg.png); background-color: #002233; background-position: top center;}
 body {margin:0; font-size:12px; line-height:20px; font-family:Arial, Helvetica, sans-serif; }
 
 #container {width:782px; margin:0 auto; padding-top: 10px;}
