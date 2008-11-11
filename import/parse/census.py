@@ -31,27 +31,39 @@ import fixed_width
 DATA_DIR='../data/crawl/census/census_data/'
 #DATA_DIR='../../data/crawl/census/census_data/'
 SAS_FORMAT='[sS][fF]%(type)d%(table)02d.[sS][aA][sS]'
+ST_FORMAT='%(st)s000%(table)02d.uf%(type)d'
+ST_GEO_FORMAT='%(st)sgeo.uf%(type)d'
 UF_FORMAT='us000%(table)02d.uf%(type)d'
 US_GEO_FORMAT='usgeo.uf%(type)d'
-CONGRESS_DAT_FORMAT='sl500-in-sl040-%(state)s000%(table)02d.%(type_c)s10'
-CONGRESS_GEO_FORMAT='sl500-in-sl040-%(state)sgeo.%(type_c)s10'
+#CONGRESS_DAT_FORMAT='sl500-in-sl040-%(state)s000%(table)02d.%(type_c)s10'
+#CONGRESS_GEO_FORMAT='sl500-in-sl040-%(state)sgeo.%(type_c)s10'
+CONGRESS_DAT_FORMAT='%(state)s000%(table)02d_%(type_c)s10'
+CONGRESS_GEO_FORMAT='%(state)sgeo_%(type_c)s10'
+REDISTRICT_DAT_FORMAT='%(state)s000%(table)02d.upl'
+REDISTRICT_GEO_FORMAT='%(state)sgeo.upl'
 ALL_TABLES = { 1: range(1,40), 3: range(1,77) }
 _text_encoding = 'latin-1' #'utf-8'
 
-CENSUSSTATES = { 
-        '01':'AL', '02':'AK', '04':'AZ', '05':'AR', '06':'CA', '08':'CO',
-        '09':'CT', '10':'DE', '11':'DC', '12':'FL', '13':'GA', '15':'HI',
-        '16':'ID', '17':'IL', '18':'IN', '19':'IA', '20':'KS', '21':'KY',
-        '22':'LA', '23':'ME', '24':'MD', '25':'MA', '26':'MI', '27':'MN',
-        '28':'MS', '29':'MO', '30':'MT', '31':'NE', '32':'NV', '33':'NH',
-        '34':'NJ', '35':'NM', '36':'NY', '37':'NC', '38':'ND', '39':'OH',
-        '40':'OK', '41':'OR', '42':'PA', '44':'RI', '45':'SC', '46':'SD',
-        '47':'TN', '48':'TX', '49':'UT', '50':'VT', '51':'VA', '53':'WA',
-        '54':'WV', '55':'WI', '56':'WY', '60':'AS', '66':'GU', '69':'MP',
-        '72':'PR', '78':'VI', }
+from fips import CENSUSSTATES
+state_list = sorted(map(string.lower,CENSUSSTATES.values()))
 
-SUMLEVs = { '010':'US', '860':'ZCTA', '040':'STATE', '050':'COUNTY',
-        '060':'COUNTYSUB', '070':'COUNTYSUBPLACE', '500':'DISTS' }
+SUMLEVs = { 
+    '010':'US',
+    '040':'STATE',
+    '050':'COUNTY',
+    '060':'COUNTYSUB',
+    '070':'COUNTYSUBPLACE',
+    '140':'TRACT',      # TRACT for countys
+    '500':'DISTS',
+    '511': 'TRACT',     # TRACT for districts
+    '860':'ZCTA',       # National sf1 files
+    '871':'ZCTA',       # State sf1 files
+#    '080':'BLOCK',      # BLOCK for sf3
+    '101':'BLOCK',      # BLOCK for sf1
+#    '090':'BLKGRP',     # BLKGRP for sf3
+    '091':'BLKGRP',     # BLKGRP for sf1
+    '750':'BLOCK',      # BLOCK for Redistricting files
+}
 
 ##TODO: some of these should be procesed as types other than strings.
 GeoFields = {
@@ -146,7 +158,7 @@ GeoFields = {
 
 def parse_geo_file(fn):
     GF= {'D': list(GeoFields['D'])}
-    if 'usgeo' in fn:
+    if 'usgeo' in fn or 'by_state' in fn:
         # The geo files for usgeo.* use dos line breaks...
         GF['D'].append((None, 2, fixed_width.filler))
     else:
@@ -218,19 +230,74 @@ def parse_sas_file(type, table, pathMap={}):
     return (fieldList,labelMap,pathMap)
 
 
+def parse_state_sum_file(type, table, state, layout):
+    FIELDs = layout[0]
+    dat_fn = (DATA_DIR + 'by_state/' + ST_FORMAT) % \
+            { 'st':state, 'type':type, 'table':table }
+    geo_fn = (DATA_DIR + 'by_state/' + ST_GEO_FORMAT) % \
+            {'st':state, 'type':type}
+    return _parse_sum_file(dat_fn, geo_fn, FIELDs)
+
+def parse_congress_file(type, table, state, layout):
+    FIELDs = layout[0]
+    type_c = { 1: 'h', 3:'s'}
+    dat_fn = DATA_DIR + 'congress/' + CONGRESS_DAT_FORMAT % \
+            {'type_c':type_c[type], 'state':state, 'table':table}
+    geo_fn = DATA_DIR + 'congress/' + CONGRESS_GEO_FORMAT % \
+            {'type_c':type_c[type], 'state':state, 'table':table}
+    return _parse_sum_file(dat_fn, geo_fn, FIELDs)
+
+def parse_redistrict_file(type, table, state, layout):
+    FIELDs = layout[0]
+    dat_fn = DATA_DIR + 'Redistrict/' + REDISTRICT_DAT_FORMAT % \
+            {'state':state, 'table':table}
+    geo_fn = DATA_DIR + 'Redistrict/' + REDISTRICT_GEO_FORMAT % \
+            {'state':state, 'table':table}
+    return _parse_sum_file(dat_fn, geo_fn, FIELDs)
+
 def parse_sum_file(type, table, layout):
     FIELDs = layout[0]
-    fn = (DATA_DIR + UF_FORMAT) % { 'type':type, 'table':table }
-    return _parse_sum_file(fn,FIELDs)
+    dat_fn = (DATA_DIR + UF_FORMAT) % { 'type':type, 'table':table }
+    geo_fn = (DATA_DIR + US_GEO_FORMAT) % {'type':type}
+    return _parse_sum_file(dat_fn, geo_fn, FIELDs)
 
 
-def _parse_sum_file(fn, FIELDs):
-    print fn
-    c = csv.reader(codecs.open(fn, 'r', encoding=_text_encoding))
+def _parse_sum_file(dat_fn, geo_fn, FIELDs):
+    if not glob.glob(dat_fn): return
+    print dat_fn
+    c = csv.reader(codecs.open(dat_fn, 'r', encoding=_text_encoding))
     for row in c:
         d = dict(zip(FIELDs,row))
+        if geo_fn: d['geo_file'] = geo_fn
         yield d
 
+
+### ARRG, we *MUST* be able to get blocks within districts, they even give us a
+#   file that tells us when there is overlap:
+#   http://www.census.gov/geo/www/cd110th/spblk110.txt
+def parse_state_sum_files(types=[1,3], ReqKeyList=None):
+    # About 19403085 records!
+    type = 1
+    table = 1
+    all_keys = {}
+    layout = parse_sas_file(type, table,all_keys)
+    for state in state_list:
+        ## Check if this file has any of the keys we want.
+        if ReqKeyList :
+            want = set(ReqKeyList)
+            have = set(layout[0])
+            if not have.intersection(want): continue
+        #pprint(layout[1])
+        for parser_fn in [parse_congress_file, parse_state_sum_file]:
+            numRows = 0
+            start_time = time.time()
+            for row in parser_fn(type, table, state, layout):
+                row['type']=type
+                row['layout']=layout
+                numRows += 1
+                yield row
+            print "Summary file processed with %d rows in %.4f seconds." % \
+                    (numRows, time.time()-start_time)
 
 def parse_sum_files(types=[1,3], ReqKeyList=None):
     # About 19403085 records!
@@ -238,7 +305,7 @@ def parse_sum_files(types=[1,3], ReqKeyList=None):
     for type in types:
         all_keys = {}
         for table in tables[type]:
-            layout = parse_sas_file(type,table,all_keys)
+            layout = parse_sas_file(type, table, all_keys)
             ## Check if this file has any of the keys we want.
             if ReqKeyList :
                 want = set(ReqKeyList)
@@ -250,32 +317,20 @@ def parse_sum_files(types=[1,3], ReqKeyList=None):
             for row in parse_sum_file( type, table, layout ):
                 row['type']=type
                 row['layout']=layout
-                row['geo_file']=DATA_DIR + US_GEO_FORMAT % {'type':type}
                 numRows += 1
                 yield row
             print "Summary file processed with %d rows in %.4f seconds." % \
                     (numRows, time.time()-start_time)
             numRows = 0
             start_time = time.time()
-            for row in parse_congress_files(type, table, layout):
-                row['type']=type
-                row['layout']=layout
-                numRows += 1
-                yield row
+            for state in state_list:
+                for row in parse_congress_file(type, table, state, layout):
+                    row['type']=type
+                    row['layout']=layout
+                    numRows += 1
+                    yield row
             print "Congress summary file(s) processed with %d rows in %.4f seconds." % \
                     (numRows, time.time()-start_time)
-
-
-def parse_congress_files(type, table, layout ):
-    state_list = map(string.lower,CENSUSSTATES.values())
-    type_c = { 1: 'h', 3:'s'}
-    for state in state_list:
-        dat_fn = DATA_DIR + 'congress/' + CONGRESS_DAT_FORMAT % {'type_c':type_c[type], 'state':state, 'table':table}
-        geo_fn = DATA_DIR + 'congress/' + CONGRESS_GEO_FORMAT % {'type_c':type_c[type], 'state':state, 'table':table}
-        if not glob.glob(dat_fn): continue
-        for row in _parse_sum_file(dat_fn, layout[0]):
-            row['geo_file'] = geo_fn
-            yield row
 
 ################################################################################
 def print_sum_files():
@@ -306,12 +361,14 @@ def print_sum_files():
 def build_geo_table(fn):
     LOGRECNOs = {}
     numRows=0
+    start_time = time.time()
     for row in parse_geo_file(fn):
         numRows += 1
         if row['GEOCOMP'] != '00':  ## We only care about geo code 00 for now.
             continue
         LOGRECNOs[row['LOGRECNO']] = row
-    print "Geo table processed with %d rows." % (numRows)
+    print "Geo table processed with %d rows in %.4f seconds." % \
+            (numRows, time.time()-start_time)
     return LOGRECNOs
 
 

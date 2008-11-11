@@ -30,6 +30,43 @@ def load_census_meta(type):
                     hr_key=hr_key)
 
 
+def load_census_population():
+    #db.delete('census_population', where='1=1')
+    geoTables = {}
+    # Load the population data from SF101.
+    required_geo_keys = set(['LOGRECNO', 'SUMLEV', 'STATE', 'CD110', 'COUNTY',
+        'BLKGRP', 'BLOCK', 'TRACT', 'ZCTA5', 'AREALAND'])
+    desired_sumlevs = set(['STATE', 'COUNTY', 'DISTS', 'ZCTA', 'TRACT',
+        'BLOCK'])
+    for row in census.parse_state_sum_files([1], ['P002001']):
+        (layout, logrecno, fileid, stusab, chariter, cifsn, t, geo_file) = map(row.pop, 
+                ['layout', 'LOGRECNO', 'FILEID', 'STUSAB', 'CHARITER', 'CIFSN', 'type', 'geo_file'])
+        logrecno = int(logrecno)
+        geo = None
+        if geo_file not in geoTables:
+            geoTables = dict()
+            geoTables[geo_file] = dict([ (lrn, dict([(k,d[k]) for k in filter(lambda x: x in required_geo_keys, d.keys())])) for lrn,d in census.build_geo_table(geo_file).items() ])
+        geo = geoTables[geo_file]
+        if logrecno not in geo: continue
+        if geo[logrecno]['SUMLEV'] in desired_sumlevs and 'P002001' in row:
+            if geo[logrecno]['SUMLEV'] == 'DISTS' and \
+                    not geo[logrecno]['CD110']: 
+                        continue
+            #print "inserting", geo[logrecno]['SUMLEV']
+            db.insert('census_population', 
+                    state_id = geo[logrecno]['STATE'],
+                    county_id = geo[logrecno]['COUNTY'],
+                    blockgrp_id = geo[logrecno]['BLKGRP'],
+                    block_id = geo[logrecno]['BLOCK'],
+                    district_id = geo[logrecno]['CD110'],
+                    zip_id = geo[logrecno]['ZCTA5'],
+                    sumlev = geo[logrecno]['SUMLEV'],
+                    tract_id = geo[logrecno]['TRACT'],
+                    area_land = geo[logrecno]['AREALAND'],
+                    population = row['P002001'])
+        #else: print "oops", geo[logrecno]['SUMLEV']
+
+
 def load_census_data(type):
     geoTables = {}
     for row in census.parse_sum_files([type]): #,requesting_keys[type]):
@@ -59,9 +96,10 @@ def load_census_data(type):
                 db.insert('census_data', seqname=False, district_id=loc_code, internal_key=internal_key, census_type=type, value=value)
 
 def main():
-    for type in [1, 3]:
-        load_census_meta(type)
-        load_census_data(type)
+#    for type in [1, 3]:
+#        load_census_meta(type)
+#        load_census_data(type)
+    load_census_population()
 
 if __name__ == "__main__":
     if batch_mode:
@@ -71,6 +109,8 @@ if __name__ == "__main__":
         db.open_table('census_meta', meta_cols, filename=tsv_file_format%'census_meta')
         data_cols = ['district_id', 'internal_key', 'census_type', 'value']
         db.open_table('census_data', data_cols, filename=tsv_file_format%'census_data')
+        pop_cols = ['state_id', 'county_id', 'zip_id', 'tract_id', 'blockgrp_id', 'block_id', 'district_id', 'sumlev', 'population', 'area_land']
+        db.open_table('census_population', pop_cols, filename=tsv_file_format%'census_population')
         main()
     else:
         from tools import db
