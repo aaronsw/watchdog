@@ -1,8 +1,10 @@
 from __future__ import with_statement
 import os, sys
+from pprint import pprint, pformat
+
+import web
 
 from parse import census
-from pprint import pprint, pformat
 
 batch_mode = True
 DATA_DIR='../data/'
@@ -26,7 +28,7 @@ def load_census_meta(type):
                     seqname=False,
                     internal_key=k,
                     census_type=type,
-                    label=labelMap[k].replace('\t','    '),
+                    label=web.sqlquote(labelMap[k].replace('\t','    ')),
                     hr_key=hr_key)
 
 
@@ -96,9 +98,9 @@ def load_census_data(type):
                 db.insert('census_data', seqname=False, district_id=loc_code, internal_key=internal_key, census_type=type, value=value)
 
 def main():
-#    for type in [1, 3]:
-#        load_census_meta(type)
-#        load_census_data(type)
+    for type in [1, 3]:
+        load_census_meta(type)
+        load_census_data(type)
     load_census_population()
 
 if __name__ == "__main__":
@@ -117,5 +119,6 @@ if __name__ == "__main__":
         with db.transaction():
             #db.delete('census_data', where='1=1')
             #db.delete('census_meta', where='1=1')
+            #db.delete('census_population', where='1=1')
             main()
 
