@@ -1,5 +1,5 @@
 from __future__ import with_statement
-import os
+import os, sys
 
 from parse import census
 from pprint import pprint, pformat
@@ -13,8 +13,11 @@ def load_census_meta(type):
     str_cols = set(['FILEID', 'STUSAB', 'CHARITER', 'CIFSN', 'LOGRECNO',])
     all_keys = {}
     # Build list
+    labelMap = {}
     for table in census.ALL_TABLES[type]:
-        (_,_,pathMap) = census.parse_sas_file(type, table, all_keys)
+        (_,lm,pathMap) = census.parse_sas_file(type, table, all_keys)
+        labelMap.update(lm)
+
     # Now insert
     for hr_key, int_keys in all_keys.items():
         for k in int_keys:
@@ -23,18 +26,20 @@ def load_census_meta(type):
                     seqname=False,
                     internal_key=k,
                     census_type=type,
+                    label=labelMap[k].replace('\t','    '),
                     hr_key=hr_key)
 
 
 def load_census_data(type):
     geoTables = {}
     for row in census.parse_sum_files([type]): #,requesting_keys[type]):
-        (layout, logrecno, fileid, stusab, chariter, cifsn, t, geo_file) = map(row.pop, 
+        (layout, logrecno, fileid, stusab, chariter, cifsn, t, geo_file) = map(row.pop, \
                 ['layout', 'LOGRECNO', 'FILEID', 'STUSAB', 'CHARITER', 'CIFSN', 'type', 'geo_file'])
         logrecno = int(logrecno)
         if geo_file not in geoTables:
             reqed_keys = set(['LOGRECNO','SUMLEV','STATE','CD110'])
-            geoTables[geo_file] = dict([ (lrn, dict([(k,d[k]) for k in filter(lambda x: x in reqed_keys, d.keys())])) for lrn,d in census.build_geo_table(geo_file).items()])
+            tmp = census.build_geo_table(geo_file)
+            geoTables[geo_file] = dict([ (lrn, dict([(k,d[k]) for k in filter(lambda x: x in reqed_keys, d.keys())])) for lrn,d in tmp.items()])
         geo = geoTables[geo_file]
         if logrecno in geo:
             ### Entries for states
@@ -62,7 +67,7 @@ if __name__ == "__main__":
     if batch_mode:
         from bulk_loader import bulk_loader_db
         db = bulk_loader_db(os.environ.get('WATCHDOG_TABLE', 'watchdog_dev'))
-        meta_cols = ['internal_key', 'census_type', 'hr_key']
+        meta_cols = ['internal_key', 'census_type', 'hr_key', 'label']
         db.open_table('census_meta', meta_cols, filename=tsv_file_format%'census_meta')
         data_cols = ['district_id', 'internal_key', 'census_type', 'value']
         db.open_table('census_data', data_cols, filename=tsv_file_format%'census_data')

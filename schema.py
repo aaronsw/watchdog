@@ -493,6 +493,7 @@ class Census_meta(sql.Table):
     internal_key = sql.String(10, primary=True)
     census_type = sql.Integer(primary=True)
     hr_key = sql.String(512)
+    label = sql.String()
 
 class Census_data(sql.Table):
     #district_id = sql.String(10, primary=True) 
