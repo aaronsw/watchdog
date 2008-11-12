@@ -14,7 +14,8 @@ class bulk_loader_db:
         if table not in self.tables: raise 'Table %s not open.' % table
         return self.tables[table].insert(table, seqname, _test, **values)
 
-_text_encoding = 'utf-8'
+_text_encoding = 'latin-1'
+#_text_encoding = 'utf-8'
 class bulk_loader:
     """Opens a file/pipe and writes tsv."""
     hdr = "SET client_encoding = '%s';\nBEGIN;\n\n" % _text_encoding

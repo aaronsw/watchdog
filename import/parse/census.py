@@ -5,46 +5,54 @@
 ##     all_0Final_National.zip
 ##     all_0_National-part1.zip
 ##     all_0_National-part2.zip
-##     SF1SAS.zip
-##     SF3SAS.zip
 ##     sl500-in-sl010-us_h10.zip
 ##     sl500-in-sl010-us_s10.zip
 ##
-## And that the all_*.zip have been extracted into DATA_DIR/ with the *SAS.zip
-## files being extracted into DATA_DIR/table_layouts/ the sl500*.zip files
-## extracted into DATA_DIR/congress/
-## 
 ## See: ../crawl/census.sh
 
 
-import glob
-import csv
-import sys
-import re
-import time
-from pprint import pprint, pformat
-import string
 import codecs
+import csv
+import fnmatch
+import glob
+import os
+import re
+import string
+import sys
+import time
+import zipfile
+from pprint import pprint, pformat
 
 import fixed_width
 
-DATA_DIR='../data/crawl/census/census_data/'
+DATA_DIR='../data/crawl/census/census_data'
 #DATA_DIR='../../data/crawl/census/census_data/'
 SAS_FORMAT='[sS][fF]%(type)d%(table)02d.[sS][aA][sS]'
-ST_FORMAT='%(st)s000%(table)02d.uf%(type)d'
-ST_GEO_FORMAT='%(st)sgeo.uf%(type)d'
+ST_FORMAT='%(state)s000%(table)02d.uf%(type)d'
+ST_GEO_FORMAT='%(state)sgeo.uf%(type)d'
 UF_FORMAT='us000%(table)02d.uf%(type)d'
 US_GEO_FORMAT='usgeo.uf%(type)d'
-#CONGRESS_DAT_FORMAT='sl500-in-sl040-%(state)s000%(table)02d.%(type_c)s10'
-#CONGRESS_GEO_FORMAT='sl500-in-sl040-%(state)sgeo.%(type_c)s10'
-CONGRESS_DAT_FORMAT='%(state)s000%(table)02d_%(type_c)s10'
-CONGRESS_GEO_FORMAT='%(state)sgeo_%(type_c)s10'
+CONGRESS_DAT_FORMAT='sl500-in-sl040-%(state)s000%(table)02d.%(type_c)s10'
+CONGRESS_GEO_FORMAT='sl500-in-sl040-%(state)sgeo.%(type_c)s10'
+ST_CONGRESS_DAT_FORMAT='%(state)s000%(table)02d_%(type_c)s10'
+ST_CONGRESS_GEO_FORMAT='%(state)sgeo_%(type_c)s10'
 REDISTRICT_DAT_FORMAT='%(state)s000%(table)02d.upl'
 REDISTRICT_GEO_FORMAT='%(state)sgeo.upl'
 ALL_TABLES = { 1: range(1,40), 3: range(1,77) }
 _text_encoding = 'latin-1' #'utf-8'
 
-from fips import CENSUSSTATES
+CENSUSSTATES = { 
+        '01':'AL', '02':'AK', '04':'AZ', '05':'AR', '06':'CA', '08':'CO',
+        '09':'CT', '10':'DE', '11':'DC', '12':'FL', '13':'GA', '15':'HI',
+        '16':'ID', '17':'IL', '18':'IN', '19':'IA', '20':'KS', '21':'KY',
+        '22':'LA', '23':'ME', '24':'MD', '25':'MA', '26':'MI', '27':'MN',
+        '28':'MS', '29':'MO', '30':'MT', '31':'NE', '32':'NV', '33':'NH',
+        '34':'NJ', '35':'NM', '36':'NY', '37':'NC', '38':'ND', '39':'OH',
+        '40':'OK', '41':'OR', '42':'PA', '44':'RI', '45':'SC', '46':'SD',
+        '47':'TN', '48':'TX', '49':'UT', '50':'VT', '51':'VA', '53':'WA',
+        '54':'WV', '55':'WI', '56':'WY', '60':'AS', '66':'GU', '69':'MP',
+        '72':'PR', '78':'VI', }
+
 state_list = sorted(map(string.lower,CENSUSSTATES.values()))
 
 SUMLEVs = { 
@@ -156,7 +164,7 @@ GeoFields = {
         ]}
 
 
-def parse_geo_file(fn):
+def parse_geo_file(fn, args):
     GF= {'D': list(GeoFields['D'])}
     if 'usgeo' in fn or 'by_state' in fn:
         # The geo files for usgeo.* use dos line breaks...
@@ -166,7 +174,9 @@ def parse_geo_file(fn):
         GF['D'].append((None, 1, fixed_width.filler))
     GF['D'].append(('geo_file', 0, lambda x: fn))
     print fn
-    return fixed_width.parse_file(GF, codecs.open(fn, 'r', encoding=_text_encoding),lambda x:'D')
+    #file = codecs.open(fn, 'r', encoding=_text_encoding)
+    file = getFile(os.path.dirname(fn), os.path.basename(fn), args)
+    return fixed_width.parse_file(GF, file,lambda x:'D')
 
 
 def makePath(l):
@@ -185,6 +195,40 @@ def makePath(l):
 def getIndent(s):
     return len(s) - len(s.lstrip())
 
+def getFile(dir, fn_format, args1=None):
+    path_to_zipfiles = {
+            DATA_DIR + '/table_layouts': ["SF%(type)sSAS.zip", ],
+            DATA_DIR + '/by_state': ["%(state)s000%(table)02d_uf%(type)d.zip", "%(state)sgeo_uf%(type)d.zip"],
+            DATA_DIR + '/congress': ["%(state)s000%(table)02d_%(type_c)s10.zip", "%(state)sgeo_%(type_c)s10.zip", "sl500-in-sl040-%(state)s_%(type_c)s10.zip"],
+            DATA_DIR: ["us%(table)05d_uf%(type)d.zip", "usgeo_uf%(type)d.zip"], 
+            }
+    args = dict(type=None, type_c=None, table=None, state=None)
+    if args1: args.update(args1)
+    type_c = { 1: 'h', 3:'s'}
+    if not args['type_c'] and args['type']: args['type_c']=type_c[args['type']]
+    #print pformat(args), dir, fn_format
+    fn = glob.glob((dir+'/'+fn_format) % args)
+    #if False and fn: # For now force from zipfile.
+    if fn:
+        if len(fn) != 1: return None # Woah, matched multiple files
+        print fn[0]
+        return codecs.open(fn[0], 'r', encoding=_text_encoding)
+    else: # Try zip files
+        r = re.compile(fnmatch.translate(fn_format%args))
+        for zipfn in path_to_zipfiles[dir]:
+            if not glob.glob(dir+'/'+zipfn%args): continue
+            zf = zipfile.ZipFile(dir+'/'+zipfn%args)
+            files = zf.namelist()
+            for f in files: 
+                if r.match(f):
+                    print "%s/%s -> %s" % (dir, zipfn%args, f)
+                    return codecs.EncodedFile(zf.open(f), _text_encoding) ## Requires zipfile from python 2.6
+                    #return zf.read(f).splitlines(True)
+    print "Couldn't find file %s in %s." % \
+            ((dir+'/'+fn_format) % args, pformat(map(lambda x: (x % args), path_to_zipfiles[dir])))
+    return []
+
+
 def parse_sas_file(type, table, pathMap={}):
     #TODO: - Should be able to handle LENGTH section 
     #        and '... $ start-end' input lines.
@@ -195,10 +239,8 @@ def parse_sas_file(type, table, pathMap={}):
     fieldList = []   # ordered list of fields
     path=[]          # 
     state = 'INIT'
-    fn = glob.glob( (DATA_DIR+'table_layouts/'+SAS_FORMAT) %
-            {'type':type,'table':table} )[0]
-    print fn
-    for line in codecs.open(fn, 'r', encoding=_text_encoding):
+    
+    for line in getFile(DATA_DIR+'/table_layouts',SAS_FORMAT, {'type':type,'table':table}):
         if state == 'INIT':
             if 'LABEL' in line:
                 state = 'LABEL'
@@ -232,43 +274,45 @@ def parse_sas_file(type, table, pathMap={}):
 
 def parse_state_sum_file(type, table, state, layout):
     FIELDs = layout[0]
-    dat_fn = (DATA_DIR + 'by_state/' + ST_FORMAT) % \
-            { 'st':state, 'type':type, 'table':table }
-    geo_fn = (DATA_DIR + 'by_state/' + ST_GEO_FORMAT) % \
-            {'st':state, 'type':type}
-    return _parse_sum_file(dat_fn, geo_fn, FIELDs)
+    args = { 'state':state, 'type':type, 'table':table }
+    dat_fn = (DATA_DIR + '/by_state/' + ST_FORMAT) % args
+    geo_fn = (DATA_DIR + '/by_state/' + ST_GEO_FORMAT) % args
+    return _parse_sum_file(dat_fn, geo_fn, FIELDs, args)
 
-def parse_congress_file(type, table, state, layout):
+def parse_congress_file(type, table, state, layout, use_st=True):
     FIELDs = layout[0]
     type_c = { 1: 'h', 3:'s'}
-    dat_fn = DATA_DIR + 'congress/' + CONGRESS_DAT_FORMAT % \
-            {'type_c':type_c[type], 'state':state, 'table':table}
-    geo_fn = DATA_DIR + 'congress/' + CONGRESS_GEO_FORMAT % \
-            {'type_c':type_c[type], 'state':state, 'table':table}
-    return _parse_sum_file(dat_fn, geo_fn, FIELDs)
+    args = {'type_c':type_c[type], 'state':state, 'table':table, 'type':type}
+    if use_st:
+        dat_fn = DATA_DIR + '/congress/' + ST_CONGRESS_DAT_FORMAT % args
+        geo_fn = DATA_DIR + '/congress/' + ST_CONGRESS_GEO_FORMAT % args
+    else:
+        dat_fn = DATA_DIR + '/congress/' + CONGRESS_DAT_FORMAT % args
+        geo_fn = DATA_DIR + '/congress/' + CONGRESS_GEO_FORMAT % args
+    return _parse_sum_file(dat_fn, geo_fn, FIELDs, args)
 
 def parse_redistrict_file(type, table, state, layout):
     FIELDs = layout[0]
-    dat_fn = DATA_DIR + 'Redistrict/' + REDISTRICT_DAT_FORMAT % \
-            {'state':state, 'table':table}
-    geo_fn = DATA_DIR + 'Redistrict/' + REDISTRICT_GEO_FORMAT % \
-            {'state':state, 'table':table}
-    return _parse_sum_file(dat_fn, geo_fn, FIELDs)
+    args = {'state':state, 'table':table, 'type':type}
+    dat_fn = DATA_DIR + '/Redistrict/' + REDISTRICT_DAT_FORMAT % args
+    geo_fn = DATA_DIR + '/Redistrict/' + REDISTRICT_GEO_FORMAT % args
+    return _parse_sum_file(dat_fn, geo_fn, FIELDs, args)
 
 def parse_sum_file(type, table, layout):
     FIELDs = layout[0]
-    dat_fn = (DATA_DIR + UF_FORMAT) % { 'type':type, 'table':table }
-    geo_fn = (DATA_DIR + US_GEO_FORMAT) % {'type':type}
-    return _parse_sum_file(dat_fn, geo_fn, FIELDs)
+    args = { 'type':type, 'table':table }
+    dat_fn = (DATA_DIR + '/' + UF_FORMAT) % args
+    geo_fn = (DATA_DIR + '/' + US_GEO_FORMAT) % args
+    return _parse_sum_file(dat_fn, geo_fn, FIELDs, args)
 
 
-def _parse_sum_file(dat_fn, geo_fn, FIELDs):
-    if not glob.glob(dat_fn): return
-    print dat_fn
-    c = csv.reader(codecs.open(dat_fn, 'r', encoding=_text_encoding))
+def _parse_sum_file(dat_fn, geo_fn, FIELDs, args):
+    file = getFile(os.path.dirname(dat_fn),os.path.basename(dat_fn), args)
+    if not file: return
+    c = csv.reader(file)
     for row in c:
         d = dict(zip(FIELDs,row))
-        if geo_fn: d['geo_file'] = geo_fn
+        if geo_fn: d['geo_file'] = (geo_fn, args)
         yield d
 
 
@@ -324,7 +368,7 @@ def parse_sum_files(types=[1,3], ReqKeyList=None):
             numRows = 0
             start_time = time.time()
             for state in state_list:
-                for row in parse_congress_file(type, table, state, layout):
+                for row in parse_congress_file(type, table, state, layout, use_st=False):
                     row['type']=type
                     row['layout']=layout
                     numRows += 1
@@ -336,11 +380,12 @@ def parse_sum_files(types=[1,3], ReqKeyList=None):
 def print_sum_files():
     geoTables = {}
     for row in parse_sum_files():
-        if row['geo_file'] in geoTables:
-            geo = geoTables[row['geo_file']]
+        (geo_file, geo_args) = row['geo_file']
+        if geo_file in geoTables:
+            geo = geoTables[geo_file]
         else:
-            geoTables[row['geo_file']] = build_geo_table(row['geo_file'])
-            geo = geoTables[row['geo_file']]
+            geoTables[geo_file] = build_geo_table(geo_file, geo_args)
+            geo = geoTables[geo_file]
         layout = row['layout']
         if row['LOGRECNO'] in geo:
             print "Found geo data for:", row['LOGRECNO'], "as", geo[row['LOGRECNO']]
@@ -358,11 +403,11 @@ def print_sum_files():
         print '='*80
 
 
-def build_geo_table(fn):
+def build_geo_table(fn, args):
     LOGRECNOs = {}
     numRows=0
     start_time = time.time()
-    for row in parse_geo_file(fn):
+    for row in parse_geo_file(fn, args):
         numRows += 1
         if row['GEOCOMP'] != '00':  ## We only care about geo code 00 for now.
             continue
@@ -382,8 +427,8 @@ def process_all_sas():
 
 ################################################################################
 if __name__ == "__main__":
-    process_all_sas()
-    #print_sum_files()
+    #process_all_sas()
+    print_sum_files()
     ## Just to do the following iteration through the data takes about an hour.
     #for row in parse_sum_files():
     #    pass

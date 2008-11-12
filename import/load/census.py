@@ -12,6 +12,7 @@ tsv_file_format = DATA_DIR+'load/%s.tsv'
 
 
 def load_census_meta(type):
+    print >>sys.stderr, "Loading census_meta table..."
     str_cols = set(['FILEID', 'STUSAB', 'CHARITER', 'CIFSN', 'LOGRECNO',])
     all_keys = {}
     # Build list
@@ -28,11 +29,13 @@ def load_census_meta(type):
                     seqname=False,
                     internal_key=k,
                     census_type=type,
-                    label=web.sqlquote(labelMap[k].replace('\t','    ')),
+                    label=labelMap[k].replace('\t','    '),
                     hr_key=hr_key)
+    print >>sys.stderr, "...Done loading census_meta table."
 
 
 def load_census_population():
+    print >>sys.stderr, "Loading census_population table..."
     #db.delete('census_population', where='1=1')
     geoTables = {}
     # Load the population data from SF101.
@@ -43,11 +46,12 @@ def load_census_population():
     for row in census.parse_state_sum_files([1], ['P002001']):
         (layout, logrecno, fileid, stusab, chariter, cifsn, t, geo_file) = map(row.pop, 
                 ['layout', 'LOGRECNO', 'FILEID', 'STUSAB', 'CHARITER', 'CIFSN', 'type', 'geo_file'])
+        (geo_file, geo_args) = geo_file
         logrecno = int(logrecno)
         geo = None
         if geo_file not in geoTables:
             geoTables = dict()
-            geoTables[geo_file] = dict([ (lrn, dict([(k,d[k]) for k in filter(lambda x: x in required_geo_keys, d.keys())])) for lrn,d in census.build_geo_table(geo_file).items() ])
+            geoTables[geo_file] = dict([ (lrn, dict([(k,d[k]) for k in filter(lambda x: x in required_geo_keys, d.keys())])) for lrn,d in census.build_geo_table(geo_file, geo_args).items() ])
         geo = geoTables[geo_file]
         if logrecno not in geo: continue
         if geo[logrecno]['SUMLEV'] in desired_sumlevs and 'P002001' in row:
@@ -67,17 +71,20 @@ def load_census_population():
                     area_land = geo[logrecno]['AREALAND'],
                     population = row['P002001'])
         #else: print "oops", geo[logrecno]['SUMLEV']
+    print >>sys.stderr, "...Done loading census_population table."
 
 
 def load_census_data(type):
+    print >>sys.stderr, "Loading census_data table..."
     geoTables = {}
     for row in census.parse_sum_files([type]): #,requesting_keys[type]):
         (layout, logrecno, fileid, stusab, chariter, cifsn, t, geo_file) = map(row.pop, \
                 ['layout', 'LOGRECNO', 'FILEID', 'STUSAB', 'CHARITER', 'CIFSN', 'type', 'geo_file'])
+        (geo_file, geo_args) = geo_file
         logrecno = int(logrecno)
         if geo_file not in geoTables:
             reqed_keys = set(['LOGRECNO','SUMLEV','STATE','CD110'])
-            tmp = census.build_geo_table(geo_file)
+            tmp = census.build_geo_table(geo_file, geo_args)
             geoTables[geo_file] = dict([ (lrn, dict([(k,d[k]) for k in filter(lambda x: x in reqed_keys, d.keys())])) for lrn,d in tmp.items()])
         geo = geoTables[geo_file]
         if logrecno in geo:
@@ -96,6 +103,7 @@ def load_census_data(type):
             if loc_code in ['DC-98','PR-98']: continue
             for internal_key, value in row.items():
                 db.insert('census_data', seqname=False, district_id=loc_code, internal_key=internal_key, census_type=type, value=value)
+    print >>sys.stderr, "...Done loading census_data table."
 
 def main():
     for type in [1, 3]:
