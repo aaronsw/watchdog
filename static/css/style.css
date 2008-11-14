@@ -299,6 +299,8 @@ h2.repred { color: #EE4400; margin-bottom: 6px; }
 .login th, .signup th { font-weight: normal; }
 .login fieldset, .signup fieldset { width: 250px; }
 .login input, .signup input { width: 250px; }
+.signup { padding-left: 2em; border-left: 1px solid #ccc; }
+.login { padding-right: 2em; }
 
 td.rule {border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
 

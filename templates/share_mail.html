@@ -1,4 +1,4 @@
-$def with (title, url, description=None, track_id=None)
+$def with (title, url, sender, description=None, track_id=None)
 
 Dear Friend,
 
@@ -19,6 +19,8 @@ $else:
        I hope you'll find it interesting to visit "$:title" - $full_url.
 
 Thanks!
+$if sender:
+    $sender.fname $sender.lname
 
 -------------------------------------------------
 [ this message was sent by http://watchdog.net/ ]

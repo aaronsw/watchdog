@@ -10,6 +10,7 @@ import config
 from utils.wyrutils import CaptchaException, add_captcha
 
 from datetime import datetime
+import urllib
 
 urls = (
   '', 'redir',
@@ -174,23 +175,12 @@ class signup:
             
         raise web.seeother('/%s' % i.pid)
 
-def askforpasswd(user_id):
-    useremail = helpers.get_loggedin_email()
-    #if the current user is the owner of the petition and has not set the password
-    r = db.select('users', where='id=$user_id AND email=$useremail AND password is NULL', vars=locals())
-    return bool(r)
-
-def save_password(forminput):
-    password = auth.encrypt_password(forminput.password)
-    db.update('users', where='id=$forminput.user_id', password=password, vars=locals())
-    helpers.set_msg('Password stored')
-
 def save_signature(i, pid, uid, tocongress=False):
     has_captcha = tocongress and captcha_to_be_filled(i)
     msg_status = has_captcha and 'T' #mark it as temporary
     msg_status = msg_status or (tocongress and 'D') or 'N' # D=sending due; N=not for congress  
 
-    where = 'petition_id=$pid AND user_id=$uid and deleted is null'
+    where = 'petition_id=$pid AND user_id=$uid'
     signed = db.select('signatory', where=where, vars=locals())
     share_with = (i.get('share_with', 'off') == 'on' and 'N') or 'A'
     if not signed:
@@ -203,15 +193,16 @@ def save_signature(i, pid, uid, tocongress=False):
         helpers.set_msg("Thanks for your signing! Why don't you tell your friends about it now?")
         return signid 
     else:
+        db.update('signatory', where='user_id=$uid and petition_id=$pid', 
+                    comment=i.get('comment'), deleted=None, vars=locals())
         if not signed[0].sent_to_congress == 'T':
-            helpers.set_msg("You've signed this petition before. Why don't you tell your friends about it now?")
+            helpers.set_msg("You've signature has been changed. Why don't you tell your friends about it now?")
         
 def sendmail_to_signatory(user, pid):
     p = get_petition_by_id(pid)
     p.url = 'http://watchdog.net/c/%s' % (pid)
     token = auth.get_secret_token(user.email)
     msg = render_plain.signatory_mailer(user, p, token)
-    #@@@ shouldn't this web.utf8 stuff taken care by in web.py?
     web.sendmail(web.utf8(config.from_address), web.utf8(user.email), web.utf8(msg.subject.strip()), web.utf8(msg))
 
 def is_author(email, pid):
@@ -221,7 +212,7 @@ def is_author(email, pid):
 
 def is_signatory(email, pid):
     user = email and helpers.get_user_by_email(email)
-    where = 'petition_id=$pid and user_id=$user.id'
+    where = 'petition_id=$pid and user_id=$user.id and deleted is null'
     return user and bool(db.select('signatory', where=where, vars=locals()))
     
 def get_signs(pid):
@@ -270,6 +261,7 @@ def get_referrer(pid, uid):
 class petition:
     def GET(self, pid, signform=None, wyrform=None):
         i = web.input()
+        pid = pid.rstrip('/')
         p = get_petition_by_id(pid)
         if not p: raise web.notfound
         
@@ -332,7 +324,7 @@ class petition:
             msg = render_plain.confirm_unsign(pid, user.id)
             msg_type = ''
 
-        helpers.set_msg(msg, msg_type)
+        helpers.set_msg(msg.__body__, msg_type)
         raise web.seeother('/%s' % pid)
 
     def GET_delete(self, pid):
@@ -348,21 +340,12 @@ class petition:
 
     def POST(self, pid):
         i = web.input('m', _method='GET')
-        options = ['sign', 'unsign', 'edit', 'password', 'delete']
+        options = ['sign', 'unsign', 'edit', 'delete']
         if i.m in options:
             handler = getattr(self, 'POST_'+i.m)
             return handler(pid)
         else:
             raise ValueError
-
-    def POST_password(self, pid):
-        form = forms.passwordform()
-        i = web.input()
-        if form.validates(i):
-            save_password(i)
-            raise web.seeother('/%s' % pid)
-        else:
-            return self.GET(pid, passwordform=form)
 
     def POST_sign(self, pid):
         i = web.input()
@@ -389,7 +372,8 @@ class petition:
                     return self.GET(pid, signform=sform, wyrform=wyrform)    
             if signid:
                 sendmail_to_signatory(user, pid)
-            raise web.seeother('/share?url=/c/%s&title=%s' % (pid, p.title), absolute=True)
+            query = urllib.urlencode(dict(url='/c/%s' % pid, title=p.title))
+            raise web.seeother('/share?%s' % query, absolute=True)
         else:
             return self.GET(pid, signform=sform, wyrform=wyrform)
 
@@ -454,16 +438,6 @@ def get_contacts(user, by='id'):
     contacts.sort(key=lambda x: x.name.lower())
     return contacts
 
-def signed(email, pid):
-    try:
-        user_id = db.select('users', what='id', where='email=$email', vars=locals())[0].id
-    except IndexError:
-        return False
-    else:
-        is_signatory = db.select('signatory', where='user_id=$user_id and petition_id=$pid', vars=locals())
-        return bool(is_signatory)
-
-
 class share:
     def GET(self, emailform=None, loadcontactsform=None):
         i = web.input()
@@ -472,6 +446,7 @@ class share:
 
         user_id = helpers.get_loggedin_userid()
         contacts = get_contacts(user_id)
+        sender = helpers.get_user_by_email(helpers.get_loggedin_email() or helpers.get_unverified_email())
 
         page_or_petition = 'page'    
         if not emailform:
@@ -483,10 +458,10 @@ class share:
                 p = get_petition_by_id(pid)
                 description = p and p.description
                 track_id = helpers.get_trackid(user_id, pid)
-                contacts = filter(lambda c: not signed(c.email, pid), contacts)
+                contacts = filter(lambda c: not is_signatory(c.email, pid), contacts)
                 page_or_petition = 'petition'
 
-            msg = render_plain.share_mail(title, url, description, track_id)
+            msg = render_plain.share_mail(title, url, sender, description, track_id)
             emailform.fill(subject=title, body=msg)
 
         loadcontactsform = loadcontactsform or forms.loadcontactsform()
@@ -501,9 +476,10 @@ class share:
         if emailform.validates(i):
             url, msg, subject = i.url, i.body, i.subject
             emails = [e.strip() for e in i.emails.strip(', ').split(',')]
-            u = helpers.get_user_by_email(helpers.get_loggedin_email())
+            u = helpers.get_user_by_email(helpers.get_loggedin_email() or helpers.get_unverified_email())
             from_address = u and "%s %s <%s>" % (u.fname, u.lname, u.email) or config.from_address
-            web.sendmail(from_address, emails, subject, msg)
+            for email in emails:
+                web.sendmail(from_address, email, subject, msg)
             page_or_petition = url.startswith('/c/') and 'petition' or 'page'
             helpers.set_msg('Thanks for sharing this %s with your friends!' % page_or_petition)
             raise web.seeother(url)
