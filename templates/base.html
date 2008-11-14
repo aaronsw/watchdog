@@ -32,7 +32,7 @@ $if page.get('front'):
     $else: 
         $if is_logged_in():
             <div id="topnav" style="padding-right: 52px;">
-            <span style="font-size:14px;">Welcome, <a href='/u/$get_user_id()') style="color: #fff;">$get_user_name()</a></span>
+            <span style="font-size:14px;">Hi, <a href='/u/$get_user_id()') style="color: #fff;">$get_user_name()</a>.</span>
             <a href="#" onclick="document.forms['logout'].submit()" class="$page.get('login_class', 'footer')">logout</a
         $else:
             <div style="float: right; padding-right: 62px; padding-top: 37px;">
