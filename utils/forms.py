@@ -153,25 +153,24 @@ forgot_password = form.Form(
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
             description='Email:'
-            )
+            ),
+    validators = [form.Validator("Account doesn't exist with this email", lambda i: not emailnotexists(i.email))]
     )
 
 userinfo = form.Form(
-        form.Dropdown('prefix', ['Mr.', 'Mrs.', 'Dr.', 'Ms.', 'Miss'], description='Prefix', post='*'),
-        form.Textbox('lname', form.notnull, description='Last Name', post='*'),
-        form.Textbox('fname', form.notnull, description='First Name', post='*'),
-        form.Textbox('email', form.notnull, form.regexp(email_regex, 'Please enter a valid email'),
-                            description='Email', size='20', post='*'),
-        form.Textbox('addr1', form.notnull, description='Address Line1', size='20', post='*'),
+        form.Dropdown('prefix', ['Mr.', 'Mrs.', 'Dr.', 'Ms.', 'Miss'], description='Prefix'),
+        form.Textbox('fname', description='First Name'),
+        form.Textbox('lname', description='Last Name'),
+        form.Textbox('addr1', description='Address Line1', size='20'),
         form.Textbox('addr2', description='Address Line2', size='20'),
-        form.Textbox('city', form.notnull, description='City', post='*'),
+        form.Textbox('city', description='City'),
         form.Dropdown('state', getstates(), form.notnull, description='State'),
-        form.Textbox('zip5', form.notnull, form.regexp(r'[0-9]{5}', 'Please enter a valid zip'),
-                         size='5', maxlength='5', description='Zip', post='*'),
-        form.Textbox('zip4', form.notnull, form.regexp(r'[0-9]{4}', 'Please Enter a valid zip'),
+        form.Textbox('zip5', form.regexp(r'^$|[0-9]{5}', 'Please enter a valid zip'),
+                         size='5', maxlength='5', description='Zip'),
+        form.Textbox('zip4', form.regexp(r'^$|[0-9]{4}', 'Please Enter a valid zip'),
                          size='4', maxlength='4', description='Zip4'),
-        form.Textbox('phone', form.notnull, form.regexp(r'^[0-9-. ]*$', 'Please enter a valid phone number'),
-                    form.Validator('Please enter a valid phone number', check_len), maxlength='15', description='Phone', post='*')
+        form.Textbox('phone', form.regexp(r'^[0-9-. ]*$', 'Please enter a valid phone number'),
+                    form.Validator('Please enter a valid phone number', check_len), maxlength='15', description='Phone')
         )
 
 change_password = form.Form(

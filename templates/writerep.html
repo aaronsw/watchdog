@@ -16,7 +16,9 @@ $if msg:
     $var msg: $:msg
 
 <form name="writerepform" method="POST">
-    $if not form.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
+    $if not form.valid:
+         $if form.note: <p class="error">$form.note</p>
+         $else: <p class="error">Please try again after fixing the errors highlighted below:</p>
 <fieldset id="wyr">    
     <legend>Write your representative</legend>
        <table><tr><td><label for="prefix">Prefix</label>$:form.prefix.render()</td>

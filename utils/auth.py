@@ -155,7 +155,7 @@ watchdog.net
 class set_password:
     def GET(self, form=None):
         i = web.input()
-        if check_secret_token(i.email, i.token):
+        if check_secret_token(i.get('email', ''), i.get('token', '')):
             form = form or forms.passwordform()
             return render.set_password(form, i.email)
         else:
@@ -168,8 +168,9 @@ class set_password:
         if form.validates(i):
             password = encrypt_password(i.password)
             db.update('users', password=password, verified=True, where='email=$i.email', vars=locals())
-            helpers.set_msg('Login with your new password.')
-            raise web.seeother('/u/login', absolute=True)
+            helpers.set_login_cookie(i.email)
+            helpers.set_msg('Password stored')
+            raise web.seeother('/c/', absolute=True)
         else:
             return self.GET(form)
 

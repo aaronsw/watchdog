@@ -3,7 +3,7 @@ Parse IRS' political organizations' form download.
 """
 import warnings
 import web
-from fixed_width import string, integer, date, filler, enum
+from fixed_width import string, integer, date, filler, enum, state, digits
 
 olddate = date
 def date(s):
@@ -20,9 +20,9 @@ def def_address(name):
       (name + '_address_1', string),
       (name + '_address_2', string),
       (name + '_address_city', string),
-      (name + '_address_state', string),
-      (name + '_address_zip', string),
-      (name + '_address_zip4', string)
+      (name + '_address_state', state),
+      (name + '_address_zip', digits),
+      (name + '_address_zip4', digits)
     ]
 
 
@@ -30,7 +30,7 @@ def_entity = [
   ('form_id', integer),
   ('entity_id', integer),
   ('org_name', string),
-  ('ein', string),
+  ('ein', digits),
   ('entity_name', string),
   ('entity_tile', string),
 ] + def_address('entity')
@@ -49,7 +49,7 @@ def_polorgs = {
     ('initial_report', boolean),
     ('amended_report', boolean),
     ('final_report', boolean),
-    ('ein', string),
+    ('ein', digits),
     ('org_name', string),
   ] + def_address('mailing') + [
     ('email', string),
@@ -88,7 +88,7 @@ def_polorgs = {
     ('final_report', boolean),
     ('change_of_address', boolean),
     ('org_name', string),
-    ('ein', string),
+    ('ein', digits),
     ] + def_address('mailing') + [
     ('email', string),
     ('established_date', date),
@@ -122,7 +122,7 @@ def_polorgs = {
     ('form_id', integer),
     ('schedule_a_id', integer),
     ('org_name', string),
-    ('ein', string),
+    ('ein', digits),
     ('contributor_name', string),
   ] + def_address('contributor') + [
     ('contributor_employer', string),
@@ -136,7 +136,7 @@ def_polorgs = {
     ('form_id', integer),
     ('schedule_b_id', integer),
     ('org_name', string),
-    ('ein', string),
+    ('ein', digits),
     ('recipient_name', string),
   ] + def_address('recipient') + [
     ('recipient_employer', string),

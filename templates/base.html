@@ -2,7 +2,10 @@ $def with (page)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>$:page.title.strip() (watchdog.net)</title>
+  $if page.get('front'):
+      <title>watchdog.net: $:page.title.strip()</title>
+  $else:
+      <title>$:page.title.strip() (watchdog.net)</title>
   <link href="/static/css/style.css" type="text/css" rel="stylesheet" />
   <script type="text/javascript" src="/static/js/jquery.js"></script>
   <script type="text/javascript" src="/static/js/slicker.js"></script>
@@ -29,7 +32,7 @@ $if page.get('front'):
     $else: 
         $if is_logged_in():
             <div id="topnav" style="padding-right: 52px;">
-            <span style="font-size:14px;">Welcome <a href='/u/$get_user_id()') style="color: #fff;">$get_user_name()</a></span>
+            <span style="font-size:14px;">Hi, <a href='/u/$get_user_id()') style="color: #fff;">$get_user_name()</a>.</span>
             <a href="#" onclick="document.forms['logout'].submit()" class="$page.get('login_class', 'footer')">logout</a
         $else:
             <div style="float: right; padding-right: 62px; padding-top: 37px;">
