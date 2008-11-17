@@ -4,7 +4,7 @@
 This regenerates e.g. the `watchdog/import/parse/fec_headers/5.1.csv`
 file from the `Fec_v510.xls` spreadsheet provided by the FEC.  It
 doesn’t completely work yet, because I’m not quite sure what to do
-about form 12.  Also it omits form 3Z-1 entirely because the
+about form 12 and Sch I.  Also it omits form 3Z-1 entirely because the
 spreadsheet doesn’t contain any field definitions for it.
 
 Instructions for use: (this is painful because of OpenOffice UI brain
@@ -33,7 +33,7 @@ I really thought this would be about 5 lines of code.
 
 """
 
-import os, uno
+import os, uno, sys
 from com.sun.star.table.CellContentType import VALUE, FORMULA
 # TEXT and EMPTY also show up from CellContentType.
 
@@ -117,13 +117,20 @@ def get_field_names(sheet=None):
         cell = sheet.getCellByPosition(0, row)
         if cell.Type in [VALUE, FORMULA]: # the ones counted by =COUNT()
             field_number = cell.Value
-            # this still fails on F12, because a bunch of fields are omitted!
-            # XXX have to figure out what to do
-            assert field_number == current_field_number + 1, (sheet.Name, row)
+            if field_number != current_field_number + 1:
+                # This still fails on F12, because a bunch of fields are omitted!
+                # It found an error in Sch I in the FEC’s version of Fec_v510.xls;
+                # I’m running from a corrected one.
+                # XXX maybe do something better than just omit it?
+                sys.stderr.write(("in sheet %s, field %d " +
+                                  "follows field %d; omitting this sheet") % (
+                    sheet.Name, field_number, current_field_number))
+                return
+
             current_field_number = field_number
             field_names.append(sheet.getCellByPosition(1, row).String)
         row += 1
-    debug(';'.join([sheet.Name] + field_names))
+    debug(';'.join([sheet.Name.replace('Sch ', 'S')] + field_names))
 
 def sheets_having_col_seq():
     """Sheets describing a record format say COL SEQ in the first column,
