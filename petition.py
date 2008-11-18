@@ -131,7 +131,8 @@ class new:
         raise web.seeother('/%s' % i.pid)
 
 class login:
-    def GET(self, i, wf=None):
+    def GET(self, i=None, wf=None):
+        i = i or web.input()
         lf, sf = forms.loginform(), forms.signupform()
         pf, wf = forms.petitionform(), (wf or forms.wyrform())
         pf.fill(i), wf.fill(i)
