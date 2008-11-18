@@ -330,7 +330,10 @@ fields = {
                                    contributor_last_name),
                     ],
     # XXX recipient_name should be reformatted with caret_separated_name
-    # at least in 5.00    
+    # at least in 5.00
+    # XXX also 'recipient_first_name' 'recipient_last_name'
+    # 'recipient_middle_name' 'recipient_organization_name'
+    # 'recipient_prefix' 'recipient_suffix'
     'recipient': ['payee_organization_name', 'recipient_name', 'name_(payee)'],
     'employer': ['employer', 'contributor_employer', 'indemp'],
     'amount': Reformat(format=amount,
@@ -451,7 +454,7 @@ def readfile(fileobj):
     in_text_field = False
     for line in r:
         if not line: continue         # FILPAC inserts random blank lines
-        if line[0].lower() in ('[begintext]', '[begin text]'):
+        if line[0].lower().strip() in ('[begintext]', '[begin text]'):
             # see e.g. "New F99 Filing Type for unstructured, formatted text"
             # in FEC_v300.rtf
             in_text_field = True
@@ -503,5 +506,6 @@ def parse_efilings(filepattern = EFILINGS_PATH + '*.zip'):
 
 if __name__ == '__main__':
     cgitb.enable(format='text')
+    from pprint import pprint
     for filename in sys.argv[1:]:
-        for line in readfile_generic(filename): print line
+        for line in readfile_generic(filename): pprint(line)
