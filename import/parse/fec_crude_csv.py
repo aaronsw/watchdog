@@ -279,12 +279,17 @@ def schedule_type(form_type):
     if form_type.startswith('SA'): return 'contribution'
     if form_type.startswith('SB'): return 'expenditure'
 
+def date(value):
+    if value: return fixed_width.date(value)
+    return ''
+
 fields = {
-    'date': Reformat(format=fixed_width.date,
+    'date': Reformat(format=date,
                      source=['date',
                              'date_received',
                              'contribution_date',
                              'expenditure_date',
+                             # XXX add 'date_(of_contribution)'
                              'date_of_expenditure']),
     'candidate_fec_id': Reformat(format=strip, source=['candidate_fec_id',
                                                        'candidate_id_number',
@@ -296,13 +301,17 @@ fields = {
                         'contrib_organization_name'],
     'contributor': [Reformat(format=caret_separated_name,
                              source=['contributor_name']),
+                    # XXX should include contributor_prefix and
+                    # contributor_suffix?
                     lambda contributor_first_name,
                            contributor_middle_name,
                            contributor_last_name:
                         name_combo(contributor_first_name,
                                    contributor_middle_name,
                                    contributor_last_name),
-                    ], 
+                    ],
+    # XXX recipient_name should be reformatted with caret_separated_name
+    # at least in 5.00    
     'recipient': ['payee_organization_name', 'recipient_name'],
     'employer': ['employer', 'contributor_employer', 'indemp'],
     'amount': Reformat(format=amount,
