@@ -408,6 +408,7 @@ def readfile(fileobj):
         headerline = r.next()
     version = headerline[2]
     headermap = headers_for_version(version)
+
     in_text_field = False
     for line in r:
         if not line: continue         # FILPAC inserts random blank lines
@@ -427,17 +428,25 @@ def readfile(fileobj):
             if line[0].lower() in ('[endtext]', '[end text]'):
                 in_text_field = False
 
+def readfile_into_tree(fileobj):
+    records = readfile(fileobj)
+    form = records.next()
+    if not form['original_data']['form_type'].startswith('F'):
+        warn("skipping %r: its first record is %r" % (fileobj, formline))
+        return
+    form['schedules'] = list(records)
+    return form
+
 def readfile_zip(filename):
     zf = zipfile.ZipFile(filename)
     for name in zf.namelist():
-        for record in readfile(cStringIO.StringIO(zf.read(name))):
-            yield record
+        yield readfile_into_tree(cStringIO.StringIO(zf.read(name)))
 
 def readfile_generic(filename):
     if filename.endswith('.zip'):
         return readfile_zip(filename)
     else:
-        return readfile(file(filename))
+        return [readfile_into_tree(file(filename))]
 
 
 if __name__ == '__main__':
