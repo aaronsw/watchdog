@@ -351,7 +351,7 @@ fields = {
                           contributor_city, contributor_state, contributor_zip])
                 ],
 
-    'committee': ['committee_name', 'committee_name_______'],
+    'committee': ['committee_name', 'committee_name_______', 'committeename'],
     'candidate': [lambda candidate_first_name,
                         candidate_middle_name,
                          candidate_last_name:
