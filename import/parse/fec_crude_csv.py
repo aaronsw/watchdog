@@ -451,24 +451,26 @@ def readfile(fileobj):
     version = headerline[2]
     headermap = headers_for_version(version)
 
-    in_text_field = False
     for line in r:
         if not line: continue         # FILPAC inserts random blank lines
         if line[0].lower().strip() in ('[begintext]', '[begin text]'):
-            # see e.g. "New F99 Filing Type for unstructured, formatted text"
-            # in FEC_v300.rtf
-            in_text_field = True
-        if not in_text_field:
-            fieldnames = findkey(headermap, line[0])
-            if not fieldnames:
-                raise "could not find field defs", (line[0], headermap.keys())
-            rv = fieldmapper.map(dict(zip(fieldnames, line)))
-            rv['format_version'] = version # for debugging
-            yield rv
-        elif in_text_field:
-            # XXX currently discard the contents of text fields
-            if line[0].lower() in ('[endtext]', '[end text]'):
-                in_text_field = False
+            # see e.g. "New F99 Filing Type for unstructured,
+            # formatted text" in FEC_v300.rtf.  Note that this data
+            # may violate `csv`'s expectations, so we have to read it
+            # ourselves, and XXX pray that `csv` isn’t doing some kind of
+            # buffering-ahead.
+            while True:
+                line = fileobj.readline().lower().strip()
+                if line in ('[endtext]', '[end text]'):
+                    break
+                # XXX right now we just discard the lines
+            line = r.next()
+        fieldnames = findkey(headermap, line[0])
+        if not fieldnames:
+            raise "could not find field defs", (line[0], headermap.keys())
+        rv = fieldmapper.map(dict(zip(fieldnames, line)))
+        rv['format_version'] = version # for debugging
+        yield rv
 
 def readfile_into_tree(fileobj, filename):
     records = readfile(fileobj)
