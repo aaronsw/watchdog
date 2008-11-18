@@ -5,14 +5,12 @@ import cgitb, fec, simplejson, sys
 class DummyDB:
     def select(self, *args, **kwargs):
         return []
-    def output(self, method, args, kwargs):
-        print "db.%s %s %s" % (method,
-                               simplejson.dumps(args),
-                               simplejson.dumps(kwargs))
-    def update(self, *args, **kwargs):
-        self.output('update', args, kwargs)
-    def insert(self, *args, **kwargs):
-        self.output('insert', args, kwargs)
+    def output(self, method, table, kwargs):
+        print simplejson.dumps(dict(method=method, table=table, kwargs=kwargs))
+    def update(self, table, **kwargs):
+        self.output('update', table, kwargs)
+    def insert(self, table, **kwargs):
+        self.output('insert', table, kwargs)
     
 if __name__ == '__main__':
     cgitb.enable(format='text')
