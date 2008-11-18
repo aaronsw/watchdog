@@ -6,7 +6,8 @@ import itertools
 import web
 import tools
 from tools import db
-from parse import fec_cobol, fec_csv
+from parse import fec_cobol, fec_csv, fec_crude_csv
+import cgitb
 
 fec2pol = {}
 def load_fec_ids():
@@ -41,17 +42,18 @@ def load_fec_cans():
               pct_pac = can.contrib_from_other_pc/total
             )
 
-def load_fec_efilings():
-    for f in fec_csv.parse_efilings():
+def load_fec_efilings(filepattern=None):
+    for f in fec_crude_csv.parse_efilings(filepattern):
         for s in f['schedules']:
-            if s['type'] == 'contribution':
+            if s.get('type') == 'contribution':
+                # XXX all this code for politician_id is currently dead, does nothing useful
                 politician_id = None
-                if f['candidate_fec_id']:
+                if f.get('candidate_fec_id'):
                     fec_id = f['candidate_fec_id']
                     pol_fec_id = list(db.select('politician_fec_ids', where='fec_id=$fec_id', vars=locals()))
                     if pol_fec_id and len(pol_fec_id) == 1:
                         politician_id = pol_fec_id[0].politician_id
-                elif not politician_id and f['candidate']:
+                elif not politician_id and f.get('candidate'):
                     names = f['candidate'].split(' ')
                     fn, ln = names[0], names[-1]
                     pol = list(db.select('politician', where='lastname=$ln and firstname=$fn', vars=locals()))
@@ -60,27 +62,31 @@ def load_fec_efilings():
                 db.insert('contribution',
                           committee=f['committee'],
                           contrib_date=s['date'],
-                          contributor_org=s['contributor_org'],
+                          contributor_org=s.get('contributor_org'),
                           contributor=s['contributor'],
                           occupation=s['occupation'],
                           employer=s['employer'],
                           employer_stem=tools.stemcorpname(s['employer']),
-                          candidate_name=f['candidate'],
+                          candidate_name=f.get('candidate'),
                           filer_id=f['filer_id'],
                           report_id=f['report_id'],
                           amount=s['amount'])
-            else:
+            elif s.get('type') == 'expenditure':
                 db.insert('expenditure',
-                          candidate_name=f['candidate'],
+                          candidate_name=f.get('candidate'),
                           committee=f['committee'],
                           expenditure_date=s['date'],
                           recipient=s['recipient'],
                           filer_id=f['filer_id'],
                           report_id=f['report_id'],
                           amount=s['amount'])
+            else:
+                print "ignoring record of type %s" % \
+                      s['original_data'].get('form_type')
 
 
 if __name__ == "__main__":
+    cgitb.enable(format='text')
     load_fec_ids()
     load_fec_cans()
     load_fec_efilings()

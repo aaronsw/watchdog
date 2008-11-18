@@ -494,7 +494,8 @@ def readfile_generic(filename):
 
 EFILINGS_PATH = '../data/crawl/fec/electronic/'
 
-def parse_efilings(filepattern = EFILINGS_PATH + '*.zip'):
+def parse_efilings(filepattern = None):
+    if filepattern is None: filepattern = EFILINGS_PATH + '*.zip'
     last_time = time.time()
     for filename in glob.glob(filepattern):
         sys.stderr.write('parsing efilings file %s\n' % filename)
@@ -506,6 +507,8 @@ def parse_efilings(filepattern = EFILINGS_PATH + '*.zip'):
 
 if __name__ == '__main__':
     cgitb.enable(format='text')
-    from pprint import pprint
+    # pprint is unacceptable --- it made the script run 40× slower.
+    import simplejson
     for filename in sys.argv[1:]:
-        for line in readfile_generic(filename): pprint(line)
+        for line in readfile_generic(filename):
+            print simplejson.dumps(line, sort_keys=True, indent=4)
