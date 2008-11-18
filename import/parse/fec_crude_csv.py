@@ -9,7 +9,7 @@ that was chewing through 300 kilobytes per second on my 700MHz
 dinosaur --- now it's doing 210 kilobytes per second.
 
 """
-import csv, sys, cgitb, fixed_width, zipfile, cStringIO, types, os
+import csv, sys, cgitb, fixed_width, zipfile, cStringIO, types, os, glob, time
 
 class Field:
     """Represents a field in the output data, and knows how to compute it.
@@ -133,6 +133,23 @@ class CompositeField(Field):
         for field in self.fields: rv.update(as_field(field).inverteds())
         return rv
 
+class CatchAllField(Field):
+    """A field for special cases.
+
+    >>> f = CatchAllField(['x', 'y'], lambda data: data.get('z'))
+    >>> m = FieldMapper({'a': f})
+    >>> [m.map(x) for x in [{'z': 2}, {'x': 4, 'z': 3}, {'y': 5, 'z': 6},
+    ...                     {'x': 7}]]
+    ... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    [{'original_data': {...}}, {...'a': 3...}, {...'a': 6...}, 
+     {...'a': None...}]
+
+    """
+    def __init__(self, inputs, function):
+        self.inputs, self.function = inputs, function
+    def inverteds(self):
+        return dict((input, self.function) for input in self.inputs)
+
 def argnames(func):
     "Compute a list of the names of the arguments of a Python function."
     return func.func_code.co_varnames[:func.func_code.co_argcount]
@@ -164,14 +181,14 @@ class FieldMapper:
     >>> FieldMapper({'a': ['a', 'b']}).map({'a': 3})
     {'a': 3, 'original_data': {'a': 3}}
 
-    >>> mapped = FieldMapper(fields).map({'date_received': '20081131',
+    >>> mapped = FieldMapper(fields).map({'date_received': '20081130',
     ...                                   'tran_id': '12345', 
     ...                                   'weird_field': 34, 
     ...                                   'amount_received': '123456'})
     >>> sorted(mapped.keys())
     ['amount', 'date', 'original_data', 'tran_id']
     >>> mapped['date']
-    '2008-11-31'
+    '2008-11-30'
     >>> mapped['amount']
     '1234.56'
     >>> mapped['original_data']['weird_field']
@@ -274,14 +291,15 @@ def caret_separated_name(name):
 
     return ''.join([prefix, firstname, lastname, suffix])
 
-def schedule_type(form_type):
+def schedule_type(data):
     """Is this a contribution, an expenditure, or neither?"""
-    if form_type.startswith('SA'): return 'contribution'
-    if form_type.startswith('SB'): return 'expenditure'
+    if data.get('rec_type') == 'TEXT': return # they have an unhelpful form_type
+    if data['form_type'].startswith('SA'): return 'contribution'
+    if data['form_type'].startswith('SB'): return 'expenditure'
 
 def date(value):
     if value: return fixed_width.date(value)
-    return ''
+    return None                         # to keep Postgres happy
 
 fields = {
     'date': Reformat(format=date,
@@ -289,7 +307,8 @@ fields = {
                              'date_received',
                              'contribution_date',
                              'expenditure_date',
-                             # XXX add 'date_(of_contribution)'
+                             'date_(of_contribution)',
+                             'date_(incurred)', # XXX this is for SC loans
                              'date_of_expenditure']),
     'candidate_fec_id': Reformat(format=strip, source=['candidate_fec_id',
                                                        'candidate_id_number',
@@ -312,7 +331,7 @@ fields = {
                     ],
     # XXX recipient_name should be reformatted with caret_separated_name
     # at least in 5.00    
-    'recipient': ['payee_organization_name', 'recipient_name'],
+    'recipient': ['payee_organization_name', 'recipient_name', 'name_(payee)'],
     'employer': ['employer', 'contributor_employer', 'indemp'],
     'amount': Reformat(format=amount,
                        source=['amount',
@@ -328,8 +347,28 @@ fields = {
                 ' '.join([contributor_street__1, contributor_street__2,
                           contributor_city, contributor_state, contributor_zip])
                 ],
+
+    'committee': ['committee_name', 'committee_name_______'],
+    'candidate': [lambda candidate_first_name,
+                        candidate_middle_name,
+                         candidate_last_name:
+                     name_combo(candidate_first_name,
+                                candidate_middle_name,
+                                candidate_last_name),
+                  # XXX add matching of 'x for Congress'. This will
+                  # require allowing one input field to map to more
+                  # than one output field in the field-mapping logic.
+                  '11(d)_the_candidate'],
+    'filer_id': ['filer_fec_cand_id',
+                 'filer_fec_cmte_id_',
+                 'filer_fec_cmte_id',
+                 'filer_fec_committee_id',
+                 'filer_committee_id_number',
+                 'filer_candidate_id_number',
+                 "filer's_fec_id_number",
+                 'filer_committee_id'],
     
-    'type': schedule_type,
+    'type': CatchAllField(['form_type'], schedule_type),
 }
 
 fieldmapper = FieldMapper(fields)
@@ -428,26 +467,39 @@ def readfile(fileobj):
             if line[0].lower() in ('[endtext]', '[end text]'):
                 in_text_field = False
 
-def readfile_into_tree(fileobj):
+def readfile_into_tree(fileobj, filename):
     records = readfile(fileobj)
     form = records.next()
     if not form['original_data']['form_type'].startswith('F'):
         warn("skipping %r: its first record is %r" % (fileobj, formline))
         return
     form['schedules'] = list(records)
+    form['report_id'] = filename[:-4]
     return form
 
 def readfile_zip(filename):
     zf = zipfile.ZipFile(filename)
     for name in zf.namelist():
-        yield readfile_into_tree(cStringIO.StringIO(zf.read(name)))
+        yield readfile_into_tree(cStringIO.StringIO(zf.read(name)), name)
 
 def readfile_generic(filename):
     if filename.endswith('.zip'):
         return readfile_zip(filename)
     else:
-        return [readfile_into_tree(file(filename))]
+        _, basename = os.path.split(filename)
+        return [readfile_into_tree(file(filename), basename)]
 
+EFILINGS_PATH = '../data/crawl/fec/electronic/'
+
+def parse_efilings(filepattern = EFILINGS_PATH + '*.zip'):
+    last_time = time.time()
+    for filename in glob.glob(filepattern):
+        sys.stderr.write('parsing efilings file %s\n' % filename)
+        for record in readfile_generic(filename):
+            yield record
+        now = time.time()
+        sys.stderr.write('parsing took %.1f seconds\n' % (now - last_time))
+        last_time = now
 
 if __name__ == '__main__':
     cgitb.enable(format='text')
