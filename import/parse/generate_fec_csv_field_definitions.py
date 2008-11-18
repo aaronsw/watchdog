@@ -123,14 +123,13 @@ def get_field_names(sheet=None):
                 # I’m running from a corrected one.
                 # XXX maybe do something better than just omit it?
                 sys.stderr.write(("in sheet %s, field %d " +
-                                  "follows field %d; omitting this sheet") % (
+                                  "follows field %d; omitting this sheet\n") % (
                     sheet.Name, field_number, current_field_number))
                 return
-
             current_field_number = field_number
             field_names.append(sheet.getCellByPosition(1, row).String)
         row += 1
-    debug(';'.join([sheet.Name.replace('Sch ', 'S')] + field_names))
+    debug(';'.join([sheet.Name.replace('Sch ', 'S').upper()] + field_names))
 
 def sheets_having_col_seq():
     """Sheets describing a record format say COL SEQ in the first column,
