@@ -57,7 +57,7 @@ wyrform = form.Form(
       form.Textbox('addr1', form.Validator("Address can't be blank", bool), description='Address', size='20'),
       form.Textbox('addr2', description='Address', size='20'),
       form.Textbox('city', form.Validator("City can't be blank", bool), description='City'),
-      form.Dropdown('state', getstates(), form.Validator("State can't be blank", bool), description='State'),
+      form.Dropdown('state', [(None, 'Select state')] + getstates(), form.Validator("State can't be blank", bool), description='State'),
       form.Textbox('zipcode', form.Validator("Zip code can't be blank", bool), form.regexp(r'^[0-9]{5}$', 'Please enter a valid zip'),
                     size='5', maxlength='5', description='Zip'),
       form.Textbox('zip4', form.regexp(r'^$|[0-9]{4}', 'Please Enter a valid zip'),
@@ -158,13 +158,13 @@ forgot_password = form.Form(
     )
 
 userinfo = form.Form(
-        form.Dropdown('prefix', ['Mr.', 'Mrs.', 'Dr.', 'Ms.', 'Miss'], description='Prefix'),
+        form.Dropdown('prefix', [(None, 'Select'), 'Mr.', 'Mrs.', 'Dr.', 'Ms.', 'Miss'], description='Prefix'),
         form.Textbox('fname', description='First Name'),
         form.Textbox('lname', description='Last Name'),
         form.Textbox('addr1', description='Address Line1', size='20'),
         form.Textbox('addr2', description='Address Line2', size='20'),
         form.Textbox('city', description='City'),
-        form.Dropdown('state', getstates(), form.notnull, description='State'),
+        form.Dropdown('state', [(None, 'Select state')] + getstates(), description='State'),
         form.Textbox('zip5', form.regexp(r'^$|[0-9]{5}', 'Please enter a valid zip'),
                          size='5', maxlength='5', description='Zip'),
         form.Textbox('zip4', form.regexp(r'^$|[0-9]{4}', 'Please Enter a valid zip'),
