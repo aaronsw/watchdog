@@ -508,16 +508,6 @@ class Pol_contacts(sql.Table):
     contacttype = sql.String(1)     # E=email, W=wyr, I=ima, Z=zipauth
     captcha = sql.Boolean()
 
-
-def init():
-    db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
-    db.query("CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician)")
-    try:
-        db.query("GRANT ALL on census TO watchdog")
-        db.query("GRANT ALL on v_politician_name TO watchdog")
-    except:
-        pass # user doesn't exist
-
 class Census_Population(sql.Table):
     state_id = sql.String(2)     # STATE
     county_id = sql.String(3)    # COUNTY
@@ -530,4 +520,11 @@ class Census_Population(sql.Table):
     area_land = sql.Integer()    # AREALAND
     area_land.sql_type = 'bigint'
     population = sql.Integer()   
+
+def init():
+    db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
+    try:
+        db.query("GRANT ALL on census TO watchdog")
+    except:
+        pass # group doesn't exist
 
