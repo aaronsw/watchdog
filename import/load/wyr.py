@@ -14,7 +14,7 @@ def load_wyr():
                     continue
 
                 if data['contacttype'] == 'wyr':
-                    contact = 'https://forms.house.gov/wyr/welcome.shtml'
+                    contact = 'https://writerep.house.gov/writerep/welcome.shtml'
                 else:
                     contact = data['contact']    
             

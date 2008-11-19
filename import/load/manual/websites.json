@@ -123,6 +123,9 @@
   "dianne_feinstein": {
     "contact": "http://feinstein.senate.gov/public/index.cfm?FuseAction=ContactUs.EmailMe"
   }, 
+  "christopher_dodd": {
+    "contact": " http://dodd.senate.gov/index.php?q=node/3128"
+  },
   "don_cazayoux": {
     "contact": "https://forms.house.gov/cazayoux/webforms/issue_subscribe.htm"
   }, 
@@ -130,8 +133,7 @@
     "contact": "http://donyoung.house.gov/IMA/issue_subscribe.htm"
   }, 
   "donna_edwards": {
-    "comment": "NO WEB PAGE", 
-    "contact": ""
+    "contact": "4mddistrict@mail.house.gov"
   }, 
   "doris_matsui": {
     "contact": "https://forms.house.gov/matsui/webforms/issue_subscribe.htm"
@@ -359,7 +361,8 @@
     "contact": "http://hoyer.house.gov/contact/email.asp"
   }, 
   "stephanie_tubbs_jones": {
-    "contact": "http://www.house.gov/formtubbsjones/ic_zip_auth.htm"
+    "comment": "DEAD",
+    "contact": ""
   }, 
   "steve_israel": {
     "contact": "http://israel.house.gov/?sectionid=89&sectiontree=89"
