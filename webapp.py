@@ -466,8 +466,11 @@ def notfound():
     web.ctx.status = '404 Not Found'
     return getattr(render, '404')()
 
+def internalerror():
+    return file('templates/500.html').read()
+
 app.notfound = notfound
 if production_mode:
-    app.internalerror = web.emailerrors(config.send_errors_to, web.debugerror)
+    app.internalerror = web.emailerrors(config.send_errors_to, internalerror)
 
 if __name__ == "__main__": app.run()
