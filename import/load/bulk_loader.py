@@ -14,11 +14,12 @@ class bulk_loader_db:
         if table not in self.tables: raise 'Table %s not open.' % table
         return self.tables[table].insert(table, seqname, _test, **values)
 
-_text_encoding = 'utf-8'
+_text_encoding = 'latin-1'
+#_text_encoding = 'utf-8'
 class bulk_loader:
     """Opens a file/pipe and writes tsv."""
     hdr = "SET client_encoding = '%s';\nBEGIN;\n\n" % _text_encoding
-    footer = "\.\n\n"
+    footer = "\.\n\nCOMMIT;\n\n"
     tsv_filename = psql_pipe = psql_out = use_file = cols = table = None
     def __init__(self, database_name, table, columns, delete_first=False, filename=None):
         """If filename is passed then write the tsv file. Otherwise pipe is opened to postgres."""
@@ -40,7 +41,6 @@ class bulk_loader:
         copy_cmd = "COPY %s (%s) FROM stdin;" % (table, ', '.join(columns))
         print >>self.psql_out, self.hdr
         print >>self.psql_out, copy_cmd
-        print >>self.psql_out, "COMMIT;"
     def insert(self, tablename, seqname=None, _test=False, **values): 
         assert(tablename == self.table)
         self.add_row(map(values.get, self.cols))

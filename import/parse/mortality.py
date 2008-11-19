@@ -6,12 +6,22 @@ mortality data scraped from http://wonder.cdc.gov
 __author__ = 'garryj'
 
 import re, csv
+from glob import glob
 import web
+
+from fips import CENSUSSTATES
+
+DATA_DIR='../data'
+
+
+FILES=[DATA_DIR+'/crawl/mortality/%s.tsv' % x for x in CENSUSSTATES.values()]
+
 
 def parse_line(x):
     out = web.storage()
     out.county_name = x['County']
-    out.county_fips = x['County Code']
+    out.state=CENSUSSTATES[x['County Code'][:2]]
+    out.county_fips = x['County Code'][2::]
     out.cause_name = x['Cause of death']
     out.cause_code = x['Cause of death Code']
     if 'Suppressed' in x['Count']:
@@ -32,6 +42,8 @@ def parse_line(x):
     return out
 
 def parse_file(fn):
+    if not glob(fn):
+        return 
     parser = csv.DictReader(file(fn), delimiter="\t")
     for x in parser:
         # IgnoreTotal and footer lines
