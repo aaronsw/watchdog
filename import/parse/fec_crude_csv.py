@@ -448,6 +448,11 @@ def readfile(fileobj):
         fileobj.seek(0)
         r = csv.reader(fileobj, dialect=ascii28separated)
         headerline = r.next()
+    if len(headerline) == 1:
+        # It’s probably the old 2.x format that we don’t support yet
+        # because we can’t find docs; return without yielding
+        # anything.
+        return
     version = headerline[2]
     headermap = headers_for_version(version)
 
