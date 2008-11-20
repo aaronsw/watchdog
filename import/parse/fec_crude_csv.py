@@ -454,14 +454,18 @@ def readfile(fileobj):
     for line in r:
         if not line: continue         # FILPAC inserts random blank lines
         if line[0].lower().strip() in ('[begintext]', '[begin text]'):
-            # see e.g. "New F99 Filing Type for unstructured,
-            # formatted text" in FEC_v300.rtf.  Note that this data
+            # see e.g. “New F99 Filing Type for unstructured,
+            # formatted text” in FEC_v300.rtf.  Note that this data
             # may violate `csv`'s expectations, so we have to read it
             # ourselves, and XXX pray that `csv` isn’t doing some kind of
             # buffering-ahead.
             while True:
-                line = fileobj.readline().lower().strip()
-                if line in ('[endtext]', '[end text]'):
+                line = fileobj.readline().lower()
+                if not line: break      # robustness against premature EOF
+                if line.strip() in ('[endtext]', '[end text]',
+                                    # NGP Campaign Office(R) 1.0e filing 207928
+                                    '[endtext]"'
+                                    ):
                     break
                 # XXX right now we just discard the lines
             line = r.next()
