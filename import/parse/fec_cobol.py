@@ -642,9 +642,9 @@ def_indiv = [
 def_indiv_80 = def_indiv[:-2] + [(None, 3, filler), def_indiv[-1]]
 def_indiv_80[13] = ('date', 6, date99)
 def_indiv_80[14] = ('amount', 6, integer)
-def_indiv_90 = def_indiv[:7] + def_indiv[8:]
+def_indiv_90 = def_indiv[:8] + def_indiv[9:]
 def_indiv_90[12] = ('date', 6, date99)
-def_indiv_96 = def_indiv[:7] + def_indiv[8:]
+def_indiv_96 = def_indiv[:8] + def_indiv[9:]
 
 def fix80(line_def, fh):
     line_len = sum(x[1] for x in line_def)
@@ -700,7 +700,6 @@ def parse_contributions():
             fh = fix80(cur_def, fh)
         if '1990' in fn: cur_def = def_indiv_90
         if '1996' in fn: cur_def = def_indiv_96
-        if '2004' not in fn: continue
         for elt in parse_file(cur_def, fh):
             yield elt
 def parse_others():
