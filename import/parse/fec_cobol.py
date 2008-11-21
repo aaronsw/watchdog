@@ -700,7 +700,8 @@ def parse_contributions():
             fh = fix80(cur_def, fh)
         if '1990' in fn: cur_def = def_indiv_90
         if '1996' in fn: cur_def = def_indiv_96
-        if '2004' not in fn: continue
+        if '2004' in fn:
+            cur_def = def_indiv
         for elt in parse_file(cur_def, fh):
             yield elt
 def parse_others():
