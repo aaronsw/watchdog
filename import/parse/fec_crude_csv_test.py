@@ -97,7 +97,7 @@ def test_windows_1252_characters():
     option' on 2.4.
 
     >>> records(filing_181941_truncated)[-1]
-    ... #doctest: +SKIP
+    ... #doctest: +ELLIPSIS
     {...'occupation': 'Team Ldr \xe2\x80\x93 HRIS'...}
     """
 
