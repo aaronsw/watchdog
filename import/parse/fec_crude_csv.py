@@ -353,12 +353,15 @@ fields = {
                 ],
 
     'committee': ['committee_name', 'committee_name_______', 'committeename'],
-    'candidate': lambda candidate_first_name,
-                        candidate_middle_name,
+    'candidate': [Reformat(format=caret_separated_name,
+                           source='candidate_name'),
+                  lambda candidate_first_name,
+                         candidate_middle_name,
                          candidate_last_name:
                      name_combo(candidate_first_name,
                                 candidate_middle_name,
                                 candidate_last_name),
+                  ],
     'filer_id': ['filer_fec_cand_id',
                  'filer_fec_cmte_id_',
                  'filer_fec_cmte_id',
@@ -506,11 +509,12 @@ def readstring(astring):
         rv['format_version'] = version # for debugging
         yield rv
 
-# XXX use this
-candidate_name_re = r'''(?ix)
-    (?P<candidate>.*) \s+ for \s+ congress
-  | committee \s+ to \s+ elect (?P<candidate>.*)
-'''
+candidate_name_res = [re.compile(x, re.IGNORECASE) for x in
+                      [r'''(?ix)(?P<candidate>.*) \s+ for \s+ congress''',
+                       r'''(?ix)friends \s+ of \s+ (?P<candidate>.*)''']]
+# maybe also:
+#  | committee \s+ to \s+ elect (?P<candidate>.*)
+# "Alan Pedigo For US House of Rep"
 
 def readstring_into_tree(astring, filename):
     records = readstring(astring)
@@ -520,6 +524,12 @@ def readstring_into_tree(astring, filename):
         return
     form['schedules'] = list(records)
     form['report_id'] = filename[:-4]
+    if not form.get('candidate'):
+        for regex in candidate_name_res:
+            mo = regex.match(form.get('committee', ''))
+            if mo:
+                form['candidate'] = mo.group('candidate')
+                break
     return form
 
 def readfile_zip(filename):
