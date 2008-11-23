@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 "Unit tests for code in webapp.py."
 import re, time, urllib, pprint, StringIO
-import json
+import simplejson as json
 import web
 from utils import rdftramp
 import webapp

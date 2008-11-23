@@ -1,0 +1,33 @@
+$def with (pacs, limit)
+
+$var width: 90%
+$var color: white
+
+$var title: Lobbyist PAC
+
+
+<table class="structure" width=100%>
+<tr>
+<th class="header">name</th>
+<th class="header">filings</th>
+</tr>
+$for i,p in enumerate(pacs):
+	<tr class="${'odd' if i%2 else 'even'}">
+	<td>$p.name</td>
+	<td>
+	$for f in p.filings:
+		<a href="/l/f/$f.filing_id">$f.filing_id</a><br>
+	</td>
+	</tr>
+</tr>
+</table>
+
+$ page = int(query_param("page", 0))
+
+$if page != 0:
+    &lt;&lt;<a href="$changequery(page=page - 1)">Prev</a>
+
+$if len(pacs) == limit:
+     | <a href="$changequery(page=page + 1)">Next</a> &gt;&gt;
+
+

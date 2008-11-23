@@ -13,6 +13,12 @@ def attrget(obj, attr, value=None):
     return value
 
 class Form:
+    r"""HTML form.
+    
+        >>> f = Form(Textbox("x"))
+        >>> f.render()
+        '<table>\n    <tr><th><label for="x">x</label></th><td><input type="text" name="x" id="x" /></td></tr>\n</table>'
+    """
     def __init__(self, *inputs, **kw):
         self.inputs = inputs
         self.valid = True
@@ -29,16 +35,15 @@ class Form:
         out += self.rendernote(self.note)
         out += '<table>\n'
         for i in self.inputs:
-            out += '   <tr><th><label for="%s">%s</label></th>' % (i.id, net.websafe(i.description))
-            out += "<td>"+i.pre+i.render()+i.post+"</td>"
-            out += '<td id="note_%s">%s</td></tr>\n' % (i.id, self.rendernote(i.note))
+            out += '    <tr><th><label for="%s">%s</label></th>' % (i.id, net.websafe(i.description))
+            out += "<td>"+i.pre+i.render()+i.post+"</td></tr>\n"
         out += "</table>"
         return out
-    
+
     def rendernote(self, note):
         if note: return '<strong class="wrong">%s</strong>' % net.websafe(note)
         else: return ""
-
+    
     def validates(self, source=None, _validate=True, **kw):
         source = source or kw or web.input()
         out = True
@@ -68,7 +73,20 @@ class Form:
         for x in self.inputs:
             if x.name == i: return x
         raise KeyError, i
+
+    def __getattr__(self, name):
+        # don't interfere with deepcopy
+        inputs = self.__dict__.get('inputs') or []
+        for x in inputs:
+            if x.name == name: return x
+        raise AttributeError, name
     
+    def get(self, i, default=None):
+        try:
+            return self[i]
+        except KeyError:
+            return default
+            
     def _get_d(self): #@@ should really be form.attr, no?
         return utils.storage([(i.name, i.value) for i in self.inputs])
     d = property(_get_d)
@@ -95,6 +113,10 @@ class Input(object):
 
     def render(self): raise NotImplementedError
 
+    def rendernote(self, note):
+        if note: return '<strong class="wrong">%s</strong>' % net.websafe(note)
+        else: return ""
+        
     def addatts(self):
         str = ""
         for (n, v) in self.attrs.items():
@@ -104,11 +126,13 @@ class Input(object):
 #@@ quoting
 
 class Textbox(Input):
-    def render(self):
+    def render(self, shownote=True):
         x = '<input type="text" name="%s"' % net.websafe(self.name)
         if self.value: x += ' value="%s"' % net.websafe(self.value)
         x += self.addatts()
         x += ' />'
+        if shownote:
+            x += self.rendernote(self.note)
         return x
 
 class Password(Input):
@@ -117,6 +141,7 @@ class Password(Input):
         if self.value: x += ' value="%s"' % net.websafe(self.value)
         x += self.addatts()
         x += ' />'
+        x += self.rendernote(self.note)
         return x
 
 class Textarea(Input):
@@ -126,6 +151,7 @@ class Textarea(Input):
         x += '>'
         if self.value is not None: x += net.websafe(self.value)
         x += '</textarea>'
+        x += self.rendernote(self.note)
         return x
 
 class Dropdown(Input):
@@ -145,6 +171,7 @@ class Dropdown(Input):
             else: select_p = ''
             x += '  <option %s value="%s">%s</option>\n' % (select_p, net.websafe(value), net.websafe(desc))
         x += '</select>\n'
+        x += self.rendernote(self.note)
         return x
 
 class Radio(Input):
@@ -158,7 +185,9 @@ class Radio(Input):
             if self.value == arg: select_p = ' checked="checked"'
             else: select_p = ''
             x += '<input type="radio" name="%s" value="%s"%s%s /> %s ' % (net.websafe(self.name), net.websafe(arg), select_p, self.addatts(), net.websafe(arg))
-        return x+'</span>'
+            x += '</span>'
+            x += self.rendernote(self.note)    
+        return x
 
 class Checkbox(Input):
     def render(self):
@@ -166,6 +195,7 @@ class Checkbox(Input):
         if self.value: x += ' checked="checked"'
         x += self.addatts()
         x += ' />'
+        x += self.rendernote(self.note)
         return x
 
 class Button(Input):
@@ -176,6 +206,7 @@ class Button(Input):
     def render(self):
         safename = net.websafe(self.name)
         x = '<button name="%s"%s>%s</button>' % (safename, self.addatts(), safename)
+        x += self.rendernote(self.note)
         return x
 
 class Hidden(Input):
@@ -195,6 +226,7 @@ class File(Input):
         x = '<input type="file" name="%s"' % net.websafe(self.name)
         x += self.addatts()
         x += ' />'
+        x += self.rendernote(self.note)
         return x
     
 class Validator:
@@ -213,3 +245,7 @@ class regexp(Validator):
     
     def valid(self, value):
         return bool(self.rexp.match(value))
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

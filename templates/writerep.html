@@ -1,5 +1,8 @@
 $def with (form, useremail=None, msg=None)
 
+$var width: 90%
+$var color: white
+
 $var title: Write your representative
 
 <script type="text/javascript" src="/static/js/wyr.js"></script>
@@ -7,31 +10,33 @@ $var title: Write your representative
 <style>
 fieldset#wyr { margin-top: 2em; }
 #text fieldset td { padding: 0; margin: 0;}
-#text fieldset #fname {width: 220px;}
-#text fieldset #lname, #phone, #addr2 {width: 190px;}
-#text fieldset #addr1, #city { width: 290px; }
 </style>
 
 $if msg:
     $var msg: $:msg
 
 <form name="writerepform" method="POST">
-    $if not form.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
+    $if not form.valid:
+         $if form.note: <p class="error">$form.note</p>
+         $else: <p class="error">Please try again after fixing the errors highlighted below:</p>
 <fieldset id="wyr">    
     <legend>Write your representative</legend>
-   <table>
-       <tr><td><label for="prefix">Prefix</label>$:form.prefix.render()</td>
+       <table><tr><td><label for="prefix">Prefix</label>$:form.prefix.render()</td>
        <td><label for="fname">First name</label>$:form.fname.render()</td>
-       <td><label for="lname">Last name</label>$:form.lname.render()</td></tr>
-       <tr><td colspan=2><label for="addr1">Address</label>$:form.addr1.render()</td>
+       <td><label for="lname">Last name</label>$:form.lname.render()</td></tr></table>
+       <table>
+       <tr><td><label for="addr1">Address</label>$:form.addr1.render()</td>
        <td><label for="addr2">&nbsp;&nbsp;</label>$:form.addr2.render()</td></tr>
-       <tr><td colspan=2><label for="city">City</label>$:form.city.render()</td>
+       <tr><td><label for="city">City</label>$:form.city.render()</td>
+           <td><label for="state">State</label>$:form.state.render()</td>
+           
        <td><label for="zipcode">Zipcode</label>
-            $:form.zipcode.render()- $:form.zip4.render()</td><td id="note_zipcode"></td></tr>
+            $:form.zipcode.render()- $:form.zip4.render()</td></tr><span id="note_zipcode"></span>
 
-        <tr><td colspan=2><label for="email">Email</label>
+        <tr><td><label for="email">Email</label>
    $if useremail:
        <strong>$useremail</strong>
+       <div style="display: none"> $:form.email.render() </div>
    $else:
        $:form.email.render()
    </td>

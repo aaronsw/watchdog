@@ -1,4 +1,5 @@
-import os, glob, json
+import os, glob
+import simplejson as json
 import web
 from settings import db
 import cgitb

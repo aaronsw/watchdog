@@ -1,0 +1,45 @@
+$def with (contributions, limit)
+
+$var width: 90%
+$var color: white
+
+$var title: Lobbyist Contributions
+
+
+<table class="structure" width=100%>
+<tr>
+<th class="header">amount</th>
+<th class="header">date</th>
+<th class="header">type</th>
+<th class="header">payee</th>
+<th class="header">contributor</th>
+<th class="header">recipient</th>
+<th class="header">filing_id</th>
+</tr>
+
+$for i, c in enumerate(contributions):
+	<tr class="${'odd' if i%2 else 'even'}">
+	<td>\$$commify(c.amount)</td>
+	<td>$c.date</td>
+	<td>$c.type</td>
+	<td>$c.payee</td>
+	<td>$c.contributor</td>
+	<td>
+	$if c.politician_id:
+		<a href=/p/$c.politician_id>$c.recipient</a>
+	$else:
+		$c.recipient
+	</td>
+	<td><a href="/l/f/$c.filing_id">$c.filing_id</a></td>
+	</tr>
+</table>
+
+$ page = int(query_param("page", 0))
+
+$if page != 0:
+    &lt;&lt;<a href="$changequery(page=page - 1)">Prev</a>
+
+$if len(contributions) == limit:
+     | <a href="$changequery(page=page + 1)">Next</a> &gt;&gt;
+
+

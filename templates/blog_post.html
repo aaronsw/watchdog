@@ -2,8 +2,13 @@ $def with (post)
 
 $var title: $post.title
 
+$var width: 782px
+$var color: white
+
+<h1>$post.title</h1>
+
 $:post.body
 
-<p class="strapline">posted by $post.author on $post.updated</p>
+<p class="attribution strapline">posted by $post.author on $post.updated</p>
 
-<p><a href="./">More blog posts...</a></p>
+<p><a href="./" class="highlight">More blog posts...</a></p>

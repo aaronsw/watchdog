@@ -17,9 +17,10 @@ CREATE TABLE users(
     addr1 varchar(64),
     addr2 varchar(64),
     city varchar(64),
+    state varchar(2) references state,
     zip5 varchar(5),
     zip4 varchar(4),
-    phone varchar(10),
+    phone varchar(15),
     
     verified boolean default false -- done verified activity at least once
 );
@@ -43,6 +44,7 @@ CREATE TABLE signatory(
     signed timestamp default now(),
     deleted timestamp,
     sent_to_congress char(1) default 'N', --N=not to congress, S=sent to congress, D=due for sending
+    referrer int references users,
     UNIQUE (user_id, petition_id)
 );
 

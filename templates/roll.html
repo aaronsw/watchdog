@@ -1,5 +1,8 @@
 $def with (roll, votes, votepct)
 
+$var width: 90%
+$var color: white
+
 $var title: Roll call vote $roll.id
 
 <h2>$roll.question</h2>
@@ -41,7 +44,7 @@ $if roll.votes_by_caucus:
             <td>$cvotes.get(1, 0)</td>
             <td>$cvotes.get(-1, 0)</td>
             <td>$cvotes.get(0, 0)</td>
-            <td>$votepct(pvotes)</td>
+            <td>$votepct(cvotes)</td>
         </tr>
     </table>   
 

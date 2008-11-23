@@ -4,7 +4,7 @@ Load Project Vote Smart data.
 from __future__ import with_statement
 
 from parse import votesmart
-import json
+import simplejson as json
 import tools
 from settings import db
 import schema

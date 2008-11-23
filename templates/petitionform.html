@@ -1,5 +1,8 @@
 $def with (pform, cform, title="Create a new petition", target="/c/new", msg=None)
 
+$var width: 90%
+$var color: white
+
 $var title: $title
 
 $if msg:
@@ -9,13 +12,19 @@ $if msg:
 <script type="text/javascript" src="/static/js/wyr.js"></script>
 
 <style>
+#text fieldset #addr1 { width: 205px; }
+#text fieldset #addr2, #phone { width: 140px;}
+fieldset label {margin: 1em 0pt 0pt 0pt;}
+table label {margin: 0.5em 0pt 0pt 0pt;}
 fieldset #tocongresscheck { background-color: #ffc; width: 16.8em; }
 fieldset #tocongresscheck input, fieldset #tocongresscheck label { display: inline; }
 fieldset #pid { margin-right: 0.3em; font-size: 0.9em; width: 130px; }
 </style>
 
-
-$if target != '/c/new': <h2>Edit <a href='/c/$pform.pid.value'>$pform.ptitle.value</a></h2>
+$if target == '/c/new':
+    <h1>Create a new petition</h1>
+$else:
+    <h1>Edit <a href='/c/$pform.pid.value'>$pform.ptitle.value</a></h1>
 
 <form name="petition" method="POST" action="$target"> 
 	$:pform.userid.render()
@@ -23,50 +32,55 @@ $if target != '/c/new': <h2>Edit <a href='/c/$pform.pid.value'>$pform.ptitle.val
 
 <fieldset id="petition">
     $if title == 'Edit your petition': <legend>Title and description</legend>
-    $else: <legend>Create your petition</legend>
+    $else: <legend>Please fill out the following fields</legend>
     <label for="ptitle">Name your petition</label>
     $:pform.ptitle.render()
+    
+    <label>Your petition site address</label>
+    $if target == '/c/new':
+   	  <strong>http://watchdog.net/c/</strong> $:pform.pid.render() <span id="note_pid"></span>
+   	  <span>(Letters, numbers and dashes only.)</span>
+    $else:
+   	    <p><strong>http://watchdog.net/c/$:pform.pid.value</strong></p>
+    
     <label for="msg">Give it a description</label>
     $:pform.msg.render()
-</fieldset>
 
-<fieldset id="address">
-    <legend>Your petition site address</legend>
-    $if target == '/c/new':
-	    <p>Letters, numbers and dashes only — no spaces.</p>
-	    <strong>http://watchdog.net/c/</strong> $:pform.pid.render()
-    $else:
-	    <p><strong>http://watchdog.net/c/$:pform.pid.value</strong></p>
-
-</fieldset>
-
-<fieldset id="maketocongress">
-    <legend>Want to make this a petition to Congress?</legend>
-    <p>Everytime someone signs your petition, we'll send it to their Representative.</p>
-    <div id="tocongresscheck">
+    <label for="tocongresscheck">Everytime someone signs your petition, we'll send it to their Representative.</label>
+    <span id="tocongresscheck">
         $:pform.tocongress.render() 
-        <label for="tocongress">Make this is a petition to Congress</label>
-    </div>
+        <label for="tocongress"><strong>Make this is a petition to Congress</strong></label>
+    </span>
 
     <div id="tocongressform" style="display: none;">
     <h3>We'll need some more information then...</h3>
 	$if (not cform.valid) and (cform.note): <p class="error">$cform.note</p>
 
-    <table>
-    <tr><th>Prefix</th><td>$:cform.prefix.render()</td></tr>
-    <tr><th>First name</th><td>$:cform.fname.render()</td></tr>
-    <tr><th>Last name</th><td>$:cform.lname.render()</td></tr>
-    <tr><th>Address</th><td>$:cform.addr1.render()</td></tr>
-    <tr><th></th><td>$:cform.addr2.render()</td></tr>
-    <tr><th>City</th><td>$:cform.city.render()</td></tr>
-    <tr><th>Zip code</th><td>$:cform.zipcode.render()-$:cform.zip4.render()</td><td id="note_zipcode"></td></tr>
-    <tr><th>Phone</th><td>$:cform.phone.render()</td></tr>
+    <table><tr>
+        <td><label for='prefix'>Prefix</label>$:cform.prefix.render()</td>
+        <td><label for='fname'>First name</label>$:cform.fname.render()</td>
+        <td><label for='lname'>Last name</label>$:cform.lname.render()</td>
+    </tr></table>
+    <table><tr>
+        <td><label for='addr1'>Address</label>$:cform.addr1.render()</td>
+        <td><label for='addr2'>&nbsp;</label>$:cform.addr2.render()</td>
+    </tr></table>
+    <table><tr>
+        <td><label for='city'>City</label>$:cform.city.render()</td>
+        <td><label for='state'>State</label>$:cform.state.render()</td>
+        <td><label for='zipcode'>Zip code</label>$:cform.zipcode.render()-$:cform.zip4.render()</td><span id="note_zipcode"></span>        
+    </tr></table>
+    <table><tr>
+        <td><label for='phone'>Phone</label>$:cform.phone.render()</td>
     $if cform.captcha.pre:
         $:cform.signid.render()
-        <tr><th>Validation</th><td>$:cform.captcha.pre $:cform.captcha.render()</td></tr>
-    </table>
+        <td><label for='captcha'>Validation</label>$:cform.captcha.pre $:cform.captcha.render()</td>
+    </tr></table>
     </div>
 </fieldset>
 
-<button type="submit" style="font-size: 1.2em">Create my petition</button>
+$if target == '/c/new':
+    <button type="submit" style="font-size: 1.2em">Create my petition</button>
+$else:
+    <button type="submit" style="font-size: 1.2em">Save my petition</button>
 </form>

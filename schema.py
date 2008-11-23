@@ -1,4 +1,4 @@
-import json
+import simplejson as json
 import web
 import smartersql as sql
 
@@ -58,6 +58,8 @@ class District(sql.Table):
     center_lng = sql.Float()
     zoom_level = sql.Integer()
 
+    earmark_per_capita = sql.Float()
+
 class Zip(sql.Table):
     zip = sql.String(5, primary=True)
     city = sql.String()
@@ -76,6 +78,12 @@ class Zip4(sql.Table):
 #--alter table zip4 add constraint "zip4_district_fkey" FOREIGN KEY (district) REFERENCES district(name) #@@
 #--GRANT ALL ON zip4 TO watchdog;
 
+class GovtrackID(sql.URL):
+    towhatever = lambda f: (lambda self, x, *a: f(self, 
+      'http://www.govtrack.us/congress/person.xpd?id=' + x, *a))
+    toxml = towhatever(sql.URL.toxml)
+    ton3 = towhatever(sql.URL.ton3)
+
 class Politician(sql.Table):
     @property
     def _uri_(self): return 'http://watchdog.net/p/%s#it' % self.id
@@ -88,7 +96,7 @@ class Politician(sql.Table):
     # govtrack.json --@@get from votesmart?
     bioguideid = sql.String()
     opensecretsid = sql.String()
-    govtrackid = sql.String()
+    govtrackid = GovtrackID()
     gender = sql.String(1)
     birthday = sql.String() #@@date
     firstname = sql.String()
@@ -96,6 +104,22 @@ class Politician(sql.Table):
     lastname = sql.String()
     
     election_status = sql.String()
+
+    def xmllines(self):
+        sameas = lambda x: '  <owl:sameAs xmlns:owl="http://www.w3.org/2002/07/owl#" \
+rdf:resource="%s" />' % x
+        return [sameas(x) for x in self.akas()]
+    
+    def n3lines(self, indent):
+        sameas = lambda x: indent + '<http://www.w3.org/2002/07/owl#sameAs> <%s>;' % x
+        return [sameas(x) for x in self.akas()]
+    
+    def akas(self):
+        if self.bioguideid:
+            yield 'http://www.rdfabout.com/rdf/usgov/congress/people/' + self.bioguideid
+        if self.wikipedia:
+            yield 'http://dbpedia.org/resource/' + self.wikipedia.split('/')[-1]
+    
     @property
     def name(self):
         if hasattr(self, 'nickname') and self.nickname:
@@ -107,6 +131,11 @@ class Politician(sql.Table):
     def fullname(self):
         return (self.firstname or '') + ' ' + (self.middlename or '') + ' ' + (self.lastname or '')
 
+    @property
+    def title(self):
+        dist = self.district_id
+        return 'Sen.' if State.where(code=dist) else 'Rep.'
+    
     @property
     def title(self):
         dist = self.district_id
@@ -160,7 +189,13 @@ class Politician(sql.Table):
     # opensecrets
     pct_pac_business = sql.Percentage()
     
+    # almanac.json
+    n_vote_received = sql.Number()
+    pct_vote_received = sql.Percentage()
+    last_elected_year = sql.Number()
+
     bills_sponsored = sql.Backreference('Bill', 'sponsor')
+    earmarks_sponsored = sql.Backreference('Earmark_sponsor', 'politician')
 
 class Congress(sql.Table):
     politician = sql.Reference(Politician, primary=True)
@@ -195,7 +230,7 @@ class Interest_group_rating(sql.Table):
 class Bill(sql.Table):
     @property
     def _uri_(self):
-        return 'http://watchdog.net/b/%s' % self.id
+        return 'http://watchdog.net/b/%s#it' % self.id
     
     id = sql.String(primary=True)
     session = sql.Integer()
@@ -376,6 +411,69 @@ class Earmark(sql.Table):
     intended_recipient = sql.String()
     recipient_stem = sql.String()
     notes = sql.String()    
+    sponsors = sql.Backreference('Earmark_sponsor', 'earmark')
+
+class Earmark_sponsor(sql.Table):
+    earmark = sql.Reference(Earmark, primary=True)
+    politician = sql.Reference(Politician, primary=True)
+
+
+## Lobbyiest stuff:
+class lob_organization(sql.Table):
+    id = sql.Number(primary=True)  #@@TODO: design stable ids
+    name = sql.String()
+    filings = sql.Backreference('lob_filing', 'org')
+
+class lob_person(sql.Table):
+    id = sql.Number(primary=True)  #@@TODO: design stable ids
+    prefix = sql.String()
+    firstname = sql.String()
+    middlename = sql.String()
+    lastname = sql.String()
+    suffix = sql.String()
+    contact_name = sql.String()
+    filings = sql.Backreference('lob_filing', 'lobbyist')
+
+class lob_pac(sql.Table):
+    id = sql.Number(primary=True)  #@@TODO: design stable ids
+    name = sql.String()
+    filings = sql.Backreference('lob_pac_filings', 'pac')
+
+class lob_filing(sql.Table):
+    id = sql.Number(primary=True)  #Uses xml file number as a stable id.
+    year = sql.Year()
+    type = sql.String()
+    signed_date = sql.Date()
+    amendment = sql.Boolean()
+    certified = sql.Boolean()
+    comments = sql.String()
+
+    senate_id = sql.Number()
+    house_id = sql.Number()
+    filer_type = sql.String(1)
+
+    lobbyist = sql.Reference(lob_person)
+    org = sql.Reference(lob_organization)
+    pacs = sql.Backreference('lob_pac_filings', 'filing')
+    contributions = sql.Backreference('lob_contribution', 'filing', order='amount asc')
+    @property
+    def house_url(self):
+        return "http://disclosures.house.gov/lc/xmlform.aspx?id=%d" % self.id
+
+class lob_contribution(sql.Table):
+    filing = sql.Reference(lob_filing)
+    date = sql.Date()
+    type = sql.String()
+    contributor = sql.String()
+    payee = sql.String()
+    recipient = sql.String()
+    amount = sql.Dollars()
+    politician = sql.Reference(Politician)
+
+class lob_pac_filings(sql.Table):
+    pac = sql.Reference(lob_pac)
+    filing = sql.Reference(lob_filing)
+
 
 class Expenditure (sql.Table):
     id = sql.Serial(primary=True)
@@ -386,12 +484,6 @@ class Expenditure (sql.Table):
     filer_id = sql.String(10)
     report_id = sql.Integer()
     amount = sql.String(20)
-
-class WYR(sql.Table):
-    district = sql.Reference(District)
-    contact = sql.String()
-    contacttype = sql.String(1) # E=email, W=wyr, I=ima, Z=zipauth
-    captcha = sql.Boolean()
 
 class SOI(sql.Table):
     #district_id = sql.String(10, primary=True) 
@@ -418,6 +510,7 @@ class Census_meta(sql.Table):
     internal_key = sql.String(10, primary=True)
     census_type = sql.Integer(primary=True)
     hr_key = sql.String(512)
+    label = sql.String()
 
 class Census_data(sql.Table):
     #district_id = sql.String(10, primary=True) 
@@ -426,7 +519,29 @@ class Census_data(sql.Table):
     census_type = sql.Integer(primary=True)
     value = sql.Float()
 
-#db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
+class Pol_contacts(sql.Table):
+    politician = sql.Reference(Politician, primary=True)
+    contact = sql.String()
+    contacttype = sql.String(1)     # E=email, W=wyr, I=ima, Z=zipauth
+    captcha = sql.Boolean()
 
-#db.query("CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician)")
-#db.query("GRANT ALL on v_politician_name")
+class Census_Population(sql.Table):
+    state_id = sql.String(2)     # STATE
+    county_id = sql.String(3)    # COUNTY
+    blockgrp_id = sql.String(1)  # BLOCKGRP
+    block_id = sql.String(4)     # BLOCK
+    district_id = sql.String(2)  # CD110
+    tract_id = sql.String(6)     # TRACT
+    zip_id = sql.String(5)       # ZCTA
+    sumlev = sql.String(16)      # SUMLEV
+    area_land = sql.Integer()    # AREALAND
+    area_land.sql_type = 'bigint'
+    population = sql.Integer()   
+
+def init():
+    db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
+    try:
+        db.query("GRANT ALL on census TO watchdog")
+    except:
+        pass # group doesn't exist
+

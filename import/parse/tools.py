@@ -4,7 +4,7 @@ common tools for parsers
 """
 
 import sys
-import json
+import simplejson as json
 
 def netstring(x):
     """

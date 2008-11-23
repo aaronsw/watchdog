@@ -27,8 +27,17 @@ var zip_check_event = function(){
         });
 }
 
-$('#zip4').change(zip_check_event);
-//$('#zip4').blur(zip_check_event);
+var zip_changed = false
+$('#zipcode').change(function(){ 
+    zip_changed = true; 
+    $('#zip4').focus();
+});
+$('#zip4').change(function(){ zip_changed = true; });
+$('#zip4').blur(function(){
+     if (zip_changed){
+        zip_check_event();
+    }
+});
 
 function load_unload_captcha(dist){
     $.get('/writerep/getcaptcha', {dist: dist},

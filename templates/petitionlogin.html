@@ -1,7 +1,10 @@
 $def with (loginform, signupform, petitionform, wyrform, msg=None, redirect="")
 
+$var width: 782px
+$var color: white
+
 $var title: Log in or sign up
-$var login_class: select\
+$var login_class: select
 
 $if msg:
     $var msg: $:msg
@@ -17,13 +20,12 @@ $elif not signupform.valid:
 <style>
 #text h2 { margin-bottom: 30px; }
 #text fieldset td { padding: 0; }
-#text fieldset #fname { margin-right: 7px; }
-#text fieldset #fname { width: 115px; }
-#text fieldset #lname { width: 115px; }
 </style>
 
 
 <h2>You just need an account now...</h2>
+
+$if not cookies_on(): <p class="error">Please turn on cookies for login to work. You can enable them via your browser's preference settings.</p>
 
 <table>
 <tr>
@@ -55,7 +57,7 @@ $elif not signupform.valid:
         <p><a href='/u/forgot_password'>Forgot your password?</a></p>
         </fieldset>
     </form>
-</td>
+</td>    
 <td class="signup">
     <form name="signup" method="POST" action="signup">
         <div style="display: none">
@@ -76,10 +78,6 @@ $elif not signupform.valid:
         $:signupform.redirect.render()
         <fieldset>
         <legend>... or sign up to create one</legend>
-        <table>
-        <tr><td><label for="fname">First name</label>$:signupform.fname.render()</td>
-        <td><label for="lname">Last name</label>$:signupform.lname.render()</td></tr>
-        </table>
         <label>Enter your email</label>
         $:signupform.email.render()
         <label>Give it a password</label>

@@ -12,7 +12,7 @@ content = [
     slug='fecpvs',
     title='More data!',
     author='Aaron Swartz',
-    updated='2008-07-30T00:00Z',
+    updated='2008-07-30T00:00:00Z',
     body = """
 <p>
 We've added even more data to the site. 
@@ -52,7 +52,7 @@ and later this week.
     slug = 'alignment',
     title = 'Interest Group Alignment',
     author = 'Aaron Swartz',
-    updated = '2008-06-16T00:00Z',
+    updated = '2008-06-16T00:00:00Z',
     body = """
 <p>
 First, 
@@ -106,7 +106,7 @@ I hope you enjoy it!
     slug = 'earmarks',
     title = 'Earmark Info',
     author = 'Aaron Swartz',
-    updated = '2008-05-07T00:00Z',
+    updated = '2008-05-07T00:00:00Z',
     body = """
 <p>
 Thanks to the work of Alex Gourley
@@ -151,7 +151,7 @@ Thanks to Alex and Taxpayers for Common Sense for making it possible.
     slug = 'speeches',
     title = 'Speech Data',
     author = 'Aaron Swartz',
-    updated = '2008-04-21T00:00Z',
+    updated = '2008-04-21T00:00:00Z',
     body = """
 <p>
 I'm thrilled to say that Thursday, 
@@ -188,7 +188,7 @@ and it shouldn't happen again.
     slug = 'momentum',
     title = 'Building Momentum',
     author = 'Aaron Swartz',
-    updated = '2008-04-16T23:48Z',
+    updated = '2008-04-16T23:48:00Z',
     body = """
 <p>
 The response to the announcement of this little site 
@@ -302,7 +302,7 @@ class feed:
     def GET(self):
         web.header('content-type', 'application/atom+xml')
         lastupdate = max(x.updated for x in content)
-        return render._do('blog_feed')(content, lastupdate)
+        return render._template('blog_feed')(content, lastupdate)
 
 class post:
     def GET(self, name):

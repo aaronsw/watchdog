@@ -1,14 +1,29 @@
 $def with (pol)
 
+$var width: 90%
+$var color: white
+
 $var title: Bills introduced by $pol.name
 
-<p><a href="/p/$pol.id">&laquo; Back to $pol.name</a></p>
+<style>
+.header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
+</style>
 
-<ul>
+
+<h1>Bills introduced by $pol.name</h1>
+
+<table class="structure">
+<tr><td class="header">Bill</td><td class="header" colspan="2">Description</td></tr>
+$ trclass = "odd"
 $for bill in pol.bills_sponsored:
-    <li><a href="/b/$bill.id">$bill.type.upper(). $bill.number</a>: $bill.title</li>
-$else:
-    <li><em>no bills sponsored</em></li>
-</ul>
+    $if trclass == "odd":
+        $ trclass = "even"
+    $else:
+        $ trclass = "odd"
+    <tr class="$trclass"><td style="white-space: nowrap"><a href="/b/$bill.id">$bill.type.upper(). $bill.number</a></td><td>$bill.title</td></tr>
+</table>
+
+$if not pol.bills_sponsored:
+    <b>no bills sponsored</b>
 
 <p><a href="/p/$pol.id">&laquo; Back to $pol.name</a></p>

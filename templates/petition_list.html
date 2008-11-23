@@ -1,17 +1,35 @@
 $def with (petitions, msg=None)
 
-$var title: Top signed petitions
+$var width: 90%
+$var color: white
+
+$var title: Causes
 
 $if msg:
     $var msg: $:msg
 
-<p><a href="/c/new" class="action">Start a new petition</a></p>
+<style>
+#text #signs { margin: 0; padding: 0; }
+#text #signs { list-style: none; border-bottom: 1px solid #ddd; padding: 6px 0; line-height: 14px; background: none; }
+#text #signs a { color: black; }
+#text #signs .count { margin-right: 0.3em; }
+.header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
+</style>
 
-<ul class="chartlist">
+<h1>Causes</h1>
+
+<p><strong>Get involved!</strong> Don't just sit on the sidelines &mdash; pick an issue you care about and do something about it. You can sign a petition (and maybe write your Congressperson) for any of the issues below. Then ask all your friends to join you. Or, do even more by <a href="/c/new">starting a petition of your own</a>.</p.>
+
+<table class="structure" width="100%" style="margin-top: 1em">
+<tr><td class="header">Name of petition</td><td class="header" style="text-align: right;">No. of signatures</td></tr>
+$ trclass = "odd"
 $for p in petitions:
-    <li>
-        <a href="/c/$p.id">$p.title</a> 
-        <span class="count"> $p.signature_count</span>
-    </li>
-</ul>
+    $if trclass == "odd":
+        $ trclass = "even"
+    $else:
+        $ trclass = "odd"
+    <tr class="$trclass"><td style="padding: 3px;"><a href="/c/$p.id">$p.title</a></td><td style="padding: 3px 24px 3px 3px; text-align: right;"><span class="count"> $p.signature_count</span></a></td></tr>
+
+</table>
+
 <p><a href="/c/new" class="action">Start a new petition</a></p>

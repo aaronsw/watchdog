@@ -1,18 +1,27 @@
 $def with (votes)
 
+$var width: 90%
+$var color: white
+
 $var title: Votes
 
-<table>
-  <tr><th>Bill</th><th>Pol</th><th>Group</th></tr>
+<style>
+.header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
+</style>
+
+<h1>Votes</h1>
 
 $ support_decode = {1: 'Support', 0: 'Abstain', -1: 'Oppose', None: 'Unknown'}
 
+<table class="structure" width="100%">
+<tr><td class="header">Bill</td><td class="header">Description</td><td class="header" style="padding-left: 12px; padding-right: 0px; padding-left: 0px; text-align: center;">Pol.</td><td class="header" style="padding-left: 12px; padding-right: 0px; padding-left: 0px; text-align: center;">Group</td></tr>
+$ trclass = "odd"
 $for vote in votes:
-    <tr>
-      <td><a href="/b/$vote.bill_id">$vote.type.upper(). $vote.number</a>: $vote.title</td>
-      <td><span class="$support_decode[vote.vote].lower()"
-      >$support_decode[vote.vote]</span></td>
-      <td><span class="$support_decode[vote.support].lower()"
-      >$support_decode[vote.support]</span></td>
-    </tr>
+    $if trclass == "odd":
+        $ trclass = "even"
+    $else:
+        $ trclass = "odd"
+    <tr class="$trclass"><td><a href="/b/$vote.bill_id">$vote.type.upper(). $vote.number</a></td><td>$vote.title</td><td class="$support_decode[vote.vote].lower()">$support_decode[vote.vote]</td><td class="$support_decode[vote.support].lower()" style=" border-left: 1px solid #fff;">$support_decode[vote.support]</td></tr>
+
 </table>
+

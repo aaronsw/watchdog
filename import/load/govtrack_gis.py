@@ -3,7 +3,8 @@ parse data from govtrack maps
 
 from: data/crawl/govtrack/gis/gmapdata/
 """
-import re, json
+import re
+import simplejson as json
 from settings import db
 
 DISTRICT_TABLE = 'load/manual/districts.json'

@@ -44,7 +44,7 @@ def parse_file(fn):
         # earmarks
         if not r.description: break 
         # The id's aren't remotely uniq, map to something that is
-        r.id=n
+        r.id=n+1 # Lets start at 1 instead of 0
         yield r
 
 if __name__ == "__main__":

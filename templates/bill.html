@@ -1,8 +1,15 @@
 $def with (bill)
 
+$var width: 90%
+$var color: white
+
 $var title: $bill.name
 
-<p><strong>$bill.title</strong></p>
+<style>
+.header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
+</style>
+
+<h1>$bill.title</h1>
 
 <p>(Introduced on $bill.introduced in the ${bill.session}th Congress.)</p>
 
@@ -13,60 +20,70 @@ $if bill.sponsor:
 
 $ support_decode = {1: 'Support', 0: 'Abstain', -1: 'Oppose', None: 'Unknown'}
 
+<table class="structure" width="100%">
+<tr><td width="50%" style="padding-right: 25px;">
+
 $if bill.interest_group_support:
-    <h2>Interest Group Support</h2>
+    <h2 class="rep">Interest Group Support</h2>
     
-    <table class="interest_group_support">
-    <tr><th>Group</th>
-        <th>Support</th>
+    <table class="interest_group_support" cellpadding="0" cellspacing="0" width="100%">
+    <tr><td class="header">Group</td>
+        <td class="header" style="text-align: center; padding-left: 20px; padding-right: 20px;">Support</td>
     </tr>
+    $ trclass = "odd"
     $for support in bill.interest_group_support:
-        <tr>
-          <td>$support.group.longname</td>
-          <td class="$support_decode[support.support].lower()"\
-          >$support_decode[support.support]</td>
-        </tr>
+        $if trclass == "odd":
+            $ trclass = "even"
+        $else:
+            $ trclass = "odd"
+        <tr class="$trclass"><td>$support.group.longname</td><td style="text-align: center;" class="$support_decode[support.support].lower()"\>$support_decode[support.support]</td></tr>
+    
     </table>
+    
+    
+</td><td width="50%" style="padding-left: 25px;">
 
 $if bill.votes_by_party:
-    <h2>Votes</h2>
-    <table class="interest_group_support">
-    <tr><th>Party</th>
-        <th>Support</th>
-        <th>Oppose</th>
-        <th>Abstain</th>
+    <h2 class="rep">Votes</h2>
+    <table class="interest_group_support"  cellpadding="0" cellspacing="0" width="100%">
+    <tr><td class="header">Party</td>
+        <td class="header" style="text-align: center">Support</td>
+        <td class="header" style="text-align: center">Oppose</td>
+        <td class="header" style="text-align: center">Abstain</td>
     </tr>
+    $ trclass = "odd"
     $for party, votes in bill.votes_by_party.items():
-        <tr><th>$party</th>
-            <td>$votes.get(1, 0)</td>
-            <td>$votes.get(-1, 0)</td>
-            <td>$votes.get(0, 0)</td>
-        </tr>
-    </table>
+        $if trclass == "odd":
+            $ trclass = "even"
+        $else:
+            $ trclass = "odd"
+        <tr class="$trclass"><td>$party</td><td style="text-align: center">$votes.get(1, 0)</td><td style="text-align: center">$votes.get(-1, 0)</td><td style="text-align: center">$votes.get(0, 0)</td></tr>
 
 $if bill.votes_by_caucus:
-    <table class="interest_group_support">
-    <tr><th>Caucus</th>
-        <th>Support</th>
-        <th>Oppose</th>
-        <th>Abstain</th>
+    <tr><td class="header" style="padding-top: 20px;">Caucus</td>
+        <td class="header" style="text-align: center; padding-top: 20px;">Support</td>
+        <td class="header" style="text-align: center; padding-top: 20px;">Oppose</td>
+        <td class="header" style="text-align: center; padding-top: 20px;">Abstain</td>
     </tr>
+    $ trclass = "odd"
     $for caucus, votes in bill.votes_by_caucus.items():
-        <tr><th>$caucus</th>
-            <td>$votes.get(1, 0)</td>
-            <td>$votes.get(-1, 0)</td>
-            <td>$votes.get(0, 0)</td>
-        </tr>
-    </table>    
+        $if trclass == "odd":
+            $ trclass = "even"
+        $else:
+            $ trclass = "odd"
+        <tr class="$trclass"><td>$caucus</td><td style="text-align: center">$votes.get(1, 0)</td><td style="text-align: center">$votes.get(-1, 0)</td><td style="text-align: center">$votes.get(0, 0)</td></tr>
 
-<p><strong>Developers:</strong> Get this page in <a href="/b/${bill.id}.n3">N3</a>, <a href="/b/${bill.id}.xml">XML</a>, or <a href="/b/${bill.id}.json">JSON</a>.</p>
+$if bill.votes_by_caucus:
+	<tr><td colspan="4" style="border-top: 1px solid #999; padding-top: 30px;"></td></tr>
+    </table>    
+    
+</td></tr></table>    
+
 
 <div class="sources">
-  Bill data comes from <a 
-    href="http://www.govtrack.us/congress/bill.xpd?bill=$bill.type$bill.session-$bill.number"
-  >GovTrack</a>.
+  Bill data comes from <a href="http://www.govtrack.us/congress/bill.xpd?bill=$bill.type$bill.session-$bill.number" class="external">GovTrack</a>.
   $if bill.maplightid:
-      Interest group data comes from
-      <a href="http://maplight.org/map/us/bill/$bill.maplightid/default"
-      >MAPLight.org</a>.  
+      Interest group data comes from <a href="http://maplight.org/map/us/bill/$bill.maplightid/default" class="external">MAPLight.org</a>.  
 </div>
+
+<p><strong>Developers:</strong> Get this page in <a href="/b/${bill.id}.n3">N3</a>, <a href="/b/${bill.id}.xml">XML</a>, or <a href="/b/${bill.id}.json">JSON</a>.</p>

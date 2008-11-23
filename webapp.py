@@ -1,14 +1,17 @@
 #!/usr/bin/env python
-import re
+import re, sys
 import web
-web.config.debug = True
 
-from utils import zip2rep, simplegraphs, apipublish, users, writerep
+from utils import zip2rep, simplegraphs, apipublish, users, writerep, se
 import blog
 import petition
 import settings
-from settings import db, render
+from settings import db, render, production_mode
 import schema
+import config
+
+if not production_mode:
+	web.config.debug = True
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -20,19 +23,30 @@ urls = (
   r'/us/([a-z][a-z]-\d+)%s?' % options, 'district',
   r'/(us|p)/by/(.*)/distribution\.png', 'sparkdist',
   r'/(us|p)/by/(.*)', 'dproperty',
+  r'/p/(.*?)/lobby', 'politician_lobby',
+  r'/p/(.*?)/earmarks', 'politician_earmarks',
   r'/p/(.*?)/introduced', 'politician_introduced',
   r'/p/(.*?)/groups', 'politician_groups',
   r'/p/(.*?)/(\d+)', 'politician_group',
   r'/p/(.*?)%s?' % options, 'politician',
+  r'/e/(.*?)%s?' % options, 'earmark',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/r/us/(.*?)%s?' % options, 'roll',
   r'/c', petition.app,
   r'/u', users.app,
+  r'/l/c/?(.*?)', 'lob_contrib',
+  r'/l/f/?(.*?)', 'lob_filing',
+  r'/l/o/?(.*?)', 'lob_org',
+  r'/l/pa/?(.*?)', 'lob_pac',
+  r'/l/pe/?(.*?)', 'lob_person',
   r'/writerep', writerep.app,
   r'/about(/?)', 'about',
+  r'/about/team', 'aboutteam',
+  r'/about/help', 'abouthelp',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
   r'/blog', blog.app,
+  r'/share', 'petition.share',
   r'/data/(.*)', 'staticdata',
   r'/bbauth/', 'contacts.auth_yahoo',
   r'/authsub', 'contacts.auth_google',
@@ -52,9 +66,17 @@ class aboutapi:
     def GET(self):
         return render.about_api()
 
+class aboutteam:
+    def GET(self):
+        return render.about_team()
+
+class abouthelp:
+    def GET(self):
+        return render.about_help()
+
 class feedback:
     def GET(self):
-        raise web.seeother('/about')
+        return render.feedback()
 
     def POST(self):
         i = web.input(email='info@watchdog.net')
@@ -69,21 +91,23 @@ class find:
         i = web.input(address=None)
         pzip5 = re.compile(r'\d{5}')
         pzip4 = re.compile(r'\d{5}-\d{4}')
-        pname = re.compile(r'[a-zA-Z\.]+')
         pdist = re.compile(r'[a-zA-Z]{2}\-\d{2}')
         
         dists = None
-        if i.get('zip'):
-            if pzip4.match(i.zip):
-                zip, plus4 = i.zip.split('-')
+        if not i.get('q'):
+            i.q = i.get('zip')
+        
+        if i.q:
+            if pzip4.match(i.q):
+                zip, plus4 = i.q.split('-')
                 dists = [x.district for x in
                   db.select('zip4', where='zip=$zip and plus4=$plus4', vars=locals())]
             
-            elif pzip5.match(i.zip):
+            elif pzip5.match(i.q):
                 try:
-                    dists = zip2rep.zip2dist(i.zip, i.address)
+                    dists = zip2rep.zip2dist(i.q, i.address)
                 except zip2rep.BadAddress:
-                    return render.find_badaddr(i.zip, i.address)
+                    return render.find_badaddr(i.q, i.address)
             
             if dists:
                 d_dists = schema.District.select(where=web.sqlors('name=', dists))
@@ -93,30 +117,23 @@ class find:
                 if len(dists) == 1:
                     raise web.seeother('/us/%s' % dists[0].lower())
                 elif len(dists) == 0:
-                    return render.find_none(i.zip)
+                    return render.find_none(i.q)
                 else:
-                    return render.find_multi(i.zip, d_dists)
+                    return render.find_multi(i.q, d_dists)
 
-            if pdist.match(i.zip):
-                raise web.seeother('/us/%s' % i.zip)
-
-            if pname.match(i.zip):
-                in_name = i.zip.lower()
-                name = in_name.replace(' ', '_')
-                vars = {'name':'%%%s%%' % name}
-                #reps = db.select('politician, congress', where="current_member AND congress_num=110 AND id like $name", vars=vars)
-                reps = db.query('select * from politician JOIN (select * from congress where current_member and congress_num=110) as cur on id=politician_id where id like $name', vars=vars)
-                if len(reps) == 0:
-                    vars = {'name':'%%%s%%' % in_name}
-                    reps = db.select('v_politician_name', where="name ilike $name", vars=vars)
-                if len(reps) > 1:
-                    return render.find_multi_reps(reps)
-                else:
-                    try:
-                        rep = reps[0]
-                        web.seeother('/p/%s' % rep.id)
-                    except IndexError:
-                        raise web.notfound
+            if pdist.match(i.q):
+                raise web.seeother('/us/%s' % i.q)
+            
+            results = se.query(i.q)
+            reps = db.select('politician', where=web.sqlors('id=', results))
+            if len(reps) > 1:
+                return render.find_multi_reps(reps)
+            else:
+                try:
+                    rep = reps[0]
+                    web.seeother('/p/%s' % rep.id)
+                except IndexError:
+                    raise web.notfound
 
         else:
             index = schema.District.select(order='name asc')
@@ -151,7 +168,7 @@ class district:
         out = apipublish.publish([d], format)
         if out: return out
         
-        return render.district(d)
+        return render.district(d, sparkpos)
 
 def group_politician_similarity(politician_id, qmin=None):
     """Find the interest groups that vote most like a politician."""
@@ -216,6 +233,47 @@ class bill:
         
         return render.bill(b)
 
+def earmark_list(format, page=0, limit=50):
+    earmarks = schema.Earmark.select(limit=limit, offset=page*limit, order='id')
+
+    out = apipublish.publish(earmarks, format)
+    if out: return out
+    return render.earmark_list(earmarks, limit)
+def earmark_pol_list(pol_id, format, page=0, limit=50):
+    earmarks = db.select(['earmark_sponsor', 'earmark'], what='earmark.*', 
+            where='politician_id = $pol_id AND earmark_id=earmark.id', 
+            order='final_amt desc', vars=locals())
+    if not earmarks:
+        # @@TODO: something better here. 
+        raise web.notfound
+    out = apipublish.publish(earmarks, format)
+    if out: return out
+    return render.earmark_list(earmarks, limit)
+
+class politician_earmarks:
+    def GET(self, polid, format=None):
+        try:
+            em = schema.Politician.where(id=polid)[0]
+        except IndexError:
+            raise web.notfound
+        return earmark_pol_list(polid, format)
+class earmark:
+    def GET(self, earmark_id, format=None):
+        # No earmark id, show list
+        if earmark_id == "" or earmark_id == "index":
+            # Show earmark list
+            i = web.input(page=0)
+            return earmark_list(format, int(i.page))
+        # Display the specific earmark
+        try:
+            em = schema.Earmark.where(id=int(earmark_id))[0]
+        except IndexError:
+            raise web.notfound
+        except ValueError:
+            raise web.notfound
+        return render.earmark(em)
+
+
 class politician:
     def GET(self, polid, format=None):
         if polid != polid.lower():
@@ -255,7 +313,72 @@ class politician:
         out = apipublish.publish([p], format)
         if out: return out
 
-        return render.politician(p)
+        return render.politician(p, sparkpos)
+
+class politician_lobby:
+    def GET(self, polid, format=None):
+        limit = 50
+        page = int(web.input(page=0).page)
+        #c = schema.lob_contribution.select(where='politician_id=$polid', limit=limit, offset=page*limit, order='amount desc', vars=locals())
+        a = db.select(['lob_filing', 'lob_contribution'], 
+                what='SUM(amount)',
+                where="politician_id = $polid AND lob_filing.id = filing_id",
+                vars=locals())[0].sum
+        c = db.select(['lob_organization', 'lob_filing', 'lob_contribution', 'lob_person'], 
+                where="politician_id = $polid and lob_filing.id = filing_id and lob_organization.id = org_id and lob_person.id = lobbyist_id", 
+                order='amount desc', limit=limit, offset=page*limit,
+                vars=locals())
+        return render.politician_lobby(c, a, limit)
+class lob_filing:
+    def GET(self, filing_id):
+        limit = 50
+        page = int(web.input(page=0).page)
+        if filing_id:
+            f = schema.lob_filing.select(where='id=$filing_id', limit=limit, offset=page*limit, vars=locals())
+        else:
+            f = schema.lob_filing.select(limit=limit, offset=page*limit)
+        return render.lob_filings(f,limit)
+class lob_contrib:
+    def GET(self, filing_id):
+        limit = 50
+        page = int(web.input(page=0).page)
+        if filing_id:
+            c = schema.lob_contribution.select(where='filing_id=$filing_id', limit=limit, offset=page*limit, order='amount desc', vars=locals())
+        else:
+            c = schema.lob_contribution.select(limit=limit, offset=page*limit, order='amount desc')
+        return render.lob_contributions(c, limit)
+class lob_pac:
+    def GET(self, pac_id):
+        limit = 50
+        i = web.input(page=0)
+        page = int(i.page)
+        if 'filing_id' in i:
+            p = [x.pac for x in schema.lob_pac_filings.select(where='filing_id=$i.filing_id',limit=limit, offset=page*limit, vars=locals())]
+        elif pac_id:
+            p = schema.lob_pac.select(where='id=$pac_id',limit=limit, offset=page*limit, vars=locals())
+        else:
+            p = schema.lob_pac.select(limit=limit, offset=page*limit)
+        return render.lob_pacs(p,limit)
+class lob_org:
+    def GET(self, org_id):
+        limit = 50
+        i = web.input(page=0)
+        page = int(i.page)
+        if org_id:
+            o = schema.lob_organization.select(where='id=$org_id', limit=limit, offset=page*limit, order='name asc', vars=locals())
+        else:
+            o = schema.lob_organization.select(limit=limit, offset=page*limit, order='name asc')
+        return render.lob_orgs(o,limit)
+class lob_person:
+    def GET(self, person_id):
+        limit = 50
+        i = web.input(page=0)
+        page = int(i.page)
+        if person_id:
+            p = schema.lob_person.select(where='id=$person_id', limit=limit, offset=page*limit, order='lastname asc', vars=locals())
+        else:
+            p = schema.lob_person.select(limit=limit, offset=page*limit, order='lastname asc')
+        return render.lob_person(p,limit)
 
 class politician_introduced:
     def GET(self, politician_id):
@@ -265,7 +388,8 @@ class politician_introduced:
 class politician_groups:
     def GET(self, politician_id):
         related = group_politician_similarity(politician_id, qmin=1)
-        return render.politician_groups(politician_id, related)
+        pol = schema.Politician.where(id=politician_id)[0]
+        return render.politician_groups(pol, related)
 
 class politician_group:
     def GET(self, politician_id, group_id):
@@ -313,6 +437,22 @@ class dproperty:
                 item.path = '/p/' + item.id
         return render.dproperty(items, what)
 
+def sparkpos(table, what, id):
+    if table == 'district':
+        id_col = 'name'
+        id = id.upper()
+    elif table == 'politician':
+        id_col= 'id'
+    else: return 0
+    assert table in table_map.values()
+    if not r_safeproperty.match(what): raise web.notfound
+    
+    item = db.query("select count(*) as position from %(table)s, \
+      (select * from %(table)s where %(id_col)s=$id) as a \
+      where %(table)s.%(what)s > a.%(what)s" % 
+      {'table':table, 'what':what, 'id_col':id_col}, vars={'id': id})[0]
+    return item.position + 1 # '#1' looks better than '#0'
+
 class sparkdist:
     def GET(self, table, what):
         try:
@@ -337,6 +477,15 @@ class staticdata:
         return file('data/' + path).read()
 
 app = web.application(urls, globals())
-settings.setup_session(app)
+def notfound():
+    web.ctx.status = '404 Not Found'
+    return getattr(render, '404')()
+
+def internalerror():
+    return file('templates/500.html').read()
+
+app.notfound = notfound
+if production_mode:
+    app.internalerror = web.emailerrors(config.send_errors_to, internalerror)
 
 if __name__ == "__main__": app.run()

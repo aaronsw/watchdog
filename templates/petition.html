@@ -1,4 +1,7 @@
-$def with (p, signform, useremail, isauthor, wyrform=None, msg=None)
+$def with (p, signform, useremail, isauthor, issignatory, wyrform=None, msg=None)
+
+$var width: 90%
+$var color: white
 
 $var title: $p.title
 
@@ -10,20 +13,21 @@ $if wyrform:
 /*fieldset#signpetition input { width: 500px; }*/
 fieldset#signpetition { margin-top: 2em; }
 #text fieldset td { padding: 0; }
-#text fieldset #fname { margin-right: 7px; }
-#text fieldset #fname, #lname, #phone, #addr2 {width: 190px;}
-#text fieldset #addr1, #city { width: 250px; }
+#text fieldset #lname, #phone, #addr2 {width: 190px;}
+#text fieldset #addr1 { width: 250px; }
 #text fieldset #share_with { width: 13px; }
-#text fieldset #share_with_container { margin-top: 1em; background-color: #ffc; width: 23em;}
+#text fieldset #share_with_container { margin-top: 1em; background-color: #ffc; width: 23em; }
 #text fieldset #share_with_container label { display: inline; }
 </style>
 
 $if msg:
     $var msg: $:msg
 
-<h2>$p.title</h2>
+<h1>$p.title</h1>
 
 $:format(p.description)
+
+<!-- <h2>$p.title</h2> -->
 
 <div id="upperbar">
 $if p.signatory_count == 0:
@@ -33,9 +37,14 @@ $else:
 		$ ppl = 'person</a></strong> has'
 	$else:
 		$ ppl = 'people</a></strong> have'
-	<h2> <strong><a href='/c/$p.id/signatories'>$p.signatory_count $:ppl signed this petition. </h2>
+	$if issignatory:
+	    $ signed = ', including <em>you</em>'
+	$else:
+	    $ signed = ''
+	<h2> <strong><a href='/c/$p.id/signatories'>$p.signatory_count $:ppl signed this petition$:signed.</h2>
+
 <div id="uppermenu">
-  <a href="/c/$p.id/share">Share</a>&nbsp;
+  <a href="/share?url=/c/$p.id/&title=$p.title">Share</a>&nbsp;
 $if isauthor:
     <a href="?m=edit">Edit</a>
     <a href="?m=delete">Delete</a>
@@ -45,35 +54,49 @@ $if isauthor:
 <a name="sign"></a>
 
 <form name="sign" method="POST" action="/c/$p.id?m=sign">
-        $if (not signform.valid) or (wyrform and not wyrform.valid):
-            <p class="error">Please try again after fixing the errors highlighted below:</p>
         <fieldset id="signpetition">
-            <legend>Sign this petition</legend>
+            $if issignatory:
+                <legend>Change your signature</legend>
+            $else:
+                <legend>Sign this petition</legend>
             $if wyrform:
                 <p> When you sign this petition, your comments will be sent to your Representative too.</p>
+
+            $if not signform.valid:
+                $if signform.note: <p class="error">$signform.note</p>
+                $else: <p class="error">Please try again after fixing the problems highlighted below:</p>
+            $elif wyrform and not wyrform.valid:
+                $if wyrform.note: <p class="error">$wyrform.note</p>
+                $else: <p class="error">Please try again after fixing the errors highlighted below:</p>
+
             <table>
             <tr>
             $if wyrform:
                 <td><label for="prefix">Prefix</label>$:wyrform.prefix.render()</td>
             <td><label for="fname">First name</label>$:signform.fname.render()</td>
-            <td><label for="lname">Last name</label>$:signform.lname.render()</td></tr>
+            <td><label for="lname">Last name</label>$:signform.lname.render()</td></tr></table>
             $if wyrform:
-                 <tr><td colspan=2><label for="addr1">Address</label>$:wyrform.addr1.render()</td>
+                 <table>
+                 <tr><td><label for="addr1">Address</label>$:wyrform.addr1.render()</td>
                  <td><label for="addr2">&nbsp;&nbsp;</label>$:wyrform.addr2.render()</td></tr>
-                 <tr><td colspan=2><label for="city">City</label>$:wyrform.city.render()</td>
-                 <td colspan=3><label for="zipcode">Zipcode</label>
-                     $:wyrform.zipcode.render()- $:wyrform.zip4.render()</td><td id="note_zipcode"></td></tr>
-            <tr><td colspan=2>         
+                 <tr><td><label for="city">City</label>$:wyrform.city.render()</td>
+                     <td><label for='state'>State</label>$:wyrform.state.render()</td>
+                 <td><label for="zipcode">Zipcode</label>
+                     $:wyrform.zipcode.render()- $:wyrform.zip4.render()</td></tr>
+                 <span id="note_zipcode"></span></table>
+            <table><tr><td>         
             <label for="email">Email</label>
-            $if useremail:
-                <div><strong>$useremail</strong></div>
+            $if useremail: 
+                <span><strong>$useremail</strong></span>
+                <span style="display: none"> $:signform.email.render() </span>
+                &nbsp;&nbsp;(not you? &nbsp;<b><a href="#" onclick="document.forms['logout'].submit()">logout</a></b>)
             $else:
                 $:signform.email.render()
             $if wyrform:
                 <td><label for="phone">Phone</label>$:wyrform.phone.render()</td>
             </tr>
                 
-            <tr><td colspan=3><label for="comment">Comment</label>
+            <tr><td colspan=3><label for="comment">Personal comment (explain how this affects you):</label>
             $:signform.comment.render()</td></tr>
             
             $if wyrform and wyrform.captcha.pre:
@@ -81,10 +104,14 @@ $if isauthor:
                     <label for="captcha">Verification</label>$:wyrform.captcha.pre $:wyrform.captcha.render()
                 </td></tr>
             </table>    
-            <div id="share_with_container">
-            $:signform.share_with.render() 
+            <div id="share_with_container" style="margin: 3px;"><div style="float: left; padding-right: 12px;">
+            $:signform.share_with.render()
+            </div>
             <label for="share_with">Do not share my email with the author of this petition</label>
             </div>
+        $if issignatory:
+            <p><button type="submit" class="red">Change your signature</button></p>
+        $else:
+            <p><button type="submit" class="red">Sign this petition</button></p>
         </fieldset>
-    <p><button type="submit">Sign this petition</button></p>
 </form>

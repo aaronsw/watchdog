@@ -1,0 +1,59 @@
+$def with (em)
+
+$var width: 90%
+$var color: white
+
+$var title: Earmark for: $em.description
+
+<!-- <br />  ID: $em.id -->
+<table class="structure" style="width: 100%;"><tr><td style="vertical-align: top; text-align: right; border-bottom: 1px solid #ccc;">
+<h1 style="padding-bottom: 0px; margin-bottom: 12px;">\$$commify(em.final_amt)</h1>
+</td><td style="vertical-align: top; padding-top: 9px; border-bottom: 1px solid #ccc; width: 100%;"> 
+<h2 style="padding-bottom: 0px; margin-bottom: 12px;">for $em.description</h2>
+</td></tr><tr><td style="vertical-align: top; text-align: right; padding-top: 10px; white-space: nowrap">
+
+<!-- Sponsors -->
+$if em.sponsors:
+	<h3 style="padding-bottom: 0px; margin-bottom: 0px; padding-top: 0px; margin-top: 0px;">Sponsors:</h3>
+	$for s in em.sponsors:
+		<a href="/p/$s.politician.id">$s.politician.title $s.politician.name</a><br /> 
+
+</td><td style="padding-top: 10px;">
+
+<!-- Amounts -->
+$if em.prereduction_amt:
+	<b>Pre-reduction amount:</b> \$$commify(em.prereduction_amt) <br /> 
+$if em.budget_request:
+	<b>Budget Request:</b> \$$commify(em.budget_request) <br /> 
+$if em.senate_request:
+	<b>Senate Request:</b> \$$commify(em.senate_request) <br /> 
+$if em.house_request:
+	<b>House Request:</b> \$$commify(em.house_request) <br /> 
+<!-- Where -->
+$if em.county:
+	<b>County:</b> $em.county <br /> 
+$if em.city:
+	<b>City:</b> $em.city <br /> 
+	<!-- <br />  District: $em.district -->
+
+	<!-- Bill information for earmark -->
+$if em.bill:
+	<b>Bill:</b> $em.bill <br /> 
+$if em.bill_section:
+	<b>Bill Section:</b> $em.bill_section <br /> 
+$if em.bill_subsection:
+	<b>Bill Sub-section:</b> $em.bill_subsection <br /> 
+$if em.project_heading:
+	<b>Project Heading:</b> $em.project_heading <br /> 
+$if em.notes:
+	<b>Notes:</b> $em.notes <br /> 
+$if em.undisclosed:
+	<b>Undisclosed:</b> $em.undisclosed <br /> 
+
+	<!-- Who's the benificary -->
+$if em.recipient_stem:
+	<b>Recipient stem:</b> $em.recipient_stem <br /> 
+$if em.intended_recipient:
+	<b>Intended Recipient:</b> $em.intended_recipient <br /> 
+
+</td></tr></table>

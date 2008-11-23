@@ -1,0 +1,37 @@
+$def with (contributions, total, limit)
+
+$var width: 90%
+$var color: white
+
+$var title: Lobbyist Contributions
+
+
+<p>Total amount: \$$commify(total)</p>
+<table class="structure" width=100%>
+<tr>
+<th class="header">Amount</th>
+<th class="header">From</th>
+<th class="header">Representing</th>
+<th class="header"></th>
+</tr>
+
+$for i, c in enumerate(contributions):
+	$def whom():
+		${(c.contact_name if c.contact_name else ((c.prefix or '') + ' ' + (c.firstname or '') + ' ' + (c.middlename or '') + ' ' + (c.lastname or '') + ' ' + (c.suffix or ''))).title()}
+	<tr class="${'odd' if i%2 else 'even'}">
+		<td>\$$commify(c.amount)</td>
+		<td>$:whom()</td>
+		<td>$c.name</td>
+	<td><a href="/l/f/$c.filing_id">(filing&nbsp;details)</a></td>
+	</tr>
+</table>
+
+$ page = int(query_param("page", 0))
+
+$if page != 0:
+    &lt;&lt;<a href="$changequery(page=page - 1)">Prev</a>
+
+$if len(contributions) == limit:
+     | <a href="$changequery(page=page + 1)">Next</a> &gt;&gt;
+
+

@@ -2,81 +2,63 @@ $def with (page)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>$:page.title.strip() (watchdog.net)</title>
+  $if page.get('front'):
+      <title>watchdog.net: $:page.title.strip()</title>
+  $else:
+      <title>$:page.title.strip() (watchdog.net)</title>
   <link href="/static/css/style.css" type="text/css" rel="stylesheet" />
   <script type="text/javascript" src="/static/js/jquery.js"></script>
   <script type="text/javascript" src="/static/js/slicker.js"></script>
   $:page.get('head')
 </head><body>
-<div id="container\
-$if not page.get('front'):-leaf\
-">
+<div id="container"  style="width: $page.get('width');">
 <!-- header -->
 $if page.get('front'):
-    <div id="logo"><a href="/"><img src="/static/images/watchdog.big.gif" alt="Watchdog" /></a></div>
-  <div id="intro">
+    <div id="logo"></div>
+  <div id="intro" style="padding-bottom: 20px;">
     $if page.get('front'):
         <a href="/about">
-          <img class="logo" src="/static/images/watchdog.slogan.twolines.png"
+          <img class="logo" src="/static/images/watchdog.slogan.twolines.gif"
             alt="Watchdog. The good government site with teeth." />
-        </a>
-    $else:
-        <a href="/">
-          <img src="/static/images/watchdog.small.png" style="float: left;" 
-            alt="" />
-        </a>
-        <div style="float: left; padding-bottom: 10px;">
-	        <a href="/">Watchdog.net.</a> $:page.title.strip().
-	      </div>
+        </a></div>
+        <table cellpadding="0" cellspacing="0" border="0" width="400">
+        <tr>
+        <td width="28" class="frontbox-$page.get('color')-top-left"><img src="/static/images/trans.gif" border="0" width="28" height="28" /></td>
+        <td width="28" class="frontbox-top-$page.get('color')"></td>
+        <td width="28" style="background: transparent"><img src="/static/images/box/right.top.curve.${page.get('color')}.png" border="0" width="28" height="28" /></td>
+        </tr><tr>
+        <td width="28" class="frontbox-left-$page.get('color')"></td>
+        <td class="frontbox" width="344">
+    $else: 
         $if is_logged_in():
-            <div style="float: right; padding-right: 22px; padding-top: 15px;">        
+            <div id="topnav" style="padding-right: 52px;">
+            <span style="font-size:14px;">Hi, <a href='/u/$get_user_id()') style="color: #fff;">$get_user_name()</a>.</span>
             <a href="#" onclick="document.forms['logout'].submit()" class="$page.get('login_class', 'footer')">logout</a
         $else:
-            <div style="float: right; padding-right: 32px; padding-top: 15px;">
+            <div style="float: right; padding-right: 62px; padding-top: 37px;">
             <a href="/u/login" class="$page.get('login_class', 'footer')">login</a
+            
           ><a href="/about/" class="$page.get('about_class', 'footer')">about</a
           ><a href="/blog/" class="$page.get('blog_class', 'footer')">blog</a
-          ><a href="/about/#feedback" class="footer">feedback</a>
+          ><a href="/about/feedback" class="$page.get('feedback_class', 'footer')">feedback</a>
         </div>
-  </div>
-  <div id="header\
-$if not page.get('front'):-leaf\
-"></div>
+            <a href="/"><img class="logo" src="/static/images/watchdog.slogan.twolines.gif" alt="Watchdog. The good government site with teeth." /></a>
+        </div>
+        <div style="top: 55px;">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+        <tr>
+        <td width="28" class="frontbox-$page.get('color')-top-left"><img src="/static/images/trans.gif" border="0" width="28" height="28" /></td>
+        <td width="28" class="frontbox-top-$page.get('color')"></td>
+        <td width="28" style="background: transparent"><img src="/static/images/box/right.top.curve.${page.get('color')}.png" border="0" width="28" height="28" /></td>
+        </tr><tr>
+        <td width="28" class="frontbox-left-$page.get('color')"></td>
+        <td class="frontbox-$page.get('color')" width="100%">
+
 <!-- /header -->
 <div id="main">
-$if page.get('sidebar', '').strip() != "None":
-    <div id="sidebar" style="clear: right">
-    $if page.get('sidebar'):
-        $:page.sidebar
-    $else:
-        <h2>The Latest</h2>
-        <ul>
-        $ li_class = "top"
-        $for post in blog_content[slice(None, 4)]:
-            <li\
-            $if li_class:  class="$li_class"\
-            >
-            <a href="/blog/$post.slug" class="sidebarlink">$post.title</a> <span class="attribution"> by $post.author.split()[0]</span>
-            <div class="blurb">$striphtml(post.body).split('. ')[0]. <strong><a href="/blog/$post.slug">...</a></strong></div>
-            </li>
-            $ li_class = ""
-        </ul>
-    <div class="postit">
-      <p><strong>Pardon the mess</strong> &mdash;<br />
-      we're building this site as you use it.
-      Expect things to break, fix, appear, and disappear.
-      We'd love your <a href="/about/#feedback">feedback</a> and your <a href="/about/#help">help</a>.</p>
-      
-      <p><a href="/about/#hiring" class="highlight">We're hiring!</a></p>
-    </div>
-    </div>
+
 
 $:page.get('pretext')
-
-$if not page.get('maxi'):
-    <div id="text"\
-    $if page.get('front'):  style="margin-top: -10px;"\
-    >
 
 $:page.get('pretitle')
 
@@ -88,29 +70,34 @@ $:page
 
 $if not page.get('maxi'):
     </div>
-<div id="menu_footer">
-  $if is_logged_in():
-      <form name="logout" action="/u/logout" method='POST' style="display: none;"></form>
 
-	<a href="/" class="watchdog">watchdog.net</a>\
-$if is_logged_in():
-    <a href="/u/logout" onclick="document.forms['logout'].submit()" class="footer">logout</a
+$if page.get('front'):
+        </td>
+        <td width="28" class="frontbox-right-$page.get('color')"></td>
+        </tr><tr>
+        <td width="28" class="frontbox-$page.get('color')-bottom-left"><img src="/static/images/trans.gif" border="0" width="28" height="28" /></td>
+        <td width="28" class="frontbox-bottom-$page.get('color')"></td>
+        <td width="28"  style="background: transparent"><img src="/static/images/box/right.bottom.curve.${page.get('color')}.png" border="0" width="28" height="28" /></td>
+        </form>
+        </tr></table>
+        <div id="left_footer_base"><a href="/about/" class="footer">About us...</a></div>
+        <div style="text-align: right; margin-top: -4px; width: 450px;"><img src="/static/images/${page.get('color')}.talkbubble.png" width="103" height="135" alt="Talk Bubble" /><a href="/" class="logo"><img src="/static/images/watchdog.talk.gif" width="255" height="135" alt="Watchdog sez -" /></a></div>        
 $else:
-    <a href="/u/login" class="footer">login</a
-  ><a href="/about/" class="footer">about</a
-  ><a href="/blog/" class="footer">blog</a
-  ><a href="/about/#feedback" class="footer">feedback</a>
-</div>
-</div><!-- /main -->
-
-<div id="footer\
-$if not page.get('front'):-leaf\
-">
-<div id="left_footer">What do you think? <a href="/about/#feedback"><strong>Send us your feedback.</strong></a></div>
-<div id="right_footer">
-Site created by <a href="http://groups.google.com/group/watchdog-devel/"><strong>the watchdog team</strong></a> &amp; <a href="http://groups.google.com/group/watchdog-volunteers"><strong>volunteers like you!</strong></a>
-</div>
-</div><!-- /footer -->
+          <form name="logout" action="/u/logout" method='POST' style="display: none;"></form>
+        </td>
+        <td width="28" class="frontbox-right-$page.get('color')"></td>
+        </tr><tr>
+        <td width="28" class="frontbox-$page.get('color')-bottom-left"><img src="/static/images/trans.gif" border="0" width="28" height="28" /></td>
+        <td width="28" class="frontbox-bottom-$page.get('color')"></td>
+        <td width="28" style="background-transparent"><img src="/static/images/box/right.bottom.curve.${page.get('color')}.png" border="0" width="28" height="28" /></td>
+        </tr></table>
+        <!-- /main -->
+    <div id="footer\
+    $if not page.get('front'):-leaf\
+    ">
+	<div id="left_footer">What do you think? <a href="/about/feedback"><strong>Send us your feedback.</strong></a></div>
+    <div style="text-align: right; margin-top: -4px; width: 100%;"><img src="/static/images/${page.get('color')}.talkbubble.png" width="103" height="135" alt="Talk Bubble" /><a href="/" class="logo"><img src="/static/images/watchdog.talk.gif" width="255" height="135" alt="Watchdog sez -" /></a></div>
+</div></div><!-- /footer -->
 </div>
 </body>
 </html>

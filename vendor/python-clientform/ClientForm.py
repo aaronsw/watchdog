@@ -15,24 +15,20 @@ HTML 3.2 Specification, W3C Recommendation 14 January 1997 (for ISINDEX)
 HTML 4.01 Specification, W3C Recommendation 24 December 1999
 
 
-Copyright 2002-2006 John J. Lee <jjl@pobox.com>
+Copyright 2002-2007 John J. Lee <jjl@pobox.com>
 Copyright 2005 Gary Poster
 Copyright 2005 Zope Corporation
 Copyright 1998-2000 Gisle Aas.
 
 This code is free software; you can redistribute it and/or modify it
-under the terms of the BSD License (see the file COPYING included with
-the distribution).
+under the terms of the BSD or ZPL 2.1 licenses (see the file
+COPYING.txt included with the distribution).
 
 """
 
 # XXX
-# Remove unescape_attr method
 # Remove parser testing hack
 # safeUrl()-ize action
-# Really should to merge CC, CF, pp and mechanize as soon as mechanize
-#  goes to beta...
-# Add url attribute to ParseError
 # Switch to unicode throughout (would be 0.3.x)
 #  See Wichert Akkerman's 2004-01-22 message to c.l.py.
 # Add charset parameter to Content-type headers?  How to find value??
@@ -41,11 +37,6 @@ the distribution).
 #  Does file upload work when name is missing?  Sourceforge tracker form
 #   doesn't like it.  Check standards, and test with Apache.  Test
 #   binary upload with Apache.
-# Controls can have name=None (e.g. forms constructed partly with
-#  JavaScript), but find_control can't be told to find a control
-#  with that name, because None there means 'unspecified'.  Can still
-#  get at by nr, but would be nice to be able to specify something
-#  equivalent to name=None, too.
 # mailto submission & enctype text/plain
 # I'm not going to fix this unless somebody tells me what real servers
 #  that want this encoding actually expect: If enctype is
@@ -65,6 +56,15 @@ the distribution).
 # Work on DOMForm.
 # XForms?  Don't know if there's a need here.
 
+__all__ = ['AmbiguityError', 'CheckboxControl', 'Control',
+           'ControlNotFoundError', 'FileControl', 'FormParser', 'HTMLForm',
+           'HiddenControl', 'IgnoreControl', 'ImageControl', 'IsindexControl',
+           'Item', 'ItemCountError', 'ItemNotFoundError', 'Label',
+           'ListControl', 'LocateError', 'Missing', 'ParseError', 'ParseFile',
+           'ParseFileEx', 'ParseResponse', 'ParseResponseEx','PasswordControl',
+           'RadioControl', 'ScalarControl', 'SelectControl',
+           'SubmitButtonControl', 'SubmitControl', 'TextControl',
+           'TextareaControl', 'XHTMLCompatibleFormParser']
 
 try: True
 except NameError:
@@ -79,6 +79,7 @@ except NameError:
 
 try:
     import logging
+    import inspect
 except ImportError:
     def debug(msg, *args, **kwds):
         pass
@@ -90,11 +91,7 @@ else:
         if OPTIMIZATION_HACK:
             return
 
-        try:
-            raise Exception()
-        except:
-            caller_name = (
-                sys.exc_info()[2].tb_frame.f_back.f_back.f_code.co_name)
+        caller_name = inspect.stack()[1][3]
         extended_msg = '%%s %s' % msg
         extended_args = (caller_name,)+args
         debug = _logger.debug(extended_msg, *extended_args, **kwds)
@@ -109,26 +106,44 @@ else:
 
 import sys, urllib, urllib2, types, mimetools, copy, urlparse, \
        htmlentitydefs, re, random
-from urlparse import urljoin
 from cStringIO import StringIO
+
+import sgmllib
+# monkeypatch to fix http://www.python.org/sf/803422 :-(
+sgmllib.charref = re.compile("&#(x?[0-9a-fA-F]+)[^0-9a-fA-F]")
+
+# HTMLParser.HTMLParser is recent, so live without it if it's not available
+# (also, sgmllib.SGMLParser is much more tolerant of bad HTML)
+try:
+    import HTMLParser
+except ImportError:
+    HAVE_MODULE_HTMLPARSER = False
+else:
+    HAVE_MODULE_HTMLPARSER = True
 
 try:
     import warnings
 except ImportError:
-    def deprecation(message):
+    def deprecation(message, stack_offset=0):
         pass
 else:
-    def deprecation(message):
-        warnings.warn(message, DeprecationWarning, stacklevel=2)
+    def deprecation(message, stack_offset=0):
+        warnings.warn(message, DeprecationWarning, stacklevel=3+stack_offset)
 
-VERSION = "0.2.2"
+VERSION = "0.2.9"
 
 CHUNK = 1024  # size of chunks fed to parser, in bytes
 
 DEFAULT_ENCODING = "latin-1"
 
+class Missing: pass
+
 _compress_re = re.compile(r"\s+")
 def compress_text(text): return _compress_re.sub(" ", text.strip())
+
+def normalize_line_endings(text):
+    return re.sub(r"(?:(?<!\r)\n)|(?:\r(?!\n))", "\r\n", text)
+
 
 # This version of urlencode is from my Python 1.5.2 back-port of the
 # Python 2.1 CVS maintenance branch of urllib.  It will accept a sequence
@@ -429,8 +444,23 @@ class ItemNotFoundError(LocateError): pass
 
 class ItemCountError(ValueError): pass
 
-
-class ParseError(Exception): pass
+# for backwards compatibility, ParseError derives from exceptions that were
+# raised by versions of ClientForm <= 0.2.5
+if HAVE_MODULE_HTMLPARSER:
+    SGMLLIB_PARSEERROR = sgmllib.SGMLParseError
+    class ParseError(sgmllib.SGMLParseError,
+                     HTMLParser.HTMLParseError,
+                     ):
+        pass
+else:
+    if hasattr(sgmllib, "SGMLParseError"):
+        SGMLLIB_PARSEERROR = sgmllib.SGMLParseError
+        class ParseError(sgmllib.SGMLParseError):
+            pass
+    else:
+        SGMLLIB_PARSEERROR = RuntimeError
+        class ParseError(RuntimeError):
+            pass
 
 
 class _AbstractFormParser:
@@ -452,22 +482,29 @@ class _AbstractFormParser:
         self._option = None
         self._textarea = None
 
+        # forms[0] will contain all controls that are outside of any form
+        # self._global_form is an alias for self.forms[0]
+        self._global_form = None
+        self.start_form([])
+        self.end_form()
+        self._current_form = self._global_form = self.forms[0]
+
     def do_base(self, attrs):
         debug("%s", attrs)
         for key, value in attrs:
             if key == "href":
-                self.base = value
+                self.base = self.unescape_attr_if_required(value)
 
     def end_body(self):
         debug("")
         if self._current_label is not None:
             self.end_label()
-        if self._current_form is not None:
+        if self._current_form is not self._global_form:
             self.end_form()
 
     def start_form(self, attrs):
         debug("%s", attrs)
-        if self._current_form is not None:
+        if self._current_form is not self._global_form:
             raise ParseError("nested FORMs")
         name = None
         action = None
@@ -476,14 +513,14 @@ class _AbstractFormParser:
         d = {}
         for key, value in attrs:
             if key == "name":
-                name = value
+                name = self.unescape_attr_if_required(value)
             elif key == "action":
-                action = value
+                action = self.unescape_attr_if_required(value)
             elif key == "method":
-                method = value.upper()
+                method = self.unescape_attr_if_required(value.upper())
             elif key == "enctype":
-                enctype = value.lower()
-            d[key] = value
+                enctype = self.unescape_attr_if_required(value.lower())
+            d[key] = self.unescape_attr_if_required(value)
         controls = []
         self._current_form = (name, action, method, enctype), d, controls
 
@@ -491,22 +528,20 @@ class _AbstractFormParser:
         debug("")
         if self._current_label is not None:
             self.end_label()
-        if self._current_form is None:
+        if self._current_form is self._global_form:
             raise ParseError("end of FORM before start")
         self.forms.append(self._current_form)
-        self._current_form = None
+        self._current_form = self._global_form
 
     def start_select(self, attrs):
         debug("%s", attrs)
-        if self._current_form is None:
-            raise ParseError("start of SELECT before start of FORM")
         if self._select is not None:
             raise ParseError("nested SELECTs")
         if self._textarea is not None:
             raise ParseError("SELECT inside TEXTAREA")
         d = {}
         for key, val in attrs:
-            d[key] = val
+            d[key] = self.unescape_attr_if_required(val)
 
         self._select = d
         self._add_label(d)
@@ -515,8 +550,6 @@ class _AbstractFormParser:
 
     def end_select(self):
         debug("")
-        if self._current_form is None:
-            raise ParseError("end of SELECT before start of FORM")
         if self._select is None:
             raise ParseError("end of SELECT before start")
 
@@ -531,7 +564,7 @@ class _AbstractFormParser:
             raise ParseError("OPTGROUP outside of SELECT")
         d = {}
         for key, val in attrs:
-            d[key] = val
+            d[key] = self.unescape_attr_if_required(val)
 
         self._optgroup = d
 
@@ -550,7 +583,7 @@ class _AbstractFormParser:
 
         d = {}
         for key, val in attrs:
-            d[key] = val
+            d[key] = self.unescape_attr_if_required(val)
 
         self._option = {}
         self._option.update(d)
@@ -583,23 +616,19 @@ class _AbstractFormParser:
 
     def start_textarea(self, attrs):
         debug("%s", attrs)
-        if self._current_form is None:
-            raise ParseError("start of TEXTAREA before start of FORM")
         if self._textarea is not None:
             raise ParseError("nested TEXTAREAs")
         if self._select is not None:
             raise ParseError("TEXTAREA inside SELECT")
         d = {}
         for key, val in attrs:
-            d[key] = val
+            d[key] = self.unescape_attr_if_required(val)
         self._add_label(d)
 
         self._textarea = d
 
     def end_textarea(self):
         debug("")
-        if self._current_form is None:
-            raise ParseError("end of TEXTAREA before start of FORM")
         if self._textarea is None:
             raise ParseError("end of TEXTAREA before start")
         controls = self._current_form[2]
@@ -613,7 +642,7 @@ class _AbstractFormParser:
             self.end_label()
         d = {}
         for key, val in attrs:
-            d[key] = val
+            d[key] = self.unescape_attr_if_required(val)
         taken = bool(d.get("for"))  # empty id is invalid
         d["__text"] = ""
         d["__taken"] = taken
@@ -628,28 +657,28 @@ class _AbstractFormParser:
             # something is ugly in the HTML, but we're ignoring it
             return
         self._current_label = None
-        label["__text"] = label["__text"]
         # if it is staying around, it is True in all cases
         del label["__taken"]
 
     def _add_label(self, d):
         #debug("%s", d)
         if self._current_label is not None:
-            if self._current_label["__taken"]:
-                self.end_label()  # be fuzzy
-            else:
+            if not self._current_label["__taken"]:
                 self._current_label["__taken"] = True
                 d["__label"] = self._current_label
 
     def handle_data(self, data):
+        debug("%s", data)
+
         # according to http://www.w3.org/TR/html4/appendix/notes.html#h-B.3.1
         # line break immediately after start tags or immediately before end
         # tags must be ignored, but real browsers only ignore a line break
         # after a start tag, so we'll do that.
-        if data[0:1] == '\n':
+        if data[0:2] == "\r\n":
+            data = data[2:]
+        if data[0:1] in ["\n", "\r"]:
             data = data[1:]
 
-        debug("%s", data)
         if self._option is not None:
             # self._option is a dictionary of the OPTION element's HTML
             # attributes, but it has two special keys, one of which is the
@@ -660,6 +689,7 @@ class _AbstractFormParser:
         elif self._textarea is not None:
             map = self._textarea
             key = "value"
+            data = normalize_line_endings(data)
         # not if within option or textarea
         elif self._current_label is not None:
             map = self._current_label
@@ -674,12 +704,10 @@ class _AbstractFormParser:
 
     def do_button(self, attrs):
         debug("%s", attrs)
-        if self._current_form is None:
-            raise ParseError("start of BUTTON before start of FORM")
         d = {}
         d["type"] = "submit"  # default
         for key, val in attrs:
-            d[key] = val
+            d[key] = self.unescape_attr_if_required(val)
         controls = self._current_form[2]
 
         type = d["type"]
@@ -694,12 +722,10 @@ class _AbstractFormParser:
 
     def do_input(self, attrs):
         debug("%s", attrs)
-        if self._current_form is None:
-            raise ParseError("start of INPUT before start of FORM")
         d = {}
         d["type"] = "text"  # default
         for key, val in attrs:
-            d[key] = val
+            d[key] = self.unescape_attr_if_required(val)
         controls = self._current_form[2]
 
         type = d["type"]
@@ -709,11 +735,9 @@ class _AbstractFormParser:
 
     def do_isindex(self, attrs):
         debug("%s", attrs)
-        if self._current_form is None:
-            raise ParseError("start of ISINDEX before start of FORM")
         d = {}
         for key, val in attrs:
-            d[key] = val
+            d[key] = self.unescape_attr_if_required(val)
         controls = self._current_form[2]
 
         self._add_label(d)
@@ -750,11 +774,7 @@ class _AbstractFormParser:
     def unknown_charref(self, ref): self.handle_data("&#%s;" % ref)
 
 
-# HTMLParser.HTMLParser is recent, so live without it if it's not available
-# (also, htmllib.HTMLParser is much more tolerant of bad HTML)
-try:
-    import HTMLParser
-except ImportError:
+if not HAVE_MODULE_HTMLPARSER:
     class XHTMLCompatibleFormParser:
         def __init__(self, entitydefs=None, encoding=DEFAULT_ENCODING):
             raise ValueError("HTMLParser could not be imported")
@@ -765,6 +785,12 @@ else:
         def __init__(self, entitydefs=None, encoding=DEFAULT_ENCODING):
             HTMLParser.HTMLParser.__init__(self)
             _AbstractFormParser.__init__(self, entitydefs, encoding)
+
+        def feed(self, data):
+            try:
+                HTMLParser.HTMLParser.feed(self, data)
+            except HTMLParser.HTMLParseError, exc:
+                raise ParseError(exc)
 
         def start_option(self, attrs):
             _AbstractFormParser._start_option(self, attrs)
@@ -803,17 +829,30 @@ else:
         def unescape_attrs_if_required(self, attrs):
             return attrs  # ditto
 
-import sgmllib
-# monkeypatch to fix http://www.python.org/sf/803422 :-(
-sgmllib.charref = re.compile("&#(x?[0-9a-fA-F]+)[^0-9a-fA-F]")
+
 class _AbstractSgmllibParser(_AbstractFormParser):
+
     def do_option(self, attrs):
         _AbstractFormParser._start_option(self, attrs)
 
-    def unescape_attr_if_required(self, name):
-        return self.unescape_attr(name)
-    def unescape_attrs_if_required(self, attrs):
-        return self.unescape_attrs(attrs)
+    if sys.version_info[:2] >= (2,5):
+        # we override this attr to decode hex charrefs
+        entity_or_charref = re.compile(
+            '&(?:([a-zA-Z][-.a-zA-Z0-9]*)|#(x?[0-9a-fA-F]+))(;?)')
+        def convert_entityref(self, name):
+            return unescape("&%s;" % name, self._entitydefs, self._encoding)
+        def convert_charref(self, name):
+            return unescape_charref("%s" % name, self._encoding)
+        def unescape_attr_if_required(self, name):
+            return name  # sgmllib already did it
+        def unescape_attrs_if_required(self, attrs):
+            return attrs  # ditto
+    else:
+        def unescape_attr_if_required(self, name):
+            return self.unescape_attr(name)
+        def unescape_attrs_if_required(self, attrs):
+            return self.unescape_attrs(attrs)
+
 
 class FormParser(_AbstractSgmllibParser, sgmllib.SGMLParser):
     """Good for tolerance of incorrect HTML, bad for XHTML."""
@@ -821,13 +860,21 @@ class FormParser(_AbstractSgmllibParser, sgmllib.SGMLParser):
         sgmllib.SGMLParser.__init__(self)
         _AbstractFormParser.__init__(self, entitydefs, encoding)
 
-try:
-    if sys.version_info[:2] < (2, 2):
-        raise ImportError  # BeautifulSoup uses generators
-    import BeautifulSoup
-except ImportError:
-    pass
-else:
+    def feed(self, data):
+        try:
+            sgmllib.SGMLParser.feed(self, data)
+        except SGMLLIB_PARSEERROR, exc:
+            raise ParseError(exc)
+
+
+
+# sigh, must support mechanize by allowing dynamic creation of classes based on
+# its bundled copy of BeautifulSoup (which was necessary because of dependency
+# problems)
+
+def _create_bs_classes(bs,
+                       icbinbs,
+                       ):
     class _AbstractBSFormParser(_AbstractSgmllibParser):
         bs_base_class = None
         def __init__(self, entitydefs=None, encoding=DEFAULT_ENCODING):
@@ -836,31 +883,115 @@ else:
         def handle_data(self, data):
             _AbstractFormParser.handle_data(self, data)
             self.bs_base_class.handle_data(self, data)
+        def feed(self, data):
+            try:
+                self.bs_base_class.feed(self, data)
+            except SGMLLIB_PARSEERROR, exc:
+                raise ParseError(exc)
 
-    class RobustFormParser(_AbstractBSFormParser, BeautifulSoup.BeautifulSoup):
+
+    class RobustFormParser(_AbstractBSFormParser, bs):
         """Tries to be highly tolerant of incorrect HTML."""
-        bs_base_class = BeautifulSoup.BeautifulSoup
-    class NestingRobustFormParser(_AbstractBSFormParser,
-                                  BeautifulSoup.ICantBelieveItsBeautifulSoup):
+        pass
+    RobustFormParser.bs_base_class = bs
+    class NestingRobustFormParser(_AbstractBSFormParser, icbinbs):
         """Tries to be highly tolerant of incorrect HTML.
 
         Different from RobustFormParser in that it more often guesses nesting
         above missing end tags (see BeautifulSoup docs).
 
         """
-        bs_base_class = BeautifulSoup.ICantBelieveItsBeautifulSoup
+        pass
+    NestingRobustFormParser.bs_base_class = icbinbs
+
+    return RobustFormParser, NestingRobustFormParser
+
+try:
+    if sys.version_info[:2] < (2, 2):
+        raise ImportError  # BeautifulSoup uses generators
+    import BeautifulSoup
+except ImportError:
+    pass
+else:
+    RobustFormParser, NestingRobustFormParser = _create_bs_classes(
+        BeautifulSoup.BeautifulSoup, BeautifulSoup.ICantBelieveItsBeautifulSoup
+        )
+    __all__ += ['RobustFormParser', 'NestingRobustFormParser']
+
 
 #FormParser = XHTMLCompatibleFormParser  # testing hack
 #FormParser = RobustFormParser  # testing hack
 
-def ParseResponse(response, select_default=False,
-                  ignore_errors=False,  # ignored!
-                  form_parser_class=FormParser,
-                  request_class=urllib2.Request,
-                  entitydefs=None,
-                  backwards_compat=True,
-                  encoding=DEFAULT_ENCODING,
-                  ):
+
+def ParseResponseEx(response,
+                    select_default=False,
+                    form_parser_class=FormParser,
+                    request_class=urllib2.Request,
+                    entitydefs=None,
+                    encoding=DEFAULT_ENCODING,
+
+                    # private
+                    _urljoin=urlparse.urljoin,
+                    _urlparse=urlparse.urlparse,
+                    _urlunparse=urlparse.urlunparse,
+                    ):
+    """Identical to ParseResponse, except that:
+
+    1. The returned list contains an extra item.  The first form in the list
+    contains all controls not contained in any FORM element.
+
+    2. The arguments ignore_errors and backwards_compat have been removed.
+
+    3. Backwards-compatibility mode (backwards_compat=True) is not available.
+    """
+    return _ParseFileEx(response, response.geturl(),
+                        select_default,
+                        False,
+                        form_parser_class,
+                        request_class,
+                        entitydefs,
+                        False,
+                        encoding,
+                        _urljoin=_urljoin,
+                        _urlparse=_urlparse,
+                        _urlunparse=_urlunparse,
+                        )
+
+def ParseFileEx(file, base_uri,
+                select_default=False,
+                form_parser_class=FormParser,
+                request_class=urllib2.Request,
+                entitydefs=None,
+                encoding=DEFAULT_ENCODING,
+
+                # private
+                _urljoin=urlparse.urljoin,
+                _urlparse=urlparse.urlparse,
+                _urlunparse=urlparse.urlunparse,
+                ):
+    """Identical to ParseFile, except that:
+
+    1. The returned list contains an extra item.  The first form in the list
+    contains all controls not contained in any FORM element.
+
+    2. The arguments ignore_errors and backwards_compat have been removed.
+
+    3. Backwards-compatibility mode (backwards_compat=True) is not available.
+    """
+    return _ParseFileEx(file, base_uri,
+                        select_default,
+                        False,
+                        form_parser_class,
+                        request_class,
+                        entitydefs,
+                        False,
+                        encoding,
+                        _urljoin=_urljoin,
+                        _urlparse=_urlparse,
+                        _urlunparse=_urlunparse,
+                        )
+
+def ParseResponse(response, *args, **kwds):
     """Parse HTTP response and return a list of HTMLForm instances.
 
     The return value of urllib2.urlopen can be conveniently passed to this
@@ -920,23 +1051,9 @@ def ParseResponse(response, select_default=False,
     own risk: there is no well-defined interface.
 
     """
-    return ParseFile(response, response.geturl(), select_default,
-                     False,
-                     form_parser_class,
-                     request_class,
-                     entitydefs,
-                     backwards_compat,
-                     encoding,
-                     )
+    return _ParseFileEx(response, response.geturl(), *args, **kwds)[1:]
 
-def ParseFile(file, base_uri, select_default=False,
-              ignore_errors=False,  # ignored!
-              form_parser_class=FormParser,
-              request_class=urllib2.Request,
-              entitydefs=None,
-              backwards_compat=True,
-              encoding=DEFAULT_ENCODING,
-              ):
+def ParseFile(file, base_uri, *args, **kwds):
     """Parse HTML and return a list of HTMLForm instances.
 
     ClientForm.ParseError is raised on parse errors.
@@ -950,8 +1067,22 @@ def ParseFile(file, base_uri, select_default=False,
     For the other arguments and further details, see ParseResponse.__doc__.
 
     """
+    return _ParseFileEx(file, base_uri, *args, **kwds)[1:]
+
+def _ParseFileEx(file, base_uri,
+                 select_default=False,
+                 ignore_errors=False,
+                 form_parser_class=FormParser,
+                 request_class=urllib2.Request,
+                 entitydefs=None,
+                 backwards_compat=True,
+                 encoding=DEFAULT_ENCODING,
+                 _urljoin=urlparse.urljoin,
+                 _urlparse=urlparse.urlparse,
+                 _urlunparse=urlparse.urlunparse,
+                 ):
     if backwards_compat:
-        deprecation("operating in backwards-compatibility mode")
+        deprecation("operating in backwards-compatibility mode", 1)
     fp = form_parser_class(entitydefs, encoding)
     while 1:
         data = file.read(CHUNK)
@@ -980,21 +1111,18 @@ def ParseFile(file, base_uri, select_default=False,
         if action is None:
             action = base_uri
         else:
-            action = urljoin(base_uri, action)
-        action = fp.unescape_attr_if_required(action)
-        name = fp.unescape_attr_if_required(name)
-        attrs = fp.unescape_attrs_if_required(attrs)
+            action = _urljoin(base_uri, action)
         # would be nice to make HTMLForm class (form builder) pluggable
         form = HTMLForm(
             action, method, enctype, name, attrs, request_class,
             forms, labels, id_to_labels, backwards_compat)
+        form._urlparse = _urlparse
+        form._urlunparse = _urlunparse
         for ii in range(len(controls)):
             type, name, attrs = controls[ii]
-            attrs = fp.unescape_attrs_if_required(attrs)
-            name = fp.unescape_attr_if_required(name)
             # index=ii*10 allows ImageControl to return multiple ordered pairs
-            form.new_control(type, name, attrs, select_default=select_default,
-                             index=ii*10)
+            form.new_control(
+                type, name, attrs, select_default=select_default, index=ii*10)
         forms.append(form)
     for form in forms:
         form.fixup()
@@ -1180,6 +1308,9 @@ class ScalarControl(Control):
         self.attrs = attrs.copy()
 
         self._clicked = False
+
+        self._urlparse = urlparse.urlparse
+        self._urlunparse = urlparse.urlunparse
 
     def __getattr__(self, name):
         if name == "value":
@@ -1389,10 +1520,10 @@ class IsindexControl(ScalarControl):
         # This doesn't seem to be specified in HTML 4.01 spec. (ISINDEX is
         # deprecated in 4.01, but it should still say how to submit it).
         # Submission of ISINDEX is explained in the HTML 3.2 spec, though.
-        parts = urlparse.urlparse(form.action)
+        parts = self._urlparse(form.action)
         rest, (query, frag) = parts[:-2], parts[-2:]
-        parts = rest + (urllib.quote_plus(self.value), "")
-        url = urlparse.urlunparse(parts)
+        parts = rest + (urllib.quote_plus(self.value), None)
+        url = self._urlunparse(parts)
         req_data = url, None, []
 
         if return_type == "pairs":
@@ -1515,6 +1646,8 @@ class Item:
         return res
 
     def __repr__(self):
+        # XXX appending the attrs without distinguishing them from name and id
+        # is silly
         attrs = [("name", self.name), ("id", self.id)]+self.attrs.items()
         return "<%s %s>" % (
             self.__class__.__name__,
@@ -1628,6 +1761,7 @@ class ListControl(Control):
         self.disabled = False
         self.readonly = False
         self.id = attrs.get("id")
+        self._closed = False
 
         # As Controls are merged in with .merge_control(), self.attrs will
         # refer to each Control in turn -- always the most recently merged
@@ -1856,16 +1990,27 @@ class ListControl(Control):
             "control.get(...).attrs")
         return self._get(name, by_label, nr).attrs
 
+    def close_control(self):
+        self._closed = True
+
     def add_to_form(self, form):
         assert self._form is None or form == self._form, (
             "can't add control to more than one form")
         self._form = form
-        try:
-            control = form.find_control(self.name, self.type)
-        except ControlNotFoundError:
+        if self.name is None:
+            # always count nameless elements as separate controls
             Control.add_to_form(self, form)
         else:
-            control.merge_control(self)
+            for ii in range(len(form.controls)-1, -1, -1):
+                control = form.controls[ii]
+                if control.name == self.name and control.type == self.type:
+                    if control._closed:
+                        Control.add_to_form(self, form)
+                    else:
+                        control.merge_control(self)
+                    break
+            else:
+                Control.add_to_form(self, form)
 
     def merge_control(self, control):
         assert bool(control.multiple) == bool(self.multiple)
@@ -1911,6 +2056,8 @@ class ListControl(Control):
     def __getattr__(self, name):
         if name == "value":
             compat = self._form.backwards_compat
+            if self.name is None:
+                return []
             return [o.name for o in self.items if o.selected and
                     (not o.disabled or compat)]
         else:
@@ -2080,7 +2227,7 @@ class ListControl(Control):
         return [o.name for o in self.items]
 
     def _totally_ordered_pairs(self):
-        if self.disabled:
+        if self.disabled or self.name is None:
             return []
         else:
             return [(o._index, self.name, o.name) for o in self.items
@@ -2622,6 +2769,9 @@ class HTMLForm:
 
         self.backwards_compat = backwards_compat  # note __setattr__
 
+        self._urlunparse = urlparse.urlunparse
+        self._urlparse = urlparse.urlparse
+
     def __getattr__(self, name):
         if name == "backwards_compat":
             return self._backwards_compat
@@ -2679,7 +2829,17 @@ class HTMLForm:
             control = klass(type, name, a, select_default, index)
         else:
             control = klass(type, name, a, index)
+
+        if type == "select" and len(attrs) == 1:
+            for ii in range(len(self.controls)-1, -1, -1):
+                ctl = self.controls[ii]
+                if ctl.type == "select":
+                    ctl.close_control()
+                    break
+
         control.add_to_form(self)
+        control._urlparse = self._urlparse
+        control._urlunparse = self._urlunparse
 
     def fixup(self):
         """Normalise form after all controls have been added.
@@ -3057,7 +3217,8 @@ class HTMLForm:
                                   is_listcontrol, nr)
 
     def _find_control(self, name, type, kind, id, label, predicate, nr):
-        if (name is not None) and not isstringlike(name):
+        if ((name is not None) and (name is not Missing) and
+            not isstringlike(name)):
             raise TypeError("control name must be string-like")
         if (type is not None) and not isstringlike(type):
             raise TypeError("control type must be string-like")
@@ -3079,7 +3240,8 @@ class HTMLForm:
             nr = 0
 
         for control in self.controls:
-            if name is not None and name != control.name:
+            if ((name is not None and name != control.name) and
+                (name is not Missing or control.name is not None)):
                 continue
             if type is not None and type != control.type:
                 continue
@@ -3109,7 +3271,7 @@ class HTMLForm:
             return found
 
         description = []
-        if name is not None: description.append("name '%s'" % name)
+        if name is not None: description.append("name %s" % repr(name))
         if type is not None: description.append("type '%s'" % type)
         if kind is not None: description.append("kind '%s'" % kind)
         if id is not None: description.append("id '%s'" % id)
@@ -3166,19 +3328,19 @@ class HTMLForm:
         """Return a tuple (url, data, headers)."""
         method = self.method.upper()
         #scheme, netloc, path, parameters, query, frag = urlparse.urlparse(self.action)
-        parts = urlparse.urlparse(self.action)
+        parts = self._urlparse(self.action)
         rest, (query, frag) = parts[:-2], parts[-2:]
 
         if method == "GET":
             if self.enctype != "application/x-www-form-urlencoded":
                 raise ValueError(
                     "unknown GET form encoding type '%s'" % self.enctype)
-            parts = rest + (urlencode(self._pairs()), "")
-            uri = urlparse.urlunparse(parts)
+            parts = rest + (urlencode(self._pairs()), None)
+            uri = self._urlunparse(parts)
             return uri, None, []
         elif method == "POST":
-            parts = rest + (query, "")
-            uri = urlparse.urlunparse(parts)
+            parts = rest + (query, None)
+            uri = self._urlunparse(parts)
             if self.enctype == "application/x-www-form-urlencoded":
                 return (uri, urlencode(self._pairs()),
                         [("Content-type", self.enctype)])
