@@ -353,7 +353,7 @@ fields = {
                 ],
 
     'committee': ['committee_name', 'committee_name_______', 'committeename'],
-    'candidate': [lambda candidate_first_name,
+    'candidate': lambda candidate_first_name,
                         candidate_middle_name,
                          candidate_last_name:
                      name_combo(candidate_first_name,
@@ -362,7 +362,6 @@ fields = {
                   # XXX add matching of 'x for Congress'. This will
                   # require allowing one input field to map to more
                   # than one output field in the field-mapping logic.
-                  '11(d)_the_candidate'],
     'filer_id': ['filer_fec_cand_id',
                  'filer_fec_cmte_id_',
                  'filer_fec_cmte_id',
