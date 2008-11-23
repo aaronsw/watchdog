@@ -438,9 +438,22 @@ def headers_for_version(version):
     return headers_cache[version]
 
 class ascii28separated(csv.excel):
+    """The FEC moved from CSV to chr(28)-separated files in format version 6."""
     delimiter = chr(28)
 
-def readfile(fileobj):
+# Note that normally we are reading from a zipfile, and Python’s
+# stupid zipfile interface doesn’t AFAICT give us the option of
+# streaming reads — it insists on reading the whole zipfile element at
+# once.  So we don’t lose much by parsing from a string rather than a
+# file object here.
+def readstring(astring):
+    # from the Python 2.5 documentation: “Note: This version of the
+    # csv module doesn't support Unicode input. Also, there are
+    # currently some issues regarding ASCII NUL
+    # characters. Accordingly, all input should be UTF-8 or printable
+    # ASCII to be safe; see the examples in section 9.1.5. These
+    # restrictions will be removed in the future.”
+    fileobj = cStringIO.StringIO(astring)
     r = csv.reader(fileobj)
     headerline = r.next()
     if chr(28) in headerline[0]:
@@ -484,11 +497,11 @@ def readfile(fileobj):
         rv['format_version'] = version # for debugging
         yield rv
 
-def readfile_into_tree(fileobj, filename):
-    records = readfile(fileobj)
+def readstring_into_tree(astring, filename):
+    records = readstring(astring)
     form = records.next()
     if not form['original_data']['form_type'].startswith('F'):
-        warn("skipping %r: its first record is %r" % (fileobj, formline))
+        warn("skipping %r: its first record is %r" % (filename, formline))
         return
     form['schedules'] = list(records)
     form['report_id'] = filename[:-4]
@@ -497,14 +510,14 @@ def readfile_into_tree(fileobj, filename):
 def readfile_zip(filename):
     zf = zipfile.ZipFile(filename)
     for name in zf.namelist():
-        yield readfile_into_tree(cStringIO.StringIO(zf.read(name)), name)
+        yield readstring_into_tree(zf.read(name), name)
 
 def readfile_generic(filename):
     if filename.endswith('.zip'):
         return readfile_zip(filename)
     else:
         _, basename = os.path.split(filename)
-        return [readfile_into_tree(file(filename), basename)]
+        return [readfile_into_tree(file(filename).read(), basename)]
 
 EFILINGS_PATH = '../data/crawl/fec/electronic/'
 

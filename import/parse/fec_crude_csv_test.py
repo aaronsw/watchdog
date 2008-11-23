@@ -1,10 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import fec_crude_csv, doctest, cgitb
-from cStringIO import StringIO
 
 def records(inputstring):
-    return list(fec_crude_csv.readfile(StringIO(inputstring)))
+    return list(fec_crude_csv.readstring(inputstring))
 
 def test_endtext():
     """
