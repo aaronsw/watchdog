@@ -10,7 +10,7 @@ dinosaur --- now it's doing 210 kilobytes per second.
 
 """
 import csv, sys, cgitb, fixed_width, zipfile, cStringIO, types, os, glob, time
-import codecs
+import codecs, re
 
 class Field:
     """Represents a field in the output data, and knows how to compute it.
@@ -359,9 +359,6 @@ fields = {
                      name_combo(candidate_first_name,
                                 candidate_middle_name,
                                 candidate_last_name),
-                  # XXX add matching of 'x for Congress'. This will
-                  # require allowing one input field to map to more
-                  # than one output field in the field-mapping logic.
     'filer_id': ['filer_fec_cand_id',
                  'filer_fec_cmte_id_',
                  'filer_fec_cmte_id',
@@ -509,6 +506,12 @@ def readstring(astring):
         rv['format_version'] = version # for debugging
         yield rv
 
+# XXX use this
+candidate_name_re = r'''(?ix)
+    (?P<candidate>.*) \s+ for \s+ congress
+  | committee \s+ to \s+ elect (?P<candidate>.*)
+'''
+
 def readstring_into_tree(astring, filename):
     records = readstring(astring)
     form = records.next()
@@ -529,7 +532,7 @@ def readfile_generic(filename):
         return readfile_zip(filename)
     else:
         _, basename = os.path.split(filename)
-        return [readfile_into_tree(file(filename).read(), basename)]
+        return [readstring_into_tree(file(filename).read(), basename)]
 
 EFILINGS_PATH = '../data/crawl/fec/electronic/'
 
