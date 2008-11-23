@@ -18,21 +18,23 @@ class NoForm(Exception): pass
 class CaptchaException(Exception): pass
 
 
-name_options = dict(prefix=['pre', 'salutation'],
+name_options = dict(prefix=['pre', 'salut'],
                     lname=['lname', 'last'],
                     fname=['fname', 'first', 'name'],
                     zipcode=['zip', 'zipcode'],
                     zip4=['zip4', 'four', 'plus'],
-                    address=['addr1', 'address1', 'add1', 'address'],
+                    address=['addr1', 'address1', 'add1', 'address', 'add'],
                     addr2=['addr2', 'add2', 'address2'],
                     addr3=['addr3'],
                     city=['city'],
                     state=['state'],
-                    email=['email'],
+                    email=['email', 'e-mail'],
                     phone=['phone'],
                     issue=['issue', 'subject', 'topic', 'title'],
+                    subject=['subject', 'topic'],
                     message=['message', 'msg', 'comment', 'text'],
-                    captcha=['captcha', 'validat']
+                    captcha=['captcha', 'validat'],
+                    reply=['reply', 'response', 'answer']
                 )
 
 def numdists(zip5, zip4=None, address=None):
@@ -107,9 +109,28 @@ def first(seq):
             return s
     return None        
 
+def matches(a, b):
+    """`a` matches `b` if any name_options of `a` is a part of `b` in lower case
+    >>> matches('name', 'required-fname')
+    True
+    >>> matches('addr2', 'address2')
+    True
+    >>> matches('captcha', 'validation')
+    True
+    >>> matches('lname', 'required-name')
+    False
+    """
+    if not a in name_options.keys():
+        return False
+    for n in name_options[a]:
+        if n in b.lower():
+            return True
+    return False 
+
 class Form(object):
     def __init__(self, f):
         self.f = f
+        self.controls = filter(lambda c: not (c.readonly or c.type == 'hidden') and c.name, f.controls)
 
     def __repr__(self):
         return repr(self.f)
@@ -138,19 +159,6 @@ class Form(object):
         except Exception, detail:
             print >> sys.stderr, detail
 
-    def select_value(self, control, options):
-        if not isinstance(options, list): options = [options]
-        items = [str(item).lstrip('*') for item in control.items]
-        for option in options: 
-            for item in items:
-                if option.lower() in item.lower():
-                    return [item]
-        return [item]
-
-    def fill_all(self, **d):
-        for k, v in d.items():
-            self.fill(v, name=k)
-
     def fill_name(self, prefix, fname, lname):
         self.fill(prefix, 'prefix')
         if self.fill(lname, 'lname'):
@@ -168,21 +176,30 @@ class Form(object):
 
     def fill_phone(self, phone):
         phone = phone + ' '* (10 - len(phone)) # make phone length 10
-        ph_ctrls = [c.name for c in self.f.controls if not c.readonly and c.name and 'phone' in c.name.lower()]
+        ph_ctrls = [c.name for c in self.controls if 'phone' in c.name.lower() and c.type == 'text']
         num_ph = len(ph_ctrls)
         if num_ph == 1:
-            return self.f.set_value(phone, ph_ctrls[0], nr=0)
+            return self.f.set_value(phone, ph_ctrls[0], type='text', nr=0)
         elif num_ph == 2:
-            self.f.set_value(phone[:3], name=ph_ctrls[0], nr=0)
-            self.f.set_value(phone[3:], name=ph_ctrls[1], nr=0)
+            self.f.set_value(phone[:3], name=ph_ctrls[0], type='text', nr=0)
+            self.f.set_value(phone[3:], name=ph_ctrls[1], type='text', nr=0)
         elif num_ph == 3:
-            self.f.set_value(phone[:3], name=ph_ctrls[0], nr=0)
-            self.f.set_value(phone[3:6], name=ph_ctrls[1], nr=0)
-            self.f.set_value(phone[6:], name=ph_ctrls[2], nr=0)
+            self.f.set_value(phone[:3], name=ph_ctrls[0], type='text', nr=0)
+            self.f.set_value(phone[3:6], name=ph_ctrls[1], type='text', nr=0)
+            self.f.set_value(phone[6:], name=ph_ctrls[2], type='text', nr=0)
 
-    def fill(self, value, name=None, type=None):
-        c = self.find_control(name=name, type=type)
-        if c and not c.readonly:
+    def select_value(self, control, options):
+        if not isinstance(options, list): options = [options]
+        items = [str(item).lstrip('*') for item in control.items]
+        for option in options:
+            for item in items:
+                if option.lower() in item.lower():
+                    return [item]
+        return [item]
+
+    def fill(self, value, name=None, type=None, control=None):
+        c = control or self.find_control(name=name, type=type)
+        if c:
             if c.type in ['select', 'radio', 'checkbox']: 
                 value = self.select_value(c, value)
             elif isinstance(value, list):
@@ -191,11 +208,23 @@ class Form(object):
             return True 
         return False
 
+    def fill_all(self, **d):
+        #fill all the fields of the form with the values from `d`
+        for c in self.controls:
+            filled = False
+            if c.name in d.keys():
+                filled = self.fill(d[c.name], control=c)
+            else:
+                for k in d.keys():
+                    if matches(k, c.name):
+                        filled = self.fill(d[k], control=c)
+            if not filled and not c.value: print "couldn't fill %s" % (c.name),
+
     def has(self, name=None, type=None):
         return bool(self.find_control(name=name, type=type))
 
     def find_control(self, name=None, type=None):
-        """return the form control of type `type` or matching name_options of `name`"""
+        """return the form control of type `type` or matching `name_options` of `name`"""
         if not (name or type): return
 
         try:
@@ -211,11 +240,11 @@ class Form(object):
 
     def find_control_by_name(self, name):
         name = name.lower()
-        return first(c for c in self.f.controls if c.name and name in c.name.lower())
+        return first(c for c in self.controls if c.name and name in c.name.lower())
 
     def find_control_by_id(self, id):
         id = id.lower()
-        return first(c for c in self.f.controls if c.id and id in c.id.lower())
+        return first(c for c in self.controls if c.id and id in c.id.lower())
 
     def find_control_by_type(self, type):
         try:

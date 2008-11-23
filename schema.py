@@ -493,6 +493,7 @@ class Census_meta(sql.Table):
     internal_key = sql.String(10, primary=True)
     census_type = sql.Integer(primary=True)
     hr_key = sql.String(512)
+    label = sql.String()
 
 class Census_data(sql.Table):
     #district_id = sql.String(10, primary=True) 
@@ -507,9 +508,23 @@ class Pol_contacts(sql.Table):
     contacttype = sql.String(1)     # E=email, W=wyr, I=ima, Z=zipauth
     captcha = sql.Boolean()
 
+class Census_Population(sql.Table):
+    state_id = sql.String(2)     # STATE
+    county_id = sql.String(3)    # COUNTY
+    blockgrp_id = sql.String(1)  # BLOCKGRP
+    block_id = sql.String(4)     # BLOCK
+    district_id = sql.String(2)  # CD110
+    tract_id = sql.String(6)     # TRACT
+    zip_id = sql.String(5)       # ZCTA
+    sumlev = sql.String(16)      # SUMLEV
+    area_land = sql.Integer()    # AREALAND
+    area_land.sql_type = 'bigint'
+    population = sql.Integer()   
+
 def init():
     db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
     try:
         db.query("GRANT ALL on census TO watchdog")
     except:
-        pass # user doesn't exist
+        pass # group doesn't exist
+
