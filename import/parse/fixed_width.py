@@ -99,7 +99,7 @@ def parse_line(linedef, line):
             t(line[n:n+l])
         else:
             out[k] = t(line[n:n+l])
-            print k, repr(line[n:n+l])
+            #print k, repr(line[n:n+l])
         if l > 0: n += l
     return out
 
