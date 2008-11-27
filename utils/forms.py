@@ -1,7 +1,7 @@
 import web
 from web import form
 from settings import db
-from wyrutils import getdists
+from wyrutils import getdist
 from auth import loginuser
 
 email_regex = r'[\w\.-]+@[\w\.-]+\.[a-zA-Z]{1,4}'
@@ -17,7 +17,7 @@ def getstates():
 
 class ZipValidator:
     def valid(self, i):
-        dists = getdists(i.zipcode, i.zip4, i.addr1+i.addr2)
+        dists = getdist(i.zip5, i.zip4, i.addr1+i.addr2)
         msg = ''
         if len(dists) > 1 and not i.zip4:
             msg = "Zipcode is shared between two districts. Enter zip4 too."
@@ -26,7 +26,7 @@ class ZipValidator:
         elif not dists[0].startswith(i.state):
             msg = "Zipcode and address doesn't fall in the selected state"
         web.ctx.zip_validator_msg = msg
-        return False if msg else True
+        return not bool(msg)
     
     def get_msg(self):
         return web.ctx.get('zip_validator_msg', '')
@@ -58,7 +58,7 @@ wyrform = form.Form(
       form.Textbox('addr2', description='Address', size='20'),
       form.Textbox('city', form.Validator("City can't be blank", bool), description='City'),
       form.Dropdown('state', [(None, 'Select state')] + getstates(), form.Validator("State can't be blank", bool), description='State'),
-      form.Textbox('zipcode', form.Validator("Zip code can't be blank", bool), form.regexp(r'^[0-9]{5}$', 'Please enter a valid zip'),
+      form.Textbox('zip5', form.Validator("Zip code can't be blank", bool), form.regexp(r'^[0-9]{5}$', 'Please enter a valid zip'),
                     size='5', maxlength='5', description='Zip'),
       form.Textbox('zip4', form.regexp(r'^$|[0-9]{4}', 'Please Enter a valid zip'),
                     size='4', maxlength='4',description=''),
@@ -66,16 +66,9 @@ wyrform = form.Form(
                     form.Validator('Please enter a valid phone number', check_len), size='15', description='Phone'),
       form.Textbox('ptitle', form.Validator("Title can't be blank", bool), description="Title:", size='80'),
       form.Textarea('msg', form.Validator("Description can't be blank", bool), description="Description:", rows='15', cols='80'),
-      form.Textbox('captcha', pre='', description="Validation:"),
-      form.Hidden('signid'),
+      form.Hidden('captcha_env'),
       validators = [ZipValidator()]
       )
-
-captcha = form.Textbox('captcha',
-    form.Validator("Enter the letters as they are shown in the image", bool),
-    size='10',
-    description='Validation'
-    )
 
 signform = form.Form(
     form.Textbox('fname', form.notnull, description='First Name:', post=' *', size='17'),
@@ -154,7 +147,7 @@ forgot_password = form.Form(
             form.regexp(email_regex, 'Please enter a valid email'),
             description='Email:'
             ),
-    validators = [form.Validator("Account doesn't exist with this email", lambda i: not emailnotexists(i.email))]
+    validators = [form.Validator("No account exists with this email", lambda i: not emailnotexists(i.email))]
     )
 
 userinfo = form.Form(

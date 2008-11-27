@@ -3,29 +3,33 @@ from zip2rep import zip2dist
 from settings import db
 
 import sys
-import urllib2
+import urllib2, cookielib
 from ClientForm import ControlNotFoundError, AmbiguityError
-from BeautifulSoup import BeautifulSoup
-import re
 from urlparse import urljoin
 
+from config import production_test, from_address, test_email
+from settings import production_mode
 
+__all__ = ['ZipShared', 'ZipIncorrect', 'ZipNotFound', 'NoForm', 'WyrError', #all exceptions
+            'numdists', 'getdist', 'getcontact', 'getpols', 'has_captcha', 'dist2pols',
+            'Form', 'urlopen', 'require_captcha',
+            'production_mode', 'test_mode', 'test_email']
+            
 class ZipShared(Exception): pass
 class ZipIncorrect(Exception): pass
 class ZipNotFound(Exception): pass
 class WyrError(Exception): pass
 class NoForm(Exception): pass
-class CaptchaException(Exception): pass
 
+test_mode = (not production_mode)
 
-name_options = dict(prefix=['pre', 'salut'],
+name_options = dict(prefix=['pre', 'salut', 'title'],
                     lname=['lname', 'last'],
                     fname=['fname', 'first', 'name'],
                     zipcode=['zip', 'zipcode'],
                     zip4=['zip4', 'four', 'plus'],
                     address=['addr1', 'address1', 'add1', 'address', 'add'],
                     addr2=['addr2', 'add2', 'address2'],
-                    addr3=['addr3'],
                     city=['city'],
                     state=['state'],
                     email=['email', 'e-mail'],
@@ -38,48 +42,32 @@ name_options = dict(prefix=['pre', 'salut'],
                 )
 
 def numdists(zip5, zip4=None, address=None):
-    return len(getdists(zip5, zip4, address))
+    return len(get_dist(zip5, zip4, address))
 
-def getdists(zip5, zip4=None, address=None):
+def getdist(zip5, zip4=None, address=None):
     query = 'select distinct district_id from zip4 where zip=$zip5'
     if zip4: query += ' and plus4=$zip4'
     query += ' limit 2'     #just to see uniqness of districts
-    dists = [x.district_id for x in db.query(query, vars=locals())]
-    if len(dists) != 1:
+    dist = [x.district_id for x in db.query(query, vars=locals())]
+    if len(dist) != 1:
         try:
-            dists = zip2dist(zip5, address and address.strip())
+            dist = zip2dist(zip5, address and address.strip())
         except Exception, details:
             pass
-    return dists
+    return dist
+
+def getcontact(pol):
+    p = db.select('pol_contacts', where='politician_id=$pol', vars=locals())
+    return p[0] if p else {}
+
+def getpols(zip5, zip4=None, address=None):
+    dist = getdist(zip5, zip4, address)
+    dist = dist[0] if dist else ''
+    return dist2pols(dist)
 
 def has_captcha(pol):
     r = db.select('pol_contacts', what='contact', where="politician_id=$pol and captcha='t'", vars=locals())
     return bool(r)
-        
-def get_captcha_src(pol):
-    if has_captcha(pol):
-        r = db.select('pol_contacts', what='contact', where="politician_id=$pol", vars=locals())
-        url = r[0].contact
-        response = urlopen(url)
-        if response: 
-            soup = BeautifulSoup(response)
-            imgs = soup.findAll('img', attrs={'src': re.compile('.*[Cc]aptcha.*')})
-            if imgs: 
-                img_src = imgs[0].get('src', '') 
-                return urljoin(url, img_src)
-
-def add_captcha(wf):
-    try:
-        dist = getdists(wf.zipcode.value, wf.zip4.value, wf.addr1.value+wf.addr2.value)[0]
-    except:
-        pass
-    else:        
-        src = get_captcha_src(dist2pol(dist))
-        set_captcha(wf, src)
-
-def set_captcha(wyrform, img_src):
-    if img_src:
-        wyrform.captcha.pre = '<img src="%s" border="0" />&nbsp;&nbsp;' % img_src
 
 def pol2dist(pol):
     try:
@@ -87,27 +75,45 @@ def pol2dist(pol):
     except KeyError:
         return
 
-def dist2pol(dist):
+def dist2pols(dist):
+    if not dist: return []
+    where = 'politician.district_id=$dist or politician.district_id=$dist[:2]'
     try:
-        return db.select('politician', what='id', where='politician.district_id=$dist', vars=locals())[0].id
+        return [p.id for p in db.select('politician', what='id', where=where, vars=locals())]
     except KeyError:
-        return
+        return []
 
-def urlopen(*args):
+def urlopen(url, data=None, cj=None):
+    cj = cj or cookielib.CookieJar()
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     try:
-        return urllib2.urlopen(*args)    
+	    return opener.open(url, data)
     except Exception, details:
-        print details,
-        if isinstance(args[0], urllib2.Request): print args[0].get_full_url(),
-        else: print args[0],
+	    print url, details
 
 def first(seq):
     """returns first True element"""    
     if not seq: return False
     for s in seq:
-        if s:
-            return s
-    return None        
+        if s: return s
+
+def require_captcha(i, pols=None):
+    """returns if the residents of the district defined by zip5, zip4, address in `i`
+    have to fill captcha in the pol contact form.
+    """
+    captchas_filled = all([i.get(k) for k in i if k.startswith('captcha_')])
+    pols = pols or getpols(i.zip5, i.zip4, i.addr1+i.addr2)
+    have_captcha = any(has_captcha(p) for p in pols)
+    return (not captchas_filled) and have_captcha
+
+def check_response(form_controls, response):
+    """sends a mail to check if the form is submitted properly.
+    """
+    form_values = "\n".join(["%s: %s" % (c.name, c.value) for c in form_controls])
+    msg = 'Filled in the form:\n\n' + form_values 
+    if response: msg +=  '\n\nResponse at' + response.geturl() + ':\n' + response.read()
+    subject = 'wyr mail'
+    web.sendmail(from_address, production_test, subject, msg)
 
 def matches(a, b):
     """`a` matches `b` if any name_options of `a` is a part of `b` in lower case
@@ -142,15 +148,12 @@ class Form(object):
         return getattr(self.f, x)
 
     def production_click(self):
-        from writerep import production_mode, test_mode
         if production_mode:
             request = self.f.click()
             response = urlopen(request.get_full_url(), request.get_data())
+            check_response(self.controls, response)
         elif test_mode:
-            home = web.ctx.get('homedomain') or 'http://0.0.0.0:8080'
-            self.f.action = home + '/writerep/test'
-            request = self.f.click() 
-            response = urlopen(request.get_full_url(), request.get_data())
+            check_response(self.controls, response='')
         return True
 
     def click(self):
@@ -167,11 +170,11 @@ class Form(object):
             name = "%s %s %s" % (prefix, lname, fname)
             return self.fill(fname, 'fname')
 
-    def fill_address(self, addr1, addr2, addr3=''):    
+    def fill_address(self, addr1, addr2):    
         if self.fill(addr2, 'addr2'):
             return self.fill(addr1, 'address')
         else:
-            address = "%s %s %s" % (addr1, addr2, addr3)
+            address = "%s %s" % (addr1, addr2)
             return self.fill(address, 'address')
 
     def fill_phone(self, phone):

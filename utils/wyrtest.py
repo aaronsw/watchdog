@@ -29,19 +29,17 @@ def test(formtype=None):
         return '', ''
           
           
-    query = "select politician_id from pol_contacts where contacttype='%s'" % formtype[0].upper() 
+    query = "select politician_id from pol_contacts where contacttype='%s'" % formtype[0].upper()
     pols = [r.politician_id for r in db.query(query)]
     for pol in pols:
-        print pol,        
-        zip5, zip4 = getzip(pol2dist(pol))
+        print pol,
+        dist = pol2dist(pol)
+        zip5, zip4 = getzip(dist)
         print zip5, zip4,
-        try:
-            msg_sent = writerep(pol, zipcode=zip5, zip4=zip4, prefix='Mr.', 
-                    fname='watchdog', lname ='Tester', addr1='111 av', addr2='addr extn', city='test city', 
-                    phone='0010010010', email='test@tryitout.net', subject='general', msg='testing...')
-        except Exception, details:
-            print details,
-            msg_sent = False            
+        u = web.Storage(zip5=zip5, zip4=zip4, prefix='Mr.', state=dist[:2],
+                    fname='test', lname ='Tester', addr1='111 av', addr2='addr extn', city='test city', 
+                    phone='0010010010', email='test@tryitout.net', subject='general', full_msg='testing...')
+        msg_sent = writerep(pol, u)
         print msg_sent and 'Success' or 'Failure'
     
 if __name__ == '__main__':

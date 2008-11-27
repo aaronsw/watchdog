@@ -78,8 +78,14 @@ def get_user_by_email(email):
     try:
         return db.select('users', where='email=$email', vars=locals())[0]
     except IndexError:
-        return None
+        return
 
+def get_user_by_id(uid):
+    try:
+        return db.select('users', where='id=$uid', vars=locals())[0]
+    except IndexError:
+        return
+    
 def set_login_cookie(email):
     setcookie('wd_login', email)
 
@@ -91,8 +97,10 @@ def del_unverified_cookie():
     
 def unverified_login(email, fname, lname):
     setcookie('wd_email', email)
-    if not get_user_by_email(email):
-        db.insert('users', fname=fname, lname=lname, email=email)
+    user = get_user_by_email(email)
+    if user:
+        return user.id
+    return db.insert('users', fname=fname, lname=lname, email=email)
 
 def is_verified(email):
     verified = db.select('users', where='email=$email and (verified=True or password is not null)', vars=locals())
@@ -103,10 +111,14 @@ def query_param(param, default_value):
     i = web.input(**d)
     return i.get(param)
 
-def get_user_name():
+def get_user():
     email = get_loggedin_email() or get_unverified_email()
     user = get_user_by_email(email)
-    return (user.fname or email[:email.index('@')]) if user else ''
+    return user
+    
+def get_user_name():
+    user = get_user()
+    return (user.fname or user.email[:user.email.index('@')]) if user else ''
 
 g = web.template.Template.globals
 g['slice'] = slice
