@@ -8,4 +8,4 @@ from_address = '"watchdog.net" <info@watchdog.net>'
 maildir_path = '/home/wathdog/Maildir'
 send_errors_to = 'bugs@watchdog.net'
 test_email = 'test@watchdog.net' #wyr test emails to go to this
-production_test = 'wyr_prod@watchdog.net' #all production wyr msgs and their responses go here
+production_test_email = 'wyr_prod@watchdog.net' #all production wyr msgs and their responses go here

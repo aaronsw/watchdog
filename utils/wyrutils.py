@@ -3,25 +3,17 @@ from zip2rep import zip2dist
 from settings import db
 
 import sys
-import urllib2, cookielib
 from ClientForm import ControlNotFoundError, AmbiguityError
-from urlparse import urljoin
-
-from config import production_test, from_address, test_email
-from settings import production_mode
 
 __all__ = ['ZipShared', 'ZipIncorrect', 'ZipNotFound', 'NoForm', 'WyrError', #all exceptions
             'numdists', 'getdist', 'getcontact', 'getpols', 'has_captcha', 'dist2pols',
-            'Form', 'urlopen', 'require_captcha',
-            'production_mode', 'test_mode', 'test_email']
+            'Form', 'require_captcha']
             
 class ZipShared(Exception): pass
 class ZipIncorrect(Exception): pass
 class ZipNotFound(Exception): pass
 class WyrError(Exception): pass
 class NoForm(Exception): pass
-
-test_mode = (not production_mode)
 
 name_options = dict(prefix=['pre', 'salut', 'title'],
                     lname=['lname', 'last'],
@@ -83,14 +75,6 @@ def dist2pols(dist):
     except KeyError:
         return []
 
-def urlopen(url, data=None, cj=None):
-    cj = cj or cookielib.CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-    try:
-	    return opener.open(url, data)
-    except Exception, details:
-	    print url, details
-
 def first(seq):
     """returns first True element"""    
     if not seq: return False
@@ -105,15 +89,6 @@ def require_captcha(i, pols=None):
     pols = pols or getpols(i.zip5, i.zip4, i.addr1+i.addr2)
     have_captcha = any(has_captcha(p) for p in pols)
     return (not captchas_filled) and have_captcha
-
-def check_response(form_controls, response):
-    """sends a mail to check if the form is submitted properly.
-    """
-    form_values = "\n".join(["%s: %s" % (c.name, c.value) for c in form_controls])
-    msg = 'Filled in the form:\n\n' + form_values 
-    if response: msg +=  '\n\nResponse at' + response.geturl() + ':\n' + response.read()
-    subject = 'wyr mail'
-    web.sendmail(from_address, production_test, subject, msg)
 
 def matches(a, b):
     """`a` matches `b` if any name_options of `a` is a part of `b` in lower case
@@ -136,6 +111,7 @@ def matches(a, b):
 class Form(object):
     def __init__(self, f):
         self.f = f
+        self.action = self.f.action
         self.controls = filter(lambda c: not (c.readonly or c.type == 'hidden') and c.name, f.controls)
 
     def __repr__(self):
@@ -146,15 +122,6 @@ class Form(object):
 
     def  __getattr__(self, x): 
         return getattr(self.f, x)
-
-    def production_click(self):
-        if production_mode:
-            request = self.f.click()
-            response = urlopen(request.get_full_url(), request.get_data())
-            check_response(self.controls, response)
-        elif test_mode:
-            check_response(self.controls, response='')
-        return True
 
     def click(self):
         try:
@@ -232,7 +199,7 @@ class Form(object):
 
         try:
             names = name_options[name]
-        except KeyError: 
+        except KeyError:
             names = name and [name]
         c = None
         if type: c = self.find_control_by_type(type)

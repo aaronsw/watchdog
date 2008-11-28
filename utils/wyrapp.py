@@ -23,9 +23,9 @@ def captcha_box(pol, img_src):
 	        size='10', pre=pre, description='Validation')
     
 def render_captcha(c):
-    return "<tr><td><label for='%s'>Verification</label> %s</td>\
-            <td style='valign:center'><label for='%s'>&nbsp;</label> %s </td></tr>" \
-	    % (c.name, c.pre, c.name, c.render())
+    return """<tr><td colspan=3>
+                <label for='%s'>Verification</label> %s %s 
+                </td></tr>""" % (c.name, c.pre, c.render())
 
 def add_captcha(form, img_src, pol):
     c = captcha_box(pol, img_src)   

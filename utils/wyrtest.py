@@ -1,6 +1,6 @@
 import web
 from settings import db
-from writerep import writerep
+from writerep import writerep, compose_msg
 from wyrutils import pol2dist
 
 def test(formtype=None):
@@ -36,9 +36,10 @@ def test(formtype=None):
         dist = pol2dist(pol)
         zip5, zip4 = getzip(dist)
         print zip5, zip4,
+        msg = compose_msg(pol, 'testing...')
         u = web.Storage(zip5=zip5, zip4=zip4, prefix='Mr.', state=dist[:2],
                     fname='test', lname ='Tester', addr1='111 av', addr2='addr extn', city='test city', 
-                    phone='0010010010', email='test@tryitout.net', subject='general', full_msg='testing...')
+                    phone='0010010010', email='test@tryitout.net', subject='general', full_msg=msg)
         msg_sent = writerep(pol, u)
         print msg_sent and 'Success' or 'Failure'
     
