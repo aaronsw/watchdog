@@ -670,8 +670,11 @@ def parse_candidates():
         print>>sys.stderr, fn
         for elt in parse_file(def_cn, file(fn)):
             yield elt
-def parse_committees():
-    for fn in sorted(glob.glob('../data/crawl/fec/*/cm.dat')):
+def parse_committees(latest=False):
+    fns = sorted(glob.glob('../data/crawl/fec/*/cm.dat'))
+    if latest:
+        fns = [fns[-1]]
+    for fn in fns:
         print>>sys.stderr, fn
         fh = file(fn)
         if '1980' in fn:
@@ -691,8 +694,12 @@ def parse_transfers():
         if '1996' in fn: cur_def = def_pas2_96
         for elt in parse_file(cur_def, fh):
             yield elt
-def parse_contributions():
-    for fn in sorted(glob.glob('../data/crawl/fec/*/indiv.dat.gz')):
+def parse_contributions(latest=False):
+    fns = sorted(glob.glob('../data/crawl/fec/*/indiv.dat.gz'))
+    if latest:
+        cur_def = def_indiv_96
+        fns = [fns[-1]]
+    for fn in fns:
         print>>sys.stderr, fn
         fh = gzip.open(fn)
         if '1980' in fn:

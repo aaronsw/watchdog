@@ -356,20 +356,37 @@ class Category (sql.Table):
     industry = sql.String()
     sector = sql.String()
 
+class Committee (sql.Table):
+    id = sql.String(primary=True) # FEC ID
+    name = sql.String()
+    treasurer = sql.String()
+    street1 = sql.String()
+    street2 = sql.String()
+    city = sql.String()
+    state = sql.String()
+    zip = sql.String()
+    connected_org_name = sql.String()
+    candidate_id = sql.String()    
+
 class Contribution (sql.Table):
     id = sql.Serial(primary=True)
-    politician_id = sql.Reference(Politician)
-    committee = sql.String()
-    contrib_date = sql.Date()
-    contributor_org = sql.String()
-    contributor = sql.String()
+    fec_record_id = sql.String()
+    microfilm_loc = sql.String()
+    report_id = sql.String()
+    recipient = sql.Reference(Committee)
+    # contributor
+    name = sql.String()
+    street = sql.String()
+    city = sql.String()
+    state = sql.String()
+    zip = sql.String()
     occupation = sql.String()
     employer = sql.String()
     employer_stem = sql.String()
-    candidate_name = sql.String()
-    filer_id = sql.String(10)
-    report_id = sql.Integer()
-    amount = sql.String(20)
+    committee = sql.String() # sigh: sometimes committee, sometimes candidate
+    
+    sent = sql.Date()
+    amount = sql.Float()
 
 #@@INDEX by employer_stem
 
