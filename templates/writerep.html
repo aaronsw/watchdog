@@ -1,4 +1,4 @@
-$def with (form, useremail=None, msg=None)
+$def with (form, useremail=None, captchas=None, msg=None)
 
 $var width: 782px
 $var color: white
@@ -10,27 +10,27 @@ $var title: Write your representative
 <style>
 fieldset#wyr { margin-top: 2em; }
 #text fieldset td { padding: 0; margin: 0;}
+fieldset input#email {width:170px;}
 </style>
 
 $if msg:
     $var msg: $:msg
 
 <form name="writerepform" method="POST">
-    $if not form.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
-<fieldset id="wyr" style="width: 95%">    
+    $if not form.valid:
+         $if form.note: <p class="error">$form.note</p>
+         $else: <p class="error">Please try again after fixing the errors highlighted below:</p>
+<fieldset id="wyr" style="width: 95%">
     <legend>Write your representative</legend>
        <table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><label for="prefix">Prefix</label>$:form.prefix.render()</td>
        <td style="width: 275px; padding-left: 0px; padding-right: 10px;"><label for="fname">First name</label>$:form.fname.render()</td>
-       <td style="width: 280px; padding-left: 10px; padding-right: 10px;"><label for="lname">Last name</label>$:form.lname.render()</td></tr>
-       
+       <td style="width: 280px; padding-left: 10px; padding-right: 10px;"><label for="lname">Last name</label>$:form.lname.render()</td></tr></table>
+       <table>
        <tr><td  style="width: 350px; padding-right: 10px;" colspan="2"><label for="addr1">Address</label>$:form.addr1.render()</td>
        <td colspan="2" style="width: 300px; padding-left: 10px; padding-right: 10px;"><label for="addr2">&nbsp;&nbsp;</label>$:form.addr2.render()</td></tr>
-       
        <tr><td style="width: 350px; padding-right: 10px;" colspan="2"><label for="city">City</label>$:form.city.render()</td>
-           <td style="width: 300px; padding-left: 10px;"><label for="state">State</label>$:form.state.render()<br />
-           <label for="zipcode">Zipcode</label>
-            $:form.zipcode.render()- $:form.zip4.render()</td></tr><span id="note_zipcode"></span>
-
+           <td style="width: 300px; padding-left: 10px;"><label for="state">State</label>$:form.state.render()<br /><label for="zip5">Zipcode</label>
+            $:form.zip5.render()- $:form.zip4.render()</td></tr><span id="note_zip5"></span>
         <tr><td style="width: 350px; padding-right: 10px;" colspan="2"><label for="email">Email</label>
    $if useremail:
        <strong>$useremail</strong>
@@ -40,13 +40,14 @@ $if msg:
    </td>
    <td colspan="2" style="width: 300px; padding-left: 10px;"><label for="phone">Phone</label>$:form.phone.render()</td>
    </tr>
-   
-   <tr><td colspan=3 width="100%"><label for="subject">Subject</label>$:form.ptitle.render()</td></tr>
-   <tr><td colspan=3 width="100%"><label for="msg">Message</label>$:form.msg.render()</td></tr>
-    $if form.captcha.pre:
-        <tr><td colspan=2><label for="captcha">Verification</label>$:form.captcha.pre $:form.captcha.render()</td></tr>
-   </table>
+   <tr><td colspan="3" width="100%"><label for="subject">Subject</label>$:form.ptitle.render()</td></tr>
+   <tr><td colspan="3" width="100%"><label for="msg">Message</label>$:form.msg.render()</td></tr>
+    $if captchas:
+        $:form.captcha_env.render()
+        $:captchas
+  </table>
    </fieldset>
+   
     <p><button type="submit">Send message</button></p>
 </form>    
 

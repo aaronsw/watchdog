@@ -1,4 +1,4 @@
-$def with (p, signform, useremail, isauthor, issignatory, wyrform=None, msg=None)
+$def with (p, signform, useremail, isauthor, issignatory, wyrform=None, captchas='', msg=None)
 
 $var width: 90%
 $var color: white
@@ -38,7 +38,7 @@ $else:
 	$else:
 		$ ppl = 'people</a></strong> have'
 	$if issignatory:
-	    $ signed = ', including <i>yourself</i>'
+	    $ signed = ', including <em>you</em>'
 	$else:
 	    $ signed = ''
 	<h2> <strong><a href='/c/$p.id/signatories'>$p.signatory_count $:ppl signed this petition$:signed.</h2>
@@ -54,12 +54,21 @@ $if isauthor:
 <a name="sign"></a>
 
 <form name="sign" method="POST" action="/c/$p.id?m=sign">
-        $if (not signform.valid) or (wyrform and not wyrform.valid):
-            <p class="error">Please try again after fixing the errors highlighted below:</p>
         <fieldset id="signpetition">
-            <legend>Sign this petition</legend>
+            $if issignatory:
+                <legend>Change your signature</legend>
+            $else:
+                <legend>Sign this petition</legend>
             $if wyrform:
                 <p> When you sign this petition, your comments will be sent to your Representative too.</p>
+
+            $if not signform.valid:
+                $if signform.note: <p class="error">$signform.note</p>
+                $else: <p class="error">Please try again after fixing the problems highlighted below:</p>
+            $elif wyrform and not wyrform.valid:
+                $if wyrform.note: <p class="error">$wyrform.note</p>
+                $else: <p class="error">Please try again after fixing the errors highlighted below:</p>
+
             <table>
             <tr>
             $if wyrform:
@@ -72,9 +81,9 @@ $if isauthor:
                  <td><label for="addr2">&nbsp;&nbsp;</label>$:wyrform.addr2.render()</td></tr>
                  <tr><td><label for="city">City</label>$:wyrform.city.render()</td>
                      <td><label for='state'>State</label>$:wyrform.state.render()</td>
-                 <td><label for="zipcode">Zipcode</label>
-                     $:wyrform.zipcode.render()- $:wyrform.zip4.render()</td></tr>
-                 <span id="note_zipcode"></span></table>
+                 <td><label for="zip5">zip5</label>
+                     $:wyrform.zip5.render()- $:wyrform.zip4.render()</td></tr>
+                 <span id="note_zip5"></span></table>
             <table><tr><td>         
             <label for="email">Email</label>
             $if useremail: 
@@ -90,16 +99,18 @@ $if isauthor:
             <tr><td colspan=3><label for="comment">Personal comment (explain how this affects you):</label>
             $:signform.comment.render()</td></tr>
             
-            $if wyrform and wyrform.captcha.pre:
-                <tr><td colspan=3>
-                    <label for="captcha">Verification</label>$:wyrform.captcha.pre $:wyrform.captcha.render()
-                </td></tr>
+            $if wyrform and captchas:
+                $:wyrform.captcha_env.render()
+                $:captchas
             </table>    
             <div id="share_with_container" style="margin: 3px;"><div style="float: left; padding-right: 12px;">
             $:signform.share_with.render()
             </div>
             <label for="share_with">Do not share my email with the author of this petition</label>
             </div>
-    <p><button type="submit" class="red">Sign this petition</button></p>
+        $if issignatory:
+            <p><button type="submit" class="red">Change your signature</button></p>
+        $else:
+            <p><button type="submit" class="red">Sign this petition</button></p>
         </fieldset>
 </form>

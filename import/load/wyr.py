@@ -14,17 +14,19 @@ def load_wyr():
                     continue
 
                 if data['contacttype'] == 'wyr':
-                    contact = 'https://forms.house.gov/wyr/welcome.shtml'
+                    contact = 'https://writerep.house.gov/writerep/welcome.shtml'
                 else:
                     contact = data['contact']    
             
-                d = {'politician':pol, 
+                d = {'politician_id':pol,
                         'contact':contact,
                         'contacttype': types[data['contacttype']],
                         'captcha': data['captcha']
                        }
-                   
-                db.insert('pol_contacts', seqname=False, **d)
+                try:
+                    db.insert('pol_contacts', seqname=False, **d)
+                except:
+                    continue
            
 if __name__ == "__main__": 
     load_wyr()

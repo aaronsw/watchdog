@@ -400,6 +400,64 @@ class Earmark_sponsor(sql.Table):
     earmark = sql.Reference(Earmark, primary=True)
     politician = sql.Reference(Politician, primary=True)
 
+
+## Lobbyiest stuff:
+class lob_organization(sql.Table):
+    id = sql.Number(primary=True)  #@@TODO: design stable ids
+    name = sql.String()
+    filings = sql.Backreference('lob_filing', 'org')
+
+class lob_person(sql.Table):
+    id = sql.Number(primary=True)  #@@TODO: design stable ids
+    prefix = sql.String()
+    firstname = sql.String()
+    middlename = sql.String()
+    lastname = sql.String()
+    suffix = sql.String()
+    contact_name = sql.String()
+    filings = sql.Backreference('lob_filing', 'lobbyist')
+
+class lob_pac(sql.Table):
+    id = sql.Number(primary=True)  #@@TODO: design stable ids
+    name = sql.String()
+    filings = sql.Backreference('lob_pac_filings', 'pac')
+
+class lob_filing(sql.Table):
+    id = sql.Number(primary=True)  #Uses xml file number as a stable id.
+    year = sql.Year()
+    type = sql.String()
+    signed_date = sql.Date()
+    amendment = sql.Boolean()
+    certified = sql.Boolean()
+    comments = sql.String()
+
+    senate_id = sql.Number()
+    house_id = sql.Number()
+    filer_type = sql.String(1)
+
+    lobbyist = sql.Reference(lob_person)
+    org = sql.Reference(lob_organization)
+    pacs = sql.Backreference('lob_pac_filings', 'filing')
+    contributions = sql.Backreference('lob_contribution', 'filing', order='amount asc')
+    @property
+    def house_url(self):
+        return "http://disclosures.house.gov/lc/xmlform.aspx?id=%d" % self.id
+
+class lob_contribution(sql.Table):
+    filing = sql.Reference(lob_filing)
+    date = sql.Date()
+    type = sql.String()
+    contributor = sql.String()
+    payee = sql.String()
+    recipient = sql.String()
+    amount = sql.Dollars()
+    politician = sql.Reference(Politician)
+
+class lob_pac_filings(sql.Table):
+    pac = sql.Reference(lob_pac)
+    filing = sql.Reference(lob_filing)
+
+
 class Expenditure (sql.Table):
     id = sql.Serial(primary=True)
     candidate_name = sql.String()
@@ -409,12 +467,6 @@ class Expenditure (sql.Table):
     filer_id = sql.String(10)
     report_id = sql.Integer()
     amount = sql.String(20)
-
-class WYR(sql.Table):
-    district = sql.Reference(District)
-    contact = sql.String()
-    contacttype = sql.String(1) # E=email, W=wyr, I=ima, Z=zipauth
-    captcha = sql.Boolean()
 
 class SOI(sql.Table):
     #district_id = sql.String(10, primary=True) 
@@ -441,6 +493,7 @@ class Census_meta(sql.Table):
     internal_key = sql.String(10, primary=True)
     census_type = sql.Integer(primary=True)
     hr_key = sql.String(512)
+    label = sql.String()
 
 class Census_data(sql.Table):
     #district_id = sql.String(10, primary=True) 
@@ -449,11 +502,29 @@ class Census_data(sql.Table):
     census_type = sql.Integer(primary=True)
     value = sql.Float()
 
+class Pol_contacts(sql.Table):
+    politician = sql.Reference(Politician, primary=True)
+    contact = sql.String()
+    contacttype = sql.String(1)     # E=email, W=wyr, I=ima, Z=zipauth
+    captcha = sql.Boolean()
+
+class Census_Population(sql.Table):
+    state_id = sql.String(2)     # STATE
+    county_id = sql.String(3)    # COUNTY
+    blockgrp_id = sql.String(1)  # BLOCKGRP
+    block_id = sql.String(4)     # BLOCK
+    district_id = sql.String(2)  # CD110
+    tract_id = sql.String(6)     # TRACT
+    zip_id = sql.String(5)       # ZCTA
+    sumlev = sql.String(16)      # SUMLEV
+    area_land = sql.Integer()    # AREALAND
+    area_land.sql_type = 'bigint'
+    population = sql.Integer()   
+
 def init():
     db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
-    db.query("CREATE VIEW v_politician_name  AS (SELECT id, firstname, lastname, id || ' ' || firstname || ' ' || lastname AS name FROM politician)")
     try:
         db.query("GRANT ALL on census TO watchdog")
-        db.query("GRANT ALL on v_politician_name TO watchdog")
     except:
-        pass # user doesn't exist
+        pass # group doesn't exist
+

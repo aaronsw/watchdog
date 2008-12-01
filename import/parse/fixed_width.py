@@ -2,7 +2,7 @@
 Library for processing fixed-width files.
 """
 
-import warnings
+import time, warnings
 try:
     from web import storage
 except ImportError:
@@ -12,13 +12,32 @@ except ImportError:
 
 def date(s):
     """where `s` is YYYYMMDD"""
-    return s[0:4] + '-' + s[4:6] + '-' + s[6:8]
+    out = s[0:4] + '-' + s[4:6]
+    if s[6:8]:
+        out += '-' + s[6:8]
+        assert time.strptime(out, '%Y-%m-%d')
+    elif out == '0000-00':
+        out = None
+    else:
+        assert time.strptime(out, '%Y-%m')
+    return out
 
 def year(s):
     return '20' + s
 
 def string(s):
     return s.strip()
+
+def state(s):
+    s = string(s)
+    assert s == s.upper()
+    assert s.isalpha()
+    return s
+
+def digits(s):
+    s = string(s)
+    assert s.isdigit()
+    return s
 
 def boolean(s):
     return {'Y': True, 'N': False, ' ': None}[s]
@@ -80,6 +99,7 @@ def parse_line(linedef, line):
             t(line[n:n+l])
         else:
             out[k] = t(line[n:n+l])
+            #print k, repr(line[n:n+l])
         if l > 0: n += l
     return out
 

@@ -25,7 +25,7 @@ $var head:
 $var sidebar: None
 $var maxi: True
 
-<h1 style="padding-top: 0px; margin-top: 0px">$d.state.name’s $d.districtth congressional district</h1>
+<h1>$d.state.name’s $d.districtth congressional district</h1>
 
 <div id="googlemap" class="bigmap">
 </div>
@@ -40,6 +40,26 @@ $if d.politician and d.politician[0].id and d.politician[0].firstname:
 $else:
     <br /><br />
 
+
+$def spark(lable, data, polid, by, unit='', url=None):
+    <th style="white-space:nowrap">$:lable</th>
+	$if not data: 
+		$ data = 0
+    $ display = commify(data) + ' ' + unit
+    $if unit == '$':
+        $ display = unit + commify(int(data))
+    $elif unit and unit[0] == '%':
+        $ display = '%3.1f' % data + unit
+    $if url:
+        <td class="sparkdata"><a href="$url">$display</a></td>
+    $else:
+        <td class="sparkdata" style="width: 100%">$display</td>
+    <td class="sparkline"><a href="/p/by/$by#$polid"
+           ><img src="/us/by/$by/distribution.png?point=$data"
+                 class="sparkline" /></a></td>
+    <td class="sparknum"><sup>(#${pos('district',by,polid)})</sup></td>
+
+
 <a href="/us/${d.state.code.lower()}">More about $d.state.name...</a>
 <br clear="both" />
 <table class="charted" cellpadding="0" cellspacing="0" border="0"><tbody>
@@ -51,42 +71,16 @@ $if d.cook_index:
       <td class="sparknum"></td>
     </tr>
   <tr class="odd">
-    <th>Area:</th>
-    <td class="sparkdata">$commify(d.area_sqmi) sq. mi.</td>
-    <td class="sparkline"><a href="/us/by/area_sqmi#d$d.name"
-         ><img src="/us/by/area_sqmi/distribution.png?point=$d.area_sqmi"
-               class="sparkline" /></a></td>
-    <td class="sparknum"><sup>(#${pos('district','area_sqmi',d.name)})</sup></td>
+      $:spark('Area:', d.area_sqmi, d.name, 'area_sqmi', ' sq. mi.')
   </tr><tr class="even">
-    <th>Population:</th>
-    <td class="sparkdata">$commify(d.est_population) ($d.est_population_year est.)</td>
-    <td class="sparkline"><a href="/us/by/est_population#d$d.name"
-         ><img 
-           src="/us/by/est_population/distribution.png?point=$d.est_population"
-           class="sparkline" /></a></td>
-    <td class="sparknum"><sup>(#${pos('district','est_population',d.name)})</sup></td>
+      $:spark('Population:', d.est_population, d.name, 'est_population', '(%d est.)' % d.est_population_year)
   </tr><tr class="odd">
-    <th>Poverty rate:</th>
-    <td class="sparkdata">$d.poverty_pct%</td>
-    <td class="sparkline"><a href="/us/by/poverty_pct#d$d.name"
-         ><img src="/us/by/poverty_pct/distribution.png?point=$d.poverty_pct"
-               class="sparkline" /></a></td>
-    <td class="sparknum"><sup>(#${pos('district','poverty_pct',d.name)})</sup></td>
+      $:spark('Poverty rate:', d.poverty_pct, d.name, 'poverty_pct', '%')
   </tr><tr class="even">
-    <th>Median household income:</th>
-    <td class="sparkdata">\$$commify(d.median_income)</td>
-    <td class="sparkline"><a href="/us/by/median_income#d$d.name"
-         ><img src="/us/by/median_income/distribution.png?point=$d.median_income"
-               class="sparkline" /></a></td>
-    <td class="sparknum"><sup>(#${pos('district','median_income',d.name)})</sup></td>
+      $:spark('Median household income:', d.median_income, d.name, 'median_income', '$')
   </tr>
   </tr><tr class="odd">
-    <th>Earmarks received per capita:</th>
-    <td class="sparkdata">\$$commify(int(d.earmark_per_capita))</td>
-    <td class="sparkline"><a href="/us/by/earmark_per_capita#d$d.name"
-         ><img src="/us/by/earmark_per_capita/distribution.png?point=$d.earmark_per_capita"
-               class="sparkline" /></a></td>
-    <td class="sparknum"><sup>(#${pos('district','earmark_per_capita',d.name)})</sup></td>
+      $:spark('Earmarks received per capita:', d.earmark_per_capita, d.name, 'earmark_per_capita', '$')
   </tr>
 </tbody></table>
 </div>

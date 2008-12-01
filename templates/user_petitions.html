@@ -1,0 +1,68 @@
+$def with (user, created, signed, logged_in=False)
+
+$var width: 90%
+$var color: white
+$var title: Petitions created by $user.fname $user.lname
+
+<style>
+#text #signs { margin: 0; padding: 0; }
+#text #signs { list-style: none; border-bottom: 1px solid #ddd; padding: 6px 0; line-height: 14px; background: none; }
+#text #signs a { color: black; }
+#text #signs .count { margin-right: 0.3em; }
+.header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
+</style>
+
+
+<h1> Petitions created by $user.fname $user.lname </h1> 
+
+<p style="text-align: right;">
+    <a href='#signed'>Signed by $user.fname $user.lname</a>&nbsp;&nbsp; 
+    <a href='/c'>All petitions</a>&nbsp;&nbsp; 
+$if logged_in: <a href='/u/$user.id/preferences'>Preferences</a>
+</p>
+
+$if not created:
+    <p>Haven't created any petitions yet. </p>
+$else:
+    <table class="structure" width="100%">
+    <tr>
+        <td class="header">Name of the petition</td>
+        <td class="header">Created on</td>
+        <td class="header" style="text-align: right;">No. of Signatories</td></tr>
+    $ trclass = "odd"
+    $for p in created:
+        $if trclass == "odd":
+            $ trclass = "even"
+        $else:
+            $ trclass = "odd"
+        <tr class="$trclass">
+            <td style="padding: 3px;"><a href="/c/$p.id">$p.title</a></td>
+            <td style="padding: 3px;">$:datestr(p.created)</td>
+            <td style="padding: 3px 24px 3px 3px; text-align: right;"><span class="count"> $p.signcount</span></a></td>
+        </tr>
+    </table>
+
+<a name='signed'></a>
+<h1> Petitions signed by $user.fname $user.lname</h1>
+$if not signed:
+    <p>Haven't signed any petitions yet. </p>
+$else:
+    <table class="structure" width="100%">
+    <tr><td class="header">Name of petition</td>
+        <td class="header" style="width:50%">Comment</td>
+        <td class="header">Signed on</td>
+        <td class="header" style="text-align: right;">No. of Signatories</td>
+    </tr>
+    $ trclass = "odd"
+    $for p in signed:
+        $if trclass == "odd":
+            $ trclass = "even"
+        $else:
+            $ trclass = "odd"
+        <tr class="$trclass">
+            <td style="padding: 3px;"><a href="/c/$p.id">$p.title</a></td>
+            <td style="padding: 3px; width:50%">$p.comment</td>
+            <td style="padding: 3px;">$:datestr(p.signed)</td>
+            <td style="padding: 3px 24px 3px 3px; text-align: right;"><span class="count"> $p.signcount</span></a></td>
+        </tr>
+    </table>
