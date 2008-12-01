@@ -1,6 +1,6 @@
 $def with (form, useremail=None, msg=None)
 
-$var width: 90%
+$var width: 782px
 $var color: white
 
 $var title: Write your representative
@@ -17,32 +17,32 @@ $if msg:
 
 <form name="writerepform" method="POST">
     $if not form.valid: <p class="error">Please try again after fixing the errors highlighted below:</p>
-<fieldset id="wyr">    
+<fieldset id="wyr" style="width: 95%">    
     <legend>Write your representative</legend>
-       <table><tr><td><label for="prefix">Prefix</label>$:form.prefix.render()</td>
-       <td><label for="fname">First name</label>$:form.fname.render()</td>
-       <td><label for="lname">Last name</label>$:form.lname.render()</td></tr></table>
-       <table>
-       <tr><td><label for="addr1">Address</label>$:form.addr1.render()</td>
-       <td><label for="addr2">&nbsp;&nbsp;</label>$:form.addr2.render()</td></tr>
-       <tr><td><label for="city">City</label>$:form.city.render()</td>
-           <td><label for="state">State</label>$:form.state.render()</td>
-           
-       <td><label for="zipcode">Zipcode</label>
+       <table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><label for="prefix">Prefix</label>$:form.prefix.render()</td>
+       <td style="width: 275px; padding-left: 0px; padding-right: 10px;"><label for="fname">First name</label>$:form.fname.render()</td>
+       <td style="width: 280px; padding-left: 10px; padding-right: 10px;"><label for="lname">Last name</label>$:form.lname.render()</td></tr>
+       
+       <tr><td  style="width: 350px; padding-right: 10px;" colspan="2"><label for="addr1">Address</label>$:form.addr1.render()</td>
+       <td colspan="2" style="width: 300px; padding-left: 10px; padding-right: 10px;"><label for="addr2">&nbsp;&nbsp;</label>$:form.addr2.render()</td></tr>
+       
+       <tr><td style="width: 350px; padding-right: 10px;" colspan="2"><label for="city">City</label>$:form.city.render()</td>
+           <td style="width: 300px; padding-left: 10px;"><label for="state">State</label>$:form.state.render()<br />
+           <label for="zipcode">Zipcode</label>
             $:form.zipcode.render()- $:form.zip4.render()</td></tr><span id="note_zipcode"></span>
 
-        <tr><td><label for="email">Email</label>
+        <tr><td style="width: 350px; padding-right: 10px;" colspan="2"><label for="email">Email</label>
    $if useremail:
        <strong>$useremail</strong>
        <div style="display: none"> $:form.email.render() </div>
    $else:
        $:form.email.render()
    </td>
-   <td><label for="phone">Phone</label>$:form.phone.render()</td>
+   <td colspan="2" style="width: 300px; padding-left: 10px;"><label for="phone">Phone</label>$:form.phone.render()</td>
    </tr>
    
-   <tr><td colspan=3><label for="subject">Subject</label>$:form.ptitle.render()</td></tr>
-   <tr><td colspan=3><label for="msg">Message</label>$:form.msg.render()</td></tr>
+   <tr><td colspan=3 width="100%"><label for="subject">Subject</label>$:form.ptitle.render()</td></tr>
+   <tr><td colspan=3 width="100%"><label for="msg">Message</label>$:form.msg.render()</td></tr>
     $if form.captcha.pre:
         <tr><td colspan=2><label for="captcha">Verification</label>$:form.captcha.pre $:form.captcha.render()</td></tr>
    </table>

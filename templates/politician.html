@@ -19,7 +19,7 @@ $var color: white
 $if pol.photo_path:
     <td style="padding-right: 10px;"><a href="http://watchdog.net$pol.photo_path"><img src="http://watchdog.net$pol.photo_path" alt="Headshot" class="headshot" style="padding: 7px; border: 1px solid #999;" /></a></td>
 
-<td>
+<td rowspan="2">
 
   $if pol.nickname: known as "$pol.nickname"<br />
   $if pol.birthday:
@@ -34,7 +34,13 @@ $if pol.education:
     <p>Education: $pol.education</p>
 $if pol.last_elected_year:
 	<p>Last elected in $pol.last_elected_year receiving $commify(pol.n_vote_received) ($pol.pct_vote_received%) votes.</p>
-</td></tr></table>
+</td>
+
+</tr><tr>
+
+<td style="padding-top: 3px; margin: 0px; color: #EE4400"><a href="/writerep" class="more">Write $pol.firstname $pol.lastname</a>&nbsp;&rarr;</td>
+
+</tr></table>
 </div>
 <table class="structure">
 <tr><td width="50%">
@@ -143,7 +149,7 @@ $if pol.predictability:
 <h2 class="rep">Interest Group Alignment</h2>
 
 <table cellpadding="0" cellspacing="0" width="100%" class="interest_group_agreement">
-<tbody><tr><th>Group</th><th>Agreement</th></tr>
+<tbody><tr><th style="padding-left: 6px;">Group</th><th>Agreement</th></tr>
 $ trclass = "odd"
 $for group in pol.related_groups:
     <tr class="$trclass">
@@ -154,9 +160,9 @@ $for group in pol.related_groups:
         $ trclass = "even"
     $else:
         $ trclass = "odd"
+  <tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/groups" class="more">More interest groups</a>&nbsp;&rarr;</span></td></tr>        
 </tbody></table>
 
-<p><a href="/p/$pol.id/groups" class="footer">More...</a></p>
 
 </td></tr></table>
 

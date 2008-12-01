@@ -9,12 +9,14 @@ $var title: $bill.name
 .header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
 </style>
 
-<h1>$bill.title</h1>
+<h1>$bill.name</h1>
+
+<h2>$bill.title</h2>
 
 <p>(Introduced on $bill.introduced in the ${bill.session}th Congress.)</p>
 
 $if bill.sponsor:
-    <p>Introduced by <a href="/p/$bill.sponsor.id">$bill.sponsor.name</a>.</p>
+    <p style="color:#EE4400;">&larr; <i>Introduced by</i> <a href="/p/$bill.sponsor.id" class="more">$bill.sponsor.name</a>.</p>
 
 <blockquote>$bill.summary</blockquote>
 

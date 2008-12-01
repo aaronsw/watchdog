@@ -19,6 +19,9 @@ a.secondary:visited  {color: #EE4400; text-decoration:underline; background-colo
 a.external  { color: #638f45 }
 a.external:hover  {color: #355321; text-decoration:underline; background-color: transparent; }
 a.logo:hover { background-color: transparent; }
+a.more {color:#EE4400; font-style:italic; text-decoration:underline; }
+a.more:visited {color:#EE4400; font-style:italic; text-decoration:underline; }
+a.more:hover {color:#EE4400;  font-style:italic; text-decoration:underline; }
 
 /* core styles */
 html {background:url(/static/images/bkg.png); background-color: #002233; }
@@ -42,7 +45,7 @@ body {margin:0; font-size:12px; line-height:20px; font-family:Arial, Helvetica, 
 #text {margin: 50px 280px 0 40px;}
 #text ul {padding:0; margin:10px 0 10px 40px;}
 #text li {list-style:none; padding-left:15px; background:url(/static/images/li.gif) no-repeat 0px 6px;}
-h1 {margin:20px 0 20px 0; font-weight: normal; color:#EE4400; font-family:"Georgia"; font-size:26px; line-height: 30px; }
+h1 {margin:0px 0 20px 0; font-weight: normal; color:#EE4400; font-family:"Georgia"; font-size:26px; line-height: 30px; }
 #text p {margin:10px 0;}
 
 #footer {padding:30px 10px 0px 10px; height:169px; clear:both; background:url(/static/images/footer_bkg.png) center top no-repeat; }
@@ -125,26 +128,26 @@ td.frontbox-white {
 }
 
 
-.frontbox-top { background:#fff url(/static/images/box/blue.top.png) center 0px repeat-x; }
-.frontbox-bottom { background:#fff url(/static/images/box/blue.bottom.png) center 0px repeat-x; }
-.frontbox-left { background:#fff url(/static/images/box/left.line.png) right 0px repeat-y; }
-.frontbox-right-blue { background:transparent url(/static/images/box/right.line.png) right 0px repeat-y; }
-.frontbox-white { background-color: #fff; }
+.frontbox-top { background:#fff url(/static/images/box/blue.top.png) center 0px repeat-x; padding-left: 0px; }
+.frontbox-bottom { background:#fff url(/static/images/box/blue.bottom.png) center 0px repeat-x; padding-left: 0px; }
+.frontbox-left { background:#fff url(/static/images/box/left.line.png) right 0px repeat-y; padding-left: 0px;  }
+.frontbox-right-blue { background:transparent url(/static/images/box/right.line.png) right 0px repeat-y; padding-left: 0px;  }
+.frontbox-white { background-color: #fff; padding-left: 0px;  }
 
-.frontbox-top-blue { background:transparent url(/static/images/box/blue.top.png) center 0px repeat-x; }
-.frontbox-bottom-blue { background:transparent url(/static/images/box/blue.bottom.png) center 0px repeat-x; }
-.frontbox-left-blue { background:transparent url(/static/images/box/left.line.png) left 0px repeat-y; width: 28px; }
-.frontbox-blue { background-color:transparent; }
-.frontbox-blue-top-left { background:transparent url(/static/images/box/left.top.curve.blue.png) left 0px repeat-x; width: 28px; height: 28px; }
-.frontbox-blue-bottom-left { background:transparent url(/static/images/box/left.bottom.curve.blue.png) left 0px repeat-x; width: 28px; height: 28px; }
+.frontbox-top-blue { background:transparent url(/static/images/box/blue.top.png) center 0px repeat-x; padding-left: 0px;  }
+.frontbox-bottom-blue { background:transparent url(/static/images/box/blue.bottom.png) center 0px repeat-x; padding-left: 0px;  }
+.frontbox-left-blue { background:transparent url(/static/images/box/left.line.png) left 0px repeat-y; width: 28px; padding-left: 0px;  }
+.frontbox-blue { background-color:transparent; padding-left: 0px;  }
+.frontbox-blue-top-left { background:transparent url(/static/images/box/left.top.curve.blue.png) left 0px repeat-x; width: 28px; height: 28px; padding-left: 0px;  }
+.frontbox-blue-bottom-left { background:transparent url(/static/images/box/left.bottom.curve.blue.png) left 0px repeat-x; width: 28px; height: 28px; padding-left: 0px;  }
 
-.frontbox-top-white { background:transparent url(/static/images/box/white.top.png) center 0px repeat-x; }
-.frontbox-bottom-white { background:transparent url(/static/images/box/white.bottom.png) center 0px repeat-x; }
-.frontbox-left-white { background:transparent url(/static/images/box/white.left.line.png) left 0px repeat-y; width: 28px; }
-.frontbox-right-white { background:transparent url(/static/images/box/white.right.line.png) right 0px repeat-y; }
-.frontbox-white { background-color:transparent; }
-.frontbox-white-top-left { background:transparent url(/static/images/box/left.top.curve.white.png) left 0px repeat-x; width: 28px; height: 28px; }
-.frontbox-white-bottom-left { background:transparent url(/static/images/box/left.bottom.curve.white.png) left 0px repeat-x; width: 28px; height: 28px; }
+.frontbox-top-white { background:transparent url(/static/images/box/white.top.png) center 0px repeat-x; padding-left: 0px;  }
+.frontbox-bottom-white { background:transparent url(/static/images/box/white.bottom.png) center 0px repeat-x; padding-left: 0px;  }
+.frontbox-left-white { background:transparent url(/static/images/box/white.left.line.png) left 0px repeat-y; width: 28px; padding-left: 0px;  }
+.frontbox-right-white { background:transparent url(/static/images/box/white.right.line.png) right 0px repeat-y; padding-left: 0px;  }
+.frontbox-white { background-color:transparent; padding-left: 0px;  }
+.frontbox-white-top-left { background:transparent url(/static/images/box/left.top.curve.white.png) left 0px repeat-x; width: 28px; height: 28px; padding-left: 0px;  }
+.frontbox-white-bottom-left { background:transparent url(/static/images/box/left.bottom.curve.white.png) left 0px repeat-x; width: 28px; height: 28px; padding-left: 0px;  }
 
 .liquidbox {
     padding: .05em 20px;
@@ -197,7 +200,7 @@ table.signs td.count { font-weight: bold }
 .attribution { font-size: 11px; padding-bottom: 3px; padding-top: 10px; color: #999;  }
 
 .emphasis { color:#EE4400; font-weight: bold; }
-.wrong { color:#EE4400; font-weight: bold; }
+.wrong { color:#EE4400; font-weight: bold;}
 .msg { background:#fff; padding: 10px;  color: #50aa50; }
 .petition { border-top: 1px solid #ccc; padding: 10px;}
 .sources { background-color: #eee; color: #555; padding: 1em; font-size: smaller; margin-top: 2em; clear: both;}
@@ -210,7 +213,7 @@ table.signs td.count { font-weight: bold }
 
 
 /* rep and district pages */
-td { vertical-align: top;}
+td { vertical-align: top; padding-left: 6px; }
 th { text-align: left;}
 table.structure, table.structure td, table.structure tr { margin: 0; border-collapse: collapse; border-spacing: 0;}
 .structure td { padding-right: 2em;}
@@ -220,6 +223,8 @@ tr.even { }
 table.interest_group_ratings { margin: 0; padding-left: 0; border-collapse: collapse; border-spacing: 0; }
 table.interest_group_ratings td { text-align: right;  }
 table.interest_group_support td, th { text-align: left; }
+.more_interest_groups { text-align: left; padding-right: 2em; padding-left: 20px; font-weight: normal; font-style: italic; color: #666;  }
+
 
 .explain { color: #999; margin-top: -.5em; font-size: 12px;}
 .explain a { color: #777; text-decoration: underline; }
@@ -258,6 +263,7 @@ td.sparknum { color: #EE4400; text-align: left; }
 td.support, td.oppose { text-align: center; padding-right: 0px; padding-left: 0px;  } /* for compatibility with everything else */
 .support { background-color: #afa;; color: #297529; font-weight: bold; text-align: center;  padding-right: 0px; padding-left: 0px; border-bottom: 1px solid #fff; }
 .oppose { background-color: #fab79d; color: #942525; font-weight: bold; text-align: center;  padding-right: 0px; padding-left: 0px; border-bottom: 1px solid #fff; }
+.present { background-color: #eee; color: #999; font-weight: bold; text-align: center;  padding-right: 0px; padding-left: 0px; border-bottom: 1px solid #fff; }
 .error { border: 3px solid #EE4400; padding: 2px 5px; background-color: #EE4400; color: white; }
 .msg {display: block; background-color:#bfb; border:1px solid #ccc; margin: auto; margin-top:10px; width: 50%; text-align: center; color: #070; padding: 1em}
 
@@ -300,4 +306,5 @@ h2.repred { color: #EE4400; margin-bottom: 6px; }
 .login input, .signup input { width: 250px; }
 
 td.rule {border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
+td.rule-below { border-bottom: 1px solid #ccc; }
 

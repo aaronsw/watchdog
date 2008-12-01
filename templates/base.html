@@ -5,7 +5,6 @@ $def with (page)
   <title>$:page.title.strip() (watchdog.net)</title>
   <link href="/static/css/style.css" type="text/css" rel="stylesheet" />
   <script type="text/javascript" src="/static/js/jquery.js"></script>
-  <script type="text/javascript" src="/static/js/slicker.js"></script>
   $:page.get('head')
 </head><body>
 <div id="container"  style="width: $page.get('width');">
@@ -22,7 +21,7 @@ $if page.get('front'):
         <tr>
         <td width="28" class="frontbox-$page.get('color')-top-left"><img src="/static/images/trans.gif" border="0" width="28" height="28" /></td>
         <td width="28" class="frontbox-top-$page.get('color')"></td>
-        <td width="28" style="background: transparent"><img src="/static/images/box/right.top.curve.${page.get('color')}.png" border="0" width="28" height="28" /></td>
+        <td width="28" style="background: transparent; padding-left: 0px;"><img src="/static/images/box/right.top.curve.${page.get('color')}.png" border="0" width="28" height="28" /></td>
         </tr><tr>
         <td width="28" class="frontbox-left-$page.get('color')"></td>
         <td class="frontbox" width="344">
@@ -46,10 +45,10 @@ $if page.get('front'):
         <tr>
         <td width="28" class="frontbox-$page.get('color')-top-left"><img src="/static/images/trans.gif" border="0" width="28" height="28" /></td>
         <td width="28" class="frontbox-top-$page.get('color')"></td>
-        <td width="28" style="background: transparent"><img src="/static/images/box/right.top.curve.${page.get('color')}.png" border="0" width="28" height="28" /></td>
+        <td width="28" style="background: transparent; padding-left: 0px;"><img src="/static/images/box/right.top.curve.${page.get('color')}.png" border="0" width="28" height="28" /></td>
         </tr><tr>
         <td width="28" class="frontbox-left-$page.get('color')"></td>
-        <td class="frontbox-$page.get('color')" width="100%">
+        <td class="frontbox-$page.get('color')" width="100%" style="padding-bottom: 30px;">
 
 <!-- /header -->
 <div id="main">
@@ -74,7 +73,7 @@ $if page.get('front'):
         </tr><tr>
         <td width="28" class="frontbox-$page.get('color')-bottom-left"><img src="/static/images/trans.gif" border="0" width="28" height="28" /></td>
         <td width="28" class="frontbox-bottom-$page.get('color')"></td>
-        <td width="28"  style="background: transparent"><img src="/static/images/box/right.bottom.curve.${page.get('color')}.png" border="0" width="28" height="28" /></td>
+        <td width="28"  style="background: transparent; padding-left: 0px;"><img src="/static/images/box/right.bottom.curve.${page.get('color')}.png" border="0" width="28" height="28" /></td>
         </form>
         </tr></table>
         <div id="left_footer_base"><a href="/about/" class="footer">About us...</a></div>
@@ -86,7 +85,7 @@ $else:
         </tr><tr>
         <td width="28" class="frontbox-$page.get('color')-bottom-left"><img src="/static/images/trans.gif" border="0" width="28" height="28" /></td>
         <td width="28" class="frontbox-bottom-$page.get('color')"></td>
-        <td width="28" style="background-transparent"><img src="/static/images/box/right.bottom.curve.${page.get('color')}.png" border="0" width="28" height="28" /></td>
+        <td width="28" style="background-transparent; padding-left: 0px;"><img src="/static/images/box/right.bottom.curve.${page.get('color')}.png" border="0" width="28" height="28" /></td>
         </tr></table>
         <!-- /main -->
     <div id="footer\
