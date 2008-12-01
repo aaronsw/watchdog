@@ -2,12 +2,12 @@
 from __future__ import with_statement
 
 import web
-from utils import forms, helpers, auth
+from utils import forms, helpers, auth, wyrapp
 from settings import db, render, render_plain
 from utils.auth import require_login
 from utils.users import fill_user_details, update_user_details
+from utils.writerep import require_captcha, send_msgs
 import config
-from utils.wyrutils import CaptchaException, add_captcha
 
 from datetime import datetime
 import urllib
@@ -45,89 +45,56 @@ class index:
         msg, msg_type = helpers.get_delete_msg()
         return render.petition_list(petitions, msg)
 
-def send_to_congress(i, wyrform, signid=None):
-    from utils.writerep import write_your_rep
-    
-    pform, wyrform = forms.petitionform(), (wyrform or forms.wyrform())
-    pform.fill(i), wyrform.fill(i)
-    wyr = write_your_rep()
-    wyr.set_pol(i)
-    if not signid: signid = get_signid(i.pid)
-    wyr.set_msg_id(signid, petition=True)
-    msg_sent = wyr.send_msg(i, wyrform, pform)
-    sent_status = msg_sent and 'S' or 'D'   # Sent or Due for sending
-    db.update('signatory', where='id=$signid', sent_to_congress=sent_status, vars=locals())
-    
-def captcha_to_be_filled(i):    
-    from utils.wyrutils import getdists, has_captcha, dist2pol
-    dist = getdists(i.zipcode, i.zip4, i.addr1+i.addr2)[0]
-    return has_captcha(dist2pol(dist))
-
-def get_signid(pid):
-    uemail = helpers.get_loggedin_email() or helpers.get_unverified_email()
-    user = helpers.get_user_by_email(uemail)
-    uid = user and user.id
-    try:    
-        sign = db.select('signatory', what='id', 
-                    where="petition_id=$pid and user_id=$uid",
-                    vars=locals())[0]
-    except IndexError:
-        pass
-    else:                    
-        return sign.id
+def send_to_congress(uid, i, signid):
+    #@@@ compose here too
+    i.msg = i.msg + '\n' + i.get('comment', '')
+    send_msgs(uid, i, source_id='s%s' % signid)
         
-def create_petition(i, email, wyrform):
+def create_petition(i, email):
     tocongress = i.get('tocongress', 'off') == 'on'
-    i.pid = i.pid.replace(' ', '_')
+    i.pid = i.pid.replace(' ', '-')
     u = helpers.get_user_by_email(email)
     try:
-        db.insert('petition', seqname=False, id=i.pid, title=i.ptitle, description=i.msg,
-                owner_id=u.id, to_congress=tocongress)
-    except:
-        return
-    signid = save_signature(i, i.pid, u.id, tocongress)            
-
-    if tocongress and captcha_to_be_filled(i): wyrform.fill(signid=signid)
-    if tocongress: send_to_congress(i, wyrform, signid)
-
+        db.insert('petition', seqname=False, id=i.pid, title=i.ptitle,
+                    description=i.msg, owner_id=u.id, to_congress=tocongress)
+    except: return
+    signid = save_signature(i, i.pid, u.id)
+    if tocongress: send_to_congress(u.id, i, signid)
     msg = """Congratulations, you've created your petition.
              Now sign and share it with all your friends."""
     helpers.set_msg(msg)
     
 class new:
-    def GET(self, wyrform=None):
-        pform = forms.petitionform()
-        cform = wyrform or forms.wyrform()
-        fill_user_details(cform)
-        add_captcha(cform)
-        email = helpers.get_loggedin_email() or helpers.get_unverified_email()
-        return render.petitionform(pform, cform)
+    def GET(self, pf=None, wf=None):
+        pf = pf or forms.petitionform()
+        if not wf:
+            #create a new form and initialize with current user details
+            wf = forms.wyrform()
+            u = helpers.get_user()
+            u and fill_user_details(wf, u)
+        captcha_html = wyrapp.prepare_for_captcha(wf)
+        msg, msg_type = helpers.get_delete_msg()
+        return render.petitionform(pf, wf, captchas=captcha_html, msg=msg)
 
-    def POST(self, input=None):
-        i = input or web.input()
+    def POST(self):
+        i = web.input()
         tocongress = i.get('tocongress', 'off') == 'on'
-        pform, wyrform = forms.petitionform(), forms.wyrform()
-        i.email = 'one@valid.mail' # to make wyrform valid, find a better work around
-        wyr_valid = (not(tocongress) or wyrform.validates(i))
-        
-        if 'signid' in i:
-            signid = i.signid
-            send_to_congress(i, wyrform, signid)
-            raise web.seeother('/%s' % i.pid)
-            
-        if not pform.validates(i) or not wyr_valid:
-            return render.petitionform(pform, wyrform)
+        pf, wf = forms.petitionform(), forms.wyrform()
+        i.email = 'one@valid.mail' # to make wf valid, find a better work around
+        wyr_valid = (not(tocongress) or wf.validates(i))
+        captcha_needed = require_captcha(i)
+        wyr_valid = wyr_valid and not captcha_needed
+
+        if not pf.validates(i) or not wyr_valid:
+            if captcha_needed: wf.valid, wf.note = False, 'Please Fill the captcha below'
+            pf.fill(i), wf.fill(i)
+            return self.GET(pf, wf)
 
         email = helpers.get_loggedin_email()
         if not email:
             return login().GET(i)
 
-        try:    
-            create_petition(i, email, wyrform)
-        except CaptchaException:
-            msg, msg_type = helpers.get_delete_msg()
-            return render.petitionform(pform, wyrform, msg) 
-               
+        create_petition(i, email)
         raise web.seeother('/%s' % i.pid)
 
 class login:
@@ -145,15 +112,7 @@ class login:
             pf, sf = forms.petitionform(), forms.signupform()
             lf.fill(i), pf.fill(i), wf.fill(i)
             return render.petitionlogin(lf, sf, pf, wf)
-            
-        try:    
-            create_petition(i, i.useremail, wf)
-        except CaptchaException:
-            msg, msg_type = helpers.get_delete_msg()
-            pf= forms.petitionform()
-            pf.fill(i)
-            return render.petitionform(pf, wf, msg)    
-            
+        create_petition(i, i.useremail)
         raise web.seeother('/%s' % i.pid)
 
 class signup:
@@ -166,45 +125,34 @@ class signup:
             return render.petitionlogin(lf, sf, pf, wf)
         user = auth.new_user(i.email, i.password)
         helpers.set_login_cookie(i.email)
-        try:
-            create_petition(i, i.email, wf)
-        except CaptchaException:
-            msg, msg_type = helpers.get_delete_msg()
-            pf = forms.petitionform()
-            pf.fill(i)
-            return render.petitionform(pf, wf, msg)
-            
+        create_petition(i, i.email)    
         raise web.seeother('/%s' % i.pid)
 
-def save_signature(i, pid, uid, tocongress=False):
-    has_captcha = tocongress and captcha_to_be_filled(i)
-    msg_status = has_captcha and 'T' #mark it as temporary
-    msg_status = msg_status or (tocongress and 'D') or 'N' # D=sending due; N=not for congress  
-
+def save_signature(i, pid, uid):
     where = 'petition_id=$pid AND user_id=$uid'
     signed = db.select('signatory', where=where, vars=locals())
     share_with = (i.get('share_with', 'off') == 'on' and 'N') or 'A'
+    update_user_details(i)
     if not signed:
         referrer = get_referrer(pid, uid)
-        signid = db.insert('signatory', 
-                user_id=uid, share_with=share_with,
-                petition_id=pid, comment=i.get('comment'),
-                sent_to_congress=msg_status, referrer=referrer)
-        update_user_details(i)
+        signid = db.insert('signatory', user_id=uid, share_with=share_with,
+                petition_id=pid, comment=i.get('comment'), referrer=referrer)
         helpers.set_msg("Thanks for your signing! Why don't you tell your friends about it now?")
-        return signid 
+        return signid
     else:
         db.update('signatory', where='user_id=$uid and petition_id=$pid', 
                     comment=i.get('comment'), deleted=None, vars=locals())
-        if not signed[0].sent_to_congress == 'T':
-            helpers.set_msg("You've signature has been changed. Why don't you tell your friends about it now?")
-        
+        helpers.set_msg("Your signature has been changed. Why don't you tell your friends about it now?")
+        return 'old_%s' % signed[0].id
+  
 def sendmail_to_signatory(user, pid):
+    """sends a thanks mail to the user, with request to share the petition with friends.
+    """
     p = get_petition_by_id(pid)
     p.url = 'http://watchdog.net/c/%s' % (pid)
     token = auth.get_secret_token(user.email)
     msg = render_plain.signatory_mailer(user, p, token)
-    web.sendmail(web.utf8(config.from_address), web.utf8(user.email), web.utf8(msg.subject.strip()), web.utf8(msg))
+    web.sendmail(config.from_address, user.email, msg.subject.strip(), str(msg))
 
 def is_author(email, pid):
     user = email and helpers.get_user_by_email(email)
@@ -217,7 +165,7 @@ def is_signatory(email, pid):
     return user and bool(db.select('signatory', where=where, vars=locals()))
     
 def get_signs(pid):
-    where = "petition_id=$pid AND users.id=user_id AND sent_to_congress !='T' AND deleted is null"          
+    where = "petition_id=$pid AND users.id=user_id AND deleted is null" 
     return db.select(['signatory', 'users'],
                         what='users.fname, users.lname, users.email, '
                               'signatory.share_with, signatory.comment, '
@@ -230,7 +178,7 @@ def to_congress(pid):
     return bool(db.select("petition", where="id=$pid AND to_congress='t'", vars=locals()))
 
 def get_num_signs(pid):
-    where = "petition_id=$pid AND sent_to_congress != 'T' AND deleted is null"
+    where = "petition_id=$pid AND deleted is null"
     r = db.query("select count(*) from signatory where " + where, vars=locals())
     return r[0].count
                        
@@ -260,7 +208,7 @@ def get_referrer(pid, uid):
         return referrer
 
 class petition:
-    def GET(self, pid, signform=None, wyrform=None):
+    def GET(self, pid, sf=None, wf=None):
         i = web.input()
         pid = pid.rstrip('/')
         p = get_petition_by_id(pid)
@@ -271,25 +219,27 @@ class petition:
             handler = getattr(self, 'GET_'+i.m)
             return handler(pid)
 
-        p.signatory_count = get_num_signs(pid)
-        if not signform:
-            signform = forms.signform()
-            fill_user_details(signform)
-            
-        if to_congress(pid) and not wyrform:
-            wyrform = forms.wyrform()
-            fill_user_details(wyrform)
-            add_captcha(wyrform)
+        if not sf:
+            sf = forms.signform()
+            fill_user_details(sf)
+
+        captcha_html = ''
+        if to_congress(pid):
+            if not wf:
+                wf = forms.wyrform()
+                fill_user_details(wf)
+            captcha_html = wyrapp.prepare_for_captcha(wf)    
 
         if 'tid' in i: 
             set_referrer_cookie(i.tid, pid)
             raise web.seeother('/%s' % pid)
             
-        msg, msg_type = helpers.get_delete_msg()
         useremail = helpers.get_loggedin_email() or helpers.get_unverified_email()
         isauthor = is_author(useremail, pid)
         issignatory = is_signatory(useremail, pid)
-        return render.petition(p, signform, useremail, isauthor, issignatory, wyrform, msg)
+        p.signatory_count = get_num_signs(pid)
+        msg, msg_type = helpers.get_delete_msg()
+        return render.petition(p, sf, useremail, isauthor, issignatory, wf, captcha_html, msg)
 
     @auth.require_login
     def GET_edit(self, pid):
@@ -297,16 +247,19 @@ class petition:
         if is_author(user_email, pid):
             p = get_petition_by_id(pid)
             u = helpers.get_user_by_email(user_email)
-            pform = forms.petitionform()
-            pform.fill(userid=u.id, email=user_email, pid=p.id, ptitle=p.title, msg=p.description, tocongress=p.to_congress)
-            cform = forms.wyrform()
-            fill_user_details(cform)
+            pf = forms.petitionform()
+            pf.fill(userid=u.id, email=user_email, pid=p.id, ptitle=p.title, msg=p.description, tocongress=p.to_congress)
+            wf = forms.wyrform()
+            fill_user_details(wf)
             title = "Edit your petition"
-            return render.petitionform(pform, cform, title, target='/c/%s?m=edit' % (pid))
-        else:
+            return render.petitionform(pf, wf, title, target='/c/%s?m=edit' % (pid))
+        elif user_email:
+            msg = "You don't have permissions to edit this petition."
+        else:    
             login_link = '<a href="/u/login">Login</a>'
-            helpers.set_msg('Only author of this petition can edit it. %s if you are.' % login_link, msg_type='error')
-            raise web.seeother('/%s' % pid)
+            msg = 'Only author of this petition can edit it. %s if you are.' % login_link
+        helpers.set_msg(msg)
+        raise web.seeother('/%s' % pid)
 
 
     def GET_unsign(self, pid):
@@ -317,26 +270,27 @@ class petition:
             where = 'petition_id=$pid and user_id=$user.id and deleted is null'
             signatory = db.select('signatory', where=where, vars=locals())
 
-        valid_token = auth.check_secret_token(i.get('email'), i.get('token'))
+        valid_token = auth.check_secret_token(i.get('email', ''), i.get('token', '@'))
         if not (user and signatory and valid_token):
             msg = "Invalid token or there is no signature for this petition with this email."
             msg_type = 'error'
         else:
-            msg = render_plain.confirm_unsign(pid, user.id)
+            msg = str(render_plain.confirm_unsign(pid, user.id))
             msg_type = ''
 
-        helpers.set_msg(msg.__body__, msg_type)
+        helpers.set_msg(msg, msg_type)
         raise web.seeother('/%s' % pid)
 
     def GET_delete(self, pid):
         user_email = helpers.get_loggedin_email()
         if is_author(user_email, pid):
             msg = str(render_plain.confirm_deletion(pid))
-            helpers.set_msg(msg)
-        else:
+        elif user_email:
+            msg = "You don't have permissions to delete this petition."
+        else:    
             login_link = '<a href="/u/login">Login</a>'
-            helpers.set_msg('Only author of this petition can delete it. %s if you are.' % login_link, msg_type='error')
-
+            msg = 'Only author of this petition can delete it. %s if you are.' % login_link
+        helpers.set_msg(msg)
         raise web.seeother('/%s' % pid)
 
     def POST(self, pid):
@@ -350,46 +304,47 @@ class petition:
 
     def POST_sign(self, pid):
         i = web.input()
-        sform = forms.signform()
+        sf = forms.signform()
         tocongress = to_congress(pid)
         p = get_petition_by_id(pid)
-                
+        
+        is_new = lambda sid: not isinstance(sid, str)
+        get_new = lambda sid: int(web.lstrips(sid, 'old_'))
         if tocongress:
             i.pid, i.ptitle, i.msg = pid, p.title, p.description
-            wyrform = forms.wyrform()
-            wyr_valid =  wyrform.validates(i)
+            wf = forms.wyrform()
+            captcha_needed = require_captcha(i)
+            wyr_valid =  wf.validates(i) and not captcha_needed
+            if captcha_needed: wf.valid, wf.note = False, 'Please fill the captcha below'
         else:
-            wyrform, wyr_valid = None, True
+            wf, wyr_valid = None, True
 
-        if sform.validates(i) and wyr_valid:
-            auth.assert_login(i)
-            user = helpers.get_user_by_email(i.email)
-            signid = save_signature(i, pid, user.id, tocongress)
-            if tocongress: 
-                try:
-                    i.msg = "%s\n%s" %(i.msg, i.comment) #need to compose 
-                    msg_sent = send_to_congress(i, wyrform, signid)
-                except CaptchaException:
-                    return self.GET(pid, signform=sform, wyrform=wyrform)    
-            if signid:
+        if sf.validates(i) and wyr_valid:
+            uid = auth.assert_login(i)
+            signid = save_signature(i, pid, uid)
+            if is_new(signid):
+                user = helpers.get_user_by_id(uid)
                 sendmail_to_signatory(user, pid)
+            else:
+                signid = get_new(signid)
+            if tocongress: send_to_congress(uid, i, signid)
             query = urllib.urlencode(dict(url='/c/%s' % pid, title=p.title))
             raise web.seeother('/share?%s' % query, absolute=True)
         else:
-            return self.GET(pid, signform=sform, wyrform=wyrform)
+            return self.GET(pid, sf=sf, wf=wf)
 
     @auth.require_login
     def POST_edit(self, pid):
         i = web.input()
         tocongress = i.get('tocongress', 'off') == 'on'
-        pform = forms.petitionform()
-        pform.inputs = filter(lambda i: i.name != 'pid', pform.inputs)
-        wyrform = forms.wyrform()
+        pf = forms.petitionform()
+        pf.inputs = filter(lambda i: i.name != 'pid', pf.inputs)
+        wf = forms.wyrform()
         i.email = helpers.get_loggedin_email()
-        wyr_valid = (not(tocongress) or wyrform.validates(i))
-        if not pform.validates(i) or not wyr_valid:
+        wyr_valid = (not(tocongress) or wf.validates(i))
+        if not pf.validates(i) or not wyr_valid:
             title = "Edit petition"
-            return render.petitionform(pform, wyrform, title, target='/c/%s?m=edit' % (pid))
+            return render.petitionform(pf, wf, title, target='/c/%s?m=edit' % (pid))
         db.update('petition', where='id=$pid', title=i.ptitle, description=i.msg, to_congress=tocongress, vars=locals())
         update_user_details(i)
         raise web.seeother('/%s' % pid)

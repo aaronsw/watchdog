@@ -1,373 +1,282 @@
-#!/usr/bin/env python
-# encoding: utf-8
 """
-writerep.py
-Write Your Representative
+Functions to send msgs to reps and deal with captchas
 """
+
 import sys
-import urllib2
-from ClientForm import ParseFile, ParseError, XHTMLCompatibleFormParser
-from BeautifulSoup import BeautifulSoup
-from StringIO import StringIO
+import re, urllib2
+from urlparse import urljoin
 
 import web
-import captchasolver, forms, helpers, auth
-from settings import db, render, production_mode
-from users import fill_user_details, update_user_details
-from wyrutils import * #@@@ put all the list here 
-from config import test_email
+from settings import db
+from wyrutils import *
+from utils import captchasolver, messages, helpers, browser
+from config import production_test_email, from_address, test_email
+from settings import production_mode
+
+__all__ = ["prepare", "send_msgs", "send", "writerep"]
 
 test_mode = (not production_mode)
 
-urls = (
-  '', 'redir',
-  '/', 'write_your_rep',
-  '/test', 'wyr_test',
-  '/verifyzip', 'verify_zip',
-  '/getcaptcha', 'get_captcha'
-)
+def prepare(pol):
+    """
+    Checks if the `pol`'s contact url has captcha, and if so - takes care of
+    with cookies, return env with captcha url, cookies and form having captcha.
+    """
+    env = {}
+    url = getcontact(pol).get('contact')
+    b = browser.Browser()
+    b.open(url)
+    captchas = b.find_nodes('img', attrs={'src': re.compile('.*[Cc]aptcha.*')})
+    captcha_src, form = get_src_and_form(url, captchas)
+    if captcha_src:
+	    env['captcha_src'], env['form'], env['cookies'] = captcha_src, form, b.get_state()
+    return env
 
-class redir:
-    def GET(self): raise web.seeother('/')
+def send(frm, to, subj, msg, user_details, source_id=None, env={}):
+    """
+    Sends the given `msg` to `to`, with the `user_details` and saves it in DB. 
+    uses `env` if `to` has captcha.
+    """
+    msgid = messages.save_msg(frm, to, subj, msg, source_id)
+    user_details.email = 'p-%s@watchdog.net' % web.to36(msgid)
+    user_details.full_msg = compose_msg(to, msg)
+    user_details.subject = user_details.ptitle
+    status = writerep(to, user_details, env)
+    if status: messages.update_msg_status(msgid, status)
 
-def has_message(soup, msg, tags='b'):
-    bs = soup.findAll(tags)
-    msg = msg.lower()
-    for b in bs:
-        errmsg = str(b.string).lower()
-        errmsg += ' '.join(str(c) for c in b.contents)
-        if (errmsg.find(msg) > -1):
-            return True
-    return False
+def send_msgs(uid, i, source_id, pols=[], env={}):
+    """
+    Sends msgs to ALL the politcians who are senators/reps of the 
+    district defined by zip5, zip4, address in i
+    """
+    pols = pols or getpols(i.zip5,  i.zip4, i.addr1+i.addr2)
+    for pol in pols:
+	    send(uid, pol, i.ptitle, i.msg, i, source_id, env.get(pol, {}))
 
-def get_forms(url, data=None, headers={}):    
-    def signup_or_search(u):
-        return ('signup' in u) or ('search' in u) or ('thomas.loc.gov' in u)
+def compose_msg(polid, msg):
+    #@@ compose msg here
+    p = db.select('politician', where='id=$polid', 
+            what='firstname, middlename, lastname, district_id', vars=locals())[0]
+    pol_name = "%s %s %s" % (p.firstname or '', p.middlename or '', p.lastname or '') 
+    rep_or_sen = 'Sen.' if len(p.district_id) == 2 else 'Rep.'
+    full_msg = 'Dear %s %s,\n%s' % (rep_or_sen, pol_name, msg)
+    return full_msg
 
-    req = urllib2.Request(url, data, headers)
-    response = urlopen(req)
-    if response: response = response.read()
+def writerep(pol, i, env={}):
+    """
+    Checks for the contact type for the `pol` and calls one of writerep_{wyr, ima, email} 
+    with the contact url appropriately and returns the status.
+    """
+    i.prefix = i.get('prefix', '.').rstrip('.') #few forms take only Mr, Ms etc.
+    c = getcontact(pol)
+    if not c: return False
+    contact, contacttype = c.contact, c.contacttype
+    handlers = dict(E=writerep_email, W=writerep_wyr, I=writerep_ima, Z=writerep_zipauth)
     try:
-        forms = ParseFile(StringIO(response), url, backwards_compat=False)
-    except ParseError:
-        forms = ParseFile(StringIO(response), url, backwards_compat=False, form_parser_class=XHTMLCompatibleFormParser)
-    except:
-        forms = []
-    
-    forms = [Form(f) for f in filter(lambda x: not signup_or_search(x.action), forms)]
-    return forms, response or ''
+        handler = handlers[contacttype]
+        print handler.__name__,
+        if contacttype == 'I':
+            msg_sent = handler(pol, contact, i, env)
+        else:
+            msg_sent = handler(pol, contact, i)    
+    except Exception, details:
+        print >> sys.stderr, 'Error in writerep:', details
+        msg_sent = False
+    return msg_sent
 
-def writerep_email(pol_email, pol, zipcode, state, prefix, fname, lname,
-            addr1, city, phone, email, subject, msg, addr2='', addr3='', zip4=''):
-            
-    name = '%s. %s %s' % (prefix, fname, lname)
-    from_addr = '%s <%s>' % (name, email)
-  
-    if production_mode:
-        to_addr = web.lstrips(pol_email, 'mailto:')
-    elif test_mode:
-        to_addr = test_email
-    #@@@@ msg has to be composed    
-    web.sendmail(from_addr, to_addr, subject, msg)
-    return True        
+def writerep_wyr(pol, wyr_link, i):
+    """Sends the msg along with the sender details from `i` through the WYR system.
+    The WYR system has 3 forms typically (and a captcha form for few reps in between 1st and 2nd forms).
+    Form 1 asks for state and zipcode
+    Form 2 asks for sender's details such as prefix, name, city, address, email, phone etc
+    Form 3 asks for the msg to send.
+    """
+    b = browser.Browser()
 
-def writerep_wyr(wyr_link, pol, zipcode, state, prefix, fname, lname,
-            addr1, city, phone, email, subject, msg, addr2='', addr3='', zip4=''):
-          
     def wyr_step1(url):
-        forms, response = get_forms(url)
-        form = forms[0]
+        b.open(url)
+        form = get_form(b, not_signup_or_search)
         # state names are in form: "PRPuerto Rico"
         state_options = form.find_control_by_name('state').items
-        state_l = [s.name for s in state_options if s.name[:2] == state]
-        form.fill_all(state=state_l[0], zip=zipcode, zip4=zip4)
+        state_l = [s.name for s in state_options if s.name[:2] == i.state]
+        form.fill_all(state=state_l[0], zipcode=i.zip5, zip4=i.zip4)
         print 'step1 done',
-        request = form.click()
-        return request
+        return form.click()
             
-    def get_challenge(soup):
-          labels =  filter(lambda x: x.get('for') == 'HIP_response', soup.findAll('label')) 
-          if labels: return labels[0].string
-          else: return None        
-            
+    def get_challenge():
+        labels = b.find_nodes('label', lambda x: x.get('for') == 'HIP_response')
+        if labels: return labels[0].string
+
     def get_wyr_form2(request):
-        if not request: return
-        url, data = request.get_full_url(), request.get_data() 
-        forms, response = get_forms(url, data)
-        soup = BeautifulSoup(response)    
-        if len(forms) < 1:
-            if has_message(soup, "is shared by more than one"): raise ZipShared
-            elif has_message(soup, "not correct for the selected State"): raise ZipIncorrect
-            elif has_message(soup, "was not found in our database."): raise ZipNotFound
-            elif has_message(soup, "Use your web browser's <b>BACK</b> capability "): raise WyrError
+        b.open(request)
+        form = get_form(b, not_signup_or_search)
+        if not form:
+            if b.has_text("is shared by more than one"): raise ZipShared
+            elif b.has_text("not correct for the selected State"): raise ZipIncorrect
+            elif b.has_text("was not found in our database."): raise ZipNotFound
+            elif b.has_text("Use your web browser's <b>BACK</b> capability "): raise WyrError
             else: raise NoForm
         else:
-            challenge = get_challenge(soup)
+            challenge = get_challenge()
             if challenge:
-                form = forms[0]
                 try:
                     solution = captchasolver.solve(challenge)
                 except Exception, detail:
                     print >> sys.stderr, 'Exception in CaptchaSolve', detail
-                    print 'Could not solve:"%s"' % challenge,
+                    print >> sys.stderr, 'Could not solve:"%s"' % challenge,
                 else:        
                     form.f['HIP_response'] = str(solution)
                     request = form.click()
                     form = get_wyr_form2(request)
                     return form
             else:
-                return forms[0]
+                return form
         
     def wyr_step2(request):
-        if not request: return
         form = get_wyr_form2(request)
-        if not form: return
-
-        if form.fill_name(prefix, fname, lname):
-            form.fill_address(addr1, addr2, addr3)
-            form.fill_all(city=city, phone=phone, email=email)
+        if form and form.fill_name(i.prefix, i.fname, i.lname):
+            form.fill_address(i.addr1, i.addr2)
+            form.fill_all(city=i.city, phone=i.phone, email=i.email)
             request = form.click()
             print 'step2 done',
             return request
             
     def wyr_step3(request):
-        if not request: return
-        forms, response = get_forms(request.get_full_url(), request.get_data())
-        forms = filter(lambda f: f.has(type='textarea'), forms)
-        if forms:
-            form = forms[0]
-            if form.fill(msg, type='textarea'):
-                print 'step3 done',
-                return form.production_click()
-        else:
-            print >> sys.stderr, response
+        b.open(request)
+        form = get_form(b, lambda f: f.find_control_by_type('textarea'))
+        if form and form.fill(i.full_msg, type='textarea'):
+            print 'step3 done',
+            return submit_form(b, form)
 
     return wyr_step3(wyr_step2(wyr_step1(wyr_link)))
 
-def writerep_ima(ima_link, pol, zipcode, state, prefix, fname, 
-                 lname, addr1, city, phone, email, subject, msg, 
-                 addr2='', addr3='', zip4='', captcha=''):
+def writerep_ima(pol, ima_link, i, env={}):
+    """Sends the msg along with the sender details from `i` through the form @ ima_link.
+        The web page at `ima_link` typically has a single form, with the sender's details
+        and subject and msg (and with a captcha img for few reps/senators).
+        If it has a captcha img, the form to fill captcha is taken from env.
+    """
+    b = browser.Browser(env.get('cookies', []))
+    b.url, b.page = ima_link, env.get('form')
+    f = get_form(b, lambda f: f.find_control_by_type('textarea'))
+    if not f:
+        b.open(ima_link)
+        f = get_form(b, lambda f: f.find_control_by_type('textarea'))
 
-    forms, response = get_forms(ima_link)
-    forms = filter(lambda f: f.has(type='textarea') , forms)
-    
-    if forms:
-        f = forms[0]
-        f.fill_name(prefix, fname, lname)
-        f.fill_address(addr1, addr2, addr3)
-        f.fill_all(city=city, state=state.upper(), zipcode=zipcode, zip4=zip4, email=email, issue=['GEN', 'OTH'])
-        f.fill_phone(phone)
-        f.fill(type='textarea', value=msg)
-        f.fill_all(captcha=captcha)
-        return f.production_click()
+    if f:
+        f.fill_name(i.prefix, i.fname, i.lname)
+        f.fill_address(i.addr1, i.addr2)
+        f.fill_phone(i.phone)
+        f.fill(type='textarea', value=i.full_msg)
+        captcha_val = i.get('captcha_%s' % pol, '')
+        f.fill_all(city=i.city, state=i.state.upper(), zipcode=i.zip5, zip4=i.zip4, email=i.email,\
+                    issue=['GEN', 'OTH'], subject=i.subject, captcha=captcha_val, reply='yes')
+        return submit_form(b, f)
     else:
         print 'Error: No IMA form in', ima_link,
 
-def writerep_zipauth(zipauth_link, pol, zipcode, state, prefix, fname, 
-                     lname, addr1, city, phone, email, subject, msg, 
-                     addr2='', addr3='', zip4=''):
-            
-    def zipauth_step1(f):    
-        f.fill_name(prefix, fname, lname)
-        f.fill_address(addr1, addr2, addr3)
-        f.fill_all(email=email, zipcode=zipcode, zip4=zip4, city=city)
-        f.fill_phone(phone)
+def writerep_zipauth(pol, zipauth_link, i):
+    """Sends the msg along with the sender details from `i` through the WYR system.
+      This has 2 forms typically.
+      Form 1 asks for zipcode and few user details 
+      Form 2 asks for the subject and msg to send and other sender's details.
+    """
+    def zipauth_step1(f):
+        f.fill_name(i.prefix, i.fname, i.lname)
+        f.fill_address(i.addr1, i.addr2)
+        f.fill_phone(i.phone)
+        f.fill_all(email=i.email, zipcode=i.zip5, zip4=i.zip4, city=i.city)
         if 'lamborn.house.gov' in zipauth_link:
             f.f.action = urljoin(zipauth_link, '/Contact/ContactForm.htm') #@@ they do it in ajax
         print 'step1 done',
         return f.click()
         
-    def zipauth_step2(request):   
-        if not request: return
-        headers = {'Cookie' : 'District=%s' % zipcode}
-        forms, response = get_forms(request.get_full_url(), request.get_data(), headers)
-        forms = filter(lambda f: f.has(type='textarea'), forms)
-        if forms:
-            f = forms[0]
-            f.fill_name(prefix, fname, lname)
-            f.fill_address(addr1, addr2, addr3)
-            f.fill_all(city=city, zip=zipcode, email=email, issue=['GEN', 'OTH'])
-            f.fill_phone(phone)
-            f.fill(type='textarea', value=msg)
+    def zipauth_step2(request):
+        request.add_header('Cookie', 'District=%s' % i.zip5)  #@@ done in ajax :(
+        response = b.open(request)
+        f = get_form(b, lambda f: f.find_control_by_type('textarea'))
+        if f:
+            f.fill_name(i.prefix, i.fname, i.lname)
+            f.fill_address(i.addr1, i.addr2)
+            f.fill_phone(i.phone)
+            f.fill(type='textarea', value=i.full_msg)
+            f.fill_all(city=i.city, zipcode=i.zip5, zip4=i.zip4, state=i.state.upper(),
+                    email=i.email, issue=['GEN', 'OTH'], subject=i.subject, reply='yes')
             print 'step2 done',
-            return f.production_click()
+            return submit_form(b, f)
         else:
-            soup = BeautifulSoup(response)
-            if has_message(soup, 'zip code is split between more', 'p'): raise ZipShared
-            if has_message(soup, 'Access to the requested form is denied', ['p', 'font']): raise ZipIncorrect
-            if has_message(soup, 'you are outside', 'p'): raise ZipIncorrect 
+            print 'no form with text area'
+            if b.has_text('zip code is split between more'): raise ZipShared
+            if b.has_text('Access to the requested form is denied'): raise ZipIncorrect
+            if b.has_text('you are outside'): raise ZipIncorrect 
             
-    forms, response = get_forms(zipauth_link)
-    forms = filter(lambda f: f.has(name='zip'), forms)
-    if forms:
-        return zipauth_step2(zipauth_step1(forms[0]))
-    else: 
-        print 'Error: No zipauth form in', zipauth_link
-        return        
-    
-def getcontact(pol):
-    r = db.select('pol_contacts', what='contact, contacttype', where='politician_id=$pol', vars=locals())
-    if r: 
-        r = r[0]                
-        return r.contact, r.contacttype
+    b = browser.Browser()
+    b.open(zipauth_link)
+    form = get_form(b, lambda f: f.has(name='zip'))
+    if form:
+        return zipauth_step2(zipauth_step1(form))
     else:
-        return None, None    
-        
-def writerep(pol, zipcode, prefix, fname, lname, 
-             addr1, city, phone, email, subject, msg, addr2='', addr3='', zip4='', captcha=''):
-    dist = pol2dist(pol)
-    state = dist and dist[:2]
-    prefix = prefix.rstrip('.') #few forms take only Mr, Ms etc.
-    args = locals(); args.pop('dist')
-    
-    href, contacttype = getcontact(pol)
-    if contacttype not in ['E', 'W', 'I', 'Z']: return False
-    d = dict(E='pol_email', W='wyr_link', I='ima_link', Z='zipauth_link')
-    args[d[contacttype]] = href
-    if contacttype != 'I': args.pop('captcha')
-         
-    handlers = dict(E=writerep_email, W=writerep_wyr, I=writerep_ima, Z=writerep_zipauth)
-    print handlers[contacttype].__name__,
-    
-    msg_sent = handlers[contacttype](**args)    
-    return msg_sent
-             
-class write_your_rep:
-    def __init__(self):
-        self.msg_id = None
-        self.dist = None
-        self.pol = None
+        print 'Error: No zipauth form in', zipauth_link
 
-    def set_dist(self, i):
-        try:
-            self.dist = getdists(i.zipcode, i.zip4, i.addr1+i.addr2)[0]
-        except KeyError:
-            raise ZipIncorrect
-            
-    def set_pol(self, i):
-        if not self.dist:
-            self.set_dist(i)
-        self.pol = db.select('politician', what='id', 
-                                where='politician.district_id=$self.dist',
-                                vars=locals())[0].id
-                
-    def set_msg_id(self, msg_id, petition=False):
-        #set msg id to trace the responses
-        #msg_id should let's know whether msg is sent through petition signatures or /writerep
-        #set msg_id to odd if msg is from signatures, even if msg is from /writerep
-        msg_id = 2 * msg_id
-        if petition: msg_id += 1
-        self.msg_id = web.to36(msg_id)
-                
-    def save_msg(self, subj, msg):
-        uemail = helpers.get_loggedin_email()
-        user = helpers.get_user_by_email(uemail)
-        user_id = user and user.id
-        msg_id = db.insert('wyr', politician=self.pol, subject=subj, message=msg, sender=user_id, sent=False)
-        return msg_id
+def writerep_email(pol, pol_email, i):
+    name = '%s. %s %s' % (i.prefix, i.fname, i.lname)
+    from_addr = '%s <%s>' % (name, i.email)
 
-    def send_msg(self, i, wyrform, pform=None):
-        pol = self.pol
-        captcha_src = (not i.get('captcha')) and get_captcha_src(pol)
-        if captcha_src:
-            set_captcha(wyrform, captcha_src)
-            msg = 'Please fill in the captcha verification below'
-            helpers.set_msg(msg, msg_type='note')
-            raise CaptchaException
-
-        email = 'p-%s@watchdog.net' % (self.msg_id)
-        try:
-            msg_sent = writerep(pol=pol,
-                        prefix=i.prefix, lname=i.lname, fname=i.fname,
-                        addr1=i.addr1, addr2=i.addr2, city=i.city,
-                        zipcode=i.zipcode, zip4=i.zip4,
-                        phone=web.numify(i.phone), email=email, subject=i.ptitle, msg=i.msg,
-                        captcha=i.get('captcha', ''))
-        except:
-            msg_sent = False
-                            
-        if not pform: update_user_details(i)
-        return msg_sent
-
-    def save_and_send_msg(self, i, wyrform, pform=None):
-        self.set_pol(i)
-        msg_id = self.save_msg(i.ptitle, i.msg)  
-        self.set_msg_id(msg_id)
-        msg_sent = self.send_msg(i, wyrform, pform)
-        if msg_sent == True:
-            db.update('wyr', where='id=$msg_id', sent=True, vars=locals())
-        return msg_sent    
-    
-    def GET(self, form=None):
-        if not form:
-            form = forms.wyrform()
-            fill_user_details(form)
-            add_captcha(form)
-            
-        useremail = helpers.get_loggedin_email() or helpers.get_unverified_email()    
-        msg, msg_type = helpers.get_delete_msg()
-        return render.writerep(form, useremail=useremail, msg=msg)
-
-    def POST(self):
-        i = web.input()
-        wyrform = forms.wyrform()
-        if wyrform.validates(i):
-            auth.assert_login(i)
-            try:
-                status = self.save_and_send_msg(i, wyrform)
-            except CaptchaException:
-                msg, msg_type = helpers.get_delete_msg()
-                return render.writerep(wyrform, msg)
-            else:
-                if status:
-                    p = db.select('politician', what='firstname, middlename, lastname',
-                                    where='id=$self.pol', vars=locals())[0]
-                    polstr = '<a href="/p/%s">%s %s %s</a>' % (self.pol, p.firstname, p.middlename, p.lastname)  
-                    helpers.set_msg('Your message has been sent to %s.' % polstr)
-                else:
-                    helpers.set_msg('Sorry, your message has NOT been sent.', 'error')
-            raise web.seeother('/')
-        else:
-            return self.GET(wyrform)
-
-class wyr_test:
-    def get_from_input(self, key, input=None):
-       if not input: input = web.input()
-       possibles = name_options[key]
-       for name in possibles:
-           for k in input.keys():
-               if name in k.lower():
-                   return input.get(k)
-    def POST(self):
-        i = web.input()
+    if production_mode:
+        to_addr = web.lstrips(pol_email, 'mailto:')
+    elif test_mode:
         to_addr = test_email
-        from_addr = self.get_from_input('email', i) or ''
-        subject = self.get_from_input('issue', i) or ''
-        msg = self.get_from_input('message', i) or ''
-        web.sendmail(from_addr, to_addr, subject, msg)
-        return 
+    web.sendmail(from_addr, to_addr, i.subject, i.full_msg)
+    return True
 
-class verify_zip:
-    def POST(self):
-        i = web.input()
-        dists = getdists(i.zipcode, i.zip4, i.address)
-        if len(dists) == 1:
-            return dists[0]
-        else:
-            return len(dists)    
-    
-class get_captcha:
-    def GET(self):
-        i = web.input()
-        pol = dist2pol(i.dist)
-        src = get_captcha_src(pol)
-        if src:
-            wyr = forms.wyrform()
-            set_captcha(wyr, src)
-            return '<tr><td colspan=3><label for="captcha">Verification</label>'+ wyr.captcha.pre + wyr.captcha.render()+'</td></tr>'
+def submit_form(b, f):
+    """clicks the form `f` and opens the request in browser `b` and sends response."""
+    if production_mode:
+        request = f.click()
+        response = b.open(request)
+        send_response(production_test_email, f.controls, response)
+    elif test_mode:
+        send_response(test_email, f.controls, response='')
+    return True
 
-app = web.application(urls, globals())
+def send_response(to, form_controls, response):
+    """sends a mail to `to` to check if the form is submitted properly.
+    """
+    form_values = "\n".join(["%s: %s" % (c.name, c.value) for c in form_controls])
+    msg = 'Filled in the last form:\n\n' + form_values 
+    if response: 
+        msg +=  '\n\nResponse at' + response.geturl() + ':\n' + response.read()
+    else:
+        msg += '\n\n(Not Production click, no response)'
 
-if __name__ == '__main__':
-    app.run()
+    subject = 'wyr mail'
+    web.sendmail(from_address, to, subject, msg)
 
+def not_signup_or_search(form):
+    has_textarea = form.find_control_by_type('textarea')
+    if has_textarea:
+        return True
+    else:    
+        action = form.action
+        signup = 'signup' in action and 'email' in action
+        search = 'search' in action or 'thomas.loc.gov' in action
+        return not(search or signup)
+
+def get_form(browser, predicate=None):
+    """wrapper for browser.get_form method to return Form ojects instead of ClientForm objects"""
+    f = browser.get_form(lambda f: predicate is None or predicate(Form(f)))
+    if f: return Form(f)
+
+def get_src_and_form(url, imgs):
+    """Returns the source of captcha img(if any) and form containing it.
+    """
+    try:
+        img = imgs[0]
+        img_src = img.get('src', '')
+        form = img.findParent('form') or ''
+        captcha_src = urljoin(url, img_src)
+    except Exception, details:
+        print >> sys.stderr, details
+        return None, None
+    else:
+        return captcha_src, form

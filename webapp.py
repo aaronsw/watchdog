@@ -2,7 +2,7 @@
 import re, sys
 import web
 
-from utils import zip2rep, simplegraphs, apipublish, users, writerep, se
+from utils import zip2rep, simplegraphs, apipublish, users, writerep, se, wyrapp
 import blog
 import petition
 import settings
@@ -39,7 +39,7 @@ urls = (
   r'/l/o/?(.*?)', 'lob_org',
   r'/l/pa/?(.*?)', 'lob_pac',
   r'/l/pe/?(.*?)', 'lob_person',
-  r'/writerep', writerep.app,
+  r'/writerep', wyrapp.app,
   r'/about(/?)', 'about',
   r'/about/team', 'aboutteam',
   r'/about/help', 'abouthelp',
