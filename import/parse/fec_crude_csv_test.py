@@ -144,8 +144,9 @@ def test_candidate_name():
     ...                                    '230179.fec')['candidate']
     'HOWARD KALOOGIAN'
 
-    In this case, there is a more specific candidate name to be
-    extracted from the committee name, but we don’t yet do it.
+    In this case, there is a more specific candidate name 'JOHN
+    T. DOOLITTLE' to be extracted from the committee name, but we
+    don’t yet do it.
     >>> fec_crude_csv.readstring_into_tree(filing_181904_truncated,
     ...                                    '181904.fec')['candidate']
     'JOHN DOOLITTLE'

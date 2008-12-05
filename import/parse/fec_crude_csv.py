@@ -515,6 +515,13 @@ candidate_name_res = [re.compile(x, re.IGNORECASE) for x in
 # maybe also:
 #  | committee \s+ to \s+ elect (?P<candidate>.*)
 # "Alan Pedigo For US House of Rep"
+# These are recipients of a certain PAC’s donations:
+# "Citizens for Arlen Specter"
+# "Ike Skelton for Congress Committee"
+# "Bill Nelson for U.S. Senate Campaign"
+# "Martin Frost Campaign Committee"
+# "Friends of Connie Morella for Congress Committee"
+# "Committee to Elect McHugh"
 
 def readstring_into_tree(astring, filename):
     records = readstring(astring)
