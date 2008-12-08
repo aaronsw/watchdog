@@ -42,8 +42,54 @@ def load_fec_cans():
               pct_pac = can.contrib_from_other_pc/total
             )
 
-def load_fec_efilings(filepattern=None):
-    for f in fec_crude_csv.parse_efilings(filepattern):
+def load_fec_committees():
+    for f in fec_cobol.parse_committees(latest=True):
+        f = web.storage(f)
+        
+        db.insert('committee', seqname=False,
+          id = f.committee_id,
+          name = f.committee_name,
+          treasurer = f.treasurer_name,
+          street1 = f.street_one,
+          street2 = f.street_two,
+          city = f.city,
+          state = f.state,
+          zip = f.zip,
+          connected_org_name = f.connected_org_name,
+          candidate_id = f.candidate_id
+        )
+
+def load_fec_contributions():
+    db.delete('contribution', '1=1')
+    for f in fec_cobol.parse_contributions(latest=True):
+        f = web.storage(f)
+        f.occupation = f.occupation.replace('N/A', '')
+        if '/' in f.occupation:
+            employer, occupation = f.occupation.split('/', 1)
+        else:
+            employer = ''
+            occupation = f.occupation
+        
+        db.insert('contribution',
+          fec_record_id = f.fec_record_id,
+          microfilm_loc = f.microfilm_loc,
+          recipient_id = f.filer_id,
+          name = f.name,
+          street = f.get('street'),
+          city = f.city,
+          state = f.state,
+          zip = f.zip,
+          occupation = occupation,
+          employer = employer,
+          employer_stem = tools.stemcorpname(employer),
+          committee_id = f.from_id or None,
+          sent = f.date,
+          amount = f.amount
+        )
+        
+
+def load_fec_efilings():
+    for f in fec_csv.parse_efilings():
         for s in f['schedules']:
             if s.get('type') == 'contribution':
                 # XXX all this code for politician_id is currently dead, does nothing useful
@@ -89,4 +135,5 @@ if __name__ == "__main__":
     cgitb.enable(format='text')
     load_fec_ids()
     load_fec_cans()
-    load_fec_efilings()
+    load_fec_committees()
+    load_fec_contributions()

@@ -1,4 +1,4 @@
-$def with (form, useremail=None, msg=None)
+$def with (form, useremail=None, captchas=None, msg=None)
 
 $var width: 90%
 $var color: white
@@ -10,6 +10,7 @@ $var title: Write your representative
 <style>
 fieldset#wyr { margin-top: 2em; }
 #text fieldset td { padding: 0; margin: 0;}
+fieldset input#email {width:170px;}
 </style>
 
 $if msg:
@@ -30,8 +31,8 @@ $if msg:
        <tr><td><label for="city">City</label>$:form.city.render()</td>
            <td><label for="state">State</label>$:form.state.render()</td>
            
-       <td><label for="zipcode">Zipcode</label>
-            $:form.zipcode.render()- $:form.zip4.render()</td></tr><span id="note_zipcode"></span>
+       <td><label for="zip5">Zipcode</label>
+            $:form.zip5.render()- $:form.zip4.render()</td></tr><span id="note_zip5"></span>
 
         <tr><td><label for="email">Email</label>
    $if useremail:
@@ -42,13 +43,14 @@ $if msg:
    </td>
    <td><label for="phone">Phone</label>$:form.phone.render()</td>
    </tr>
-   
    <tr><td colspan=3><label for="subject">Subject</label>$:form.ptitle.render()</td></tr>
    <tr><td colspan=3><label for="msg">Message</label>$:form.msg.render()</td></tr>
-    $if form.captcha.pre:
-        <tr><td colspan=2><label for="captcha">Verification</label>$:form.captcha.pre $:form.captcha.render()</td></tr>
-   </table>
+    $if captchas:
+        $:form.captcha_env.render()
+        $:captchas
+  </table>
    </fieldset>
+   
     <p><button type="submit">Send message</button></p>
 </form>    
 

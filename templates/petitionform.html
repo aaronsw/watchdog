@@ -1,4 +1,4 @@
-$def with (pform, cform, title="Create a new petition", target="/c/new", msg=None)
+$def with (pform, cform, title="Create a new petition", target="/c/new", captchas='', msg=None)
 
 $var width: 90%
 $var color: white
@@ -54,7 +54,9 @@ $else:
 
     <div id="tocongressform" style="display: none;">
     <h3>We'll need some more information then...</h3>
-	$if (not cform.valid) and (cform.note): <p class="error">$cform.note</p>
+	$if not cform.valid:
+	    $if cform.note: <p class="error">$cform.note</p>
+	    $else: <p class="error">Please try again after fixing the problems highlighted below:</p>
 
     <table><tr>
         <td><label for='prefix'>Prefix</label>$:cform.prefix.render()</td>
@@ -68,14 +70,14 @@ $else:
     <table><tr>
         <td><label for='city'>City</label>$:cform.city.render()</td>
         <td><label for='state'>State</label>$:cform.state.render()</td>
-        <td><label for='zipcode'>Zip code</label>$:cform.zipcode.render()-$:cform.zip4.render()</td><span id="note_zipcode"></span>        
-    </tr></table>
-    <table><tr>
+        </tr>
+        <td><label for='zip5'>Zip code</label>$:cform.zip5.render()-$:cform.zip4.render()</td><span id="note_zip5"></span>
         <td><label for='phone'>Phone</label>$:cform.phone.render()</td>
-    $if cform.captcha.pre:
-        $:cform.signid.render()
-        <td><label for='captcha'>Validation</label>$:cform.captcha.pre $:cform.captcha.render()</td>
-    </tr></table>
+    </tr>
+    $if captchas:
+        $:cform.captcha_env.render()
+        $:captchas
+    </table>
     </div>
 </fieldset>
 

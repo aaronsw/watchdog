@@ -155,11 +155,15 @@ watchdog.net
 class set_password:
     def GET(self, form=None):
         i = web.input()
-        if check_secret_token(i.get('email', ''), i.get('token', '')):
+        email = i.get('email', '')
+        email_exists = bool(helpers.get_user_by_email(email))
+        if email_exists and check_secret_token(email, i.get('token', '@')):
             form = form or forms.passwordform()
             return render.set_password(form, i.email)
         else:
-            helpers.set_msg('Invalid token', msg_type='error')
+            if email_exists: msg = 'Invalid token'
+            else: msg = 'No user account exists with this email'
+            helpers.set_msg(msg, msg_type='error')
             raise web.seeother('/u/forgot_password', absolute=True)
 
     def POST(self):
@@ -200,16 +204,18 @@ def assert_login(i=None):
     # if the email has verified account with us but not logged-in, redirect to login form
     # if the email has unverified account, make them login and send set password email
     # if the email has no account, set an unverified account and send set password email
+    # and return user id
     i = i or web.input()
     email = i.email
     if helpers.get_loggedin_email():
-        pass
+        uid = helpers.get_loggedin_userid()
     elif helpers.is_verified(email):
         login_page = do_login(email, set_state())
         raise web.webapi.HTTPError('200 OK', {}, data=str(login_page))
     else:
-        helpers.unverified_login(email, i.get('fname'), i.get('lname'))
         send_mail_to_set_password(email)
+        uid = helpers.unverified_login(email, i.get('fname'), i.get('lname'))
+    return uid
 
 def set_state():
     if web.ctx.method == 'POST':

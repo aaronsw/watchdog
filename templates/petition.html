@@ -1,4 +1,4 @@
-$def with (p, signform, useremail, isauthor, issignatory, wyrform=None, msg=None)
+$def with (p, signform, useremail, isauthor, issignatory, wyrform=None, captchas='', msg=None)
 
 $var width: 90%
 $var color: white
@@ -81,9 +81,9 @@ $if isauthor:
                  <td><label for="addr2">&nbsp;&nbsp;</label>$:wyrform.addr2.render()</td></tr>
                  <tr><td><label for="city">City</label>$:wyrform.city.render()</td>
                      <td><label for='state'>State</label>$:wyrform.state.render()</td>
-                 <td><label for="zipcode">Zipcode</label>
-                     $:wyrform.zipcode.render()- $:wyrform.zip4.render()</td></tr>
-                 <span id="note_zipcode"></span></table>
+                 <td><label for="zip5">zip5</label>
+                     $:wyrform.zip5.render()- $:wyrform.zip4.render()</td></tr>
+                 <span id="note_zip5"></span></table>
             <table><tr><td>         
             <label for="email">Email</label>
             $if useremail: 
@@ -99,10 +99,9 @@ $if isauthor:
             <tr><td colspan=3><label for="comment">Personal comment (explain how this affects you):</label>
             $:signform.comment.render()</td></tr>
             
-            $if wyrform and wyrform.captcha.pre:
-                <tr><td colspan=3>
-                    <label for="captcha">Verification</label>$:wyrform.captcha.pre $:wyrform.captcha.render()
-                </td></tr>
+            $if wyrform and captchas:
+                $:wyrform.captcha_env.render()
+                $:captchas
             </table>    
             <div id="share_with_container" style="margin: 3px;"><div style="float: left; padding-right: 12px;">
             $:signform.share_with.render()
