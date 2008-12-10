@@ -116,17 +116,17 @@ def test_candidate_name():
 
     This is from the committee name 'KT McFarland for Congress':
     >>> fec_crude_csv.read_filing(filing_230174_truncated,
-    ...                           '230174.fec')['candidate']
+    ...                           '230174.fec')[0]['candidate']
     'KT McFarland'
 
     This is from committee name 'Friends of Tyson Pratcher':
     >>> fec_crude_csv.read_filing(filing_230176_truncated,
-    ...                           '230176.fec')['candidate']
+    ...                           '230176.fec')[0]['candidate']
     'Tyson Pratcher'
 
     This one is from an actual `candidate_name` field in form F6:
     >>> fec_crude_csv.read_filing(filing_230177_truncated,
-    ...                           '230177.fec')['candidate']
+    ...                           '230177.fec')[0]['candidate']
     'Rick ODonnell'
 
     In this case there is a `candidate_name` field, but it is empty,
@@ -135,20 +135,20 @@ def test_candidate_name():
     `committee_name_(pcc)` field would give us 'Sue Kelly'.
 
     >>> fec_crude_csv.read_filing(filing_230179,
-    ...                           '230179.fec')['candidate']
+    ...                           '230179.fec')[0]['candidate']
     'Sue W. Kelly'
 
     In this case, `candidate_name` contains a ^-separated name, which
     needs to be properly reordered.
     >>> fec_crude_csv.read_filing(filing_230185,
-    ...                           '230179.fec')['candidate']
+    ...                           '230179.fec')[0]['candidate']
     'HOWARD KALOOGIAN'
 
     In this case, there is a more specific candidate name 'JOHN
     T. DOOLITTLE' to be extracted from the committee name, but we
     don’t yet do it.
     >>> fec_crude_csv.read_filing(filing_181904_truncated,
-    ...                           '181904.fec')['candidate']
+    ...                           '181904.fec')[0]['candidate']
     'JOHN DOOLITTLE'
 
     """

@@ -529,7 +529,6 @@ def read_filing(astring, filename):
     if not form['original_data']['form_type'].startswith('F'):
         warn("skipping %r: its first record is %r" % (filename, formline))
         return
-    form['schedules'] = list(records)
     form['report_id'] = filename[:-4]
     if not form.get('candidate'):
         for regex in candidate_name_res:
@@ -537,7 +536,7 @@ def read_filing(astring, filename):
             if mo:
                 form['candidate'] = mo.group('candidate')
                 break
-    return form
+    return form, records
 
 def readfile_zip(filename):
     zf = zipfile.ZipFile(filename)
@@ -558,8 +557,8 @@ def parse_efilings(filepattern = None):
     last_time = time.time()
     for filename in glob.glob(filepattern):
         sys.stderr.write('parsing efilings file %s\n' % filename)
-        for record in readfile_generic(filename):
-            yield record
+        for parsed_file in readfile_generic(filename):
+            yield parsed_file
         now = time.time()
         sys.stderr.write('parsing took %.1f seconds\n' % (now - last_time))
         last_time = now
@@ -569,5 +568,7 @@ if __name__ == '__main__':
     # pprint is unacceptable --- it made the script run 40× slower.
     import simplejson
     for filename in sys.argv[1:]:
-        for line in readfile_generic(filename):
-            print simplejson.dumps(line, sort_keys=True, indent=4)
+        for form, schedules in readfile_generic(filename):
+            print simplejson.dumps(form, sort_keys=True, indent=4)
+            for schedule in schedules:
+                print simplejson.dumps(schedule, sort_keys=True, indent=4)
