@@ -1,12 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""
-This is just some test code right now for exploring the space of
-parsing FEC CSV files in a relatively version-flexible way.
-
-As I write this, it takes about 50% more CPU time than the old version
-that was chewing through 300 kilobytes per second on my 700MHz
-dinosaur --- now it's doing 210 kilobytes per second.
+"""Import FEC data.
 
 """
 import csv, sys, cgitb, fixed_width, zipfile, cStringIO, types, os, glob, time
@@ -442,7 +436,9 @@ class ascii28separated(csv.excel):
     delimiter = chr(28)
 
 def translate_to_utf_8(fileobj):
-    """Although the FEC’s documents claim non-ASCII characters will be
+    """Convert a presumably Windows-1252 file to UTF-8.
+
+    Although the FEC’s documents claim non-ASCII characters will be
     rejected, I have seen a filing in Windows-1252.  Aaron points out:
     > The `chardet` library might be useful:
     > <http://chardet.feedparser.org/>
@@ -484,8 +480,8 @@ def readstring(astring):
             # see e.g. “New F99 Filing Type for unstructured,
             # formatted text” in FEC_v300.rtf.  Note that this data
             # may violate `csv`'s expectations, so we have to read it
-            # ourselves, and XXX pray that `csv` isn’t doing some kind of
-            # buffering-ahead.
+            # ourselves, and rely on `csv` not doing some kind of
+            # read-ahead.
             while True:
                 line = fileobj.readline().lower()
                 if not line: break      # robustness against premature EOF
