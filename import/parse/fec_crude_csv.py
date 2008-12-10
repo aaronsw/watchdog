@@ -523,7 +523,7 @@ candidate_name_res = [re.compile(x, re.IGNORECASE) for x in
 # "Friends of Connie Morella for Congress Committee"
 # "Committee to Elect McHugh"
 
-def readstring_into_tree(astring, filename):
+def read_filing(astring, filename):
     records = readstring(astring)
     form = records.next()
     if not form['original_data']['form_type'].startswith('F'):
@@ -542,14 +542,14 @@ def readstring_into_tree(astring, filename):
 def readfile_zip(filename):
     zf = zipfile.ZipFile(filename)
     for name in zf.namelist():
-        yield readstring_into_tree(zf.read(name), name)
+        yield read_filing(zf.read(name), name)
 
 def readfile_generic(filename):
     if filename.endswith('.zip'):
         return readfile_zip(filename)
     else:
         _, basename = os.path.split(filename)
-        return [readstring_into_tree(file(filename).read(), basename)]
+        return [read_filing(file(filename).read(), basename)]
 
 EFILINGS_PATH = '../data/crawl/fec/electronic/'
 
