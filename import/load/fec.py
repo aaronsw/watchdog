@@ -88,8 +88,8 @@ def load_fec_contributions():
         )
         
 
-def load_fec_efilings():
-    for f in fec_csv.parse_efilings():
+def load_fec_efilings(filepattern=None):
+    for f in fec_crude_csv.parse_efilings(filepattern):
         for s in f['schedules']:
             if s.get('type') == 'contribution':
                 # XXX all this code for politician_id is currently dead, does nothing useful
