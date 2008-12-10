@@ -1,13 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8; -*-
-"""Field mapping.
+"""Field mapping
+================
 
 When you have a big pile of dicts in slightly different formats, and
 you want to transform them to dicts in a consistent format, this
 module lets you write the field mappings in a small amount of code and
 execute them reasonably quickly.
 
-Quick start:
+Quick start
+-----------
 
     >>> m = FieldMapper({'age': ['Age', 'age'], 'lastname': 'sname'})
     >>> [m.map(x) for x in [dict(Age=30, sname='Smith'),
@@ -48,7 +50,8 @@ You can construct (slightly) more complicated pipelines with `Reformat`:
 Finally, you can use `CatchAllField` (q.v.) to handle cases where these
 tools don’t cut it.
 
-BUGS:
+BUGS
+----
 
 -  Any particular input field can be used reliably by at most one
    output field.  If you try to use the same input field for more than
