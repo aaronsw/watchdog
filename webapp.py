@@ -446,13 +446,19 @@ class lob_person:
 
 class politician_introduced:
     def GET(self, politician_id):
-        pol = schema.Politician.where(id=politician_id)[0]
+        try:
+            pol = schema.Politician.where(id=politician_id)[0]
+        except IndexError:
+            raise web.notfound
         return render.politician_introduced(pol)
 
 class politician_groups:
     def GET(self, politician_id):
         related = group_politician_similarity(politician_id, qmin=1)
-        pol = schema.Politician.where(id=politician_id)[0]
+        try:
+            pol = schema.Politician.where(id=politician_id)[0]
+        except IndexError:
+            raise web.notfound
         return render.politician_groups(pol, related)
 
 class politician_group:
