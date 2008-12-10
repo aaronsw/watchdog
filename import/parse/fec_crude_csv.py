@@ -441,23 +441,20 @@ class ascii28separated(csv.excel):
     """The FEC moved from CSV to chr(28)-separated files in format version 6."""
     delimiter = chr(28)
 
-def translate_to_utf_8(astring):
+def translate_to_utf_8(fileobj):
     """Although the FEC’s documents claim non-ASCII characters will be
     rejected, I have seen a filing in Windows-1252.  Aaron points out:
     > The `chardet` library might be useful:
     > <http://chardet.feedparser.org/>
     """
-    unicode_version, consumed = codecs.getdecoder('windows-1252')(astring)
-    assert consumed == len(astring)
-    rv, consumed_unicode = codecs.getencoder('utf-8')(unicode_version)
-    assert consumed_unicode == len(unicode_version)
-    return rv
+    return codecs.EncodedFile(fileobj, 'utf-8', 'windows-1252')
 
 # Note that normally we are reading from a zipfile, and Python’s
 # stupid zipfile interface doesn’t AFAICT give us the option of
 # streaming reads — it insists on reading the whole zipfile element at
 # once.  So we don’t lose much by parsing from a string rather than a
-# file object here.
+# file object here, as long as we are careful not to accidentally make
+# extra copies of the string.
 def readstring(astring):
     # from the Python 2.5 documentation: “Note: This version of the
     # csv module doesn't support Unicode input. Also, there are
@@ -465,7 +462,7 @@ def readstring(astring):
     # characters. Accordingly, all input should be UTF-8 or printable
     # ASCII to be safe; see the examples in section 9.1.5. These
     # restrictions will be removed in the future.”
-    fileobj = cStringIO.StringIO(translate_to_utf_8(astring))
+    fileobj = translate_to_utf_8(cStringIO.StringIO(astring))
     r = csv.reader(fileobj)
     headerline = r.next()
     if chr(28) in headerline[0]:

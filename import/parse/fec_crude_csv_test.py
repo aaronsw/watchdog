@@ -90,7 +90,8 @@ def test_windows_1252_characters():
     rejected, but here we have an example of a filing that wasn’t.  It
     contains a Windows-1252 byte.  Note that it is an en dash, not an
     em dash, sigh.  I am arbitrarily deciding that the result should
-    be encoded in UTF-8.
+    be encoded in UTF-8, in part because the Python `csv` module is
+    documented to be UTF-8-safe.
 
     Note that this test doesn’t pass yet; the SKIP option to doctest
     was added in Python 2.5, so this test will barf 'has an invalid
