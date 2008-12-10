@@ -48,11 +48,19 @@ tools don’t cut it.
 
 BUGS:
 
-- Any particular input field can be used reliably by at most one
-  output field.  If you try to use the same input field for more than
-  one thing, you may silently lose data.  (You can often work around
-  this with CatchAllField — just set its `inputs` to non-conflicting
-  input field names.)
+-  Any particular input field can be used reliably by at most one
+   output field.  If you try to use the same input field for more than
+   one thing, you may get an AssertionError.  (You can often work
+   around this with CatchAllField — just set its `inputs` to
+   non-conflicting input field names.)
+
+        >>> FieldMapper({'name': lambda firstname, lastname: firstname + ' ' + lastname,
+        ...              'firstname': 'firstname', 'lastname': 'lastname'})
+        ... #doctest: +ELLIPSIS
+        Traceback (most recent call last):
+          ...
+        AssertionError: ...
+
 - You can’t construct *arbitrarily* more complicated pipelines with
   Reformat.
 - It’s still way too slow.
@@ -236,8 +244,10 @@ class FieldMapper:
         self.inverteds = {}
         for name, field in fields.items():
             field = as_field(field)
-            self.inverteds.update(dict((k, (name, v))
-                                       for k, v in field.inverteds().items()))
+            for k, v in field.inverteds().items():
+                assert k not in self.inverteds, (name, k, field,
+                                                 self.inverteds[k])
+                self.inverteds[k] = (name, v)
         self.inverted_keys = set(self.inverteds.keys())
     def map(self, data):
         rv = {'original_data': data}
