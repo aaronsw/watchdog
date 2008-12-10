@@ -152,12 +152,6 @@ class state:
         except IndexError:
             raise web.notfound
 
-        #         state.__dict__  = {'status': u'state',
-        #                            'code': u'NM',
-        #                            'name': u'New Mexico',
-        #                            'wikipedia': u'http://en.wikipedia.org/wiki/New_Mexico',
-        #                            '_objs': [<schema.State object at 0xb6f896cc>],
-        #                            'fipscode': u'35'}
         out = apipublish.publish([state], format)
         if out: return out
 
