@@ -9,49 +9,51 @@ execute them reasonably quickly.
 
 Quick start:
 
->>> m = FieldMapper({'age': ['Age', 'age'], 'lastname': 'sname'})
->>> [m.map(x) for x in [dict(Age=30, sname='Smith'),
-...                     dict(age=49, sname='Wilson'),
-...                     dict(x=3, y=4, lastname='Jones')]]
-... #doctest: +NORMALIZE_WHITESPACE
-[{'lastname': 'Smith', 'age': 30, 'original_data': {'Age': 30, 'sname': 'Smith'}},
- {'lastname': 'Wilson', 'age': 49, 'original_data': {'age': 49, 'sname': 'Wilson'}},
- {'original_data': {'y': 4, 'lastname': 'Jones', 'x': 3}}]
+    >>> m = FieldMapper({'age': ['Age', 'age'], 'lastname': 'sname'})
+    >>> [m.map(x) for x in [dict(Age=30, sname='Smith'),
+    ...                     dict(age=49, sname='Wilson'),
+    ...                     dict(x=3, y=4, lastname='Jones')]]
+    ... #doctest: +NORMALIZE_WHITESPACE
+    [{'lastname': 'Smith', 'age': 30,
+      'original_data': {'Age': 30, 'sname': 'Smith'}},
+     {'lastname': 'Wilson', 'age': 49,
+      'original_data': {'age': 49, 'sname': 'Wilson'}},
+     {'original_data': {'y': 4, 'lastname': 'Jones', 'x': 3}}]
 
 You can include functions as mappings; it looks for their argument
 names in the input data.
 
->>> m = FieldMapper({'age': ['age', lambda birthyear: 2008 - birthyear]})
->>> m.map({'age': 27})
-{'age': 27, 'original_data': {'age': 27}}
->>> m.map({'birthyear': 1970})
-{'age': 38, 'original_data': {'birthyear': 1970}}
->>> m = FieldMapper({'date': lambda year, month, day:
-...                          '%s-%s-%s' % (year, month, day)})
->>> m.map(dict(year=2008, month=11, day=19))['date']
-'2008-11-19'
+    >>> m = FieldMapper({'age': ['age', lambda birthyear: 2008 - birthyear]})
+    >>> m.map({'age': 27})
+    {'age': 27, 'original_data': {'age': 27}}
+    >>> m.map({'birthyear': 1970})
+    {'age': 38, 'original_data': {'birthyear': 1970}}
+    >>> m = FieldMapper({'date': lambda year, month, day:
+    ...                          '%s-%s-%s' % (year, month, day)})
+    >>> m.map(dict(year=2008, month=11, day=19))['date']
+    '2008-11-19'
 
-You can construct (slightly) more complicated pipelines with Reformat:
+You can construct (slightly) more complicated pipelines with `Reformat`:
 
->>> def invert_name(n):
-...     last, first = n.split(',')
-...     return '%s %s' % (first.strip(), last.strip())
->>> m = FieldMapper({'name': Reformat(format=invert_name,
-...                                   source=['name', 'fullname'])})
->>> m.map({'name': 'Smith, John'})['name']
-'John Smith'
->>> m.map({'fullname': 'Smith,John'})['name']
-'John Smith'
+    >>> def invert_name(n):
+    ...     last, first = n.split(',')
+    ...     return '%s %s' % (first.strip(), last.strip())
+    >>> m = FieldMapper({'name': Reformat(format=invert_name,
+    ...                                   source=['name', 'fullname'])})
+    >>> m.map({'name': 'Smith, John'})['name']
+    'John Smith'
+    >>> m.map({'fullname': 'Smith,John'})['name']
+    'John Smith'
 
-Finally, you can use CatchAllField (q.v.) to handle cases where these
+Finally, you can use `CatchAllField` (q.v.) to handle cases where these
 tools don’t cut it.
 
 BUGS:
 
 -  Any particular input field can be used reliably by at most one
    output field.  If you try to use the same input field for more than
-   one thing, you may get an AssertionError.  (You can often work
-   around this with CatchAllField — just set its `inputs` to
+   one thing, you may get an `AssertionError`.  (You can often work
+   around this with `CatchAllField` — just set its `inputs` to
    non-conflicting input field names.)
 
         >>> FieldMapper({'name': lambda firstname, lastname: firstname + ' ' + lastname,
@@ -62,7 +64,7 @@ BUGS:
         AssertionError: ...
 
 - You can’t construct *arbitrarily* more complicated pipelines with
-  Reformat.
+  `Reformat`.
 - It’s still way too slow.
 
 """
