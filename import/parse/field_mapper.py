@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: utf-8; -*-
 """Field mapping.
 
@@ -252,3 +253,7 @@ class FieldMapper:
             else:
                 rv[name] = v
         return rv
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
