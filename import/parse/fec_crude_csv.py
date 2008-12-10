@@ -1,11 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-Import FEC filings.
+This is just some test code right now for exploring the space of
+parsing FEC CSV files in a relatively version-flexible way.
+
+As I write this, it takes about 50% more CPU time than the old version
+that was chewing through 300 kilobytes per second on my 700MHz
+dinosaur --- now it's doing 210 kilobytes per second.
 
 """
-import csv, sys, cgitb, fixed_width, zipfile, StringIO, types, os, glob, time
-import codecs, re, tempfile
+import csv, sys, cgitb, fixed_width, zipfile, cStringIO, types, os, glob, time
+import codecs, re
 
 class Field:
     """Represents a field in the output data, and knows how to compute it.
@@ -436,37 +441,31 @@ class ascii28separated(csv.excel):
     """The FEC moved from CSV to chr(28)-separated files in format version 6."""
     delimiter = chr(28)
 
-def translate_to_utf_8(fileobj):
+def translate_to_utf_8(astring):
     """Although the FEC’s documents claim non-ASCII characters will be
     rejected, I have seen a filing in Windows-1252.  Aaron points out:
     > The `chardet` library might be useful:
     > <http://chardet.feedparser.org/>
     """
-    return codecs.EncodedFile(fileobj, 'utf-8', 'windows-1252')
-
-class SensibleFileWrapper(object):
-    """Wraps a file to allow mixing of iteration and readline methods safely.
-    """
-
-    def __init__(self, fileobj):
-        self._fileobj = fileobj
-        self.readline = fileobj.readline
-    def __iter__(self):
-        return iter(self.readline, '')
+    unicode_version, consumed = codecs.getdecoder('windows-1252')(astring)
+    assert consumed == len(astring)
+    rv, consumed_unicode = codecs.getencoder('utf-8')(unicode_version)
+    assert consumed_unicode == len(unicode_version)
+    return rv
 
 # Note that normally we are reading from a zipfile, and Python’s
 # stupid zipfile interface doesn’t AFAICT give us the option of
 # streaming reads — it insists on reading the whole zipfile element at
 # once.  So we don’t lose much by parsing from a string rather than a
 # file object here.
-def readfile(fileobj):
+def readstring(astring):
     # from the Python 2.5 documentation: “Note: This version of the
     # csv module doesn't support Unicode input. Also, there are
     # currently some issues regarding ASCII NUL
     # characters. Accordingly, all input should be UTF-8 or printable
     # ASCII to be safe; see the examples in section 9.1.5. These
     # restrictions will be removed in the future.”
-    fileobj = SensibleFileWrapper(translate_to_utf_8(fileobj))
+    fileobj = cStringIO.StringIO(translate_to_utf_8(astring))
     r = csv.reader(fileobj)
     headerline = r.next()
     if chr(28) in headerline[0]:
@@ -524,14 +523,13 @@ candidate_name_res = [re.compile(x, re.IGNORECASE) for x in
 # "Friends of Connie Morella for Congress Committee"
 # "Committee to Elect McHugh"
 
-def readfile_into_tree(fo, filename):
-    print >> sys.stderr, "processing filing %s" % filename
-    records = readfile(fo)
+def readstring_into_tree(astring, filename):
+    records = readstring(astring)
     form = records.next()
     if not form['original_data']['form_type'].startswith('F'):
         warn("skipping %r: its first record is %r" % (filename, formline))
         return
-    form['schedules'] = records         # the generator, for the rest of the records
+    form['schedules'] = list(records)
     form['report_id'] = filename[:-4]
     if not form.get('candidate'):
         for regex in candidate_name_res:
@@ -541,40 +539,17 @@ def readfile_into_tree(fo, filename):
                 break
     return form
 
-def unpack_zipfile(filename):
-    dirname = tempfile.mkdtemp()
+def readfile_zip(filename):
     zf = zipfile.ZipFile(filename)
     for name in zf.namelist():
-        path, filename = os.path.split(name) # ignore path for security and convenience
-
-        pathname = os.path.join(dirname, filename)
-        assert not os.path.exists(pathname), pathname # lame error handling
-
-        file(pathname, 'w').write(zf.read(name))
-
-    return dirname
-
-def readfile_zip(filename):
-    zip_dir = unpack_zipfile(filename)
-    print >> sys.stderr, "unpacking in", zip_dir
-    
-    for name in os.listdir(zip_dir):
-        yield readfile_into_tree(file(os.path.join(zip_dir, name)), name)
-
-    # If we had an error, we leave the tempdir behind to facilitate
-    # debugging.  Otherwise we clean up:
-        
-    for name in os.listdir(zip_dir):
-        os.remove(os.path.join(zip_dir, name))
-
-    os.rmdir(zip_dir)
+        yield readstring_into_tree(zf.read(name), name)
 
 def readfile_generic(filename):
     if filename.endswith('.zip'):
         return readfile_zip(filename)
     else:
         _, basename = os.path.split(filename)
-        return [readfile_into_tree(file(filename), basename)]
+        return [readstring_into_tree(file(filename).read(), basename)]
 
 EFILINGS_PATH = '../data/crawl/fec/electronic/'
 
@@ -593,8 +568,6 @@ if __name__ == '__main__':
     cgitb.enable(format='text')
     # pprint is unacceptable --- it made the script run 40× slower.
     import simplejson
-
     for filename in sys.argv[1:]:
         for line in readfile_generic(filename):
-            # XXX this won't work now that the list of schedules is lazy!
             print simplejson.dumps(line, sort_keys=True, indent=4)
