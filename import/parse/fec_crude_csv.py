@@ -4,8 +4,7 @@
 
 """
 import csv, sys, cgitb, fixed_width, zipfile, cStringIO, os, glob, time
-import codecs, re
-from field_mapper import FieldMapper, Reformat, CatchAllField
+import codecs, re, field_mapper
 
 def strip(text):
     """
@@ -91,24 +90,27 @@ def date(value):
     return None                         # to keep Postgres happy
 
 fields = {
-    'date': Reformat(format=date,
-                     source=['date',
-                             'date_received',
-                             'contribution_date',
-                             'expenditure_date',
-                             'date_(of_contribution)',
-                             'date_(incurred)', # XXX this is for SC loans
-                             'date_of_expenditure']),
-    'candidate_fec_id': Reformat(format=strip, source=['candidate_fec_id',
-                                                       'candidate_id_number',
-                                                       'fec_candidate_id_number']),
+    'date': field_mapper.Reformat(format=date,
+                                  source=['date',
+                                          'date_received',
+                                          'contribution_date',
+                                          'expenditure_date',
+                                          'date_(of_contribution)',
+                                          # XXX this is for SC loans:
+                                          'date_(incurred)',
+                                          'date_of_expenditure']),
+    'candidate_fec_id': field_mapper.Reformat(format=strip,
+                                              source=['candidate_fec_id',
+                                                      'candidate_id_number',
+                                                      'fec_candidate_id_number']
+                                              ),
     'tran_id': ['tran_id', 'transaction_id_number'],
     'occupation': ['occupation', 'contributor_occupation', 'indocc'],
     'contributor_org': ['contributor_org',
                         'contributor_organization_name',
                         'contrib_organization_name'],
-    'contributor': [Reformat(format=caret_separated_name,
-                             source=['contributor_name']),
+    'contributor': [field_mapper.Reformat(format=caret_separated_name,
+                                          source=['contributor_name']),
                     # XXX should include contributor_prefix and
                     # contributor_suffix?
                     lambda contributor_first_name,
@@ -125,13 +127,14 @@ fields = {
     # 'recipient_prefix' 'recipient_suffix'
     'recipient': ['payee_organization_name', 'recipient_name', 'name_(payee)'],
     'employer': ['employer', 'contributor_employer', 'indemp'],
-    'amount': Reformat(format=amount,
-                       source=['amount',
-                               # XXX 6.x contribution_amount: different format
-                               'contribution_amount',
-                               'amount_received',
-                               'expenditure_amount', # also 6.x
-                               'amount_of_expenditure']),
+    'amount': field_mapper.Reformat(format=amount,
+                                    source=['amount',
+                                            # XXX 6.x contribution_amount:
+                                            # different format
+                                            'contribution_amount',
+                                            'amount_received',
+                                            'expenditure_amount', # also 6.x
+                                            'amount_of_expenditure']),
     'address': [lambda street__1, street__2, city, state, zip:
                 ' '.join([street__1, street__2, city, state, zip]),
                 lambda contributor_street__1, contributor_street__2,
@@ -141,8 +144,8 @@ fields = {
                 ],
 
     'committee': ['committee_name', 'committee_name_______', 'committeename'],
-    'candidate': [Reformat(format=caret_separated_name,
-                           source='candidate_name'),
+    'candidate': [field_mapper.Reformat(format=caret_separated_name,
+                                        source='candidate_name'),
                   lambda candidate_first_name,
                          candidate_middle_name,
                          candidate_last_name:
@@ -159,19 +162,19 @@ fields = {
                  "filer's_fec_id_number",
                  'filer_committee_id'],
     
-    'type': CatchAllField(['form_type'], schedule_type),
+    'type': field_mapper.CatchAllField(['form_type'], schedule_type),
 }
 
-fieldmapper = FieldMapper(fields)
+mapper = field_mapper.FieldMapper(fields)
 
 def _regrtest_fields():
     """
     Regression tests for the `fields` table.
     
-    >>> mapped = fieldmapper.map({'date_received': '20081130',
-    ...                                   'tran_id': '12345', 
-    ...                                   'weird_field': 34, 
-    ...                                   'amount_received': '123456'})
+    >>> mapped = mapper.map({'date_received': '20081130',
+    ...                      'tran_id': '12345', 
+    ...                      'weird_field': 34, 
+    ...                      'amount_received': '123456'})
     >>> sorted(mapped.keys())
     ['amount', 'date', 'original_data', 'tran_id']
     >>> mapped['date']
@@ -182,30 +185,30 @@ def _regrtest_fields():
     34
     >>> mapped['tran_id']
     '12345'
-    >>> fieldmapper.map({'candidate_id_number': '12345'})
+    >>> mapper.map({'candidate_id_number': '12345'})
     ... #doctest: +ELLIPSIS
     {'candidate_fec_id': '12345', 'original_data': {...}}
-    >>> fieldmapper.map({'fec_candidate_id_number': '56789'})
+    >>> mapper.map({'fec_candidate_id_number': '56789'})
     ... #doctest: +ELLIPSIS
     {'candidate_fec_id': '56789', 'original_data': {...}}
-    >>> fieldmapper.map({'transaction_id_number': '56789'})
+    >>> mapper.map({'transaction_id_number': '56789'})
     ... #doctest: +ELLIPSIS
     {'original_data': {...}, 'tran_id': '56789'}
-    >>> fieldmapper.map({'contributor_occupation': 'Consultant'})
+    >>> mapper.map({'contributor_occupation': 'Consultant'})
     ... #doctest: +ELLIPSIS
     {'original_data': {...}, 'occupation': 'Consultant'}
-    >>> fieldmapper.map({'indocc': 'Private Investor'})
+    >>> mapper.map({'indocc': 'Private Investor'})
     ... #doctest: +ELLIPSIS
     {'original_data': {...}, 'occupation': 'Private Investor'}
-    >>> fieldmapper.map({'indemp': 'EEA Development'})
+    >>> mapper.map({'indemp': 'EEA Development'})
     ... #doctest: +ELLIPSIS
     {'original_data': {...}, 'employer': 'EEA Development'}
 
-    >>> fieldmapper.map({'street__1': '2531 Falcon Way',
-    ...                  'street__2': '#400',
-    ...                  'city': 'Concord',
-    ...                  'state': 'TX',
-    ...                  'zip': '20036'})
+    >>> mapper.map({'street__1': '2531 Falcon Way',
+    ...             'street__2': '#400',
+    ...             'city': 'Concord',
+    ...             'state': 'TX',
+    ...             'zip': '20036'})
     ... #doctest: +ELLIPSIS
     {...'address': '2531 Falcon Way #400 Concord TX 20036'...}
 
@@ -306,7 +309,7 @@ def readstring(astring):
         fieldnames = findkey(headermap, line[0])
         if not fieldnames:
             raise "could not find field defs", (line[0], headermap.keys())
-        rv = fieldmapper.map(dict(zip(fieldnames, line)))
+        rv = mapper.map(dict(zip(fieldnames, line)))
         rv['format_version'] = version # for debugging
         yield rv
 
