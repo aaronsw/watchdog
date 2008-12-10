@@ -516,6 +516,10 @@ candidate_name_res = [re.compile(x, re.IGNORECASE) for x in
 # "Friends of Connie Morella for Congress Committee"
 # "Committee to Elect McHugh"
 
+def warn(string):
+    sys.stderr.write(string + "\n")
+    sys.stderr.flush()
+
 def read_filing(astring, filename):
     records = readstring(astring)
     form = records.next()
