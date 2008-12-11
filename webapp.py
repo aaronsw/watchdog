@@ -320,10 +320,15 @@ class politician_lobby:
         limit = 50
         page = int(web.input(page=0).page)
         #c = schema.lob_contribution.select(where='politician_id=$polid', limit=limit, offset=page*limit, order='amount desc', vars=locals())
+        a = db.select(['lob_filing', 'lob_contribution'], 
+                what='SUM(amount)',
+                where="politician_id = $polid AND lob_filing.id = filing_id",
+                vars=locals())[0].sum
         c = db.select(['lob_organization', 'lob_filing', 'lob_contribution', 'lob_person'], 
                 where="politician_id = $polid and lob_filing.id = filing_id and lob_organization.id = org_id and lob_person.id = lobbyist_id", 
-                order='amount desc;', vars=locals())
-        return render.politician_lobby(c, limit)
+                order='amount desc', limit=limit, offset=page*limit,
+                vars=locals())
+        return render.politician_lobby(c, a, limit)
 class lob_filing:
     def GET(self, filing_id):
         limit = 50
@@ -377,13 +382,19 @@ class lob_person:
 
 class politician_introduced:
     def GET(self, politician_id):
-        pol = schema.Politician.where(id=politician_id)[0]
+        try:
+            pol = schema.Politician.where(id=politician_id)[0]
+        except IndexError:
+            raise web.notfound
         return render.politician_introduced(pol)
 
 class politician_groups:
     def GET(self, politician_id):
         related = group_politician_similarity(politician_id, qmin=1)
-        pol = schema.Politician.where(id=politician_id)[0]
+        try:
+            pol = schema.Politician.where(id=politician_id)[0]
+        except IndexError:
+            raise web.notfound
         return render.politician_groups(pol, related)
 
 class politician_group:

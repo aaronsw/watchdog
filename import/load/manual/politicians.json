@@ -1087,6 +1087,10 @@
     "district_id": "GU-00", 
     "wikipedia": "http://en.wikipedia.org/wiki/Madeleine_Bordallo"
   }, 
+  "marcia_fudge": {
+    "district_id": "OH-11", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Marcia_Fudge"
+  }, 
   "marcy_kaptur": {
     "district_id": "OH-09", 
     "wikipedia": "http://en.wikipedia.org/wiki/Marcy_Kaptur"
@@ -1526,10 +1530,6 @@
   "stephanie_herseth_sandlin": {
     "district_id": "SD-00", 
     "wikipedia": "http://en.wikipedia.org/wiki/Stephanie_Herseth_Sandlin"
-  }, 
-  "stephanie_tubbs_jones": {
-    "district_id": "OH-11", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Stephanie_Tubbs_Jones"
   }, 
   "stephen_lynch": {
     "district_id": "MA-09", 
