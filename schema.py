@@ -508,6 +508,13 @@ class Pol_contacts(sql.Table):
     contacttype = sql.String(1)     # E=email, W=wyr, I=ima, Z=zipauth
     captcha = sql.Boolean()
 
+class Pol_phones(sql.Table):
+    politician = sql.Reference(Politician, primary=True)
+    city = sql.String(primary=True)
+    phone1 = sql.String(15)
+    phone2 = sql.String(15)
+    tollfree = sql.String(15)
+
 class Census_Population(sql.Table):
     state_id = sql.String(2)     # STATE
     county_id = sql.String(3)    # COUNTY
@@ -520,6 +527,13 @@ class Census_Population(sql.Table):
     area_land = sql.Integer()    # AREALAND
     area_land.sql_type = 'bigint'
     population = sql.Integer()   
+
+class Handshakes(sql.Table):
+    politician = sql.Reference(Politician, primary=True)
+    corporation = sql.String(primary=True)
+    pol2corp = sql.Dollars()
+    corp2pol = sql.Dollars()
+    year = sql.Integer()
 
 def init():
     db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
