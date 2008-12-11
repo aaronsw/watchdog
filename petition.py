@@ -194,7 +194,7 @@ class signatories:
     def GET(self, pid):
         user_email = helpers.get_loggedin_email()
         p = get_petition_by_id(pid)
-        if not p: raise web.notfound
+        if not p: raise web.notfound()
         ptitle = p.title
         signs = get_signs(pid).list()
         return render.signature_list(pid, ptitle, signs, is_author(user_email, pid))
@@ -214,7 +214,7 @@ class petition:
         i = web.input()
         pid = pid.rstrip('/')
         p = get_petition_by_id(pid)
-        if not p: raise web.notfound
+        if not p: raise web.notfound()
         
         options = ['unsign', 'edit', 'delete']
         if i.get('m', None) in options:

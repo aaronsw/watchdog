@@ -133,7 +133,7 @@ class find:
                     rep = reps[0]
                     web.seeother('/p/%s' % rep.id)
                 except IndexError:
-                    raise web.notfound
+                    raise web.notfound()
 
         else:
             index = schema.District.select(order='name asc')
@@ -147,7 +147,7 @@ class state:
         try:
             state = schema.State.where(code=state.upper())[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
 
         out = apipublish.publish([state], format)
         if out: return out
@@ -163,7 +163,7 @@ class district:
         try:
             d = schema.District.where(name=district.upper())[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
         
         out = apipublish.publish([d], format)
         if out: return out
@@ -206,7 +206,7 @@ class roll:
             b = schema.Roll.where(id=roll_id)[0]
             votes = schema.Vote.where(roll_id=b.id)
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
 
         out = apipublish.publish([b], format)
         if out: return out
@@ -226,7 +226,7 @@ class bill:
         try:
             b = schema.Bill.where(id=bill_id)[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
         
         out = apipublish.publish([b], format)
         if out: return out
@@ -245,7 +245,7 @@ def earmark_pol_list(pol_id, format, page=0, limit=50):
             order='final_amt desc', vars=locals())
     if not earmarks:
         # @@TODO: something better here. 
-        raise web.notfound
+        raise web.notfound()
     out = apipublish.publish(earmarks, format)
     if out: return out
     return render.earmark_list(earmarks, limit)
@@ -255,7 +255,7 @@ class politician_earmarks:
         try:
             em = schema.Politician.where(id=polid)[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
         return earmark_pol_list(polid, format)
 class earmark:
     def GET(self, earmark_id, format=None):
@@ -268,9 +268,9 @@ class earmark:
         try:
             em = schema.Earmark.where(id=int(earmark_id))[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
         except ValueError:
-            raise web.notfound
+            raise web.notfound()
         return render.earmark(em)
 
 
@@ -289,7 +289,7 @@ class politician:
 
         if idlookup:
             # we were looking up by ID but nothing matched
-            raise web.notfound
+            raise web.notfound()
 
         if polid == "" or polid == "index":
             p = schema.Politician.select(order='district_id asc')
@@ -302,14 +302,13 @@ class politician:
         try:
             p = schema.Politician.where(id=polid)[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
 
         #@@move into schema
         p.fec_ids = [x.fec_id for x in db.select('politician_fec_ids', what='fec_id',
           where='politician_id=$polid', vars=locals())]
 
         p.related_groups = group_politician_similarity(polid)
-
         out = apipublish.publish([p], format)
         if out: return out
 
@@ -385,7 +384,7 @@ class politician_introduced:
         try:
             pol = schema.Politician.where(id=politician_id)[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
         return render.politician_introduced(pol)
 
 class politician_groups:
@@ -394,7 +393,7 @@ class politician_groups:
         try:
             pol = schema.Politician.where(id=politician_id)[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
         return render.politician_groups(pol, related)
 
 class politician_group:
@@ -417,8 +416,8 @@ class dproperty:
         try:
             table = table_map[table]
         except KeyError:
-            raise web.notfound
-        if not r_safeproperty.match(what): raise web.notfound
+            raise web.notfound()
+        if not r_safeproperty.match(what): raise web.notfound()
 
         #if `what` is not there in the `table` (provide available options rather than 404???)
         try:
@@ -426,7 +425,7 @@ class dproperty:
                                  what='max(%s) as m' % what,
                                  vars=locals())[0].m)
         except:
-            raise web.notfound
+            raise web.notfound()
 
         items = db.select(table,
                           what="*, 100*(%s/$maxnum) as pct" % what,
@@ -451,7 +450,7 @@ def sparkpos(table, what, id):
         id_col= 'id'
     else: return 0
     assert table in table_map.values()
-    if not r_safeproperty.match(what): raise web.notfound
+    if not r_safeproperty.match(what): raise web.notfound()
     
     item = db.query("select count(*) as position from %(table)s, \
       (select * from %(table)s where %(id_col)s=$id) as a \
@@ -464,8 +463,8 @@ class sparkdist:
         try:
             table = table_map[table]
         except KeyError:
-            raise web.notfound
-        if not r_safeproperty.match(what): raise web.notfound
+            raise web.notfound()
+        if not r_safeproperty.match(what): raise web.notfound()
 
         inp = web.input(point=None)
         points = db.select(table, what=what, order=what+' asc', where=what+' is not null')
@@ -477,7 +476,7 @@ class sparkdist:
 class staticdata:
     def GET(self, path):
         if not web.config.debug:
-            raise web.notfound
+            raise web.notfound()
 
         assert '..' not in path, 'security'
         return file('data/' + path).read()
@@ -485,7 +484,7 @@ class staticdata:
 app = web.application(urls, globals())
 def notfound():
     web.ctx.status = '404 Not Found'
-    return getattr(render, '404')()
+    return web.notfound(getattr(render, '404')())
 
 def internalerror():
     return web.internalerror(file('templates/500.html').read())
