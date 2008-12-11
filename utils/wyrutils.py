@@ -85,8 +85,9 @@ def require_captcha(i, pols=None):
     """returns if the residents of the district defined by zip5, zip4, address in `i`
     have to fill captcha in the pol contact form.
     """
-    captchas_filled = all([i.get(k) for k in i if k.startswith('captcha_')])
-    pols = pols or getpols(i.zip5, i.zip4, i.addr1+i.addr2)
+    captcha_fields = [c for c in i if c.startswith('captcha_')]
+    captchas_filled = captcha_fields and all([i.get(c) for c in captcha_fields])
+    pols = pols or getpols(i.get('zip5'), i.get('zip4'), i.get('addr1', '')+i.get('addr2', ''))
     have_captcha = any(has_captcha(p) for p in pols)
     return (not captchas_filled) and have_captcha
 
@@ -188,7 +189,7 @@ class Form(object):
                 for k in d.keys():
                     if matches(k, c.name):
                         filled = self.fill(d[k], control=c)
-            if not filled and not c.value: print "couldn't fill %s" % (c.name),
+            #if not filled and not c.value: print "couldn't fill %s" % (c.name),
 
     def has(self, name=None, type=None):
         return bool(self.find_control(name=name, type=type))

@@ -8,6 +8,7 @@ from utils.auth import require_login
 from utils.users import fill_user_details, update_user_details
 from utils.writerep import require_captcha, send_msgs
 import config
+import simplejson
 
 from datetime import datetime
 import urllib
@@ -47,8 +48,9 @@ class index:
 
 def send_to_congress(uid, i, signid):
     #@@@ compose here too
+    env = simplejson.loads(i.get('captcha_env', '{}'))
     i.msg = i.msg + '\n' + i.get('comment', '')
-    send_msgs(uid, i, source_id='s%s' % signid)
+    send_msgs(uid, i, source_id='s%s' % signid, env=env)
         
 def create_petition(i, email):
     tocongress = i.get('tocongress', 'off') == 'on'
@@ -86,7 +88,7 @@ class new:
         wyr_valid = wyr_valid and not captcha_needed
 
         if not pf.validates(i) or not wyr_valid:
-            if captcha_needed: wf.valid, wf.note = False, 'Please Fill the captcha below'
+            if captcha_needed: wf.valid, wf.note = False, 'Please fill the captcha below'
             pf.fill(i), wf.fill(i)
             return self.GET(pf, wf)
 
