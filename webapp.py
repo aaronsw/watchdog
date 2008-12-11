@@ -477,7 +477,7 @@ def notfound():
     return getattr(render, '404')()
 
 def internalerror():
-    return file('templates/500.html').read()
+    return web.internalerror(file('templates/500.html').read())
 
 app.notfound = notfound
 if production_mode:
