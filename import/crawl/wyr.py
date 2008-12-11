@@ -264,23 +264,23 @@ def get_manual_contacts(pols):
 def main(fname='../data/crawl/votesmart/wyr.json'):
     #@@@ PVS data has few false positives for WYR form. 
     # So, better get reps having wyr forms in house.gov and then proceed to PVS data and then to manually created json
-    all_pols = set(r.id for r in db.select('politician', what='id'))
+    all_pols = [r.id for r in db.select('politician', what='id')]
 
     print 'total pols', len(all_pols)
     d = get_wyr_forms(all_pols)
-    remaining_pols = list(all_pols - set(d.keys()))
+    remaining_pols = [p for p in all_pols if p not in d.keys()]
     print 'after checking wyr forms, remaining:', len(remaining_pols)
 
     d.update(get_votesmart_contacts(remaining_pols or ['']))
-    remaining_pols = list(all_pols - set(d.keys()))
+    remaining_pols = [p for p in all_pols if p not in d.keys()]
     print 'after checking votesmart contacts, remaining:', len(remaining_pols)
 
     d.update(get_from_officeurls(remaining_pols or ['']))
-    remaining_pols = list(all_pols - set(d.keys()))
+    remaining_pols = [p for p in all_pols if p not in d.keys()]
     print 'after getting contacts from officeurls, remaining:', len(remaining_pols)
     
     d.update(get_manual_contacts(all_pols))
-    remaining_pols = list(all_pols - set(d.keys()))
+    remaining_pols = [p for p in all_pols if p not in d.keys()]
     print 'after checking manual contacts, remaining:', len(remaining_pols)
     
     f = file(fname, 'w')
