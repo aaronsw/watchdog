@@ -243,7 +243,7 @@ def headers_for_version(version):
     return headers_cache[version]
 
 class ascii28separated(csv.excel):
-    """The FEC moved from CSV to chr(28)-separated files in format version 6."""
+    "The FEC moved from CSV to chr(28)-separated files in format version 6."
     delimiter = chr(28)
 
 def translate_to_utf_8(fileobj):
@@ -283,7 +283,8 @@ def readstring(astring):
         # anything.
         return
     version = headerline[2]
-    assert headerline[5] in ['', '^']   # fix caret_separated_name if fails
+    if True or version < '6':
+        assert headerline[5] in ['', '^']   # caret_separated_name assumes this
     headermap = headers_for_version(version)
 
     for line in r:
