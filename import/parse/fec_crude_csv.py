@@ -333,18 +333,18 @@ def warn(string):
 
 def read_filing(astring, filename):
     records = readstring(astring)
-    form = records.next()
-    if not form['original_data']['form_type'].startswith('F'):
-        warn("skipping %r: its first record is %r" % (filename, formline))
+    cover_record = records.next()
+    if not cover_record['original_data']['form_type'].startswith('F'):
+        warn("skipping %r: its first record is %r" % (filename, cover_record))
         return
-    form['report_id'] = filename[:-4]
-    if not form.get('candidate'):
+    cover_record['report_id'] = filename[:-4]
+    if not cover_record.get('candidate'):
         for regex in candidate_name_res:
-            mo = regex.match(form.get('committee', ''))
+            mo = regex.match(cover_record.get('committee', ''))
             if mo:
-                form['candidate'] = mo.group('candidate')
+                cover_record['candidate'] = mo.group('candidate')
                 break
-    return form, records
+    return cover_record, records
 
 def readfile_zip(filename):
     zf = zipfile.ZipFile(filename)
