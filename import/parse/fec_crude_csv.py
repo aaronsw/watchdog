@@ -255,17 +255,58 @@ class translate_to_utf_8:
     > Generally speaking, only keyboard characters are acceptable
     > within CSV files.  Technically, any coded characters that fall
     > outside the range of ASCII characters 32 (space) through 126
-    > (tilde "~") will be rejected.  Care should be taken if text is
+    > (tilde “~”) will be rejected.  Care should be taken if text is
     > cut and pasted from word processing programs, since some
-    > characters such as appostrophe [sic] and "smart quotes" may not
+    > characters such as appostrophe [sic] and “smart quotes” may not
     > translate into the appropriate ASCII characters.
 
-    However, I have seen a filing in Windows-1252.  Aaron points out:
+    However, I have seen a filing (181941.fec, from 20050722.zip,
+    version 5.2) in Windows-1252.  Aaron points out:
 
     > The `chardet` library might be useful:
     > <http://chardet.feedparser.org/>
 
     Right now we’re not using that, though.
+
+    However, this policy changed by version 6.2, which says:
+
+    > The following characters will be allowed in filing fields (These
+    > are technically specified using the ASCII standard):
+    > - Keyboard characters. These fall within the range of ASCII 32
+    >   (space) through 126 (tilde “~”).
+    > - Some characters used in other languages. Specifically ASCII
+    >   characters 128 through 156, ASCII characters 160 through 168,
+    >   and ASCII character 173. This allows name and address fields
+    >   to contain letters such as ñ, ¿, ê, ç, ¡, Æ, etc. Care should
+    >   be taken if text is cut and pasted from word processing, or
+    >   other programs, since many non-keyboard characters such as
+    >   apostrophes and “smart quotes” (which are stored as ANSI coded
+    >   characters) will not translate into the appropriate ASCII
+    >   characters.
+
+    Unfortunately this is nonsense; ASCII is and has always been a
+    7-bit code, although there are many “extended ASCII” 8-bit
+    variants.  The characters they have quoted above exist in the
+    commonly-used character set ISO-8859-1, which also does not have
+    “smart quotes”, but ISO-8859-1 have printable characters in the
+    range 128 through 156 either.  The most likely character set that
+    contains the characters they have quoted and also contains
+    printable characters in the 128–156 range is Windows-1252, which
+    obsolete parts of Microsoft Windows use by default; however,
+    Windows-1252 *does* contain “smart quotes” (characters 145–148),
+    contains alphabetic characters at codepoints 158 and 159 as well,
+    and is missing printable characters at several codepoints inside
+    the 128–156 range.
+
+    Due to the absence of any evidence that the FEC is aware that more
+    than one character encoding exists, and their acceptance of the
+    above-cited filing in Windows-1252 at a time when they officially
+    promised not to accept such filings, I am going to assume for the
+    time being that all filings are encoded in Windows-1252.
+
+    We’re not using codecs.EncodedFile because it thinks U+001C is a
+    line terminator.
+
     """
     def __init__(self, fileobj):
         self.fileobj = fileobj
