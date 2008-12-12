@@ -9,12 +9,14 @@ def test_endtext():
     """
     >>> records(filing_207928)
     ... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    [{...'filer_id': 'C00410761', 'original_data': {...}...
-    'committee': 'Castor for Congress', 'format_version': '5.3'...}]
+    [{'format_version': '5.3'},
+     {...'filer_id': 'C00410761', 'original_data': {...}...
+      'committee': 'Castor for Congress'...}]
     >>> records(truncated_filing)       # same
     ... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    [{...'filer_id': 'C00410761', 'original_data': {...}...
-    'committee': 'Castor for Congress', 'format_version': '5.3'...}]
+    [{'format_version': '5.3'},
+     {...'filer_id': 'C00410761', 'original_data': {...}...
+      'committee': 'Castor for Congress'...}]
     """
 
 # Note the extra quote mark on the [ENDTEXT] line.
@@ -171,6 +173,23 @@ def test_format_6():
     'Amerigroup Corporation Political Action Committee (Amerigroup PAC)'
     >>> cover_record(filing_333600_truncated, '333600.fec')['committee']
     'Dan Grant for Congress'
+
+    """
+
+def test_report_id():
+    """The report ID ties together the original filing and its amendments.
+
+    Filing 230176 is a new filing.
+    >>> cover_record(filing_230176_truncated, '230176.fec')['report_id']
+    '230176'
+
+    But filing 230174 is an amendment of filing 211016.
+    >>> cover_record(filing_230174_truncated, '230174.fec')['report_id']
+    '211016'
+
+    The original report ID is in a different position in the 6.x header.
+    >>> cover_record(filing_333600_truncated, '333600.fec')['report_id']
+    '306890'
 
     """
 

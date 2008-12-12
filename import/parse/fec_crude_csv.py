@@ -350,10 +350,16 @@ def readstring(astring):
         # because we can’t find docs; return without yielding
         # anything.
         return
-    version = headerline[2]
-    if version < '6':
+    format_version = headerline[2]
+    if format_version < '6':
         assert headerline[5] in ['', '^']   # caret_separated_name assumes this
-    headermap = headers_for_version(version)
+    headermap = headers_for_version(format_version)
+
+    headerdict = {'format_version': format_version}
+    rpt_id = headerline[6 if format_version < '6' else 5]
+    if rpt_id != '':
+        headerdict['report_id'] = re.match('(?i)fec-(\d+)$', rpt_id).group(1)
+    yield headerdict
 
     for line in r:
         if not line: continue         # FILPAC inserts random blank lines
@@ -380,7 +386,6 @@ def readstring(astring):
         if not fieldnames:
             raise "could not find field defs", (line[0], headermap.keys())
         rv = mapper.map(dict(zip(fieldnames, line)))
-        rv['format_version'] = version # for debugging
         yield rv
 
 candidate_name_res = [re.compile(x, re.IGNORECASE) for x in
@@ -403,11 +408,14 @@ def warn(string):
 
 def read_filing(astring, filename):
     records = readstring(astring)
+    header_record = records.next()
     cover_record = records.next()
     if not cover_record['original_data']['form_type'].startswith('F'):
         warn("skipping %r: its first record is %r" % (filename, cover_record))
         return
-    cover_record['report_id'] = filename[:-4]
+
+    cover_record['report_id'] = header_record.get('report_id', filename[:-4])
+    cover_record['format_version'] = header_record['format_version'] # debugging
     if not cover_record.get('candidate'):
         for regex in candidate_name_res:
             mo = regex.match(cover_record.get('committee', ''))
