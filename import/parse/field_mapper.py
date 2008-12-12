@@ -66,6 +66,17 @@ BUGS
           ...
         AssertionError: ...
 
+-   If more than one of the possible sources for a single output field
+    are present in the input data, one will overwrite the others
+    arbitrarily.  In this example, we only successfully got a nonempty
+    'x' in one of the two cases:
+
+        >>> m = FieldMapper({'x': ['a', 'b']})
+        >>> datum1 = {'a': '', 'b': 'hi'}
+        >>> datum2 = {'a': 'hi', 'b': ''}
+        >>> m.map(datum1)['x'] and m.map(datum2)['x']
+        ''
+
 - You can’t construct *arbitrarily* more complicated pipelines with
   `Reformat`.
 - It’s still way too slow.
