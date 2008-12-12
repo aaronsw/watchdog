@@ -249,10 +249,23 @@ class ascii28separated(csv.excel):
 class translate_to_utf_8:
     """Convert a presumably Windows-1252 file to UTF-8.
 
-    Although the FEC’s documents claim non-ASCII characters will be
-    rejected, I have seen a filing in Windows-1252.  Aaron points out:
+    The FEC’s documents claim non-ASCII characters will be
+    rejected, e.g. in FEC_v520.doc:
+
+    > Generally speaking, only keyboard characters are acceptable
+    > within CSV files.  Technically, any coded characters that fall
+    > outside the range of ASCII characters 32 (space) through 126
+    > (tilde "~") will be rejected.  Care should be taken if text is
+    > cut and pasted from word processing programs, since some
+    > characters such as appostrophe [sic] and "smart quotes" may not
+    > translate into the appropriate ASCII characters.
+
+    However, I have seen a filing in Windows-1252.  Aaron points out:
+
     > The `chardet` library might be useful:
     > <http://chardet.feedparser.org/>
+
+    Right now we’re not using that, though.
     """
     def __init__(self, fileobj):
         self.fileobj = fileobj
