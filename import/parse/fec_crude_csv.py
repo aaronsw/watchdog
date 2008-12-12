@@ -273,7 +273,7 @@ def readstring(astring):
     r = csv.reader(fileobj)
     headerline = r.next()
     if chr(28) in headerline[0]:
-        # it must be in the new FS-separated format
+        # It must be in the new FS-separated format
         fileobj.seek(0)
         r = csv.reader(fileobj, dialect=ascii28separated)
         headerline = r.next()
@@ -283,6 +283,7 @@ def readstring(astring):
         # anything.
         return
     version = headerline[2]
+    assert headerline[5] in ['', '^']   # fix caret_separated_name if fails
     headermap = headers_for_version(version)
 
     for line in r:
