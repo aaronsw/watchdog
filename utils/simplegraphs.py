@@ -13,6 +13,7 @@ def sparkline(points, point=None, height=15*2, width=40*2, bubble=2*2, linewidth
     
     maxpoint = max(points)
     minpoint = min(points)
+    if maxpoint == minpoint: maxpoint += 0.001 # avoid Divide by zero error
     
     mypoints = [(
       margin/2. + (width*(n/float(len(points)))),

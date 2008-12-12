@@ -144,38 +144,46 @@ $if pol.predictability:
 
 <table cellpadding="0" cellspacing="0" width="100%" class="interest_group_agreement">
 <tbody><tr><th>Group</th><th>Agreement</th></tr>
-$ trclass = "odd"
 $for group in pol.related_groups:
-    <tr class="$trclass">
+    <tr class="$loop.parity">
       <td style="padding-left: 6px;">$group.longname</td>
       <td>$int(group.agreement * 100)% (<a href="/p/$pol.id/$group.id">$group.agreed/$group.total votes</a>)</td>
     </tr>
-    $if trclass == "odd":
-        $ trclass = "even"
-    $else:
-        $ trclass = "odd"
 </tbody></table>
 
 <p><a href="/p/$pol.id/groups" class="footer">More...</a></p>
 </td></tr>
 
+$def handshake_spark(frm, to, by, amount, year=2008):
+    $#<th style="white-space:nowrap; padding-left: 6px;">$:lable</th>
+    $if not amount:
+        $ amount = 0
+    $ display = '$' + commify(amount)
+    <td class="sparkdata">$display</td>
+    <td class="sparkline">
+        $ from_or_to = frm if 'from' in by else to
+        $ pol_or_corp = 'p' if by in ['earmarks_from', 'donations_to'] else 'corp'
+        <img src="/$pol_or_corp/by/${by}_$from_or_to/distribution.png?point=$amount&year=$year" class="sparkline" />
+    </td>
+    $#<td class="sparknum"><sup>(#${pos('politician',by,polid)})</sup></td>
+    
 $if pol.handshakes:
     <tr><td width="100%" class="rule">
     <h2 class="rep">Handshakes</h2>
     <table cellpadding="0" cellspacing="0" width="100%" class="handshakes">
-    <tbody><tr><th>Corporation</th><th>To the corp.</th><th>From the corp.</th><th>Year</th></tr>
-    $ trclass = "odd"
+    <tbody><tr>
+            <th width='50%'>Corporation</th>
+            <th colspan="2">Donations</th>
+            <th colspan="2">Earmarks</th>
+            <th>Year</th></tr>
     $for h in pol.handshakes:
-        <tr class="$trclass">
+        $ corporation = h.corporation.replace(' ', '-')
+        <tr class="$loop.parity">
             <td>$h.corporation.title()</td>
-            <td>$commify(h.pol2corp)</td>
-            <td>$commify(h.corp2pol)</td>
+            $:handshake_spark(corporation, h.politician_id, 'donations_from', h.corp2pol, h.year)
+            $:handshake_spark(h.politician_id, corporation, 'earmarks_from', h.pol2corp, h.year)
             <td>$h.year</td>
         </tr>
-        $if trclass == "odd":
-            $ trclass = "even"
-        $else:
-            $ trclass = "odd"
     </tbody></table>
     </td></tr>
 

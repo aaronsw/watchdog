@@ -21,6 +21,7 @@ urls = (
   r'/us/([a-z][a-z])%s?' % options, 'state',
   r'/us/([A-Z][A-Z]-\d+)', 'redistrict',
   r'/us/([a-z][a-z]-\d+)%s?' % options, 'district',
+  r'/(corp|p)/by/(donations|earmarks)_(from|to)_(.*)/(distribution\.png|)', 'moneyflow',
   r'/(us|p)/by/(.*)/distribution\.png', 'sparkdist',
   r'/(us|p)/by/(.*)', 'dproperty',
   r'/p/(.*?)/lobby', 'politician_lobby',
@@ -472,6 +473,51 @@ class sparkdist:
 
         web.header('Content-Type', 'image/png')
         return simplegraphs.sparkline(points, inp.point)
+
+class moneyflow:
+    def GET(self, pol_or_corp, prop, frm_or_to, src_or_dest, img=None):
+        inp = web.input(year=2008, point=None)
+        year = inp.year
+        props = []
+        if pol_or_corp == 'p':
+            props = ['donations_to', 'earmarks_from']
+        elif pol_or_corp == 'corp':
+            props = ['donations_from', 'earmarks_to']
+        if not '%s_%s' % (prop, frm_or_to) in props:
+            raise web.notfound()
+
+        if prop == 'donations':
+            q = 'select sum(c.amount) as amount, c.employer_stem as frm, fec.politician_id as to \
+                    from contribution c, committee pac, politician_fec_ids fec '
+            where = 'c.recipient_id = pac.id and  ' + \
+                        'pac.candidate_id = fec.fec_id and ' + \
+                        "date_part('year', sent) = $year "
+            orderby = 'order by amount asc '
+            groupby = 'group by c.employer_stem, fec.politician_id '
+            if frm_or_to == 'from': #donations from a particular corp
+                src_or_dest = src_or_dest.replace('-', ' ')
+                where = 'c.employer_stem=$src_or_dest and ' + where
+            else: #donations to a particular pol
+                where = 'fec.politician_id = $src_or_dest and ' + where
+        else: #earmarks
+            q = 'select sum(e.final_amt) as amount, es.politician_id as frm, e.recipient_stem as to \
+                    from earmark e, earmark_sponsor as es '
+            where = 'e.id = es.earmark_id '
+            groupby = 'group by es.politician_id, e.recipient_stem  '
+            orderby = 'order by amount asc '
+            if frm_or_to == 'from': #earmarks from a particular pol
+                where = 'es.politician_id = $src_or_dest and ' + where 
+            else: #earmarks to a particular corp
+                src_or_dest = src_or_dest.replace('-', ' ')
+                where = 'e.recipient_stem = $src_or_dest and ' + where
+
+        reslt = db.query(q + 'where ' + where + groupby + orderby, vars=locals())
+        if img:
+            points = [r.amount for r in reslt]
+            web.header('Content-Type', 'image/png')
+            return simplegraphs.sparkline(points, inp.point)
+        else:
+            return 'coming soon'    
 
 class staticdata:
     def GET(self, path):
