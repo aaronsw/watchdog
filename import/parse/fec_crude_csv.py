@@ -351,7 +351,7 @@ def readstring(astring):
         # anything.
         return
     version = headerline[2]
-    if True or version < '6':
+    if version < '6':
         assert headerline[5] in ['', '^']   # caret_separated_name assumes this
     headermap = headers_for_version(version)
 

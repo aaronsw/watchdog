@@ -167,9 +167,10 @@ def test_format_6():
     next `\x1c`, and so I accidentally broke reading 6.x files by
     introducing a `streamreader` into the pipeline.)
 
-    >>> f = cover_record(filing_333594_truncated, '333594.fec')
-    >>> f['committee']
+    >>> cover_record(filing_333594_truncated, '333594.fec')['committee']
     'Amerigroup Corporation Political Action Committee (Amerigroup PAC)'
+    >>> cover_record(filing_333600_truncated, '333600.fec')['committee']
+    'Dan Grant for Congress'
 
     """
 
@@ -208,6 +209,12 @@ filing_333594_truncated = '''HDR\x1cFEC\x1c6.1\x1cAristotle International CM5 PM
 F3XN\x1cC00428102\x1cAmerigroup Corporation Political Action Committee (Amerigroup PAC)\x1c\x1c4425 Corporation Lane\x1c\x1cVirginia Beach\x1cVA\x1c23462   \x1cQ1\x1c\x1c\x1c\x1c20080101\x1c20080331\x1cX\x1cLittel\x1cJohn\x1cE.\x1c\x1c\x1c20080415\x1c29749.49\x1c34461.13\x1c64210.62\x1c9039.97\x1c55170.65\x1c0.00\x1c0.00\x1c31467.51\x1c2993.62\x1c34461.13\x1c0.00\x1c0.00\x1c34461.13\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c34461.13\x1c34461.13\x1c0.00\x1c0.00\x1c39.97\x1c39.97\x1c0.00\x1c6500.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c2500.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c9039.97\x1c9039.97\x1c34461.13\x1c0.00\x1c34461.13\x1c39.97\x1c0.00\x1c39.97\x1c29749.49\x1c2008\x1c34461.13\x1c64210.62\x1c9039.97\x1c55170.65\x1c31467.51\x1c2993.62\x1c34461.13\x1c0.00\x1c0.00\x1c34461.13\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c34461.13\x1c34461.13\x1c0.00\x1c0.00\x1c39.97\x1c39.97\x1c0.00\x1c6500.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c2500.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c9039.97\x1c9039.97\x1c34461.13\x1c0.00\x1c34461.13\x1c39.97\x1c0.00\x1c39.97
 SA11AI\x1cC00428102\x1c80413.C183\x1c\x1c\x1cIND\x1c\x1cAncona\x1cVincent\x1c\x1c\x1c\x1c6640 Towering Oak Path\x1c\x1cColumbia\x1cMD\x1c21044\x1c\x1c\x1c20080111\x1c38.50\x1c38.50\x1c15\x1cReceipt\x1c\x1cAMERIGROUP Maryland  Inc.\x1cCOO - Health Plan\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1cPayroll Deduction: (38.50/Pay Period          )\x1c\x1c
 SA11AI\x1cC00428102\x1c80413.C223\x1c\x1c\x1cIND\x1c\x1cAncona\x1cVincent\x1c\x1c\x1c\x1c6640 Towering Oak Path\x1c\x1cColumbia\x1cMD\x1c21044\x1c\x1c\x1c20080125\x1c288.45\x1c326.95\x1c15\x1cReceipt\x1c\x1cAMERIGROUP Maryland  Inc.\x1cCOO - Health Plan\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1cPayroll Deduction: (57.69/Pay Period          )\x1c\x1c
+'''
+
+filing_333600_truncated = '''HDR\x1cFEC\x1c6.1\x1cNGP Campaign Office(R)\x1c3.0\x1cFEC-306890\x1c1\x1c
+F3A\x1cC00434621\x1cDan Grant for Congress\x1c\x1c6109 Rickey Drive\x1c\x1cAustin\x1cTX\x1c78757\x1cTX\x1c10\x1cQ3\x1c\x1c\x1c\x1c20070701\x1c20070930\x1cGrant\x1cBarbara\x1c\x1c\x1c\x1c20080415\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c45247.00\x1c250.00\x1c44997.00\x1c38096.51\x1c0.00\x1c38096.51\x1c72247.01\x1c0.00\x1c4128.92\x1c41677.00\x1c1070.00\x1c42747.00\x1c0.00\x1c2500.00\x1c0.00\x1c45247.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c45247.00\x1c38096.51\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c250.00\x1c0.00\x1c0.00\x1c250.00\x1c0.00\x1c38346.51\x1c65346.52\x1c45247.00\x1c110593.52\x1c38346.51\x1c72247.01\x1c118112.08\x1c250.00\x1c117862.08\x1c45615.07\x1c0.00\x1c45615.07\x1c114162.08\x1c1350.00\x1c115512.08\x1c0.00\x1c2500.00\x1c100.00\x1c118112.08\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c118112.08\x1c45615.07\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c250.00\x1c0.00\x1c0.00\x1c250.00\x1c0.00\x1c45865.07\x1c\x1c\x1c\x1c\x1c\x1c
+SA11AI\x1cC00434621\x1cC4068349\x1c\x1c\x1cIND\x1c\x1cAndries\x1cLarry\x1c\x1c\x1c\x1c1140 San Ysidro Dr\x1c\x1cBeverly Hills\x1cCA\x1c902102103\x1cP2008\x1c\x1c20070923\x1c50.00\x1c50.00\x1c\x1c\x1c\x1c20th Century Fox\x1cWriter\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c
+SA11AI\x1cC00434621\x1cC4068348\x1c\x1c\x1cIND\x1c\x1cAtchity\x1cKenneth\x1c\x1c\x1c\x1c400 S Burnside No. 11B\x1c\x1cLos Angeles\x1cCA\x1c90036\x1cP2008\x1c\x1c20070923\x1c100.00\x1c100.00\x1c\x1c\x1c\x1cSelf\x1cProducer\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c
 '''
 
 if __name__ == "__main__":
