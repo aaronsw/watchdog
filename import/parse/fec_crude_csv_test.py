@@ -111,23 +111,23 @@ filing_181941_truncated = u'''"HDR","FEC","5.2","Vocus PAC Management","3.00.182
 assert chr(0x96) in filing_181941_truncated # not really an ISO-8859-1
                                             # character! Windows-1252.
 
+def cover_record(data, name):
+    return fec_crude_csv.read_filing(data, name)[0]
+
 def test_candidate_name():
     """There are a variety of fields from which we can extract
     candidate names.  This tests some of them.
 
     This is from the committee name 'KT McFarland for Congress':
-    >>> fec_crude_csv.read_filing(filing_230174_truncated,
-    ...                           '230174.fec')[0]['candidate']
+    >>> cover_record(filing_230174_truncated, '230174.fec')['candidate']
     'KT McFarland'
 
     This is from committee name 'Friends of Tyson Pratcher':
-    >>> fec_crude_csv.read_filing(filing_230176_truncated,
-    ...                           '230176.fec')[0]['candidate']
+    >>> cover_record(filing_230176_truncated, '230176.fec')['candidate']
     'Tyson Pratcher'
 
     This one is from an actual `candidate_name` field in form F6:
-    >>> fec_crude_csv.read_filing(filing_230177_truncated,
-    ...                           '230177.fec')[0]['candidate']
+    >>> cover_record(filing_230177_truncated, '230177.fec')['candidate']
     'Rick ODonnell'
 
     In this case there is a `candidate_name` field, but it is empty,
@@ -135,21 +135,18 @@ def test_candidate_name():
     `candidate_middle_name`, and `candidate_last_name` fields.  The
     `committee_name_(pcc)` field would give us 'Sue Kelly'.
 
-    >>> fec_crude_csv.read_filing(filing_230179,
-    ...                           '230179.fec')[0]['candidate']
+    >>> cover_record(filing_230179, '230179.fec')['candidate']
     'Sue W. Kelly'
 
     In this case, `candidate_name` contains a ^-separated name, which
     needs to be properly reordered.
-    >>> fec_crude_csv.read_filing(filing_230185,
-    ...                           '230179.fec')[0]['candidate']
+    >>> cover_record(filing_230185, '230179.fec')['candidate']
     'HOWARD KALOOGIAN'
 
     In this case, there is a more specific candidate name 'JOHN
     T. DOOLITTLE' to be extracted from the committee name, but we
     don’t yet do it.
-    >>> fec_crude_csv.read_filing(filing_181904_truncated,
-    ...                           '181904.fec')[0]['candidate']
+    >>> cover_record(filing_181904_truncated, '181904.fec')['candidate']
     'JOHN DOOLITTLE'
 
     """
@@ -170,8 +167,8 @@ def test_format_6():
     next `\x1c`, and so I accidentally broke reading 6.x files by
     introducing a `streamreader` into the pipeline.)
 
-    >>> f = fec_crude_csv.read_filing(filing_333594_truncated, '333594.fec')
-    >>> f[0]['committee']
+    >>> f = cover_record(filing_333594_truncated, '333594.fec')
+    >>> f['committee']
     'Amerigroup Corporation Political Action Committee (Amerigroup PAC)'
 
     """
