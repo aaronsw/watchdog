@@ -9,12 +9,14 @@ def test_endtext():
     """
     >>> records(filing_207928)
     ... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    [{...'filer_id': 'C00410761', 'original_data': {...}...
-    'committee': 'Castor for Congress', 'format_version': '5.3'...}]
+    [{'format_version': '5.3'},
+     {...'filer_id': 'C00410761', 'original_data': {...}...
+      'committee': 'Castor for Congress'...}]
     >>> records(truncated_filing)       # same
     ... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    [{...'filer_id': 'C00410761', 'original_data': {...}...
-    'committee': 'Castor for Congress', 'format_version': '5.3'...}]
+    [{'format_version': '5.3'},
+     {...'filer_id': 'C00410761', 'original_data': {...}...
+      'committee': 'Castor for Congress'...}]
     """
 
 # Note the extra quote mark on the [ENDTEXT] line.
@@ -111,23 +113,23 @@ filing_181941_truncated = u'''"HDR","FEC","5.2","Vocus PAC Management","3.00.182
 assert chr(0x96) in filing_181941_truncated # not really an ISO-8859-1
                                             # character! Windows-1252.
 
+def cover_record(data, name):
+    return fec_crude_csv.read_filing(data, name)[0]
+
 def test_candidate_name():
     """There are a variety of fields from which we can extract
     candidate names.  This tests some of them.
 
     This is from the committee name 'KT McFarland for Congress':
-    >>> fec_crude_csv.read_filing(filing_230174_truncated,
-    ...                           '230174.fec')[0]['candidate']
+    >>> cover_record(filing_230174_truncated, '230174.fec')['candidate']
     'KT McFarland'
 
     This is from committee name 'Friends of Tyson Pratcher':
-    >>> fec_crude_csv.read_filing(filing_230176_truncated,
-    ...                           '230176.fec')[0]['candidate']
+    >>> cover_record(filing_230176_truncated, '230176.fec')['candidate']
     'Tyson Pratcher'
 
     This one is from an actual `candidate_name` field in form F6:
-    >>> fec_crude_csv.read_filing(filing_230177_truncated,
-    ...                           '230177.fec')[0]['candidate']
+    >>> cover_record(filing_230177_truncated, '230177.fec')['candidate']
     'Rick ODonnell'
 
     In this case there is a `candidate_name` field, but it is empty,
@@ -135,22 +137,59 @@ def test_candidate_name():
     `candidate_middle_name`, and `candidate_last_name` fields.  The
     `committee_name_(pcc)` field would give us 'Sue Kelly'.
 
-    >>> fec_crude_csv.read_filing(filing_230179,
-    ...                           '230179.fec')[0]['candidate']
+    >>> cover_record(filing_230179, '230179.fec')['candidate']
     'Sue W. Kelly'
 
     In this case, `candidate_name` contains a ^-separated name, which
     needs to be properly reordered.
-    >>> fec_crude_csv.read_filing(filing_230185,
-    ...                           '230179.fec')[0]['candidate']
+    >>> cover_record(filing_230185, '230179.fec')['candidate']
     'HOWARD KALOOGIAN'
 
     In this case, there is a more specific candidate name 'JOHN
     T. DOOLITTLE' to be extracted from the committee name, but we
     don’t yet do it.
-    >>> fec_crude_csv.read_filing(filing_181904_truncated,
-    ...                           '181904.fec')[0]['candidate']
+    >>> cover_record(filing_181904_truncated, '181904.fec')['candidate']
     'JOHN DOOLITTLE'
+
+    """
+
+def test_format_6():
+    r"""Format 6.x is a little tricky to decode.
+
+    The header line has changed, the separator is now `\x1c`, presumably
+    there are no quotes any more, and the official rule on amounts now
+    treats '500' as meaning '$500' and not '$5.00' (which XXX is still
+    not supported in the code!)
+
+    This is a very minimal test ensuring that we don’t completely
+    break the ability to read version 6.x files again.  (Apparently
+    Unicode thinks that `\x1c` is a kind of paragraph separator, so if
+    you’re doing a `.readline()` on an instance of the `streamreader`
+    of the Windows-1252 codec, it will give you the bytes up to the
+    next `\x1c`, and so I accidentally broke reading 6.x files by
+    introducing a `streamreader` into the pipeline.)
+
+    >>> cover_record(filing_333594_truncated, '333594.fec')['committee']
+    'Amerigroup Corporation Political Action Committee (Amerigroup PAC)'
+    >>> cover_record(filing_333600_truncated, '333600.fec')['committee']
+    'Dan Grant for Congress'
+
+    """
+
+def test_report_id():
+    """The report ID ties together the original filing and its amendments.
+
+    Filing 230176 is a new filing.
+    >>> cover_record(filing_230176_truncated, '230176.fec')['report_id']
+    '230176'
+
+    But filing 230174 is an amendment of filing 211016.
+    >>> cover_record(filing_230174_truncated, '230174.fec')['report_id']
+    '211016'
+
+    The original report ID is in a different position in the 6.x header.
+    >>> cover_record(filing_333600_truncated, '333600.fec')['report_id']
+    '306890'
 
     """
 
@@ -183,6 +222,18 @@ filing_181904_truncated = '''HDR,FEC,5.2,NetFile,1967,^,FEC-180228,001,Report Ge
 F3A,C00242768,JOHN T. DOOLITTLE FOR CONGRESS,2150 RIVER PLAZA DR. #150,,SACRAMENTO,CA,95833,,CA,4,Q2,P2006,20060606,CA,,,,,20050401,20050630,151947.33,0.00,151947.33,99667.66,0.00,99667.66,215344.09,0.00,15468.80,105249.60,20172.73,125422.33,0.00,26525.00,0.00,151947.33,0.00,0.00,0.00,0.00,0.00,0.00,151947.33,99667.66,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,99667.66,163064.42,151947.33,315011.75,99667.66,215344.09,280515.83,0.00,280515.83,197866.25,3745.00,194121.25,182756.60,40384.23,223140.83,0.00,57375.00,0.00,280515.83,0.00,0.00,0.00,0.00,3745.00,0.00,284260.83,197866.25,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,27499.86,225366.11,David Bauer,20050722,H0CA14042,DOOLITTLE^JOHN,D31,259532.33,0.00,259532.33,5875.00,0.00,5875.00
 SA11AI,C00242768,IND,,748 E. HILLCREST AVE.,,Yuba City,CA,95991,P2006,,,NONE,1200.00,20050417,1000.00,15,,,,,,,,,,,,,,,,,INC:A:63552,,,,,,BOYER,KARNA J.,,,
 SA11AI,C00242768,IND,,2150 PROFESSIONAL DRIVE,,ROSEVILLE,CA,95661,P2006,,self,Property Management,350.00,20050417,350.00,15,,,,,,,,,,,,,,,,,INC:A:63536,,,,,,BRYANT,ERIC,,MR.,
+'''
+
+filing_333594_truncated = '''HDR\x1cFEC\x1c6.1\x1cAristotle International CM5 PM5\x1cVersion 5.2\x1c\x1c0\x1c\x1c
+F3XN\x1cC00428102\x1cAmerigroup Corporation Political Action Committee (Amerigroup PAC)\x1c\x1c4425 Corporation Lane\x1c\x1cVirginia Beach\x1cVA\x1c23462   \x1cQ1\x1c\x1c\x1c\x1c20080101\x1c20080331\x1cX\x1cLittel\x1cJohn\x1cE.\x1c\x1c\x1c20080415\x1c29749.49\x1c34461.13\x1c64210.62\x1c9039.97\x1c55170.65\x1c0.00\x1c0.00\x1c31467.51\x1c2993.62\x1c34461.13\x1c0.00\x1c0.00\x1c34461.13\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c34461.13\x1c34461.13\x1c0.00\x1c0.00\x1c39.97\x1c39.97\x1c0.00\x1c6500.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c2500.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c9039.97\x1c9039.97\x1c34461.13\x1c0.00\x1c34461.13\x1c39.97\x1c0.00\x1c39.97\x1c29749.49\x1c2008\x1c34461.13\x1c64210.62\x1c9039.97\x1c55170.65\x1c31467.51\x1c2993.62\x1c34461.13\x1c0.00\x1c0.00\x1c34461.13\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c34461.13\x1c34461.13\x1c0.00\x1c0.00\x1c39.97\x1c39.97\x1c0.00\x1c6500.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c2500.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c9039.97\x1c9039.97\x1c34461.13\x1c0.00\x1c34461.13\x1c39.97\x1c0.00\x1c39.97
+SA11AI\x1cC00428102\x1c80413.C183\x1c\x1c\x1cIND\x1c\x1cAncona\x1cVincent\x1c\x1c\x1c\x1c6640 Towering Oak Path\x1c\x1cColumbia\x1cMD\x1c21044\x1c\x1c\x1c20080111\x1c38.50\x1c38.50\x1c15\x1cReceipt\x1c\x1cAMERIGROUP Maryland  Inc.\x1cCOO - Health Plan\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1cPayroll Deduction: (38.50/Pay Period          )\x1c\x1c
+SA11AI\x1cC00428102\x1c80413.C223\x1c\x1c\x1cIND\x1c\x1cAncona\x1cVincent\x1c\x1c\x1c\x1c6640 Towering Oak Path\x1c\x1cColumbia\x1cMD\x1c21044\x1c\x1c\x1c20080125\x1c288.45\x1c326.95\x1c15\x1cReceipt\x1c\x1cAMERIGROUP Maryland  Inc.\x1cCOO - Health Plan\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1cPayroll Deduction: (57.69/Pay Period          )\x1c\x1c
+'''
+
+filing_333600_truncated = '''HDR\x1cFEC\x1c6.1\x1cNGP Campaign Office(R)\x1c3.0\x1cFEC-306890\x1c1\x1c
+F3A\x1cC00434621\x1cDan Grant for Congress\x1c\x1c6109 Rickey Drive\x1c\x1cAustin\x1cTX\x1c78757\x1cTX\x1c10\x1cQ3\x1c\x1c\x1c\x1c20070701\x1c20070930\x1cGrant\x1cBarbara\x1c\x1c\x1c\x1c20080415\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c45247.00\x1c250.00\x1c44997.00\x1c38096.51\x1c0.00\x1c38096.51\x1c72247.01\x1c0.00\x1c4128.92\x1c41677.00\x1c1070.00\x1c42747.00\x1c0.00\x1c2500.00\x1c0.00\x1c45247.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c45247.00\x1c38096.51\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c250.00\x1c0.00\x1c0.00\x1c250.00\x1c0.00\x1c38346.51\x1c65346.52\x1c45247.00\x1c110593.52\x1c38346.51\x1c72247.01\x1c118112.08\x1c250.00\x1c117862.08\x1c45615.07\x1c0.00\x1c45615.07\x1c114162.08\x1c1350.00\x1c115512.08\x1c0.00\x1c2500.00\x1c100.00\x1c118112.08\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c118112.08\x1c45615.07\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c250.00\x1c0.00\x1c0.00\x1c250.00\x1c0.00\x1c45865.07\x1c\x1c\x1c\x1c\x1c\x1c
+SA11AI\x1cC00434621\x1cC4068349\x1c\x1c\x1cIND\x1c\x1cAndries\x1cLarry\x1c\x1c\x1c\x1c1140 San Ysidro Dr\x1c\x1cBeverly Hills\x1cCA\x1c902102103\x1cP2008\x1c\x1c20070923\x1c50.00\x1c50.00\x1c\x1c\x1c\x1c20th Century Fox\x1cWriter\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c
+SA11AI\x1cC00434621\x1cC4068348\x1c\x1c\x1cIND\x1c\x1cAtchity\x1cKenneth\x1c\x1c\x1c\x1c400 S Burnside No. 11B\x1c\x1cLos Angeles\x1cCA\x1c90036\x1cP2008\x1c\x1c20070923\x1c100.00\x1c100.00\x1c\x1c\x1c\x1cSelf\x1cProducer\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c
 '''
 
 if __name__ == "__main__":

@@ -243,18 +243,86 @@ def headers_for_version(version):
     return headers_cache[version]
 
 class ascii28separated(csv.excel):
-    """The FEC moved from CSV to chr(28)-separated files in format version 6."""
+    "The FEC moved from CSV to chr(28)-separated files in format version 6."
     delimiter = chr(28)
 
-def translate_to_utf_8(fileobj):
+class translate_to_utf_8:
     """Convert a presumably Windows-1252 file to UTF-8.
 
-    Although the FEC’s documents claim non-ASCII characters will be
-    rejected, I have seen a filing in Windows-1252.  Aaron points out:
+    The FEC’s documents claim non-ASCII characters will be
+    rejected, e.g. in FEC_v520.doc:
+
+    > Generally speaking, only keyboard characters are acceptable
+    > within CSV files.  Technically, any coded characters that fall
+    > outside the range of ASCII characters 32 (space) through 126
+    > (tilde “~”) will be rejected.  Care should be taken if text is
+    > cut and pasted from word processing programs, since some
+    > characters such as appostrophe [sic] and “smart quotes” may not
+    > translate into the appropriate ASCII characters.
+
+    However, I have seen a filing (181941.fec, from 20050722.zip,
+    version 5.2) in Windows-1252.  Aaron points out:
+
     > The `chardet` library might be useful:
     > <http://chardet.feedparser.org/>
+
+    Right now we’re not using that, though.
+
+    However, this policy changed by version 6.2, which says:
+
+    > The following characters will be allowed in filing fields (These
+    > are technically specified using the ASCII standard):
+    > - Keyboard characters. These fall within the range of ASCII 32
+    >   (space) through 126 (tilde “~”).
+    > - Some characters used in other languages. Specifically ASCII
+    >   characters 128 through 156, ASCII characters 160 through 168,
+    >   and ASCII character 173. This allows name and address fields
+    >   to contain letters such as ñ, ¿, ê, ç, ¡, Æ, etc. Care should
+    >   be taken if text is cut and pasted from word processing, or
+    >   other programs, since many non-keyboard characters such as
+    >   apostrophes and “smart quotes” (which are stored as ANSI coded
+    >   characters) will not translate into the appropriate ASCII
+    >   characters.
+
+    Unfortunately this is nonsense; ASCII is and has always been a
+    7-bit code, although there are many “extended ASCII” 8-bit
+    variants.  The characters they have quoted above exist in the
+    commonly-used character set ISO-8859-1, which also does not have
+    “smart quotes”, but ISO-8859-1 have printable characters in the
+    range 128 through 156 either.  The most likely character set that
+    contains the characters they have quoted and also contains
+    printable characters in the 128–156 range is Windows-1252, which
+    obsolete parts of Microsoft Windows use by default; however,
+    Windows-1252 *does* contain “smart quotes” (characters 145–148),
+    contains alphabetic characters at codepoints 158 and 159 as well,
+    and is missing printable characters at several codepoints inside
+    the 128–156 range.
+
+    Due to the absence of any evidence that the FEC is aware that more
+    than one character encoding exists, and their acceptance of the
+    above-cited filing in Windows-1252 at a time when they officially
+    promised not to accept such filings, I am going to assume for the
+    time being that all filings are encoded in Windows-1252.
+
+    We’re not using codecs.EncodedFile because it thinks U+001C is a
+    line terminator.
+
     """
-    return codecs.EncodedFile(fileobj, 'utf-8', 'windows-1252')
+    def __init__(self, fileobj):
+        self.fileobj = fileobj
+        self.encoder = codecs.getencoder('utf-8')
+        self.decoder = codecs.getdecoder('windows-1252')
+    def readline(self):
+        line = self.fileobj.readline()
+        unicode_string, length = self.decoder(line)
+        assert length == len(line)
+        rv, length = self.encoder(unicode_string)
+        assert length == len(unicode_string)
+        return rv
+    def __iter__(self): return iter(self.readline, '')
+    def seek(self, position):
+        assert position == 0
+        self.fileobj.seek(0)
 
 # Note that normally we are reading from a zipfile, and Python’s
 # stupid zipfile interface doesn’t AFAICT give us the option of
@@ -273,7 +341,7 @@ def readstring(astring):
     r = csv.reader(fileobj)
     headerline = r.next()
     if chr(28) in headerline[0]:
-        # it must be in the new FS-separated format
+        # It must be in the new FS-separated format
         fileobj.seek(0)
         r = csv.reader(fileobj, dialect=ascii28separated)
         headerline = r.next()
@@ -282,8 +350,16 @@ def readstring(astring):
         # because we can’t find docs; return without yielding
         # anything.
         return
-    version = headerline[2]
-    headermap = headers_for_version(version)
+    format_version = headerline[2]
+    if format_version < '6':
+        assert headerline[5] in ['', '^']   # caret_separated_name assumes this
+    headermap = headers_for_version(format_version)
+
+    headerdict = {'format_version': format_version}
+    rpt_id = headerline[6 if format_version < '6' else 5]
+    if rpt_id != '':
+        headerdict['report_id'] = re.match('(?i)fec-(\d+)$', rpt_id).group(1)
+    yield headerdict
 
     for line in r:
         if not line: continue         # FILPAC inserts random blank lines
@@ -310,7 +386,6 @@ def readstring(astring):
         if not fieldnames:
             raise "could not find field defs", (line[0], headermap.keys())
         rv = mapper.map(dict(zip(fieldnames, line)))
-        rv['format_version'] = version # for debugging
         yield rv
 
 candidate_name_res = [re.compile(x, re.IGNORECASE) for x in
@@ -333,18 +408,21 @@ def warn(string):
 
 def read_filing(astring, filename):
     records = readstring(astring)
-    form = records.next()
-    if not form['original_data']['form_type'].startswith('F'):
-        warn("skipping %r: its first record is %r" % (filename, formline))
+    header_record = records.next()
+    cover_record = records.next()
+    if not cover_record['original_data']['form_type'].startswith('F'):
+        warn("skipping %r: its first record is %r" % (filename, cover_record))
         return
-    form['report_id'] = filename[:-4]
-    if not form.get('candidate'):
+
+    cover_record['report_id'] = header_record.get('report_id', filename[:-4])
+    cover_record['format_version'] = header_record['format_version'] # debugging
+    if not cover_record.get('candidate'):
         for regex in candidate_name_res:
-            mo = regex.match(form.get('committee', ''))
+            mo = regex.match(cover_record.get('committee', ''))
             if mo:
-                form['candidate'] = mo.group('candidate')
+                cover_record['candidate'] = mo.group('candidate')
                 break
-    return form, records
+    return cover_record, records
 
 def readfile_zip(filename):
     zf = zipfile.ZipFile(filename)
