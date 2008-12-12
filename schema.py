@@ -133,7 +133,14 @@ rdf:resource="%s" />' % x
     def title(self):
         dist = self.district_id
         return 'Sen.' if State.where(code=dist) else 'Rep.'
-    
+
+    @property
+    def handshakes(self):
+        return db.query('select * from handshakes '
+                    'where politician_id=$self.id '
+                    'order by year desc, pol2corp+corp2pol desc',
+                    vars=locals()).list()
+        
     officeurl = sql.URL()
     party = sql.String()
     religion = sql.String()
