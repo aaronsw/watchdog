@@ -9,12 +9,12 @@ def test_endtext():
     """
     >>> records(filing_207928)
     ... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    [{'format_version': '5.3'},
+    [{...'fec_ver': '5.3'...},
      {...'filer_id': 'C00410761', 'original_data': {...}...
       'committee': 'Castor for Congress'...}]
     >>> records(truncated_filing)       # same
     ... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    [{'format_version': '5.3'},
+    [{...'fec_ver': '5.3'...},
      {...'filer_id': 'C00410761', 'original_data': {...}...
       'committee': 'Castor for Congress'...}]
     """

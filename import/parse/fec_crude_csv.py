@@ -324,6 +324,24 @@ class translate_to_utf_8:
         assert position == 0
         self.fileobj.seek(0)
 
+def decode_headerline(line):
+    format_version = line[2]
+
+    if format_version < '6':
+        headerheaders = 'record_type ef_type fec_ver soft_name soft_ver ' \
+                        'name_delim report_id rpt_number'
+    else:
+        headerheaders = 'record_type ef_type fec_ver soft_name soft_ver ' \
+                        'report_id rpt_number'
+
+    headers = dict(zip(headerheaders.split(), line))
+    assert format_version == headers['fec_ver']
+
+    if headers.get('name_delim'):
+        assert headers['name_delim'] == '^' # caret_separated_name assumes this
+
+    return headers
+
 # Note that normally we are reading from a zipfile, and Python’s
 # stupid zipfile interface doesn’t AFAICT give us the option of
 # streaming reads — it insists on reading the whole zipfile element at
@@ -350,16 +368,11 @@ def readstring(astring):
         # because we can’t find docs; return without yielding
         # anything.
         return
-    format_version = headerline[2]
-    if format_version < '6':
-        assert headerline[5] in ['', '^']   # caret_separated_name assumes this
-    headermap = headers_for_version(format_version)
 
-    headerdict = {'format_version': format_version}
-    rpt_id = headerline[6 if format_version < '6' else 5]
-    if rpt_id != '':
-        headerdict['report_id'] = re.match('(?i)fec-(\d+)$', rpt_id).group(1)
+    headerdict = decode_headerline(headerline)
     yield headerdict
+
+    headermap = headers_for_version(headerdict['fec_ver'])
 
     for line in r:
         if not line: continue         # FILPAC inserts random blank lines
@@ -414,8 +427,13 @@ def read_filing(astring, filename):
         warn("skipping %r: its first record is %r" % (filename, cover_record))
         return
 
-    cover_record['report_id'] = header_record.get('report_id', filename[:-4])
-    cover_record['format_version'] = header_record['format_version'] # debugging
+    if header_record['report_id'] != '':
+        cover_record['report_id'] = \
+            re.match('(?i)fec-(\d+)$', header_record['report_id']).group(1)
+    else:
+        cover_record['report_id'] = filename[:-4]
+
+    cover_record['format_version'] = header_record['fec_ver'] # for debugging
     if not cover_record.get('candidate'):
         for regex in candidate_name_res:
             mo = regex.match(cover_record.get('committee', ''))
