@@ -92,17 +92,22 @@ def load_fec_efilings(filepattern=None):
     for f, schedules in fec_crude_csv.parse_efilings(filepattern):
         for s in schedules:
             if s.get('type') == 'contribution':
-                # XXX all this code for politician_id is currently dead, does nothing useful
+                # XXX all this code for politician_id is currently
+                # dead, does nothing useful
                 politician_id = None
                 if f.get('candidate_fec_id'):
                     fec_id = f['candidate_fec_id']
-                    pol_fec_id = list(db.select('politician_fec_ids', where='fec_id=$fec_id', vars=locals()))
+                    pol_fec_id = list(db.select('politician_fec_ids',
+                                                where='fec_id=$fec_id',
+                                                vars=locals()))
                     if pol_fec_id and len(pol_fec_id) == 1:
                         politician_id = pol_fec_id[0].politician_id
                 elif not politician_id and f.get('candidate'):
                     names = f['candidate'].split(' ')
                     fn, ln = names[0], names[-1]
-                    pol = list(db.select('politician', where='lastname=$ln and firstname=$fn', vars=locals()))
+                    pol = list(db.select('politician',
+                                        where='lastname=$ln and firstname=$fn',
+                                        vars=locals()))
                     if pol and len(pol) == 1:
                         politician_id = pol[0].id
                 db.insert('contribution',
