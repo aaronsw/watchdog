@@ -246,7 +246,7 @@ class ascii28separated(csv.excel):
     "The FEC moved from CSV to chr(28)-separated files in format version 6."
     delimiter = chr(28)
 
-def translate_to_utf_8(fileobj):
+class translate_to_utf_8:
     """Convert a presumably Windows-1252 file to UTF-8.
 
     Although the FEC’s documents claim non-ASCII characters will be
@@ -254,7 +254,21 @@ def translate_to_utf_8(fileobj):
     > The `chardet` library might be useful:
     > <http://chardet.feedparser.org/>
     """
-    return codecs.EncodedFile(fileobj, 'utf-8', 'windows-1252')
+    def __init__(self, fileobj):
+        self.fileobj = fileobj
+        self.encoder = codecs.getencoder('utf-8')
+        self.decoder = codecs.getdecoder('windows-1252')
+    def readline(self):
+        line = self.fileobj.readline()
+        unicode_string, length = self.decoder(line)
+        assert length == len(line)
+        rv, length = self.encoder(unicode_string)
+        assert length == len(unicode_string)
+        return rv
+    def __iter__(self): return iter(self.readline, '')
+    def seek(self, position):
+        assert position == 0
+        self.fileobj.seek(0)
 
 # Note that normally we are reading from a zipfile, and Python’s
 # stupid zipfile interface doesn’t AFAICT give us the option of

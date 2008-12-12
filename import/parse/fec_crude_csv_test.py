@@ -154,6 +154,28 @@ def test_candidate_name():
 
     """
 
+def test_format_6():
+    r"""Format 6.x is a little tricky to decode.
+
+    The header line has changed, the separator is now `\x1c`, presumably
+    there are no quotes any more, and the official rule on amounts now
+    treats '500' as meaning '$500' and not '$5.00' (which XXX is still
+    not supported in the code!)
+
+    This is a very minimal test ensuring that we don’t completely
+    break the ability to read version 6.x files again.  (Apparently
+    Unicode thinks that `\x1c` is a kind of paragraph separator, so if
+    you’re doing a `.readline()` on an instance of the `streamreader`
+    of the Windows-1252 codec, it will give you the bytes up to the
+    next `\x1c`, and so I accidentally broke reading 6.x files by
+    introducing a `streamreader` into the pipeline.)
+
+    >>> f = fec_crude_csv.read_filing(filing_333594_truncated, '333594.fec')
+    >>> f[0]['committee']
+    'Amerigroup Corporation Political Action Committee (Amerigroup PAC)'
+
+    """
+
 filing_230174_truncated = '''HDR,FEC,5.3,CMDI FEC FILER,5.3.0,,FEC-211016,1,
 F3A,C00415620,"KT McFarland for Congress","954 Lexington Avenue","Box 135","New York",NY,10021,,NY,14,Q1,P2006,20061101,NY,X,,,,20060101,20060331,172080.00,1000.00,171080.00,135651.09,0.00,135651.09,24293.78,0.00,0.00,168150.00,3930.00,172080.00,0.00,0.00,0.00,172080.00,0.00,0.00,0.00,0.00,0.00,0.00,172080.00,135651.09,400000.00,0.00,0.00,0.00,1000.00,0.00,0.00,1000.00,2000.00,538651.09,390864.87,172080.00,562944.87,538651.09,24293.78,602005.00,1000.00,601005.00,174691.47,0.00,174691.47,572075.00,3930.00,576005.00,0.00,1000.00,25000.00,602005.00,0.00,0.00,0.00,0.00,0.00,0.00,602005.00,174691.47,400000.00,0.00,0.00,0.00,1000.00,0.00,0.00,1000.00,2000.00,577691.47,"Alan McFarland",20060721,,,,,,,,,
 SA11A1,C00415620,IND,,"219 East 69th Street","Apt 5-D","New York",NY,10021,P2006,,"Auda Private Equity LLC","Investment Manager",1000.00,20060201,1000.00,15,"Receipt",,,,,,,,,,,,,,,,60314.C590,,,,,,"Andryc","David",,,
@@ -183,6 +205,12 @@ filing_181904_truncated = '''HDR,FEC,5.2,NetFile,1967,^,FEC-180228,001,Report Ge
 F3A,C00242768,JOHN T. DOOLITTLE FOR CONGRESS,2150 RIVER PLAZA DR. #150,,SACRAMENTO,CA,95833,,CA,4,Q2,P2006,20060606,CA,,,,,20050401,20050630,151947.33,0.00,151947.33,99667.66,0.00,99667.66,215344.09,0.00,15468.80,105249.60,20172.73,125422.33,0.00,26525.00,0.00,151947.33,0.00,0.00,0.00,0.00,0.00,0.00,151947.33,99667.66,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,99667.66,163064.42,151947.33,315011.75,99667.66,215344.09,280515.83,0.00,280515.83,197866.25,3745.00,194121.25,182756.60,40384.23,223140.83,0.00,57375.00,0.00,280515.83,0.00,0.00,0.00,0.00,3745.00,0.00,284260.83,197866.25,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,27499.86,225366.11,David Bauer,20050722,H0CA14042,DOOLITTLE^JOHN,D31,259532.33,0.00,259532.33,5875.00,0.00,5875.00
 SA11AI,C00242768,IND,,748 E. HILLCREST AVE.,,Yuba City,CA,95991,P2006,,,NONE,1200.00,20050417,1000.00,15,,,,,,,,,,,,,,,,,INC:A:63552,,,,,,BOYER,KARNA J.,,,
 SA11AI,C00242768,IND,,2150 PROFESSIONAL DRIVE,,ROSEVILLE,CA,95661,P2006,,self,Property Management,350.00,20050417,350.00,15,,,,,,,,,,,,,,,,,INC:A:63536,,,,,,BRYANT,ERIC,,MR.,
+'''
+
+filing_333594_truncated = '''HDR\x1cFEC\x1c6.1\x1cAristotle International CM5 PM5\x1cVersion 5.2\x1c\x1c0\x1c\x1c
+F3XN\x1cC00428102\x1cAmerigroup Corporation Political Action Committee (Amerigroup PAC)\x1c\x1c4425 Corporation Lane\x1c\x1cVirginia Beach\x1cVA\x1c23462   \x1cQ1\x1c\x1c\x1c\x1c20080101\x1c20080331\x1cX\x1cLittel\x1cJohn\x1cE.\x1c\x1c\x1c20080415\x1c29749.49\x1c34461.13\x1c64210.62\x1c9039.97\x1c55170.65\x1c0.00\x1c0.00\x1c31467.51\x1c2993.62\x1c34461.13\x1c0.00\x1c0.00\x1c34461.13\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c34461.13\x1c34461.13\x1c0.00\x1c0.00\x1c39.97\x1c39.97\x1c0.00\x1c6500.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c2500.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c9039.97\x1c9039.97\x1c34461.13\x1c0.00\x1c34461.13\x1c39.97\x1c0.00\x1c39.97\x1c29749.49\x1c2008\x1c34461.13\x1c64210.62\x1c9039.97\x1c55170.65\x1c31467.51\x1c2993.62\x1c34461.13\x1c0.00\x1c0.00\x1c34461.13\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c34461.13\x1c34461.13\x1c0.00\x1c0.00\x1c39.97\x1c39.97\x1c0.00\x1c6500.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c2500.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c9039.97\x1c9039.97\x1c34461.13\x1c0.00\x1c34461.13\x1c39.97\x1c0.00\x1c39.97
+SA11AI\x1cC00428102\x1c80413.C183\x1c\x1c\x1cIND\x1c\x1cAncona\x1cVincent\x1c\x1c\x1c\x1c6640 Towering Oak Path\x1c\x1cColumbia\x1cMD\x1c21044\x1c\x1c\x1c20080111\x1c38.50\x1c38.50\x1c15\x1cReceipt\x1c\x1cAMERIGROUP Maryland  Inc.\x1cCOO - Health Plan\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1cPayroll Deduction: (38.50/Pay Period          )\x1c\x1c
+SA11AI\x1cC00428102\x1c80413.C223\x1c\x1c\x1cIND\x1c\x1cAncona\x1cVincent\x1c\x1c\x1c\x1c6640 Towering Oak Path\x1c\x1cColumbia\x1cMD\x1c21044\x1c\x1c\x1c20080125\x1c288.45\x1c326.95\x1c15\x1cReceipt\x1c\x1cAMERIGROUP Maryland  Inc.\x1cCOO - Health Plan\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1cPayroll Deduction: (57.69/Pay Period          )\x1c\x1c
 '''
 
 if __name__ == "__main__":
