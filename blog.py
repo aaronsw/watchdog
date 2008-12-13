@@ -309,7 +309,7 @@ class post:
         if name in content_mapping:
             return render.blog_post(content_mapping[name])
         else:
-            raise web.notfound
+            raise web.notfound()
 
 class reblog:
     def GET(self):

@@ -72,7 +72,7 @@ class write_rep:
     	pols = getpols(i.zip5, i.zip4, i.addr1+i.addr2)
     	captcha_needed = require_captcha(i, pols)
     	if not wf.validates(i) or captcha_needed:
-            if captcha_needed: wf.valid, wf.note = False, 'Please Fill the captcha below'
+            if captcha_needed: wf.valid, wf.note = False, 'Please fill the captcha below'
     	    wf.fill(i)
     	    return self.GET(wf)
     	else:
@@ -87,7 +87,7 @@ class write_rep:
 class get_captchas:
     def GET(self):
         i = web.input()
-        pols = dist2pols(i.dist)
+        pols = dist2pols(i.get('dist'))
         wf = forms.wyrform()
         captcha_html = prepare_for_captcha(wf, pols)
         return captcha_html

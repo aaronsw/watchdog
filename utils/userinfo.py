@@ -19,7 +19,7 @@ class userinfo():
         try:
             user = db.select('users', where='id=$uid', vars=locals())[0]
         except IndexError:     
-            raise web.notfound
+            raise web.notfound()
         
         info_form = info_form or forms.userinfo()
         if not password_form:

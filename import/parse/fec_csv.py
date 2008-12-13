@@ -81,11 +81,11 @@ def rsplit(filing, sep):
 def amendment_sort(x, y):
     return cmp(x['report_no'], y['report_no'])
 
-def file_index():
+def file_index(filepattern):
     reports = list()
     amendments = dict()
 
-    files = glob.glob(EFILINGS_PATH + '*.zip')
+    files = glob.glob(filepattern)
     files.sort()
     for f in files:
         print >> sys.stderr, '\r', f,
@@ -393,9 +393,9 @@ def parse_filings(headers, reports, amendments):
         r = apply_amendments(headers, r, amendments)
         yield r
 
-def parse_efilings():
+def parse_efilings(filepattern = EFILINGS_PATH + '*.zip'):
     headers = parse_headers()
-    reports, amendments = file_index()
+    reports, amendments = file_index(filepattern)
     return parse_filings(headers, reports, amendments)
 
 if __name__ == "__main__":

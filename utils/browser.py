@@ -19,7 +19,7 @@ class Browser:
       
     def set_state(self, state):
         cookies = state
-        self._set_cookies(self.cp.cookiejar, [self.load_cookie(d) for d in cookies])
+        self._set_cookies(self.cp.cookiejar, [self._load_cookie(d) for d in cookies])
         
     def open(self, request, data=None):
         """opens the url or processes the request and returns the response"""
@@ -51,10 +51,10 @@ class Browser:
         text = self.get_text()
         return msg.lower() in text.lower()
         
-    def find_nodes(self, tags, predicate, attrs={}):
+    def find_nodes(self, tags, predicate=None, attrs={}):
         """Finds matching nodes from the current page"""
         soup = BeautifulSoup(self.page)
-        return [n for n in soup.findAll(tags, attrs) if predicate(n)]
+        return [n for n in soup.findAll(tags, attrs) if predicate is None or predicate(n)]
         
     def _get_cookies(self, cookiejar):
         """returns all cookies in the cookiejar."""
@@ -76,5 +76,6 @@ class Browser:
 
     def _load_cookie(self, data):
         """Creates a cookie from the dumped dict."""
-        return cookielib.Cookie(**data)
+        d = dict( [(str(k), v) for (k, v) in data.items()]) #keys are getting unicode values somewhere
+        return cookielib.Cookie(**d)
 

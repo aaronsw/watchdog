@@ -26,7 +26,6 @@ def loginuser(useremail, password):
         return None
 
 def new_user(email, password):
-    token = get_secret_token(email)
     password = encrypt_password(password)
     exists = db.select('users', where='email=$email', vars=locals())
     if exists:
