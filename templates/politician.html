@@ -11,6 +11,13 @@ $var pretext: <div id="sidebarmap"  style="clear: right; margin-top: -24px;"><di
 $var width: 90%
 $var color: white
 
+<style>
+    table.contributors { width: 100%; }
+    table.contributors td { text-align: right;}
+    table.contributors th { font-weight: normal;}
+</style>
+
+
 <div class="rep-info">
 <h1>$pol.firstname $pol.middlename $pol.lastname</h1>
 
@@ -40,8 +47,9 @@ $if pol.last_elected_year:
 <tr><td width="50%">
 <h2 class="rep">Money</h2>
 
-$def spark(lable, data, polid, by, unit='', url=None):
-    <th style="white-space:nowrap; padding-left: 6px;">$:lable</th>
+$def spark(label, data, polid, by, unit='', url=None):
+    $if label:
+        <th style="white-space:nowrap; padding-left: 6px;">$:label</th>
     $if not data:
         $ data = 0
     $ display = commify(data) + ' ' + unit
@@ -138,7 +146,9 @@ $if pol.predictability:
 
 </td><td></td>
 
-</tr><td colspan="2">
+</tr>
+
+<tr><td colspan="2">
 
 <h2 class="rep">Interest Group Alignment</h2>
 
@@ -158,7 +168,64 @@ $for group in pol.related_groups:
 
 <p><a href="/p/$pol.id/groups" class="footer">More...</a></p>
 
-</td></tr></table>
+</td>
+
+</tr>
+
+<tr>
+    
+<td colspan="2">
+
+<h2 class="rep">Top Contributors</h2>
+
+<table class="charted structure contributors" style="width: 100%">
+$ trclass = "odd"
+$ num = 1
+$for c in pol.contributors:
+    <tr class="$trclass">
+        <th>$num. <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name)</a></th>
+        <td>\$$commify(int(c.amt))</td>
+    </tr>
+    $ num = num + 1
+    $if trclass == "odd":
+        $ trclass = "even"
+    $else:
+        $ trclass = "odd"
+</table>
+
+<p><a href="/p/pol.id/groups" class="footer">More...</a></p>
+    
+</td>
+
+</tr>        
+
+<tr>
+
+<td colspan="2">
+    
+<h2 class="rep">Top Contributor Employers</h2>
+
+<table class="charted structure contributors" style="width: 100%">
+$ trclass = "odd"
+$ num = 1
+$for c in pol.contributor_employers:
+    <tr class="$trclass">
+        <th>$num. <a href="/corp/$c.employer">$c.employer</a></th>
+        <td>\$$commify(int(c.amt) )</td>
+    </tr>
+    $ num = num + 1
+    $if trclass == "odd":
+        $ trclass = "even"
+    $else:
+        $ trclass = "odd"
+</table>
+
+<p><a href="/p/pol.id/groups" class="footer">More...</a></p>    
+    
+</td>
+    
+</tr>
+</table>
 
 <div class="sources">
   Money data from <nobr><a href="http://www.fec.gov/" class="external">the FEC</a>.</nobr>

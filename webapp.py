@@ -31,6 +31,8 @@ urls = (
   r'/p/(.*?)%s?' % options, 'politician',
   r'/e/(.*?)%s?' % options, 'earmark',
   r'/b/(.*?)%s?' % options, 'bill',
+  r'/contrib/(\d+)/' , 'contributor',
+  r'/empl/(.*?)%s?' % options, 'employer',
   r'/r/us/(.*?)%s?' % options, 'roll',
   r'/c', petition.app,
   r'/u', users.app,
@@ -164,6 +166,16 @@ class district:
             d = schema.District.where(name=district.upper())[0]
         except IndexError:
             raise web.notfound
+            
+        zip = '33149'
+        d.contributors = db.query("""SELECT cn.name, sum(cn.amount) as amt
+          FROM contribution cn 
+          WHERE cn.zip = $zip AND cn.employer != '' GROUP BY cn.name 
+          ORDER BY amt DESC LIMIT 5""", vars=locals())
+        d.contributor_employers = db.query("""SELECT cn.employer, 
+          sum(cn.amount) as amt FROM contribution cn 
+          WHERE cn.zip = $zip AND cn.employer != '' GROUP BY cn.employer 
+          ORDER BY amt DESC LIMIT 5""", vars=locals())
         
         out = apipublish.publish([d], format)
         if out: return out
@@ -232,6 +244,34 @@ class bill:
         if out: return out
         
         return render.bill(b)
+        
+class contributor:
+    def GET(self, zipcode):
+      s = web.input(s='').s
+      name = s.lower()
+      contributions = list(db.query("""SELECT count(*) AS how_many, 
+        sum(amount) AS how_much, p.firstname, p.lastname, 
+        cm.name AS committee, occupation, employer, max(cn.sent) as sent,
+        p.id as polid FROM contribution cn, committee cm, 
+        politician_fec_ids pfi, politician p WHERE cn.recipient_id = cm.id 
+        AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
+        AND lower(cn.name) = $name AND cn.zip = $zipcode 
+        GROUP BY cm.name, p.lastname, p.firstname, cn.occupation, cn.employer, p.id
+        ORDER BY lower(employer), lower(occupation), sent DESC, how_much DESC""", vars=locals()))
+      num = len(contributions)
+      return render.contributor(contributions, zipcode, s, num)
+  
+class employer:
+    def GET(self, corp_id, format=None):
+      contributions = db.query("""SELECT count(*) as how_many, 
+      sum(amount) as how_much, p.firstname, p.lastname, 
+      p.id as polid, cm.name as committee 
+      FROM contribution cn, committee cm, politician_fec_ids pfi, politician p
+      WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
+      AND pfi.politician_id = p.id AND lower(cn.employer) = lower($corp_id)
+      GROUP BY cm.name, p.lastname, p.firstname, p.id 
+      ORDER BY how_much DESC;""", vars=locals())
+      return render.employer(contributions, corp_id)
 
 def earmark_list(format, page=0, limit=50):
     earmarks = schema.Earmark.select(limit=limit, offset=page*limit, order='id')
@@ -309,7 +349,18 @@ class politician:
           where='politician_id=$polid', vars=locals())]
 
         p.related_groups = group_politician_similarity(polid)
-
+        p.contributors = db.query("""SELECT cn.name, cn.zip, 
+          sum(cn.amount) as amt FROM committee cm, politician_fec_ids pfi, 
+          politician p, contribution cn WHERE cn.recipient_id = cm.id 
+          AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
+          AND p.id = $polid AND cn.employer != '' GROUP BY cn.name, cn.zip 
+          ORDER BY amt DESC LIMIT 5""", vars=locals())
+        p.contributor_employers = db.query("""SELECT cn.employer, 
+          sum(cn.amount) as amt FROM committee cm, politician_fec_ids pfi, 
+          politician p, contribution cn WHERE cn.recipient_id = cm.id 
+          AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
+          AND p.id = $polid AND cn.employer != '' GROUP BY cn.employer 
+          ORDER BY amt DESC LIMIT 5""", vars=locals())
         out = apipublish.publish([p], format)
         if out: return out
 

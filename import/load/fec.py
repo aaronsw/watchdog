@@ -44,7 +44,7 @@ def load_fec_cans():
 def load_fec_committees():
     for f in fec_cobol.parse_committees(latest=True):
         f = web.storage(f)
-        
+
         db.insert('committee', seqname=False,
           id = f.committee_id,
           name = f.committee_name,
@@ -68,7 +68,7 @@ def load_fec_contributions():
         else:
             employer = ''
             occupation = f.occupation
-        
+
         db.insert('contribution',
           fec_record_id = f.fec_record_id,
           microfilm_loc = f.microfilm_loc,
@@ -81,11 +81,11 @@ def load_fec_contributions():
           occupation = occupation,
           employer = employer,
           employer_stem = tools.stemcorpname(employer),
-          committee_id = f.from_id or None,
+          committee = f.from_id or None,
           sent = f.date,
           amount = f.amount
         )
-        
+
 
 def load_fec_efilings():
     for f in fec_csv.parse_efilings():
