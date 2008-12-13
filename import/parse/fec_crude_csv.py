@@ -337,7 +337,7 @@ def decode_headerline(line):
     headers = dict(zip(headerheaders.split(), line))
     assert format_version == headers['fec_ver']
 
-    if headers.get('name_delim'):
+    if headers.get('name_delim'):       # empty string means to use the default
         assert headers['name_delim'] == '^' # caret_separated_name assumes this
 
     return headers
@@ -427,7 +427,7 @@ def read_filing(astring, filename):
         warn("skipping %r: its first record is %r" % (filename, cover_record))
         return
 
-    if header_record['report_id'] != '':
+    if header_record.get('report_id'):  # The field may be missing or empty.
         cover_record['report_id'] = \
             re.match('(?i)fec-(\d+)$', header_record['report_id']).group(1)
     else:
