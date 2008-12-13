@@ -429,7 +429,7 @@ def read_filing(astring, filename):
 
     if header_record.get('report_id'):  # The field may be missing or empty.
         cover_record['report_id'] = \
-            re.match('(?i)fec-(\d+)$', header_record['report_id']).group(1)
+            re.match('(?i)fec-\s*(\d+)$', header_record['report_id']).group(1)
     else:
         cover_record['report_id'] = filename[:-4]
 

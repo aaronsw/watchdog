@@ -214,6 +214,11 @@ def test_strange_headers():
     ...       fec_crude_csv.read_filing(filing_19538_truncated, '19538.fec')[1]]
     [None, None, 'Mrs. Jean Abernathy', 'Mrs. Renee Abraham']
 
+    Filing 22784 has a space in the FEC ID of the filing it's supposed
+    to amend.
+    >>> cover_record(filing_22784_truncated, '22784.fec')['report_id']
+    '17081'
+
     """
 
 filing_230174_truncated = '''HDR,FEC,5.3,CMDI FEC FILER,5.3.0,,FEC-211016,1,
@@ -278,6 +283,11 @@ SD9,"C00003418","CAN","FRIENDS OF SENATOR DAVID KARNES","626 109TH PLAZA","","OM
 SD9,"C00003418","CAN","SENATOR KARNES CAMPAIGN","626 109TH PLAZA","","OMAHA","NE","68154","NEWS RELEASES",834.75,0.00,0.00,834.75,"","",""," ","","","","","","","",""," ","D09-02"
 SA11A1,"C00003418","IND","Abernathy^Jean^Mrs.","50 Broad Cove Lane","","Montgomery","TX","77356","P2002","","","Retired",0.00,20001012,300.00,"15","","","",""," ","","","","","","","","","X","","C","31912284","","",""
 SA11A1,"C00003418","IND","Abraham^Renee^Mrs.","1317 University Avenue","","Lubbock","TX","79401","P2002","","Self-employed","Office Manager",0.00,20001205,55.00,"15","","","",""," ","","","","","","","","","X","","C","32331751","","",""
+'''
+
+filing_22784_truncated = '''"HDR","FEC","3.00","THE FEC ELECTRONIC FILER","1.01a2zac..01C","^","FEC- 17081",1,""
+"F3A","C00282970","FRIENDS OF BLAGOJEVICH","PO BOX 18415","","CHICAGO","IL","60618","","IL",5,"MY","",20021105,"IL","X","","","",20010101,20010630,137992.12,0.00,137992.12,50032.56,0.00,50032.56,1023657.79,0.00,27954.00,56945.00,21495.00,78440.00,802.12,58750.00,0.00,137992.12,0.00,0.00,0.00,0.00,0.00,11115.14,149107.26,50032.56,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,50032.56,924583.09,149107.26,1073690.35,50032.56,1023657.79,137992.12,0.00,137992.12,50032.56,0.00,50032.56,56945.00,21495.00,78440.00,802.12,58750.00,0.00,137992.12,0.00,0.00,0.00,0.00,0.00,11115.14,149107.26,50032.56,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,50032.56,"MICHAEL ASCARIDIS","20011226"
+"SA11C","C00282970","PAC","AFGE Political Action Committee","80 F Street, NW","","Washington","DC","20001","P2002","","","",500.00,20010420,500.00,"15","","","","","","",,"","","","","","","","","","C00bE06","                    "
 '''
 
 if __name__ == "__main__":
