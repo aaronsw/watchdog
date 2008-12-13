@@ -334,7 +334,7 @@ def decode_headerline(line):
         headerheaders = 'record_type ef_type fec_ver soft_name soft_ver ' \
                         'report_id rpt_number'
 
-    headers = dict(zip(headerheaders.split(), line))
+    headers = dict(zip(headerheaders.split(), (f.strip() for f in line)))
     assert format_version == headers['fec_ver']
 
     if headers.get('name_delim'):       # empty string means to use the default
@@ -429,7 +429,7 @@ def read_filing(astring, filename):
 
     if header_record.get('report_id'):  # The field may be missing or empty.
         cover_record['report_id'] = \
-            re.match('(?i)fec-(\d+)\s*$', header_record['report_id']).group(1)
+            re.match('(?i)fec-(\d+)$', header_record['report_id']).group(1)
     else:
         cover_record['report_id'] = filename[:-4]
 
