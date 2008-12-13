@@ -193,6 +193,14 @@ def test_report_id():
 
     """
 
+def test_short_header():
+    """Filing 184656 doesn’t include all of the header fields.
+
+    >>> cover_record(filing_184656, '184656.fec')['committee']
+    'Hewlett Packard Company PAC'
+
+    """
+
 filing_230174_truncated = '''HDR,FEC,5.3,CMDI FEC FILER,5.3.0,,FEC-211016,1,
 F3A,C00415620,"KT McFarland for Congress","954 Lexington Avenue","Box 135","New York",NY,10021,,NY,14,Q1,P2006,20061101,NY,X,,,,20060101,20060331,172080.00,1000.00,171080.00,135651.09,0.00,135651.09,24293.78,0.00,0.00,168150.00,3930.00,172080.00,0.00,0.00,0.00,172080.00,0.00,0.00,0.00,0.00,0.00,0.00,172080.00,135651.09,400000.00,0.00,0.00,0.00,1000.00,0.00,0.00,1000.00,2000.00,538651.09,390864.87,172080.00,562944.87,538651.09,24293.78,602005.00,1000.00,601005.00,174691.47,0.00,174691.47,572075.00,3930.00,576005.00,0.00,1000.00,25000.00,602005.00,0.00,0.00,0.00,0.00,0.00,0.00,602005.00,174691.47,400000.00,0.00,0.00,0.00,1000.00,0.00,0.00,1000.00,2000.00,577691.47,"Alan McFarland",20060721,,,,,,,,,
 SA11A1,C00415620,IND,,"219 East 69th Street","Apt 5-D","New York",NY,10021,P2006,,"Auda Private Equity LLC","Investment Manager",1000.00,20060201,1000.00,15,"Receipt",,,,,,,,,,,,,,,,60314.C590,,,,,,"Andryc","David",,,
@@ -234,6 +242,13 @@ filing_333600_truncated = '''HDR\x1cFEC\x1c6.1\x1cNGP Campaign Office(R)\x1c3.0\
 F3A\x1cC00434621\x1cDan Grant for Congress\x1c\x1c6109 Rickey Drive\x1c\x1cAustin\x1cTX\x1c78757\x1cTX\x1c10\x1cQ3\x1c\x1c\x1c\x1c20070701\x1c20070930\x1cGrant\x1cBarbara\x1c\x1c\x1c\x1c20080415\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c45247.00\x1c250.00\x1c44997.00\x1c38096.51\x1c0.00\x1c38096.51\x1c72247.01\x1c0.00\x1c4128.92\x1c41677.00\x1c1070.00\x1c42747.00\x1c0.00\x1c2500.00\x1c0.00\x1c45247.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c45247.00\x1c38096.51\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c250.00\x1c0.00\x1c0.00\x1c250.00\x1c0.00\x1c38346.51\x1c65346.52\x1c45247.00\x1c110593.52\x1c38346.51\x1c72247.01\x1c118112.08\x1c250.00\x1c117862.08\x1c45615.07\x1c0.00\x1c45615.07\x1c114162.08\x1c1350.00\x1c115512.08\x1c0.00\x1c2500.00\x1c100.00\x1c118112.08\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c118112.08\x1c45615.07\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c250.00\x1c0.00\x1c0.00\x1c250.00\x1c0.00\x1c45865.07\x1c\x1c\x1c\x1c\x1c\x1c
 SA11AI\x1cC00434621\x1cC4068349\x1c\x1c\x1cIND\x1c\x1cAndries\x1cLarry\x1c\x1c\x1c\x1c1140 San Ysidro Dr\x1c\x1cBeverly Hills\x1cCA\x1c902102103\x1cP2008\x1c\x1c20070923\x1c50.00\x1c50.00\x1c\x1c\x1c\x1c20th Century Fox\x1cWriter\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c
 SA11AI\x1cC00434621\x1cC4068348\x1c\x1c\x1cIND\x1c\x1cAtchity\x1cKenneth\x1c\x1c\x1c\x1c400 S Burnside No. 11B\x1c\x1cLos Angeles\x1cCA\x1c90036\x1cP2008\x1c\x1c20070923\x1c100.00\x1c100.00\x1c\x1c\x1c\x1cSelf\x1cProducer\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c
+'''
+
+filing_184656 = '''HDR,FEC,5.2,DemocracyDirect,Ver 6.5
+F99,C00196725,Hewlett Packard Company PAC,3000 Hanover Street,20BX,Palo Alto,CA,94304,Ann Baskins,20050818,
+[BEGINTEXT]
+This amendment, filed in response to the letter from the FEC dated August 12, 2005, corrects the figures on Lines 11(a)(i) and 11(a)(ii), Column B of the Detailed Summary Page.
+[ENDTEXT]
 '''
 
 if __name__ == "__main__":
