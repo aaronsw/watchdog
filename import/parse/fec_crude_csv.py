@@ -68,9 +68,16 @@ def caret_separated_name(name):
     Should we downcase/titlecase this one?
     >>> caret_separated_name('LOVE^KARA^^')
     'KARA LOVE'
+    
+    What were they smoking when they made this one up?
+    >>> caret_separated_name('Everett^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+    'Everett'
     """
     fields = name.split('^')
     while len(fields) < 4: fields.append('')
+    while len(fields) > 4:
+        assert fields[-1] == ''
+        fields.pop()
 
     lastname, firstname, prefix, suffix = fields
     if prefix: prefix += ' '

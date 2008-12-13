@@ -228,7 +228,21 @@ def test_lowercase_form_type():
 
     >>> [rec['contributor'] for rec in
     ...      fec_crude_csv.read_filing(filing_22795_truncated, '22795.fec')[1]]
-    ['Ballard Spahr Andrews & Ingersoll LLP', 'Ballard Spahr Andrews & Ingersoll LLP']
+    ... #doctest: +NORMALIZE_WHITESPACE
+    ['Ballard Spahr Andrews & Ingersoll LLP',
+     'Ballard Spahr Andrews & Ingersoll LLP']
+
+    """
+
+def test_extra_carets():
+    """Filing 23422 has a “name” field with a large number of carets in it.
+
+    I swear I am not making this data up.  This filing was ACTUALLY
+    ACCEPTED BY THE FEC.
+
+    >>> [rec['candidate'] for rec in
+    ...     fec_crude_csv.read_filing(filing_23422_abbreviated, '23422.fec')[1]]
+    ['', 'Everett']
 
     """
 
@@ -305,6 +319,12 @@ filing_22795_truncated = '''HDR,FEC,3.00,Campaign Central,,,FEC-20671,1,
 F4A,C00342519,Philadelphia 2000,1735 Market Street,51st Floor,Philadelphia,PA,19103,A,,Q3,20010701,20010930,468626.72,16173.15,484799.87,114174.12,370625.75,359667.00,0.00,110236.62,0.00,110236.62,0.00,110236.62,0.00,14713.80,0.00,14713.80,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,1459.35,0.00,1459.35,16173.15,110236.62,0.00,110236.62,0.00,0.00,0.00,0.00,3937.50,0.00,3937.50,114174.12,4404651.52,2001,828116.74,5232768.26,4862142.51,370625.75,4437134.58,141496.91,4295637.67,0.00,4295637.67,0.00,335366.65,0.00,0.00,141496.91,0.00,351253.18,828116.74,4437134.58,0.00,0.00,425007.93,4862142.51,Karen Dougherty Bucholz,20011227
 SA14A,C00342519,ORG,Ballard Spahr Andrews & Ingersoll LLP,1735 Market Street,51st Floor,Philadelphia,PA,19103,C2000,,,,74929.53,20010701,4963.72,,In-Kind Contribution,,,,,,,,,,,,,,,,41101,,,
 sA14A,C00342519,ORG,Ballard Spahr Andrews & Ingersoll LLP,1735 Market Street,51st Floor,Philadelphia,PA,19103,C2000,,,,81018.5,20010731,6088.97,,In-Kind Contribution,,,,,,,,,,,,,,,,41102,,,
+'''
+
+filing_23422_abbreviated = '''HDR,FEC,3.00,"FECfile4",4.00,,FEC-15985,1
+F3XA,C00096842,"The American Electric Power Committee For Responsible Government","1 Riverside Plaza","P.O. Box 16631","Coumbus","OH","43216","","X","MY","","","","20010101","20010630",58496.65,231937.92,290434.57,206900.00,83534.57,0.00,0.00,34341.83,134678.00,169019.83,0.00,62918.09,231937.92,0.00,0.00,0.00,0.00,0.00,0.00,0.00,231937.92,231937.92,0.00,0.00,0.00,0.00,0.00,147500.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,59400.00,206900.00,206900.00,231937.92,0.00,231937.92,0.00,0.00,0.00,58496.65,2001,231937.92,290434.57,206900.00,83534.57,169019.83,0.00,169019.83,0.00,62918.09,231937.92,0.00,0.00,0.00,0.00,0.00,0.00,0.00,231937.92,231937.92,0.00,0.00,0.00,0.00,0.00,147500.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,59400.00,206900.00,206900.00,231937.92,0.00,231937.92,0.00,0.00,0.00,"Doreen W. Hohl","20020115"
+SA11A1,C00096842,"IND","Ackerman^Melinda S","4033 Silver Springs Lane","","Columbus","OH","432309874","","","AEP Services Corporation","Svp-Human Resources",420,"20010331",70,"","PayDed Id - 655","","","","","","","","","","","","","",,"","1177784688","",""
+SB23,C00096842,"CCM","Hall for Congress","2833 Northeast Weidler Street","","Portland","OR","97232","","2002 Primary","P2002","","20010410",1000,"C00288357","H4OR03044","Everett^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","H","OR","03","","","","","","","",,"","23188910104105668548","",""
 '''
 
 if __name__ == "__main__":
