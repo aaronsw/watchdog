@@ -395,7 +395,7 @@ def readstring(astring):
             # There can be a blank line here too, inserted by e.g. NIC
             # WebForms 6.2.1.1 in filing 353794.fec from 20080722.zip.
             if not line: continue
-        fieldnames = findkey(headermap, line[0])
+        fieldnames = findkey(headermap, line[0].upper())
         if not fieldnames:
             raise "could not find field defs", (line[0], headermap.keys())
         rv = mapper.map(dict(zip(fieldnames, line)))
