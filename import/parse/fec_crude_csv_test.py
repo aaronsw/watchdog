@@ -193,11 +193,16 @@ def test_report_id():
 
     """
 
-def test_short_header():
+def test_strange_headers():
     """Filing 184656 doesn’t include all of the header fields.
 
     >>> cover_record(filing_184656, '184656.fec')['committee']
     'Hewlett Packard Company PAC'
+
+    Filing 184693’s report_id has an extraneous space character at the
+    end, which should *not* be considered part of the report ID:
+    >>> cover_record(filing_184693_truncated, '184693.fec')['report_id']
+    '180927'
 
     """
 
@@ -249,6 +254,12 @@ F99,C00196725,Hewlett Packard Company PAC,3000 Hanover Street,20BX,Palo Alto,CA,
 [BEGINTEXT]
 This amendment, filed in response to the letter from the FEC dated August 12, 2005, corrects the figures on Lines 11(a)(i) and 11(a)(ii), Column B of the Detailed Summary Page.
 [ENDTEXT]
+'''
+
+filing_184693_truncated = '''HDR,FEC,5.2,"FECfile4",5.2,,FEC-180927 ,1
+F3XA,C00093054,"Wal-Mart Stores Inc. PAC For Responsible Government","702 S.W. 8th Street","","Bentonville","AR","727160150","","X","M7","","","","20050601","20050630",513583.82,164630.83,678214.65,185500.00,492714.65,0.00,0.00,16783.90,146603.16,163387.06,0.00,0.00,163387.06,0.00,0.00,0.00,0.00,0.00,1243.77,0.00,164630.83,164630.83,0.00,0.00,0.00,0.00,0.00,125000.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,60500.00,185500.00,185500.00,163387.06,0.00,163387.06,0.00,0.00,0.00,301464.31,2005,719467.34,1020931.65,528217.00,492714.65,36939.60,674942.03,711881.63,0.00,0.00,711881.63,0.00,0.00,0.00,0.00,2500.00,5085.71,0.00,719467.34,719467.34,0.00,0.00,917.00,917.00,0.00,329500.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,197800.00,528217.00,528217.00,711881.63,0.00,711881.63,917.00,0.00,917.00,"Raymond W Bracy","20050818",0,0,0,0,0,0,0,0,0,0,0,0
+SA11A1,C00093054,"IND",,"6 Canterbury Park","","Bentonville","AR","727124088","","","WAL-Mart Stores Inc.","Vice President Dmm",260,"20050616",20,"","","","","","","","","","","","","","","","","","WP2011866162005","","",,,,"Alderson",Art ,,,
+SA11A1,C00093054,"IND",,"6 Canterbury Park","","Bentonville","AR","727124088","","","WAL-Mart Stores Inc.","Vice President Dmm",260,"20050602",20,"","","","","","","","","","","","","","","","","","WP188779622005","","",,,,"Alderson",Art ,,,
 '''
 
 if __name__ == "__main__":
