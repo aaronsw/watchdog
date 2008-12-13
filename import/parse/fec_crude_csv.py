@@ -4,7 +4,7 @@
 
 """
 import csv, sys, cgitb, fixed_width, zipfile, cStringIO, os, glob, time
-import codecs, re, field_mapper
+import codecs, re, field_mapper, simplejson, itertools, tempfile
 
 def strip(text):
     """
@@ -467,12 +467,42 @@ def parse_efilings(filepattern = None):
         sys.stderr.write('parsing took %.1f seconds\n' % (now - last_time))
         last_time = now
 
+def stash_efilings(destdir = None, filepattern = None, save_orig = False):
+    if destdir is None: destdir = tempfile.mkdtemp()
+    for cover_record, records in parse_efilings(filepattern):
+        report_id = cover_record['report_id']
+        dirpath = os.path.join(destdir, report_id[-2:], report_id)
+        if not os.path.exists(dirpath): os.makedirs(dirpath)
+
+        for n in itertools.count():
+            # XXX we should use the filing ID for this
+            # but we don’t have it yet
+            pathname = os.path.join(dirpath, '%s.fec' % n)
+            if not os.path.exists(pathname):
+                outfile = file(pathname, 'w') # XXX race
+                if not save_orig: del cover_record['original_data']
+                simplejson.dump(cover_record, outfile)
+                outfile.write('\n')
+
+                for record in records:
+                    if not save_orig: del record['original_data']
+                    simplejson.dump(record, outfile)
+                    outfile.write('\n')
+
+                outfile.close()
+                break
+    return destdir
+
 if __name__ == '__main__':
     cgitb.enable(format='text')
-    # pprint is unacceptable --- it made the script run 40× slower.
-    import simplejson
-    for filename in sys.argv[1:]:
-        for form, schedules in readfile_generic(filename):
-            print simplejson.dumps(form, sort_keys=True, indent=4)
-            for schedule in schedules:
-                print simplejson.dumps(schedule, sort_keys=True, indent=4)
+    if sys.argv[1] == '--stash':
+        sys.argv.pop(1)
+        pattern = sys.argv[1] if len(sys.argv) > 1 else None
+        print stash_efilings(filepattern = pattern)
+    else:
+        # pprint is unacceptable --- it made the script run 40× slower.
+        for filename in sys.argv[1:]:
+            for form, schedules in readfile_generic(filename):
+                print simplejson.dumps(form, sort_keys=True, indent=4)
+                for schedule in schedules:
+                    print simplejson.dumps(schedule, sort_keys=True, indent=4)
