@@ -520,10 +520,11 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
 
 if __name__ == '__main__':
     cgitb.enable(format='text')
-    if sys.argv[1] == '--stash':
+    if sys.argv[1] == '--stash-in':
         sys.argv.pop(1)
+        destdir = sys.argv.pop(1)
         pattern = sys.argv[1] if len(sys.argv) > 1 else None
-        print stash_efilings(filepattern = pattern)
+        stash_efilings(destdir=destdir, filepattern=pattern)
     else:
         # pprint is unacceptable --- it made the script run 40× slower.
         for filename in sys.argv[1:]:
