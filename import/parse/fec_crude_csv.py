@@ -360,6 +360,8 @@ def decode_headerline(line):
 
     if not headers.get('name_delim'): # empty string means to use the default
         headers['name_delim'] = '^'
+    if headers['name_delim'] == '0':     # special case for RNC 2002 software
+        headers['name_delim'] = '^'
     assert headers['name_delim'] in '>^' # I want to know if not!
 
     return headers

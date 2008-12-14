@@ -257,6 +257,18 @@ def test_noncarets():
     >>> [rec['contributor'] for rec in
     ...      fec_crude_csv.read_filing(filing_31454_faked, '31454.fec')[1]]
     ['Melinda S Ackerman']
+
+    However, the Republican National Committee’s 2002 proprietary
+    software claims to use “0” for its name delimiter, even though it
+    actually uses “^” like normal software.  Since I don’t think
+    anyone will really use “0” as a name delimiter, I am going to
+    special-case it.
+    >>> [rec.get('contributor') for rec in
+    ...      fec_crude_csv.read_filing(filing_33818_truncated, '33818.fec')[1]]
+    ... #doctest: +NORMALIZE_WHITESPACE
+    [None, None, 'Mrs. MarciA. Abel', 'Ms. Margaret Allyn',
+     'Ms. Helen Andalla', 'Mr. RalphJ. Anderson']
+
     """
 
 filing_230174_truncated = '''HDR,FEC,5.3,CMDI FEC FILER,5.3.0,,FEC-211016,1,
@@ -343,6 +355,16 @@ SB23,C00096842,"CCM","Hall for Congress","2833 Northeast Weidler Street","","Por
 filing_31454_faked = '''HDR,FEC,3.00,we did it,0203HGA,>,,,
 F3PN,C00361790,Hagelin/Goldhaber,PO Box 1900,,Fairfield,IA,52556,,,,Q1,G2000,20001107,,20020101,20020331,74.21,,74.21,15.90,58.31,,55578.23,,,15.90,,,,,,,,,,,,,,,,,15.90,,,,,,,,,,,,15.90,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,3021.00,,,,3021.00,,,,,525.00,,,525.00,,3546.00,969.91,,1862.44,,,,,150.00,,,150.00,,2982.35,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Blanche Woodward,20020409
 SA11A1,C00361790,"IND","Ackerman>Melinda S","4033 Silver Springs Lane","","Columbus","OH","432309874","","","AEP Services Corporation","Svp-Human Resources",420,"20010331",70,"","PayDed Id - 655","","","","","","","","","","","","","",,"","1177784688","",""
+'''
+
+filing_33818_truncated = '''"HDR","FEC","3.00","Proprietary",2002,"0","",0,"M4 2002"
+"F3XN","C00003418","REPUBLICAN NATIONAL COMMITTEE","310 FIRST STREET SE","","WASHINGTON","DC","20003"," ","X","M4","",20020420,"",20020301,20020331,44472804.65,8906846.93,53379651.58,7533865.45,45845786.13,1446.75,0.00,1859262.91,5082449.96,6941712.87,0.00,21500.00,6963212.87,0.00,0.00,0.00,154880.12,0.00,56421.87,1732332.07,8906846.93,7174514.86,2335814.04,1748981.24,2888242.17,6973037.45,533976.00,25000.00,0.00,0.00,0.00,0.00,1852.00,0.00,0.00,1852.00,0.00,7533865.45,5784884.21,6963212.87,1852.00,6961360.87,5224056.21,154880.12,5069176.09,34420547.12,2002,32088616.47,66509163.59,20663377.46,45845786.13,6122494.10,20356875.00,26479369.10,0.00,94500.00,26573869.10,2327.00,0.00,0.00,551329.16,0.00,160956.48,4800134.73,32088616.47,27288481.74,6780967.14,4634383.55,8598758.14,20014108.83,600311.90,25000.00,0.00,0.00,0.00,0.00,23956.73,0.00,0.00,23956.73,0.00,20663377.46,16028993.91,26573869.10,23956.73,26549912.37,15379725.28,551329.16,14828396.12,"JAY C. BANNING Asstant Treasurer",20020420
+"SD9","C00003418","","FRIENDS OF SENATOR DAVID KARNES","626 109TH PLAZA","","OMAHA","NE","68154","NEWS RELEASES",612.00,0.00,0.00,612.00,"","",""," ","","","","","","","",""," ","D09-01"
+"SD9","C00003418","","SENATOR KARNES CAMPAIGN","626 109TH PLAZA","","OMAHA","NE","68154","NEWS RELEASES",834.75,0.00,0.00,834.75,"","",""," ","","","","","","","",""," ","D09-02"
+"SA11A1","C00003418","IND","Abel^MarciA.^Mrs.","2342 E. Riverdale Circle","","Mesa","AZ","85213"," "," ","Alaska Airlines","Reservations Sales Coord.",500.00,20020117,500.00,"15",""," "," "," "," "," "," "," "," "," "," "," "," ","X"," ","C","33999581"," "," ",""
+"SA11A1","C00003418","IND","Allyn^Margaret^Ms.","1420 Sheridan Road","","Wilmette","IL","60091"," "," ","","Housewife",500.00,20020115,500.00,"15",""," "," "," "," "," "," "," "," "," "," "," "," ","X"," ","C","33981112"," "," ",""
+"SA11A1","C00003418","IND","Andalla^Helen^Ms.","7237 Wapello Drive","","Rockville","MD","20855"," "," ","Facility Service Co., Inc.","Landscaper",800.00,20020222,400.00,"15",""," "," "," "," "," "," "," "," "," "," "," "," ","X"," ","C","34279570"," "," ",""
+"SA11A1","C00003418","IND","Anderson^RalphJ.^Mr.","4 Orchard Hill Drive","","Moline","IL","61265"," "," ","","Retired",250.00,20020226,250.00,"15",""," "," "," "," "," "," "," "," "," "," "," "," ","X"," ","C","34304612"," "," ",""
 '''
 
 if __name__ == "__main__":
