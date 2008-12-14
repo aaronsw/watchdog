@@ -70,7 +70,7 @@ class petitions():
     def GET(self, uid):
         from petition import get_num_signs
         user = db.select('users', what='id, lname, fname', where='id=$uid', vars=locals())      
-        if not user: raise web.notfound
+        if not user: raise web.notfound()
         created, signed = created_by(uid).list(), signed_by(uid).list()
         for p in created + signed: p.signcount = get_num_signs(p.id)
         logged_in = (helpers.get_loggedin_userid() == int(uid))
@@ -82,7 +82,7 @@ class userinfo():
         try:
             user = db.select('users', where='id=$uid', vars=locals())[0]
         except IndexError:     
-            raise web.notfound
+            raise web.notfound()
         
         info_form = info_form or forms.userinfo()
         if not password_form:

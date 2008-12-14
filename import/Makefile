@@ -36,7 +36,7 @@ NJS=$(PARSE)/almanac.njs \
 LOADERS = .schema .manual \
           .almanac .centers .voteview .govtrack \
           .bills .interests .votesmart .photos .lobbyist \
-		  .fec .census .soi .earmarks .wyr .saveusers .restoreusers
+		  .fec .handshakes .census .soi .earmarks .wyr .phones .saveusers .restoreusers
 
 all: database .se
 clean:
@@ -97,6 +97,10 @@ database: $(LOADERS)
 	$(PYTHON) load/earmarks.py
 	touch $@
 
+.handshakes: load/handshakes.py .fec .earmarks
+	$(PYTHON) load/handshakes.py
+	touch $@
+
 .bills: .govtrack load/bills.py
 	$(PYTHON) load/bills.py
 
@@ -110,6 +114,10 @@ database: $(LOADERS)
 
 .wyr: .schema load/wyr.py $(CRAWL)/votesmart/wyr.json
 	$(PYTHON) load/wyr.py
+	touch $@
+
+.phones: .schema load/phones.py $(CRAWL)/votesmart/offices.json
+	$(PYTHON) load/phones.py
 	touch $@
 
 .photos: .manual .votesmart load/photos.py

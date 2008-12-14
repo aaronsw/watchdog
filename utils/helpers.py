@@ -120,6 +120,12 @@ def get_user_name():
     user = get_user()
     return (user.fname or user.email[:user.email.index('@')]) if user else ''
 
+def format_name(name):
+    if name.find(',') != -1:
+      i = name.index(',')
+      name = name[i+2:]+' '+name[0:i]
+    return name
+
 g = web.template.Template.globals
 g['slice'] = slice
 g['commify'] = web.commify
@@ -129,6 +135,8 @@ g['len'] = len
 g['changequery'] = web.changequery
 g['enumerate'] = enumerate
 g['datestr'] = web.datestr
+g['urlquote'] = web.urlquote
+g['format_name'] = format_name
 
 g['query_param'] = query_param
 g['is_logged_in'] = lambda: bool(get_loggedin_email() or get_unverified_email())

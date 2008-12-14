@@ -21,6 +21,7 @@ urls = (
   r'/us/([a-z][a-z])%s?' % options, 'state',
   r'/us/([A-Z][A-Z]-\d+)', 'redistrict',
   r'/us/([a-z][a-z]-\d+)%s?' % options, 'district',
+  r'/(corp|p)/by/(donations|earmarks)_(from|to)_(.*)/(distribution\.png|)', 'moneyflow',
   r'/(us|p)/by/(.*)/distribution\.png', 'sparkdist',
   r'/(us|p)/by/(.*)', 'dproperty',
   r'/p/(.*?)/lobby', 'politician_lobby',
@@ -31,6 +32,8 @@ urls = (
   r'/p/(.*?)%s?' % options, 'politician',
   r'/e/(.*?)%s?' % options, 'earmark',
   r'/b/(.*?)%s?' % options, 'bill',
+  r'/contrib/(\d+)/' , 'contributor',
+  r'/empl/(.*?)%s?' % options, 'employer',
   r'/r/us/(.*?)%s?' % options, 'roll',
   r'/c', petition.app,
   r'/u', users.app,
@@ -133,7 +136,7 @@ class find:
                     rep = reps[0]
                     web.seeother('/p/%s' % rep.id)
                 except IndexError:
-                    raise web.notfound
+                    raise web.notfound()
 
         else:
             index = schema.District.select(order='name asc')
@@ -147,7 +150,7 @@ class state:
         try:
             state = schema.State.where(code=state.upper())[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
 
         out = apipublish.publish([state], format)
         if out: return out
@@ -164,6 +167,16 @@ class district:
             d = schema.District.where(name=district.upper())[0]
         except IndexError:
             raise web.notfound
+            
+        zip = '33149'
+        d.contributors = db.query("""SELECT cn.name, sum(cn.amount) as amt
+          FROM contribution cn 
+          WHERE cn.zip = $zip AND cn.employer != '' GROUP BY cn.name 
+          ORDER BY amt DESC LIMIT 5""", vars=locals())
+        d.contributor_employers = db.query("""SELECT cn.employer, 
+          sum(cn.amount) as amt FROM contribution cn 
+          WHERE cn.zip = $zip AND cn.employer != '' GROUP BY cn.employer 
+          ORDER BY amt DESC LIMIT 5""", vars=locals())
         
         out = apipublish.publish([d], format)
         if out: return out
@@ -206,7 +219,7 @@ class roll:
             b = schema.Roll.where(id=roll_id)[0]
             votes = schema.Vote.where(roll_id=b.id)
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
 
         out = apipublish.publish([b], format)
         if out: return out
@@ -226,12 +239,40 @@ class bill:
         try:
             b = schema.Bill.where(id=bill_id)[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
         
         out = apipublish.publish([b], format)
         if out: return out
         
         return render.bill(b)
+        
+class contributor:
+    def GET(self, zipcode):
+      s = web.input(s='').s
+      name = s.lower()
+      contributions = list(db.query("""SELECT count(*) AS how_many, 
+        sum(amount) AS how_much, p.firstname, p.lastname, 
+        cm.name AS committee, occupation, employer, max(cn.sent) as sent,
+        p.id as polid FROM contribution cn, committee cm, 
+        politician_fec_ids pfi, politician p WHERE cn.recipient_id = cm.id 
+        AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
+        AND lower(cn.name) = $name AND cn.zip = $zipcode 
+        GROUP BY cm.name, p.lastname, p.firstname, cn.occupation, cn.employer, p.id
+        ORDER BY lower(employer), lower(occupation), sent DESC, how_much DESC""", vars=locals()))
+      num = len(contributions)
+      return render.contributor(contributions, zipcode, s, num)
+  
+class employer:
+    def GET(self, corp_id, format=None):
+      contributions = db.query("""SELECT count(*) as how_many, 
+      sum(amount) as how_much, p.firstname, p.lastname, 
+      p.id as polid, cm.name as committee 
+      FROM contribution cn, committee cm, politician_fec_ids pfi, politician p
+      WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
+      AND pfi.politician_id = p.id AND lower(cn.employer) = lower($corp_id)
+      GROUP BY cm.name, p.lastname, p.firstname, p.id 
+      ORDER BY how_much DESC;""", vars=locals())
+      return render.employer(contributions, corp_id)
 
 def earmark_list(format, page=0, limit=50):
     earmarks = schema.Earmark.select(limit=limit, offset=page*limit, order='id')
@@ -245,7 +286,7 @@ def earmark_pol_list(pol_id, format, page=0, limit=50):
             order='final_amt desc', vars=locals())
     if not earmarks:
         # @@TODO: something better here. 
-        raise web.notfound
+        raise web.notfound()
     out = apipublish.publish(earmarks, format)
     if out: return out
     return render.earmark_list(earmarks, limit)
@@ -255,7 +296,7 @@ class politician_earmarks:
         try:
             em = schema.Politician.where(id=polid)[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
         return earmark_pol_list(polid, format)
 class earmark:
     def GET(self, earmark_id, format=None):
@@ -268,9 +309,9 @@ class earmark:
         try:
             em = schema.Earmark.where(id=int(earmark_id))[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
         except ValueError:
-            raise web.notfound
+            raise web.notfound()
         return render.earmark(em)
 
 
@@ -289,7 +330,7 @@ class politician:
 
         if idlookup:
             # we were looking up by ID but nothing matched
-            raise web.notfound
+            raise web.notfound()
 
         if polid == "" or polid == "index":
             p = schema.Politician.select(order='district_id asc')
@@ -302,14 +343,25 @@ class politician:
         try:
             p = schema.Politician.where(id=polid)[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
 
         #@@move into schema
         p.fec_ids = [x.fec_id for x in db.select('politician_fec_ids', what='fec_id',
           where='politician_id=$polid', vars=locals())]
 
         p.related_groups = group_politician_similarity(polid)
-
+        p.contributors = db.query("""SELECT cn.name, cn.zip, 
+          sum(cn.amount) as amt FROM committee cm, politician_fec_ids pfi, 
+          politician p, contribution cn WHERE cn.recipient_id = cm.id 
+          AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
+          AND p.id = $polid AND cn.employer != '' GROUP BY cn.name, cn.zip 
+          ORDER BY amt DESC LIMIT 5""", vars=locals())
+        p.contributor_employers = db.query("""SELECT cn.employer, 
+          sum(cn.amount) as amt FROM committee cm, politician_fec_ids pfi, 
+          politician p, contribution cn WHERE cn.recipient_id = cm.id 
+          AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
+          AND p.id = $polid AND cn.employer != '' GROUP BY cn.employer 
+          ORDER BY amt DESC LIMIT 5""", vars=locals())
         out = apipublish.publish([p], format)
         if out: return out
 
@@ -382,13 +434,19 @@ class lob_person:
 
 class politician_introduced:
     def GET(self, politician_id):
-        pol = schema.Politician.where(id=politician_id)[0]
+        try:
+            pol = schema.Politician.where(id=politician_id)[0]
+        except IndexError:
+            raise web.notfound()
         return render.politician_introduced(pol)
 
 class politician_groups:
     def GET(self, politician_id):
         related = group_politician_similarity(politician_id, qmin=1)
-        pol = schema.Politician.where(id=politician_id)[0]
+        try:
+            pol = schema.Politician.where(id=politician_id)[0]
+        except IndexError:
+            raise web.notfound()
         return render.politician_groups(pol, related)
 
 class politician_group:
@@ -411,8 +469,8 @@ class dproperty:
         try:
             table = table_map[table]
         except KeyError:
-            raise web.notfound
-        if not r_safeproperty.match(what): raise web.notfound
+            raise web.notfound()
+        if not r_safeproperty.match(what): raise web.notfound()
 
         #if `what` is not there in the `table` (provide available options rather than 404???)
         try:
@@ -420,7 +478,7 @@ class dproperty:
                                  what='max(%s) as m' % what,
                                  vars=locals())[0].m)
         except:
-            raise web.notfound
+            raise web.notfound()
 
         items = db.select(table,
                           what="*, 100*(%s/$maxnum) as pct" % what,
@@ -445,7 +503,7 @@ def sparkpos(table, what, id):
         id_col= 'id'
     else: return 0
     assert table in table_map.values()
-    if not r_safeproperty.match(what): raise web.notfound
+    if not r_safeproperty.match(what): raise web.notfound()
     
     item = db.query("select count(*) as position from %(table)s, \
       (select * from %(table)s where %(id_col)s=$id) as a \
@@ -458,8 +516,8 @@ class sparkdist:
         try:
             table = table_map[table]
         except KeyError:
-            raise web.notfound
-        if not r_safeproperty.match(what): raise web.notfound
+            raise web.notfound()
+        if not r_safeproperty.match(what): raise web.notfound()
 
         inp = web.input(point=None)
         points = db.select(table, what=what, order=what+' asc', where=what+' is not null')
@@ -468,10 +526,55 @@ class sparkdist:
         web.header('Content-Type', 'image/png')
         return simplegraphs.sparkline(points, inp.point)
 
+class moneyflow:
+    def GET(self, pol_or_corp, prop, frm_or_to, src_or_dest, img=None):
+        inp = web.input(year=2008, point=None)
+        year = inp.year
+        props = []
+        if pol_or_corp == 'p':
+            props = ['donations_to', 'earmarks_from']
+        elif pol_or_corp == 'corp':
+            props = ['donations_from', 'earmarks_to']
+        if not '%s_%s' % (prop, frm_or_to) in props:
+            raise web.notfound()
+
+        if prop == 'donations':
+            q = 'select sum(c.amount) as amount, c.employer_stem as frm, fec.politician_id as to \
+                    from contribution c, committee pac, politician_fec_ids fec '
+            where = 'c.recipient_id = pac.id and  ' + \
+                        'pac.candidate_id = fec.fec_id and ' + \
+                        "date_part('year', sent) = $year "
+            orderby = 'order by amount asc '
+            groupby = 'group by c.employer_stem, fec.politician_id '
+            if frm_or_to == 'from': #donations from a particular corp
+                src_or_dest = src_or_dest.replace('-', ' ')
+                where = 'c.employer_stem=$src_or_dest and ' + where
+            else: #donations to a particular pol
+                where = 'fec.politician_id = $src_or_dest and ' + where
+        else: #earmarks
+            q = 'select sum(e.final_amt) as amount, es.politician_id as frm, e.recipient_stem as to \
+                    from earmark e, earmark_sponsor as es '
+            where = 'e.id = es.earmark_id '
+            groupby = 'group by es.politician_id, e.recipient_stem  '
+            orderby = 'order by amount asc '
+            if frm_or_to == 'from': #earmarks from a particular pol
+                where = 'es.politician_id = $src_or_dest and ' + where 
+            else: #earmarks to a particular corp
+                src_or_dest = src_or_dest.replace('-', ' ')
+                where = 'e.recipient_stem = $src_or_dest and ' + where
+
+        reslt = db.query(q + 'where ' + where + groupby + orderby, vars=locals())
+        if img:
+            points = [r.amount for r in reslt]
+            web.header('Content-Type', 'image/png')
+            return simplegraphs.sparkline(points, inp.point)
+        else:
+            return 'coming soon'    
+
 class staticdata:
     def GET(self, path):
         if not web.config.debug:
-            raise web.notfound
+            raise web.notfound()
 
         assert '..' not in path, 'security'
         return file('data/' + path).read()
@@ -479,10 +582,10 @@ class staticdata:
 app = web.application(urls, globals())
 def notfound():
     web.ctx.status = '404 Not Found'
-    return getattr(render, '404')()
+    return web.notfound(getattr(render, '404')())
 
 def internalerror():
-    return file('templates/500.html').read()
+    return web.internalerror(file('templates/500.html').read())
 
 app.notfound = notfound
 if production_mode:

@@ -16,6 +16,7 @@ from settings import production_mode
 __all__ = ["prepare", "send_msgs", "send", "writerep"]
 
 test_mode = (not production_mode)
+DEBUG = False
 
 def prepare(pol):
     """
@@ -74,7 +75,7 @@ def writerep(pol, i, env={}):
     handlers = dict(E=writerep_email, W=writerep_wyr, I=writerep_ima, Z=writerep_zipauth)
     try:
         handler = handlers[contacttype]
-        print handler.__name__,
+        if DEBUG: print handler.__name__,
         if contacttype == 'I':
             msg_sent = handler(pol, contact, i, env)
         else:
@@ -82,6 +83,8 @@ def writerep(pol, i, env={}):
     except Exception, details:
         print >> sys.stderr, 'Error in writerep:', details
         msg_sent = False
+    if not msg_sent: send_failure_report(pol, i)
+    if DEBUG: print msg_sent and 'Success' or 'Failure'
     return msg_sent
 
 def writerep_wyr(pol, wyr_link, i):
@@ -100,7 +103,7 @@ def writerep_wyr(pol, wyr_link, i):
         state_options = form.find_control_by_name('state').items
         state_l = [s.name for s in state_options if s.name[:2] == i.state]
         form.fill_all(state=state_l[0], zipcode=i.zip5, zip4=i.zip4)
-        print 'step1 done',
+        if DEBUG: print 'step1 done',
         return form.click()
             
     def get_challenge():
@@ -138,15 +141,15 @@ def writerep_wyr(pol, wyr_link, i):
             form.fill_address(i.addr1, i.addr2)
             form.fill_all(city=i.city, phone=i.phone, email=i.email)
             request = form.click()
-            print 'step2 done',
+            if DEBUG: print 'step2 done',
             return request
             
     def wyr_step3(request):
         b.open(request)
         form = get_form(b, lambda f: f.find_control_by_type('textarea'))
         if form and form.fill(i.full_msg, type='textarea'):
-            print 'step3 done',
-            return submit_form(b, form)
+            if DEBUG: print 'step3 done',
+            return submit_form(b, form, i)
 
     return wyr_step3(wyr_step2(wyr_step1(wyr_link)))
 
@@ -171,9 +174,9 @@ def writerep_ima(pol, ima_link, i, env={}):
         captcha_val = i.get('captcha_%s' % pol, '')
         f.fill_all(city=i.city, state=i.state.upper(), zipcode=i.zip5, zip4=i.zip4, email=i.email,\
                     issue=['GEN', 'OTH'], subject=i.subject, captcha=captcha_val, reply='yes')
-        return submit_form(b, f)
+        return submit_form(b, f, i)
     else:
-        print 'Error: No IMA form in', ima_link,
+        print >> sys.stderr, 'Error: No IMA form in', ima_link,
 
 def writerep_zipauth(pol, zipauth_link, i):
     """Sends the msg along with the sender details from `i` through the WYR system.
@@ -188,7 +191,7 @@ def writerep_zipauth(pol, zipauth_link, i):
         f.fill_all(email=i.email, zipcode=i.zip5, zip4=i.zip4, city=i.city)
         if 'lamborn.house.gov' in zipauth_link:
             f.f.action = urljoin(zipauth_link, '/Contact/ContactForm.htm') #@@ they do it in ajax
-        print 'step1 done',
+        if DEBUG: print 'step1 done',
         return f.click()
         
     def zipauth_step2(request):
@@ -202,10 +205,10 @@ def writerep_zipauth(pol, zipauth_link, i):
             f.fill(type='textarea', value=i.full_msg)
             f.fill_all(city=i.city, zipcode=i.zip5, zip4=i.zip4, state=i.state.upper(),
                     email=i.email, issue=['GEN', 'OTH'], subject=i.subject, reply='yes')
-            print 'step2 done',
-            return submit_form(b, f)
+            if DEBUG: print 'step2 done',
+            return submit_form(b, f, i)
         else:
-            print 'no form with text area'
+            print >> sys.stderr, 'no form with text area'
             if b.has_text('zip code is split between more'): raise ZipShared
             if b.has_text('Access to the requested form is denied'): raise ZipIncorrect
             if b.has_text('you are outside'): raise ZipIncorrect 
@@ -216,7 +219,7 @@ def writerep_zipauth(pol, zipauth_link, i):
     if form:
         return zipauth_step2(zipauth_step1(form))
     else:
-        print 'Error: No zipauth form in', zipauth_link
+        print >> sys.stderr, 'Error: No zipauth form in', zipauth_link
 
 def writerep_email(pol, pol_email, i):
     name = '%s. %s %s' % (i.prefix, i.fname, i.lname)
@@ -229,29 +232,40 @@ def writerep_email(pol, pol_email, i):
     web.sendmail(from_addr, to_addr, i.subject, i.full_msg)
     return True
 
-def submit_form(b, f):
+def submit_form(browser, f, i):
     """clicks the form `f` and opens the request in browser `b` and sends response."""
     if production_mode:
         request = f.click()
-        response = b.open(request)
-        send_response(production_test_email, f.controls, response)
+        response = browser.open(request)
+        send_response(production_test_email, i, f.controls, response)
     elif test_mode:
-        send_response(test_email, f.controls, response='')
+        send_response(test_email, i, f.controls, response='')
     return True
 
-def send_response(to, form_controls, response):
+def send_response(to, i, form_controls, response):
     """sends a mail to `to` to check if the form is submitted properly.
     """
+    inputs ='\n'.join(['%s: %s' % (k, v) for k, v in i.items()])
+    msg = 'Filled at watchdog.net:\n\n%s' % inputs
+
     form_values = "\n".join(["%s: %s" % (c.name, c.value) for c in form_controls])
-    msg = 'Filled in the last form:\n\n' + form_values 
+    msg += '\n\nFilled in the last form:\n\n%s' % form_values
+
     if response: 
-        msg +=  '\n\nResponse at' + response.geturl() + ':\n' + response.read()
+        msg +=  '\n\nResponse: \n\n' + response
     else:
         msg += '\n\n(Not Production click, no response)'
 
     subject = 'wyr mail'
     web.sendmail(from_address, to, subject, msg)
 
+def send_failure_report(pol, i):
+    inputs ='\n'.join(['%s: %s' % (k, v) for k, v in i.items()])
+    msg = 'Filled at watchdog.net:\n\n%s' % inputs
+    subject = 'Writerep to %s failed' % pol
+    to = production_test_email if production_mode else test_email
+    web.sendmail(from_address, to, subject, msg)    
+    
 def not_signup_or_search(form):
     has_textarea = form.find_control_by_type('textarea')
     if has_textarea:
@@ -273,7 +287,7 @@ def get_src_and_form(url, imgs):
     try:
         img = imgs[0]
         img_src = img.get('src', '')
-        form = img.findParent('form') or ''
+        form = repr(img.findParent('form')) or ''
         captcha_src = urljoin(url, img_src)
     except Exception, details:
         print >> sys.stderr, details

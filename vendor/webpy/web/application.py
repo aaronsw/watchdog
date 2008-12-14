@@ -24,18 +24,14 @@ except ImportError:
 __all__ = [
     "application", "auto_application",
     "subdir_application", "subdomain_application", 
-    "combine_applications",
     "loadhook", "unloadhook",
     "autodelegate"
 ]
 
-class NotFound(Exception): 
-    """Exception raised when an application can't handle a request."""
-    pass
-
 class application:
-    """Application to delegate requests based on path.
-
+    """
+    Application to delegate requests based on path.
+    
         >>> urls = ("/hello", "hello")
         >>> app = application(urls, globals())
         >>> class hello:
@@ -52,13 +48,21 @@ class application:
         self.processors = []
 
         if autoreload:
+            def main_module_name():
+                mod = sys.modules['__main__']
+                file = getattr(mod, '__file__', None) # make sure this works even from python interpreter
+                return file and os.path.splitext(os.path.basename(file))[0]
+
             def modname(fvars):
                 """find name of the module name from fvars."""
-                file, name = fvars['__file__'], fvars['__name__']
+                file, name = fvars.get('__file__'), fvars.get('__name__')
+                if file is None or name is None:
+                    return None
+
                 if name == '__main__':
                     # Since the __main__ module can't be reloaded, the module has 
                     # to be imported using its file name.                    
-                    name = os.path.splitext(os.path.basename(file))[0]
+                    name = main_module_name()
                 return name
                 
             mapping_name = utils.dictfind(fvars, mapping)
@@ -67,20 +71,28 @@ class application:
             def reload_mapping():
                 """loadhook to reload mapping and fvars."""
                 mod = __import__(module_name)
-                self.fvars = mod.__dict__
-                self.mapping = getattr(mod, mapping_name)
-            
-            # to reload modified modules
-            self.add_processor(loadhook(Reloader()))
+                mapping = getattr(mod, mapping_name, None)
+                if mapping:
+                    self.fvars = mod.__dict__
+                    self.mapping = mapping
 
-            # to update mapping and fvars
-            self.add_processor(loadhook(reload_mapping))
-            
+            self.add_processor(loadhook(Reloader()))
+            if mapping_name and module_name:
+                self.add_processor(loadhook(reload_mapping))
+
+            # load __main__ module usings its filename, so that it can be reloaded.
+            if main_module_name() and '__main__' in sys.argv:
+                try:
+                    __import__(main_module_name())
+                except ImportError:
+                    pass
+
     def add_mapping(self, pattern, classname):
         self.mapping += (pattern, classname)
         
     def add_processor(self, processor):
-        """Adds a processor to the application. 
+        """
+        Adds a processor to the application. 
         
             >>> urls = ("/(.*)", "echo")
             >>> app = application(urls, globals())
@@ -151,21 +163,38 @@ class application:
             env = kw['env']
         else:
             env = {}
-        env = dict(env, HTTP_HOST=host, REQUEST_METHOD=method, PATH_INFO=path, QUERY_STRING=query, HTTPS=https)
+        env = dict(env, HTTP_HOST=host, REQUEST_METHOD=method, PATH_INFO=path, QUERY_STRING=query, HTTPS=str(https))
         headers = headers or {}
+
         for k, v in headers.items():
             env['HTTP_' + k.upper().replace('-', '_')] = v
-        
+
+        if 'HTTP_CONTENT_LENGTH' in env:
+            env['CONTENT_LENGTH'] = env.pop('HTTP_CONTENT_LENGTH')
+
+        if 'HTTP_CONTENT_TYPE' in env:
+            env['CONTENT_TYPE'] = env.pop('HTTP_CONTENT_TYPE')
+
         if data:
             import StringIO
-            q = urllib.urlencode(data)
+            if isinstance(data, dict):
+                q = urllib.urlencode(data)
+            else:
+                q = data
             env['wsgi.input'] = StringIO.StringIO(q)
+            if not env.get('CONTENT_TYPE', '').lower().startswith('multipart/') and 'CONTENT_LENGTH' not in env:
+                env['CONTENT_LENGTH'] = len(q)
         response = web.storage()
         def start_response(status, headers):
             response.status = status
             response.headers = dict(headers)
-        response.data = "".join(self.wsgifunc()(env, start_response))
+            response.header_items = headers
+        response.data = "".join(self.wsgifunc(cleanup_threadlocal=False)(env, start_response))
         return response
+
+    def browser(self):
+        import browser
+        return browser.AppBrowser(self)
 
     def handle(self):
         fn, args = self._match(self.mapping, web.ctx.path)
@@ -173,16 +202,26 @@ class application:
         
     def handle_with_processors(self):
         def process(processors):
-            if processors:
-                p, processors = processors[0], processors[1:]
-                return p(lambda: process(processors))
-            else:
-                return self.handle()
-                
-        # processors must be applied in the resvere order.
-        return process(self.processors)
-                
-    def wsgifunc(self, *middleware):
+            try:
+                web.ctx.app_stack.append(self)
+                if processors:
+                    p, processors = processors[0], processors[1:]
+                    return p(lambda: process(processors))
+                else:
+                    return self.handle()
+            except web.HTTPError:
+                raise
+            except:
+                print >> web.debug, traceback.format_exc()
+                raise self.internalerror()
+                    
+        try:
+            # processors must be applied in the resvere order. (??)
+            return process(self.processors)
+        finally:
+            web.ctx.app_stack = web.ctx.app_stack[:-1]
+                        
+    def wsgifunc(self, *middleware, **kw):
         """Returns a WSGI-compatible function for this application."""
         def peep(iterator):
             """Peeps into an iterator by doing an iteration
@@ -209,16 +248,8 @@ class application:
                     raise web.nomethod()
 
                 result = self.handle_with_processors()
-            except NotFound:
-                web.ctx.status = "404 Not Found"
-                result = self.notfound()
             except web.HTTPError, e:
                 result = e.data
-            except:
-                print >> web.debug, traceback.format_exc()
-                web.ctx.status = '500 Internal Server Error'
-                result = self.internalerror()
-                web.ctx.headers = [('Content-Type', 'text/html')]
 
             if is_generator(result):
                 result = peep(result)
@@ -235,7 +266,7 @@ class application:
             # see utils.ThreadedDict for details
             import threading
             t = threading.currentThread()
-            if hasattr(t, '_d'):
+            if kw.get('cleanup_threadlocal', True) and hasattr(t, '_d'):
                 del t._d
         
             return result
@@ -245,18 +276,6 @@ class application:
 
         return wsgi
 
-    def internalerror(self):
-        """Message for `500 internal error`."""
-        
-        if web.config.get('debug'):
-            return debugerror.debugerror()
-        else:
-            return "internal server error"
-
-    def notfound(self):
-        """Message for `404 not found`."""
-        return "not found"
-        
     def run(self, *middleware):
         """
         Starts handling requests. If called in a CGI or FastCGI context, it will follow
@@ -288,12 +307,19 @@ class application:
     def load(self, env):
         """Initializes ctx using env."""
         ctx = web.ctx
+        ctx.clear()
         ctx.status = '200 OK'
         ctx.headers = []
         ctx.output = ''
         ctx.environ = ctx.env = env
         ctx.host = env.get('HTTP_HOST')
-        ctx.protocol = env.get('HTTPS') and 'https' or 'http'
+
+        if env.get('wsgi.url_scheme') in ['http', 'https']:
+            ctx.protocol = env['wsgi.url_scheme']
+        elif env.get('HTTPS', '').lower() in ['on', 'true']:
+            ctx.protocol = 'https'
+        else:
+            ctx.protocol = 'http'
         ctx.homedomain = ctx.protocol + '://' + env.get('HTTP_HOST', '[unknown]')
         ctx.homepath = os.environ.get('REAL_SCRIPT_NAME', env.get('SCRIPT_NAME', ''))
         ctx.home = ctx.homedomain + ctx.homepath
@@ -320,6 +346,8 @@ class application:
 
         # status must always be str
         ctx.status = '200 OK'
+        
+        ctx.app_stack = []
 
     def _delegate(self, f, fvars, args=[]):
         def handle_class(cls):
@@ -334,9 +362,9 @@ class application:
         def is_class(o): return isinstance(o, (types.ClassType, type))
             
         if f is None:
-            raise NotFound
+            raise web.notfound()
         elif isinstance(f, application):
-            return f.handle()
+            return f.handle_with_processors()
         elif is_class(f):
             return handle_class(f)
         elif isinstance(f, basestring):
@@ -390,12 +418,37 @@ class application:
             web.ctx.homepath += dir
             web.ctx.path = web.ctx.path[len(dir):]
             web.ctx.fullpath = web.ctx.fullpath[len(dir):]
-            return app.handle()
+            return app.handle_with_processors()
         finally:
             web.ctx.home = oldctx.home
             web.ctx.homepath = oldctx.homepath
             web.ctx.path = oldctx.path
             web.ctx.fullpath = oldctx.fullpath
+            
+    def get_parent_app(self):
+        if self in web.ctx.app_stack:
+            index = web.ctx.app_stack.index(self)
+            if index > 0:
+                return web.ctx.app_stack[index-1]
+        
+    def notfound(self):
+        """Returns HTTPError with '404 not found' message"""
+        parent = self.get_parent_app()
+        if parent:
+            return parent.notfound()
+        else:
+            return web._NotFound()
+            
+    def internalerror(self):
+        """Returns HTTPError with '500 internal error' message"""
+        parent = self.get_parent_app()
+        if parent:
+            return parent.internalerror()
+        elif web.config.get('debug'):
+            import debugerror
+            return debugerror.debugerror()
+        else:
+            return web._InternalError()
 
 class auto_application(application):
     """Application similar to `application` but urls are constructed 
@@ -432,33 +485,12 @@ class auto_application(application):
 
         self.page = page
 
-class subdir_application(application):
-    """Application to delegate requests based on directory.
-
-        >>> urls = ("/hello", "hello")
-        >>> app = application(urls, globals())
-        >>> class hello:
-        ...     def GET(self): return "hello"
-        >>>
-        >>> mapping = ("/foo", app)
-        >>> app2 = subdir_application(mapping)
-        >>> app2.request("/foo/hello").data
-        'hello'
-    """
-    def handle(self):
-        for dir, what in utils.group(self.mapping, 2):
-            if web.ctx.path.startswith(dir + '/'):
-                # change paths to make path relative to dir
-                web.ctx.home += dir
-                web.ctx.homepath += dir
-                web.ctx.path = web.ctx.path[len(dir):]
-                web.ctx.fullpath = web.ctx.fullpath[len(dir):]
-                return self._delegate(what, self.fvars)
-
-        raise NotFound
+# The application class already has the required functionality of subdir_application
+subdir_application = application
                 
 class subdomain_application(application):
-    """Application to delegate requests based on the host.
+    """
+    Application to delegate requests based on the host.
 
         >>> urls = ("/hello", "hello")
         >>> app = application(urls, globals())
@@ -491,43 +523,9 @@ class subdomain_application(application):
                 return what, [x and urllib.unquote(x) for x in result.groups()]
         return None, None
         
-
-class combine_applications(application):
-    """Combines a list of applications into single application.
-    
-        >>> app1 = auto_application()
-        >>> class foo(app1.page):
-        ...     def GET(self): return "foo"
-        ...
-        >>> app2 = auto_application()
-        >>> class bar(app2.page):
-        ...     def GET(self): return "bar"
-        ...
-        >>> app = combine_applications(app1, app2)
-        >>> app.request('/foo').data
-        'foo'
-        >>> app.request('/bar').data
-        'bar'
-        >>> response = app.request("/hello")
-        >>> response.status
-        '404 Not Found'
-        >>> response.data
-        'not found'
-    """
-    def __init__(self, *apps):
-        self.apps = apps
-        application.__init__(self)
-        
-    def handle(self):
-        for a in self.apps:
-            try:
-                return a.handle()
-            except NotFound:
-                pass
-        raise NotFound
-        
 def loadhook(h):
-    """Converts a load hook into an application processor.
+    """
+    Converts a load hook into an application processor.
     
         >>> app = auto_application()
         >>> def f(): "something done before handling request"
@@ -541,7 +539,8 @@ def loadhook(h):
     return processor
     
 def unloadhook(h):
-    """Converts an unload hook into an application processor.
+    """
+    Converts an unload hook into an application processor.
     
         >>> app = auto_application()
         >>> def f(): "something done after handling request"
@@ -592,7 +591,6 @@ def autodelegate(prefix=''):
             return web.notfound()
     return internal
 
-    
 class Reloader:
     """Checks to see if any loaded modules have changed on disk and, 
     if so, reloads them.

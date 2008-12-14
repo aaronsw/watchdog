@@ -11,6 +11,13 @@ $var pretext: <div id="sidebarmap"  style="clear: right; margin-top: -24px;"><di
 $var width: 90%
 $var color: white
 
+<style>
+    table.contributors { width: 100%; }
+    table.contributors td { text-align: right;}
+    table.contributors th { font-weight: normal;}
+</style>
+
+
 <div class="rep-info">
 <h1>$pol.firstname $pol.middlename $pol.lastname</h1>
 
@@ -46,8 +53,9 @@ $if pol.last_elected_year:
 <tr><td width="50%">
 <h2 class="rep">Money</h2>
 
-$def spark(lable, data, polid, by, unit='', url=None):
-    <th style="white-space:nowrap; padding-left: 6px;">$:lable</th>
+$def spark(label, data, polid, by, unit='', url=None):
+    $if label:
+        <th style="white-space:nowrap; padding-left: 6px;">$:label</th>
     $if not data:
         $ data = 0
     $ display = commify(data) + ' ' + unit
@@ -144,27 +152,116 @@ $if pol.predictability:
 
 </td><td></td>
 
-</tr><td colspan="2">
+</tr>
+
+<tr><td colspan="2">
 
 <h2 class="rep">Interest Group Alignment</h2>
 
 <table cellpadding="0" cellspacing="0" width="100%" class="interest_group_agreement">
 <tbody><tr><th style="padding-left: 6px;">Group</th><th>Agreement</th></tr>
 $ trclass = "odd"
+<tbody><tr><th>Group</th><th>Agreement</th></tr>
 $for group in pol.related_groups:
-    <tr class="$trclass">
+    <tr class="$loop.parity">
       <td style="padding-left: 6px;">$group.longname</td>
       <td>$int(group.agreement * 100)% (<a href="/p/$pol.id/$group.id">$group.agreed/$group.total votes</a>)</td>
     </tr>
+</tbody></table>
+
+<p><a href="/p/$pol.id/groups" class="footer">More...</a></p>
+</td></tr>
+
+</td>
+
+</tr>
+
+$def handshake_spark(frm, to, by, amount, year=2008):
+    $#<th style="white-space:nowrap; padding-left: 6px;">$:lable</th>
+    $if not amount:
+        $ amount = 0
+    $ display = '$' + commify(amount)
+    <td class="sparkdata">$display</td>
+    <td class="sparkline">
+        $ from_or_to = frm if 'from' in by else to
+        $ pol_or_corp = 'p' if by in ['earmarks_from', 'donations_to'] else 'corp'
+        <img src="/$pol_or_corp/by/${by}_$from_or_to/distribution.png?point=$amount&year=$year" class="sparkline" />
+    </td>
+    $#<td class="sparknum"><sup>(#${pos('politician',by,polid)})</sup></td>
+
+$if pol.handshakes:
+    <tr><td width="100%" class="rule">
+    <h2 class="rep">Handshakes</h2>
+    <table cellpadding="0" cellspacing="0" width="100%" class="handshakes">
+    <tbody><tr>
+            <th width='50%'>Corporation</th>
+            <th colspan="2">Donations</th>
+            <th colspan="2">Earmarks</th>
+            <th>Year</th></tr>
+    $for h in pol.handshakes:
+        $ corporation = h.corporation.replace(' ', '-')
+        <tr class="$loop.parity">
+            <td>$h.corporation.title()</td>
+            $:handshake_spark(corporation, h.politician_id, 'donations_from', h.corp2pol, h.year)
+            $:handshake_spark(h.politician_id, corporation, 'earmarks_from', h.pol2corp, h.year)
+            <td>$h.year</td>
+        </tr>
+    </tbody></table>
+    </td></tr>
+
+<tr>
+    
+<td colspan="2">
+
+<h2 class="rep">Top Contributors</h2>
+
+<table class="charted structure contributors" style="width: 100%">
+$ trclass = "odd"
+$ num = 1
+$for c in pol.contributors:
+    <tr class="$trclass">
+        <th>$num. <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name)</a></th>
+        <td>\$$commify(int(c.amt))</td>
+    </tr>
+    $ num = num + 1
     $if trclass == "odd":
         $ trclass = "even"
     $else:
         $ trclass = "odd"
   <tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/groups" class="more">More interest groups</a>&nbsp;&rarr;</span></td></tr>        
 </tbody></table>
+</td>
 
+</tr>        
 
-</td></tr></table>
+<tr>
+
+<td colspan="2">
+    
+<h2 class="rep">Top Contributor Employers</h2>
+
+<table class="charted structure contributors" style="width: 100%">
+$ trclass = "odd"
+$ num = 1
+$for c in pol.contributor_employers:
+    <tr class="$trclass">
+        <th>$num. <a href="/corp/$c.employer">$c.employer</a></th>
+        <td>\$$commify(int(c.amt) )</td>
+    </tr>
+    $ num = num + 1
+    $if trclass == "odd":
+        $ trclass = "even"
+    $else:
+        $ trclass = "odd"
+</table>
+
+<p><a href="/p/pol.id/groups" class="footer">More...</a></p>    
+    
+</td>
+    
+</tr>
+
+</table>
 
 <div class="sources">
   Money data from <nobr><a href="http://www.fec.gov/" class="external">the FEC</a>.</nobr>

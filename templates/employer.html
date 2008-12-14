@@ -1,0 +1,133 @@
+$def with (contributions, corp_id)
+
+$var width: 90%
+$var color: white
+
+$var title: $corp_id
+
+<script type="text/javascript" src="/static/js/fec.js"></script>
+
+<h1>$corp_id</h1>
+
+  <style>
+  .subtitle { color: #777;}
+  table.donors th, table.donors td { font-weight: normal; padding: 0.3em 1em;}
+  table.donors td { text-align: right;}
+  </style>
+
+<table class="charted structure donors" style="width: 100%; margin-top: 0em; margin-bottom: 2em;">
+$ trclass = "odd"
+$for c in contributions:
+    <tr class="$trclass">
+        <th class="paying">
+            <strong>$c.how_many</strong> $corp_id employees donated <strong>\$$commify(int(c.how_much))</strong> 
+            to <a href="http://watchdog.net/p/$c.polid">$c.firstname $c.lastname</a>, 
+            $c.committee
+        </td> 
+        <td style="text-align: right;"><!--
+            <a id="view_details1" href="#" onclick="return view_details(1);">view details</a>
+            <a id="hide_details1" style="display: none;" href="#" onclick="return hide_details(1);">hide details</a>-->
+        </td>
+    </tr>
+    $if trclass == "odd":
+        $ trclass = "even"
+    $else:
+        $ trclass = "odd"
+</table>
+
+<!--
+<table style="width: 100%; margin-top: 0em; margin-bottom: 2em;" class="paying structure">
+<tbody>
+<tr class="even">    
+  <td class="paying">
+    <img src="/static/images/dist1.png" width="30">
+    <strong>7</strong> Boeing employees donated <strong>\$22,000</strong> 
+    to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, 
+    <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a>
+  </td> 
+  <td style="text-align: right;">
+      <a id="view_details1" href="#" onclick="return view_details(1);">view details</a>
+      <a id="hide_details1" style="display: none;" href="#" onclick="return hide_details(1);">hide details</a>
+  </td>
+</tr>
+<tr id="details1" style="display: none;">
+    <td colspan="2" class="details">
+        <ol>
+            <li><a href="/d/1">Robert Jackman</a>, <span class="subtitle">Exec. Director</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/2">Bob Zimmerman</a>, <span class="subtitle">Creative Masermind</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/1">Robert Jackman</a>, <span class="subtitle">Exec. Director</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/2">Bob Zimmerman</a>, <span class="subtitle">Creative Masermind</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/1">Robert Jackman</a>, <span class="subtitle">Exec. Director</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/2">Bob Zimmerman</a>, <span class="subtitle">Creative Masermind</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/1">Robert Jackman</a>, <span class="subtitle">Exec. Director</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>        
+        </ol>
+    </td>
+</tr>
+
+  <tr class="odd">
+  <td class="paying">
+    <img src="/static/images/dist1.png" width="30">
+    <strong>10</strong> Boeing employees donated <strong>\$12,000</strong> 
+    to <a href="http://watchdog.net/p/michael_jorda">Samuel Blake</a>, 
+    <a href="http://watchdog.net/fec/d">Blake's House</a>
+  <td style="text-align: right;">
+      <a id="view_details2" href="#" onclick="return view_details(2);">view details</a>
+      <a id="hide_details2" style="display: none;" href="#" onclick="return hide_details(2);">hide details</a>
+  </td>
+</tr>
+<tr id="details2" style="display: none;">
+    <td colspan="2" class="details">
+        <ol>
+            <li><a href="/d/1">Robert Jackman</a>, <span class="subtitle">Exec. Director</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/2">Bob Zimmerman</a>, <span class="subtitle">Creative Masermind</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/1">Robert Jackman</a>, <span class="subtitle">Exec. Director</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/2">Bob Zimmerman</a>, <span class="subtitle">Creative Masermind</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/1">Robert Jackman</a>, <span class="subtitle">Exec. Director</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/2">Bob Zimmerman</a>, <span class="subtitle">Creative Masermind</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/1">Robert Jackman</a>, <span class="subtitle">Exec. Director</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>     
+            <li><a href="/d/1">Robert Jackman</a>, <span class="subtitle">Exec. Director</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/2">Bob Zimmerman</a>, <span class="subtitle">Creative Masermind</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/1">Robert Jackman</a>, <span class="subtitle">Exec. Director</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+        </ol>
+    </td>
+</tr>
+
+<tr class="even">
+  <td class="paying">
+    <img src="/static/images/dist1.png" width="30">
+    <strong>2</strong> Boeing employees donated <strong>\$4,000</strong> to 
+    <a href="http://watchdog.net/p/michael_jorda">Robert Morris</a>, 
+    <a href="http://watchdog.net/fec/d">Morris for CTO</a>
+  <td style="text-align: right;">
+      <a id="view_details3" href="#" onclick="return view_details(3);">view details</a>
+      <a id="hide_details3" style="display: none;" href="#" onclick="return hide_details(3);">hide details</a>
+  </td>
+</tr>
+<tr id="details3" style="display: none;">
+    <td colspan="2" class="details">
+        <ol>
+            <li><a href="/d/2">Bob Zimmerman</a>, <span class="subtitle">Creative Masermind</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+            <li><a href="/d/1">Robert Jackman</a>, <span class="subtitle">Exec. Director</span>
+        contributed <strong>\$2,000</strong> to <a href="http://watchdog.net/p/michael_jorda">Michael Jordan</a>, <a href="http://watchdog.net/fec/d">Cmte. to Re-Elect the Player</a></li>
+        </ol>
+    </td>
+</tr>
+</tbody></table>-->

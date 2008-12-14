@@ -127,13 +127,14 @@ signupform = form.Form(
     form.Password('password_again', form.notnull, description='Password again'),
     form.Hidden('redirect'),
     form.Hidden('state'),
-    validators = [form.Validator('Oops, passwords don\'t match', lambda i: i.password == i.password_again)]
+    validators = [form.Validator("Oops, passwords don't match", lambda i: i.password == i.password_again)]
     )
 
 loginform = form.Form(
     form.Textbox('useremail',
             form.notnull,
             form.regexp(email_regex, 'Please enter a valid email'),
+            form.Validator('No account exists with this email', lambda e: not emailnotexists(e)),
             description='Email'),
     form.Password('password', form.notnull, description='Password'),
     form.Hidden('redirect'),

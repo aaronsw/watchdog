@@ -10,7 +10,7 @@ __all__ = [
     "setcookie", "cookies",
     "ctx", 
     "HTTPError", 
-    "BadRequest", "NotFound", "Gone", 
+    "BadRequest", "NotFound", "Gone", "InternalError",
     "badrequest", "notfound", "gone", "internalerror",
     "Redirect", "Found", "SeeOther", "TempRedirect",
     "redirect", "found", "seeother", "tempredirect", 
@@ -24,16 +24,8 @@ config = storage()
 config.__doc__ = """
 A configuration object for various aspects of web.py.
 
-`db_parameters`
-   : A dictionary containing the parameters to be passed to `connect`
-     when `load()` is called.
-`db_printing`
-   : Set to `True` if you would like SQL queries and timings to be
-     printed to the debug output.
-`session_parameters`
-   : A dictionary containing session parameters
-    cookie_name, cookie_domain, timeout, 
-    ignore_change_ip, ignore_expiry, expired_message
+`debug`
+   : when True, enables reloading, disabled template caching and sets internalerror to debugerror.
 """
 
 class HTTPError(Exception):
@@ -46,31 +38,41 @@ class HTTPError(Exception):
 
 class BadRequest(HTTPError):
     """`400 Bad Request` error."""
+    message = "bad request"
     def __init__(self):
         status = "400 Bad Request"
         headers = {'Content-Type': 'text/html'}
-        data = 'bad request'
-        HTTPError.__init__(self, status, headers, data)
+        HTTPError.__init__(self, status, headers, self.message)
 
 badrequest = BadRequest
 
-class NotFound(HTTPError):
+class _NotFound(HTTPError):
     """`404 Not Found` error."""
-    def __init__(self):
+    message = "not found"
+    def __init__(self, message=None):
         status = '404 Not Found'
         headers = {'Content-Type': 'text/html'}
-        data = 'not found'
-        HTTPError.__init__(self, status, headers, data)
+        HTTPError.__init__(self, status, headers, message or self.message)
+
+def NotFound(message=None):
+    """Returns HTTPError with '404 Not Found' error from the active application.
+    """
+    if message:
+        return _NotFound(message)
+    elif ctx.get('app_stack'):
+        return ctx.app_stack[-1].notfound()
+    else:
+        return _NotFound()
 
 notfound = NotFound
 
 class Gone(HTTPError):
     """`410 Gone` error."""
+    message = "gone"
     def __init__(self):
         status = '410 Gone'
         headers = {'Content-Type': 'text/html'}
-        data = 'gone'
-        HTTPError.__init__(self, status, headers, data)
+        HTTPError.__init__(self, status, headers, self.message)
 
 gone = Gone
 
@@ -137,11 +139,26 @@ class NoMethod(HTTPError):
         
 nomethod = NoMethod
 
-def internalerror():
-    """Returns a `500 Internal Server` error."""
-    ctx.status = "500 Internal Server Error"
-    ctx.headers = [('Content-Type', 'text/html')]
-    return "internal server error"
+class _InternalError(HTTPError):
+    """500 Internal Server Error`."""
+    message = "internal server error"
+    
+    def __init__(self, message=None):
+        status = '500 Internal Server Error'
+        headers = {'Content-Type': 'text/html'}
+        HTTPError.__init__(self, status, headers, message or self.message)
+
+def InternalError(message=None):
+    """Returns HTTPError with '500 internal error' error from the active application.
+    """
+    if message:
+        return _InternalError(message)
+    elif ctx.get('app_stack'):
+        return ctx.app_stack[-1].internalerror()
+    else:
+        return _InternalError()
+
+internalerror = InternalError
 
 def header(hdr, value, unique=False):
     """
@@ -167,7 +184,12 @@ def input(*requireds, **defaults):
     See `storify` for how `requireds` and `defaults` work.
     """
     from cStringIO import StringIO
-    def dictify(fs): return dict([(k, fs[k]) for k in fs.keys()])
+    def dictify(fs): 
+        # hack to make web.input work with enctype='text/plain.
+        if fs.list is None:
+            fs.list = [] 
+
+        return dict([(k, fs[k]) for k in fs.keys()])
     
     _method = defaults.pop('_method', 'both')
     
@@ -196,7 +218,6 @@ def input(*requireds, **defaults):
 
     out = dictadd(b, a)
     try:
-        #@@ disabled because this is causing failure on file uploads
         defaults.setdefault('_unicode', True) # force unicode conversion by default.
         return storify(out, *requireds, **defaults)
     except KeyError:
@@ -220,7 +241,7 @@ def setcookie(name, value, expires="", domain=None, secure=False):
         kargs['secure'] = secure
     # @@ should we limit cookies to a different path?
     cookie = Cookie.SimpleCookie()
-    cookie[name] = urllib.quote(value)
+    cookie[name] = urllib.quote(utf8(value))
     for key, val in kargs.iteritems(): 
         cookie[name][key] = val
     header('Set-Cookie', cookie.items()[0][1].OutputString())
@@ -235,7 +256,7 @@ def cookies(*requireds, **defaults):
     try:
         d = storify(cookie, *requireds, **defaults)
         for k, v in d.items():
-            d[k] = urllib.unquote(v)
+            d[k] = v and urllib.unquote(v)
         return d
     except KeyError:
         badrequest()

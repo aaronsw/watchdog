@@ -1,0 +1,46 @@
+$def with (contributions, zip, s, num)
+
+$var width: 90%
+$var color: white
+
+$ name = format_name(s)
+
+$var title: $name
+
+<h1><span class="header_em">$num</span> results for <span class="header_em">$name</span> in <span class="header_em">$zip</span></h1>
+
+  <style>
+  .subtitle { color: #777;}
+  .paying td { padding-top: .4em; padding-bottom: .4em;}
+  td.payout { text-align: right; padding-right: .4em;}
+  td.paying { padding-left: .4em !important; padding-right: 8em;}
+  td.date { padding-top: 1em; }
+  h2 { margin-bottom: 0.3em;}
+  h1 .header_em { color: black; color:#002233; }
+  </style>
+  
+<table style="width: 100%; margin-top: 0em; margin-bottom: 2em;" class="paying structure">
+$ prev_occupation = None
+$ prev_employer = None
+$for c in contributions:
+    $if c.occupation.lower() != prev_occupation or c.employer.lower() != prev_employer:
+        <tr style="border-bottom: 1px solid #999;">
+            <td colspan="2" class="date"><strong>$name</strong>
+            $if c.occupation:
+                , <span class="subtitle">$c.occupation</span>
+            $if c.employer:
+                , <span class="subtitle"><a href="/corp/$urlquote(c.employer)">$c.employer</a></span>
+            </td>
+        </tr>
+    <tr class="even">
+        <td class="paying">
+            <strong>\$$commify(int(c.how_much))</strong> to <a href="http://watchdog.net/p/$c.polid">$c.firstname $c.lastname</a>, 
+            $c.committee on
+            <strong>$c.sent</strong>
+        </td>
+    </tr>
+    $ prev_occupation = c.occupation.lower()
+    $ prev_employer = c.employer.lower()
+
+    
+</table>
