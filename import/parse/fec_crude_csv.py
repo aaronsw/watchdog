@@ -500,7 +500,7 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
         for n in itertools.count():
             # XXX we should use the filing ID for this
             # but we don’t have it yet
-            pathname = os.path.join(dirpath, '%s.fec' % n)
+            pathname = os.path.join(dirpath, '%s.json' % n)
             if not os.path.exists(pathname):
                 outfile = file(pathname, 'w') # XXX race
                 if not save_orig: del cover_record['original_data']
