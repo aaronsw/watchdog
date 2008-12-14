@@ -218,10 +218,15 @@ def test_strange_headers():
     ...       fec_crude_csv.read_filing(filing_19538_truncated, '19538.fec')[1]]
     [None, None, 'Mrs. Jean Abernathy', 'Mrs. Renee Abraham']
 
-    Filing 22784 has a space in the FEC ID of the filing it's supposed
+    Filing 22784 has a space in the FEC ID of the filing it’s supposed
     to amend.
     >>> cover_record(filing_22784_truncated, '22784.fec')['report_id']
     '17081'
+
+    Filing 39775 says its report ID is “FEC-23808 F3XN”, which
+    includes the form type of the filing it’s amending.
+    >>> cover_record(filing_39775_truncated, '39775.fec')['report_id']
+    '23808'
 
     """
 
@@ -369,6 +374,12 @@ filing_33818_truncated = '''"HDR","FEC","3.00","Proprietary",2002,"0","",0,"M4 2
 "SA11A1","C00003418","IND","Allyn^Margaret^Ms.","1420 Sheridan Road","","Wilmette","IL","60091"," "," ","","Housewife",500.00,20020115,500.00,"15",""," "," "," "," "," "," "," "," "," "," "," "," ","X"," ","C","33981112"," "," ",""
 "SA11A1","C00003418","IND","Andalla^Helen^Ms.","7237 Wapello Drive","","Rockville","MD","20855"," "," ","Facility Service Co., Inc.","Landscaper",800.00,20020222,400.00,"15",""," "," "," "," "," "," "," "," "," "," "," "," ","X"," ","C","34279570"," "," ",""
 "SA11A1","C00003418","IND","Anderson^RalphJ.^Mr.","4 Orchard Hill Drive","","Moline","IL","61265"," "," ","","Retired",250.00,20020226,250.00,"15",""," "," "," "," "," "," "," "," "," "," "," "," ","X"," ","C","34304612"," "," ",""
+'''
+
+filing_39775_truncated = '''HDR,FEC,3.00,Region's Own Software,2.00,,FEC-23808 F3XN,1,
+F3XA,C00179473,Regions Financial Corporation Political Action Committee,417 20th Street North,,Birmingham,AL,35203,,,YE,,,AL,20010701,20011231,290160.83,155186.18,445347.01,44500.00,400847.01,,,69942.59,85243.59,155186.18,.00,.00,155186.18,.00,.00,.00,.00,.00,.00,.00,155186.18,155186.18,.00,.00,.00,.00,29500.00,15000.00,.00,.00,.00,.00,.00,.00,.00,.00,.00,44500.00,44500.00,155186.18,.00,155186.18,.00,.00,.00,214934.87,2001,278880.62,493815.49,92968.48,400847.01,126271.96,152608.66,278880.62,.00,.00,278880.62,.00,.00,.00,.00,.00,.00,.00,278880.62,278880.62,.00,.00,.00,.00,53768.48,39200.00,.00,.00,.00,.00,.00,.00,.00,.00,.00,92968.48,92968.48,278880.62,.00,278880.62,.00,.00,.00,John Hixon,20020620
+SA11ai,C00179473,IND,"West^Neil^","6712 Hollytree Circle","",Tyler,TX,75703,,,"Regions Bank","President",500.00,20010709,500.00,,,,,,,,,,,,,,,,,N,YEC011
+SA11ai,C00179473,IND,"Weaver^Michael^D.^","40 Cheet Road","",Oneonta,AL,35121,,,"Otelco Tel.","President",200.00,20010809,200.00,,,,,,,,,,,,,,,,,N,YEC012
 '''
 
 if __name__ == "__main__":
