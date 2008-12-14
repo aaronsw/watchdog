@@ -493,8 +493,16 @@ def parse_efilings(filepattern = None):
         sys.stderr.write('parsing took %.1f seconds\n' % (now - last_time))
         last_time = now
 
+def atomically_commit_efiling(outfile, tempname, realname):
+    outfile.flush()
+    os.fsync(outfile.fileno())
+    outfile.close()
+
+    os.rename(tempname, realname)
+
 def stash_efilings(destdir = None, filepattern = None, save_orig = False):
     if destdir is None: destdir = tempfile.mkdtemp()
+
     for cover_record, records in parse_efilings(filepattern):
         report_id = cover_record['report_id']
         dirpath = os.path.join(destdir, report_id[-2:], report_id)
@@ -502,9 +510,11 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
 
         pathname = os.path.join(dirpath,
                                 '%s.json' % cover_record['this_report_id'])
-        assert not os.path.exists(pathname)
 
-        outfile = file(pathname, 'w')
+        if os.path.exists(pathname):
+            continue
+
+        outfile = file(pathname + '.new', 'w') # hoping we’re the only ones
         if not save_orig: del cover_record['original_data']
         simplejson.dump(cover_record, outfile)
         outfile.write('\n')
@@ -514,7 +524,7 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
             simplejson.dump(record, outfile)
             outfile.write('\n')
 
-        outfile.close()
+        atomically_commit_efiling(outfile, pathname + '.new', pathname)
 
     return destdir
 
