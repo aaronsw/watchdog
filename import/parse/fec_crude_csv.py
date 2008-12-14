@@ -4,7 +4,7 @@
 
 """
 import csv, sys, cgitb, fixed_width, zipfile, cStringIO, os, glob, time
-import codecs, re, field_mapper, simplejson, itertools, tempfile
+import codecs, re, field_mapper, simplejson, itertools, tempfile, web.utils
 
 def strip(text):
     """
@@ -104,6 +104,7 @@ def date(value):
     if value: return fixed_width.date(value)
     return None                         # to keep Postgres happy
 
+@web.utils.memoize
 def mapper_for(name_delim):
     return field_mapper.FieldMapper({
         'date': field_mapper.Reformat(format=date,
@@ -257,14 +258,10 @@ def findkey(hmap, key):
         if key in hmap: return hmap[key]
         else: key = key[:-1]
 
-headers_cache = {}
+@web.utils.memoize   # Memoizing saved about 25–40% of run time when I measured
 def headers_for_version(version):
-    "Memoize headers function, saving about 25–40% of run time."
     headerdir = os.path.split(__file__)[0]
-    if version not in headers_cache:
-        headers_cache[version] = \
-            headers(os.path.join(headerdir, 'fec_headers', '%s.csv' % version))
-    return headers_cache[version]
+    return headers(os.path.join(headerdir, 'fec_headers', '%s.csv' % version))
 
 class ascii28separated(csv.excel):
     "The FEC moved from CSV to chr(28)-separated files in format version 6."
