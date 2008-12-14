@@ -106,79 +106,87 @@ def date(value):
 
 def mapper_for(name_delim):
     return field_mapper.FieldMapper({
-    'date': field_mapper.Reformat(format=date,
-                                  source=['date',
-                                          'date_received',
-                                          'contribution_date',
-                                          'expenditure_date',
-                                          'date_(of_contribution)',
-                                          # XXX this is for SC loans:
-                                          'date_(incurred)',
-                                          'date_of_expenditure']),
-    'candidate_fec_id': field_mapper.Reformat(format=strip,
-                                              source=['candidate_fec_id',
-                                                      'candidate_id_number',
-                                                      'fec_candidate_id_number']
-                                              ),
-    'tran_id': ['tran_id', 'transaction_id_number'],
-    'occupation': ['occupation', 'contributor_occupation', 'indocc'],
-    'contributor_org': ['contributor_org',
-                        'contributor_organization_name',
-                        'contrib_organization_name'],
-    'contributor': [field_mapper.Reformat(format=parse_name(name_delim),
-                                          source=['contributor_name']),
-                    # XXX should include contributor_prefix and
-                    # contributor_suffix?
-                    lambda contributor_first_name,
-                           contributor_middle_name,
-                           contributor_last_name:
-                        name_combo(contributor_first_name,
-                                   contributor_middle_name,
-                                   contributor_last_name),
+        'date': field_mapper.Reformat(format=date,
+                                      source=['date',
+                                              'date_received',
+                                              'contribution_date',
+                                              'expenditure_date',
+                                              'date_(of_contribution)',
+                                              # XXX this is for SC loans:
+                                              'date_(incurred)',
+                                              'date_of_expenditure']),
+        'candidate_fec_id':
+            field_mapper.Reformat(format=strip,
+                                  source=['candidate_fec_id',
+                                          'candidate_id_number',
+                                          'fec_candidate_id_number']
+                                  ),
+        'tran_id': ['tran_id', 'transaction_id_number'],
+        'occupation': ['occupation', 'contributor_occupation', 'indocc'],
+        'contributor_org': ['contributor_org',
+                            'contributor_organization_name',
+                            'contrib_organization_name'],
+        'contributor': [field_mapper.Reformat(format=parse_name(name_delim),
+                                              source=['contributor_name']),
+                        # XXX should include contributor_prefix and
+                        # contributor_suffix?
+                        lambda contributor_first_name,
+                               contributor_middle_name,
+                               contributor_last_name:
+                            name_combo(contributor_first_name,
+                                       contributor_middle_name,
+                                       contributor_last_name),
+                        ],
+        # XXX recipient_name should be reformatted with parse_name(name_delim)
+        # at least in 5.00
+        # XXX also 'recipient_first_name' 'recipient_last_name'
+        # 'recipient_middle_name' 'recipient_organization_name'
+        # 'recipient_prefix' 'recipient_suffix'
+        'recipient': ['payee_organization_name',
+                      'recipient_name',
+                      'name_(payee)'],
+        'employer': ['employer', 'contributor_employer', 'indemp'],
+        'amount': field_mapper.Reformat(format=amount,
+                                        source=['amount',
+                                                # XXX 6.x contribution_amount:
+                                                # different format
+                                                'contribution_amount',
+                                                'amount_received',
+                                                'expenditure_amount', # also 6.x
+                                                'amount_of_expenditure']),
+        'address': [lambda street__1, street__2, city, state, zip:
+                    ' '.join([street__1, street__2, city, state, zip]),
+                    lambda contributor_street__1, contributor_street__2,
+                           contributor_city, contributor_state, contributor_zip:
+                    ' '.join([contributor_street__1,
+                              contributor_street__2,
+                              contributor_city,
+                              contributor_state,
+                              contributor_zip])
                     ],
-    # XXX recipient_name should be reformatted with parse_name(name_delim)
-    # at least in 5.00
-    # XXX also 'recipient_first_name' 'recipient_last_name'
-    # 'recipient_middle_name' 'recipient_organization_name'
-    # 'recipient_prefix' 'recipient_suffix'
-    'recipient': ['payee_organization_name', 'recipient_name', 'name_(payee)'],
-    'employer': ['employer', 'contributor_employer', 'indemp'],
-    'amount': field_mapper.Reformat(format=amount,
-                                    source=['amount',
-                                            # XXX 6.x contribution_amount:
-                                            # different format
-                                            'contribution_amount',
-                                            'amount_received',
-                                            'expenditure_amount', # also 6.x
-                                            'amount_of_expenditure']),
-    'address': [lambda street__1, street__2, city, state, zip:
-                ' '.join([street__1, street__2, city, state, zip]),
-                lambda contributor_street__1, contributor_street__2,
-                       contributor_city, contributor_state, contributor_zip:
-                ' '.join([contributor_street__1, contributor_street__2,
-                          contributor_city, contributor_state, contributor_zip])
-                ],
 
-    'committee': ['committee_name', 'committee_name_______', 'committeename'],
-    'candidate': [field_mapper.Reformat(format=parse_name(name_delim),
-                                        source='candidate_name'),
-                  lambda candidate_first_name,
-                         candidate_middle_name,
-                         candidate_last_name:
-                     name_combo(candidate_first_name,
-                                candidate_middle_name,
-                                candidate_last_name),
-                  ],
-    'filer_id': ['filer_fec_cand_id',
-                 'filer_fec_cmte_id_',
-                 'filer_fec_cmte_id',
-                 'filer_fec_committee_id',
-                 'filer_committee_id_number',
-                 'filer_candidate_id_number',
-                 "filer's_fec_id_number",
-                 'filer_committee_id'],
+        'committee': ['committee_name',
+                      'committee_name_______',
+                      'committeename'],
+        'candidate': [field_mapper.Reformat(format=parse_name(name_delim),
+                                            source='candidate_name'),
+                      lambda candidate_first_name,
+                             candidate_middle_name,
+                             candidate_last_name:
+                         name_combo(candidate_first_name,
+                                    candidate_middle_name,
+                                    candidate_last_name),
+                      ],
+        'filer_id': ['filer_fec_cand_id',
+                     'filer_fec_cmte_id_',
+                     'filer_fec_cmte_id',
+                     'filer_fec_committee_id',
+                     'filer_committee_id_number',
+                     'filer_candidate_id_number',
+                     "filer's_fec_id_number",
+                     'filer_committee_id'],
 
-    'type': field_mapper.CatchAllField(['form_type'], schedule_type),
+        'type': field_mapper.CatchAllField(['form_type'], schedule_type),
     })
 
 
