@@ -179,17 +179,21 @@ def test_format_6():
 def test_report_id():
     """The report ID ties together the original filing and its amendments.
 
+    >>> import operator
+    >>> report_ids = operator.itemgetter('report_id', 'this_report_id')
+    >>> r = lambda data, name: report_ids(cover_record(data, name))
+
     Filing 230176 is a new filing.
-    >>> cover_record(filing_230176_truncated, '230176.fec')['report_id']
-    '230176'
+    >>> r(filing_230176_truncated, '230176.fec')
+    ('230176', '230176')
 
     But filing 230174 is an amendment of filing 211016.
-    >>> cover_record(filing_230174_truncated, '230174.fec')['report_id']
-    '211016'
+    >>> r(filing_230174_truncated, '230174.fec')
+    ('211016', '230174')
 
     The original report ID is in a different position in the 6.x header.
-    >>> cover_record(filing_333600_truncated, '333600.fec')['report_id']
-    '306890'
+    >>> r(filing_333600_truncated, '333600.fec')
+    ('306890', '333600')
 
     """
 
