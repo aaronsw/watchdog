@@ -45,9 +45,10 @@ def name_combo(first, middle, last):
     if len(middle) == 1: middle += '.'
     return ' '.join(filter(None, [first, middle, last]))
 
-def caret_separated_name(name):
+def parse_name(name_delim):
     """
     Examples from `FEC_v300.rtf`.
+    >>> caret_separated_name = parse_name('^')
     >>> caret_separated_name('Smith^John W.^Dr.^Jr.')
     'Dr. John W. Smith, Jr.'
     >>> caret_separated_name('Smith^John W.^^Jr.')
@@ -68,23 +69,30 @@ def caret_separated_name(name):
     Should we downcase/titlecase this one?
     >>> caret_separated_name('LOVE^KARA^^')
     'KARA LOVE'
-    
+
     What were they smoking when they made this one up?
     >>> caret_separated_name('Everett^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
     'Everett'
+
+    Some people use a non-caret:
+    >>> parse_name('>')('Hagelin>John S')
+    'John S Hagelin'
+
     """
-    fields = name.split('^')
-    while len(fields) < 4: fields.append('')
-    while len(fields) > 4:
-        assert fields[-1] == ''
-        fields.pop()
+    def rv(name):
+        fields = name.split(name_delim)
+        while len(fields) < 4: fields.append('')
+        while len(fields) > 4:
+            assert fields[-1] == ''
+            fields.pop()
 
-    lastname, firstname, prefix, suffix = fields
-    if prefix: prefix += ' '
-    if firstname: firstname += ' '
-    if suffix: suffix = ', ' + suffix
+        lastname, firstname, prefix, suffix = fields
+        if prefix: prefix += ' '
+        if firstname: firstname += ' '
+        if suffix: suffix = ', ' + suffix
 
-    return ''.join([prefix, firstname, lastname, suffix])
+        return ''.join([prefix, firstname, lastname, suffix])
+    return rv
 
 def schedule_type(data):
     """Is this a contribution, an expenditure, or neither?"""
@@ -96,7 +104,8 @@ def date(value):
     if value: return fixed_width.date(value)
     return None                         # to keep Postgres happy
 
-fields = {
+def mapper_for(name_delim):
+    return field_mapper.FieldMapper({
     'date': field_mapper.Reformat(format=date,
                                   source=['date',
                                           'date_received',
@@ -116,7 +125,7 @@ fields = {
     'contributor_org': ['contributor_org',
                         'contributor_organization_name',
                         'contrib_organization_name'],
-    'contributor': [field_mapper.Reformat(format=caret_separated_name,
+    'contributor': [field_mapper.Reformat(format=parse_name(name_delim),
                                           source=['contributor_name']),
                     # XXX should include contributor_prefix and
                     # contributor_suffix?
@@ -127,7 +136,7 @@ fields = {
                                    contributor_middle_name,
                                    contributor_last_name),
                     ],
-    # XXX recipient_name should be reformatted with caret_separated_name
+    # XXX recipient_name should be reformatted with parse_name(name_delim)
     # at least in 5.00
     # XXX also 'recipient_first_name' 'recipient_last_name'
     # 'recipient_middle_name' 'recipient_organization_name'
@@ -151,7 +160,7 @@ fields = {
                 ],
 
     'committee': ['committee_name', 'committee_name_______', 'committeename'],
-    'candidate': [field_mapper.Reformat(format=caret_separated_name,
+    'candidate': [field_mapper.Reformat(format=parse_name(name_delim),
                                         source='candidate_name'),
                   lambda candidate_first_name,
                          candidate_middle_name,
@@ -168,16 +177,16 @@ fields = {
                  'filer_candidate_id_number',
                  "filer's_fec_id_number",
                  'filer_committee_id'],
-    
-    'type': field_mapper.CatchAllField(['form_type'], schedule_type),
-}
 
-mapper = field_mapper.FieldMapper(fields)
+    'type': field_mapper.CatchAllField(['form_type'], schedule_type),
+    })
+
 
 def _regrtest_fields():
     """
     Regression tests for the `fields` table.
-    
+
+    >>> mapper = mapper_for('^')
     >>> mapped = mapper.map({'date_received': '20081130',
     ...                      'tran_id': '12345', 
     ...                      'weird_field': 34, 
@@ -344,8 +353,9 @@ def decode_headerline(line):
     headers = dict(zip(headerheaders.split(), (f.strip() for f in line)))
     assert format_version == headers['fec_ver']
 
-    if headers.get('name_delim'):       # empty string means to use the default
-        assert headers['name_delim'] == '^' # caret_separated_name assumes this
+    if not headers.get('name_delim'): # empty string means to use the default
+        headers['name_delim'] = '^'
+    assert headers['name_delim'] in '>^' # I want to know if not!
 
     return headers
 
@@ -380,6 +390,7 @@ def readstring(astring):
     yield headerdict
 
     headermap = headers_for_version(headerdict['fec_ver'])
+    mapper = mapper_for(headerdict['name_delim'])
 
     for line in r:
         if not line: continue         # FILPAC inserts random blank lines
