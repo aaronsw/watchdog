@@ -500,22 +500,21 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
         dirpath = os.path.join(destdir, report_id[-2:], report_id)
         if not os.path.exists(dirpath): os.makedirs(dirpath)
 
-        if True:
-            pathname = os.path.join(dirpath,
-                                    '%s.json' % cover_record['this_report_id'])
-            assert not os.path.exists(pathname)
-            if True:
-                outfile = file(pathname, 'w')
-                if not save_orig: del cover_record['original_data']
-                simplejson.dump(cover_record, outfile)
-                outfile.write('\n')
+        pathname = os.path.join(dirpath,
+                                '%s.json' % cover_record['this_report_id'])
+        assert not os.path.exists(pathname)
 
-                for record in records:
-                    if not save_orig: del record['original_data']
-                    simplejson.dump(record, outfile)
-                    outfile.write('\n')
+        outfile = file(pathname, 'w')
+        if not save_orig: del cover_record['original_data']
+        simplejson.dump(cover_record, outfile)
+        outfile.write('\n')
 
-                outfile.close()
+        for record in records:
+            if not save_orig: del record['original_data']
+            simplejson.dump(record, outfile)
+            outfile.write('\n')
+
+        outfile.close()
 
     return destdir
 
