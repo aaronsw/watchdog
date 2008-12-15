@@ -3,11 +3,11 @@ $def with (contributions, corp_id)
 $var width: 90%
 $var color: white
 
-$var title: $corp_id
+$var title: $corp_id.title()
 
 <script type="text/javascript" src="/static/js/fec.js"></script>
 
-<h1>$corp_id</h1>
+<h1>$corp_id.title()</h1>
 
   <style>
   .subtitle { color: #777;}
