@@ -29,12 +29,12 @@ $for c in contributions:
             $if c.occupation:
                 , <span class="subtitle">$c.occupation</span>
             $if c.employer:
-                , <span class="subtitle"><a href="/corp/$urlquote(c.employer)">$c.employer</a></span>
+                , <span class="subtitle"><a href="/empl/$urlquote(c.employer)">$c.employer</a></span>
             </td>
         </tr>
     <tr class="even">
         <td class="paying">
-            <strong>\$$commify(int(c.how_much))</strong> to <a href="http://watchdog.net/p/$c.polid">$c.firstname $c.lastname</a>, 
+            <strong>\$$commify(int(c.how_much))</strong> to <a href="/p/$c.polid">$c.firstname $c.lastname</a>, 
             $c.committee on
             <strong>$c.sent</strong>
         </td>
