@@ -33,7 +33,7 @@ urls = (
   r'/e/(.*?)%s?' % options, 'earmark',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/contrib/(\d+)/' , 'contributor',
-  r'/empl/(.*?)%s?' % options, 'employer',
+  r'/corp/(.*?)%s?' % options, 'employer',
   r'/r/us/(.*?)%s?' % options, 'roll',
   r'/c', petition.app,
   r'/u', users.app,
@@ -252,12 +252,12 @@ class contributor:
       name = s.lower()
       contributions = list(db.query("""SELECT count(*) AS how_many, 
         sum(amount) AS how_much, p.firstname, p.lastname, 
-        cm.name AS committee, occupation, employer, max(cn.sent) as sent,
+        cm.name AS committee, occupation, employer_stem as employer, max(cn.sent) as sent,
         p.id as polid FROM contribution cn, committee cm, 
         politician_fec_ids pfi, politician p WHERE cn.recipient_id = cm.id 
         AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
         AND lower(cn.name) = $name AND cn.zip = $zipcode 
-        GROUP BY cm.name, p.lastname, p.firstname, cn.occupation, cn.employer, p.id
+        GROUP BY cm.name, p.lastname, p.firstname, cn.occupation, cn.employer_stem, p.id
         ORDER BY lower(employer), lower(occupation), sent DESC, how_much DESC""", vars=locals()))
       num = len(contributions)
       return render.contributor(contributions, zipcode, s, num)
@@ -269,7 +269,7 @@ class employer:
       p.id as polid, cm.name as committee 
       FROM contribution cn, committee cm, politician_fec_ids pfi, politician p
       WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
-      AND pfi.politician_id = p.id AND lower(cn.employer) = lower($corp_id)
+      AND pfi.politician_id = p.id AND lower(cn.employer_stem) = lower($corp_id)
       GROUP BY cm.name, p.lastname, p.firstname, p.id 
       ORDER BY how_much DESC;""", vars=locals())
       return render.employer(contributions, corp_id)

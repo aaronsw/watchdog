@@ -182,7 +182,7 @@ $def handshake_spark(frm, to, by, amount, year=2008):
     $#<td class="sparknum"><sup>(#${pos('politician',by,polid)})</sup></td>
 
 $if pol.handshakes:
-    <tr><td width="100%" class="rule">
+    <tr><td colspan="2" class="rule">
     <h2 class="rep">Handshakes</h2>
     <table cellpadding="0" cellspacing="0" width="100%" class="handshakes">
     <tbody><tr>
@@ -201,56 +201,30 @@ $if pol.handshakes:
     </tbody></table>
     </td></tr>
 
+
 <tr>
-    
-<td colspan="2">
-
+<td colspan="2" class="rule">
 <h2 class="rep">Top Contributors</h2>
-
 <table class="charted structure contributors" style="width: 100%">
-$ trclass = "odd"
-$ num = 1
 $for c in pol.contributors:
-    <tr class="$trclass">
-        <th>$num. <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name)</a></th>
+    <tr class="$loop.parity">
+        <th>$loop.index <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name)</a></th>
         <td>\$$commify(int(c.amt))</td>
     </tr>
-    $ num = num + 1
-    $if trclass == "odd":
-        $ trclass = "even"
-    $else:
-        $ trclass = "odd"
 </table>
-
-<p><a href="/p/pol.id/groups" class="footer">More...</a></p>
-
 </td>
-
-</tr>        
+</tr>
 
 <tr>
-
-<td colspan="2">
-    
+<td colspan="2" class="rule">
 <h2 class="rep">Top Contributor Employers</h2>
-
 <table class="charted structure contributors" style="width: 100%">
-$ trclass = "odd"
-$ num = 1
 $for c in pol.contributor_employers:
-    <tr class="$trclass">
-        <th>$num. <a href="/corp/$c.employer">$c.employer</a></th>
+    <tr class="$loop.parity">
+        <th>$loop.index <a href="/corp/$c.employer">$c.employer</a></th>
         <td>\$$commify(int(c.amt) )</td>
     </tr>
-    $ num = num + 1
-    $if trclass == "odd":
-        $ trclass = "even"
-    $else:
-        $ trclass = "odd"
 </table>
-
-<p><a href="/p/pol.id/groups" class="footer">More...</a></p>    
-    
 </td>
     
 </tr>
