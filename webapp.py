@@ -295,7 +295,7 @@ class employer:
       WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
       AND pfi.politician_id = p.id AND lower(cn.employer_stem) = lower($corp_id)
       GROUP BY cm.name, p.lastname, p.firstname, p.id 
-      ORDER BY how_much DESC;""", vars=locals())
+      ORDER BY how_much DESC""", vars=locals())
       return render.employer(contributions, corp_id)
 
 def earmark_list(format, page=0, limit=50):

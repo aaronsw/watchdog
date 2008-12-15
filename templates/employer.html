@@ -20,7 +20,7 @@ $ trclass = "odd"
 $for c in contributions:
     <tr class="$trclass">
         <th class="paying">
-            <strong>$c.how_many</strong> $corp_id employees donated <strong>\$$commify(int(c.how_much))</strong> 
+            <strong>$c.how_many</strong> $corp_id.title() employees donated <strong>\$$commify(int(c.how_much))</strong> 
             to <a href="/p/$c.polid">$c.firstname $c.lastname</a>, 
             $c.committee
         </td> 
