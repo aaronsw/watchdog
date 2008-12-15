@@ -1,0 +1,23 @@
+$def with (corp, pol, contributions)
+
+$var width: 80%
+$var color: white
+
+$ c = contributions[0]
+$var title: Contributions from $corp.title() to $c.firstname $c.lastname
+
+<h1> Contributions from <a href="/corp/$corp">$corp.title()</a> to <a href="/p/$pol">$c.firstname $c.lastname</a></h1>
+
+<table class="structure" width=100%>
+<tr>
+    <th>Amount</th>
+    <th>Year</th>
+</tr>
+
+$for c in contributions:
+	<tr class="$loop.parity">
+	    <td>\$$commify(c.amount)</td>
+	    <td>$int(c.year)</td>
+	</tr>
+</table>
+

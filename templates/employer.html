@@ -3,11 +3,11 @@ $def with (contributions, corp_id)
 $var width: 90%
 $var color: white
 
-$var title: $corp_id
+$var title: $corp_id.title()
 
 <script type="text/javascript" src="/static/js/fec.js"></script>
 
-<h1>$corp_id</h1>
+<h1>$corp_id.title()</h1>
 
   <style>
   .subtitle { color: #777;}
@@ -20,8 +20,8 @@ $ trclass = "odd"
 $for c in contributions:
     <tr class="$trclass">
         <th class="paying">
-            <strong>$c.how_many</strong> $corp_id employees donated <strong>\$$commify(int(c.how_much))</strong> 
-            to <a href="http://watchdog.net/p/$c.polid">$c.firstname $c.lastname</a>, 
+            <strong>$c.how_many</strong> $corp_id.title() employees donated <strong>\$$commify(int(c.how_much))</strong> 
+            to <a href="/p/$c.polid">$c.firstname $c.lastname</a>, 
             $c.committee
         </td> 
         <td style="text-align: right;"><!--
