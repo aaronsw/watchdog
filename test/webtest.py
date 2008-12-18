@@ -12,10 +12,10 @@ settings.db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'), db
 db = settings.db
 db.printing = False
 
+from webapp import app
+
 import loaddb
 loaddb.loaddb()
-
-from webapp import app
 
 debug = web.debug
 
@@ -32,11 +32,16 @@ class TestCase(webtest.TestCase):
         self.b = AppBrowser(app)
         return self.b
 
-    def login(self):
-        self.b.open('http://watchdog.net/u/login')
+    def login(self, uemail=None, password=None):
+        self.b.open('/u/login')
         self.b.select_form(name='login')
-        self.b['useremail'] = loaddb.test_email
-        self.b['password'] = loaddb.test_passwd
+        self.b['useremail'] = uemail or loaddb.test_email
+        self.b['password'] = password or loaddb.test_passwd
+        self.b.submit()
+
+    def logout(self):
+        self.b.open('/u/logout')
+        self.b.select_form()
         self.b.submit()
 
     def get_errors(self):

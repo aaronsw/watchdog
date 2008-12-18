@@ -31,7 +31,7 @@ class LoginTest(webtest.TestCase):
         b['password_again'] = 'anything'
         b.submit()
         self.assertEquals(b.path, '/u/signup')
-        assert "An account with that email already exists" in b.data
+        self.assertTrue("An account with that email already exists" in b.data)
 
     def testLogin(self):
         b = self.browser()
@@ -50,7 +50,7 @@ class LoginTest(webtest.TestCase):
         b['password'] = test_passwd + '@@@@'
         b.submit()
         self.assertEquals(b.path, '/u/login')
-        assert 'Oops, wrong email or password' in b.data
+        self.assertTrue('Oops, wrong email or password' in b.data)
 
     def testLogin_no_user_exist(self):
         b = self.browser()
@@ -60,7 +60,16 @@ class LoginTest(webtest.TestCase):
         b['password'] = test_passwd
         b.submit()
         self.assertEquals(b.path, '/u/login')
-        assert 'No account exists with this email' in b.data
+        self.assertTrue('No account exists with this email' in b.data)
+
+    def testLogout(self):
+        b = self.browser()
+        self.login()
+        b.open('/c/new')
+        self.assertTrue('Hi, testemail.' in b.get_text())
+        self.logout()
+        b.open('/c/new')
+        self.assertTrue('Hi, testemail.' not in b.get_text())
         
 if __name__ == "__main__":
     webtest.main()
