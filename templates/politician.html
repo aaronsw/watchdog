@@ -214,7 +214,7 @@ $for c in pol.contributors:
 <table class="charted structure contributors" style="width: 100%">
 $for c in pol.contributor_employers:
     <tr class="$loop.parity">
-        <th>$loop.index <a href="/corp/$c.employer">$c.employer.title()</a></th>
+        <th>$loop.index <a href="/empl/$c.employer">$c.employer.title()</a></th>
         <td>\$$commify(int(c.amt) )</td>
     </tr>
 </table>

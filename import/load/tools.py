@@ -12,6 +12,12 @@ DISTRICT_TABLE = 'load/manual/districts.json'
 POLITICIAN_TABLE = 'load/manual/politicians.json'
 
 _stripterms = ['the', 'corporation', 'corp', 'incorporated', 'inc']
+_corpmapping = {
+  'none': '',
+  'not employed': '',
+  'self employed': 'self',
+  'selfemployed': 'self'
+}
 r_plain = re.compile(r'[a-z ]+')
 def stemcorpname(name):
     """
@@ -19,11 +25,17 @@ def stemcorpname(name):
     'boeing'
     >>> stemcorpname('SAIC Inc.')
     'saic'
+    >>> stemcorpname('Self-Employed')
+    'self'
+    >>> stemcorpname('None')
+    ''
     """
     if not name: return name
     name = name.lower()
     name = ''.join(r_plain.findall(name))
     name = ' '.join(x for x in name.split() if x not in _stripterms)
+    if name in _corpmapping:
+        name = _corpmapping[name]
     return name
 
 _unfipscache = {}
