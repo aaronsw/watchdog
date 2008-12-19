@@ -10,10 +10,11 @@ def fill_captcha(f):
 
 def fill_zip(f, captcha=False):
     if captcha:
-        f['zip5'], f['zip4'], f['state'] = '92003', '0001', ['CA'] #CA-49
-        #f['zip5'], f['zip4'], f['state'] = '75101', '0001', ['TX'] #TX-06 for 2 captchas
+        f['zip5'], f['zip4'], f['state'] = '27532', '0001', ['NC'] # NC-03
+        #f['zip5'], f['zip4'], f['state'] = '92003', '0001', ['CA'] # CA-49
+        #f['zip5'], f['zip4'], f['state'] = '75101', '0001', ['TX'] # TX-06 for 2 captchas
     else:
-        f['zip5'], f['zip4'], f['state'] = '54101', '0011', ['WI'] #WI-08
+        f['zip5'], f['zip4'], f['state'] = '54101', '0011', ['WI'] # WI-08
         
 def fill_user_details(f, to_congress=False, captcha=False):
     f['fname'] = 'Cool'
