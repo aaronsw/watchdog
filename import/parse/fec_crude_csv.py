@@ -515,11 +515,13 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
 
     def handle_error():
         etype, evalue, etb = sys.exc_info()
-        if issubclass(etype, KeyboardInterrupt): raise
+        if isinstance(etype, basestring): eclass = str
+        else: eclass = etype
+        if issubclass(eclass, KeyboardInterrupt): raise
 
         logdir = os.path.join(destdir, 'errors')
         if not os.path.exists(logdir): os.makedirs(logdir)
-        fd, path = tempfile.mkstemp(dir=logdir)
+        fd, path = tempfile.mkstemp(dir=logdir, suffix = '.' + eclass.__name__)
         fo = os.fdopen(fd, 'w')
         lines_of_context = 5
         fo.write(cgitb.text((etype, evalue, etb), lines_of_context))
