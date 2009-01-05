@@ -517,6 +517,7 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
         etype, evalue, etb = sys.exc_info()
         eclass = str if isinstance(etype, basestring) else etype
         if issubclass(eclass, KeyboardInterrupt): raise
+        if issubclass(eclass, StopIteration): raise # let it propagate
 
         logdir = os.path.join(destdir, 'errors')
         if not os.path.exists(logdir): os.makedirs(logdir)
