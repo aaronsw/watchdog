@@ -3,7 +3,7 @@
 """Import FEC data.
 
 """
-import csv, sys, cgitb, fixed_width, zipfile, cStringIO, os, glob, time
+import csv, sys, cgitb, fixed_width, zipfile, cStringIO, os, glob, time, cPickle
 import codecs, re, field_mapper, simplejson, itertools, tempfile, web.utils
 
 def strip(text):
@@ -534,20 +534,19 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
         if not os.path.exists(dirpath): os.makedirs(dirpath)
 
         pathname = os.path.join(dirpath,
-                                '%s.json' % cover_record['this_report_id'])
+                                '%s.pck' % cover_record['this_report_id'])
 
         if os.path.exists(pathname):
             continue
 
         outfile = file(pathname + '.new', 'w') # hoping for no concurrent writes
         if not save_orig: del cover_record['original_data']
-        simplejson.dump(cover_record, outfile)
-        outfile.write('\n')
+        pickle_protocol = 2
+        cPickle.dump(cover_record, outfile, pickle_protocol)
 
         for record in records:
             if not save_orig: del record['original_data']
-            simplejson.dump(record, outfile)
-            outfile.write('\n')
+            cPickle.dump(record, outfile, pickle_protocol)
 
         atomically_commit_efiling(outfile, pathname + '.new', pathname)
 
