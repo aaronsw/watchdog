@@ -440,17 +440,14 @@ candidate_name_res = [re.compile(x, re.IGNORECASE) for x in
 # "Friends of Connie Morella for Congress Committee"
 # "Committee to Elect McHugh"
 
-def warn(string):
-    sys.stderr.write(string + "\n")
-    sys.stderr.flush()
+class WrongFirstRecordError(Exception): pass
 
 def read_filing(astring, filename):
     records = readstring(astring)
     header_record = records.next()
     cover_record = records.next()
     if not cover_record['original_data']['form_type'].startswith('F'):
-        warn("skipping %r: its first record is %r" % (filename, cover_record))
-        return
+        raise WrongFirstRecordError(filename, cover_record)
 
     cover_record['this_report_id'] = filename[:-4]
     if header_record.get('report_id'):  # The field may be missing or empty.
@@ -518,6 +515,7 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
         eclass = str if isinstance(etype, basestring) else etype
         if issubclass(eclass, KeyboardInterrupt): raise
         if issubclass(eclass, StopIteration): raise # let it propagate
+        if issubclass(eclass, GeneratorExit): raise # let the generator die
 
         logdir = os.path.join(destdir, 'errors')
         if not os.path.exists(logdir): os.makedirs(logdir)
@@ -529,7 +527,8 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
 
         sys.stderr.write("logged error to %s, continuing\n" % path)
 
-    for cover_record, records in parse_efilings(filepattern, handle_error):
+    for efiling in parse_efilings(filepattern, handle_error):
+        cover_record, records = efiling
         report_id = cover_record['report_id']
         dirpath = os.path.join(destdir, report_id[-2:], report_id)
         if not os.path.exists(dirpath): os.makedirs(dirpath)
