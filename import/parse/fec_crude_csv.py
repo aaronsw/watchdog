@@ -469,26 +469,35 @@ def read_filing(astring, filename):
                 break
     return cover_record, records
 
-def readfile_zip(filename):
+def null_error_handler(): raise
+
+def readfile_zip(filename, handler=null_error_handler):
     zf = zipfile.ZipFile(filename)
     for name in zf.namelist():
-        yield read_filing(zf.read(name), name)
+        try:
+            yield read_filing(zf.read(name), name)
+        except:
+            handler()
 
-def readfile_generic(filename):
-    if filename.endswith('.zip'):
-        return readfile_zip(filename)
-    else:
-        _, basename = os.path.split(filename)
-        return [read_filing(file(filename).read(), basename)]
+def readfile_generic(filename, handler=null_error_handler):
+    try:
+        if filename.endswith('.zip'):
+            return readfile_zip(filename, handler)
+        else:
+            _, basename = os.path.split(filename)
+            return [read_filing(file(filename).read(), basename)]
+    except:
+        handler()
+        return []
 
 EFILINGS_PATH = '../data/crawl/fec/electronic/'
 
-def parse_efilings(filepattern = None):
+def parse_efilings(filepattern=None, handler=null_error_handler):
     if filepattern is None: filepattern = EFILINGS_PATH + '*.zip'
     last_time = time.time()
     for filename in glob.glob(filepattern):
         sys.stderr.write('parsing efilings file %s\n' % filename)
-        for parsed_file in readfile_generic(filename):
+        for parsed_file in readfile_generic(filename, handler):
             yield parsed_file
         now = time.time()
         sys.stderr.write('parsing took %.1f seconds\n' % (now - last_time))
@@ -504,7 +513,12 @@ def atomically_commit_efiling(outfile, tempname, realname):
 def stash_efilings(destdir = None, filepattern = None, save_orig = False):
     if destdir is None: destdir = tempfile.mkdtemp()
 
-    for cover_record, records in parse_efilings(filepattern):
+    def handle_error():
+        logdir = os.path.join(destdir, 'errors')
+        if not os.path.exists(logdir): os.makedirs(logdir)
+        cgitb.Hook(display=False, format='text', logdir=logdir).handle()
+
+    for cover_record, records in parse_efilings(filepattern, handle_error):
         report_id = cover_record['report_id']
         dirpath = os.path.join(destdir, report_id[-2:], report_id)
         if not os.path.exists(dirpath): os.makedirs(dirpath)
