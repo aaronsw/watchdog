@@ -539,7 +539,7 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
         if os.path.exists(pathname):
             continue
 
-        outfile = file(pathname + '.new', 'w') # hoping we’re the only ones
+        outfile = file(pathname + '.new', 'w') # hoping for no concurrent writes
         if not save_orig: del cover_record['original_data']
         simplejson.dump(cover_record, outfile)
         outfile.write('\n')
