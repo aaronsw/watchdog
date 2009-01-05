@@ -514,6 +514,8 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
     if destdir is None: destdir = tempfile.mkdtemp()
 
     def handle_error():
+        etype, evalue, etb = sys.exc_info()
+        if issubclass(etype, KeyboardInterrupt): raise
         logdir = os.path.join(destdir, 'errors')
         if not os.path.exists(logdir): os.makedirs(logdir)
         cgitb.Hook(display=False, format='text', logdir=logdir).handle()
