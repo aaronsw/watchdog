@@ -516,9 +516,16 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
     def handle_error():
         etype, evalue, etb = sys.exc_info()
         if issubclass(etype, KeyboardInterrupt): raise
+
         logdir = os.path.join(destdir, 'errors')
         if not os.path.exists(logdir): os.makedirs(logdir)
-        cgitb.Hook(display=False, format='text', logdir=logdir).handle()
+        fd, path = tempfile.mkstemp(dir=logdir)
+        fo = os.fdopen(fd, 'w')
+        lines_of_context = 5
+        fo.write(cgitb.text((etype, evalue, etb), lines_of_context))
+        fo.close()
+
+        sys.stderr.write("logged error to %s, continuing\n" % path)
 
     for cover_record, records in parse_efilings(filepattern, handle_error):
         report_id = cover_record['report_id']
