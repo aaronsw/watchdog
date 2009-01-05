@@ -539,16 +539,21 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
         if os.path.exists(pathname):
             continue
 
-        outfile = file(pathname + '.new', 'w') # hoping for no concurrent writes
+        tempname = pathname + '.new'  # hoping for no concurrent writes
+        outfile = file(tempname, 'w')
         if not save_orig: del cover_record['original_data']
         pickle_protocol = 2
         cPickle.dump(cover_record, outfile, pickle_protocol)
 
-        for record in records:
-            if not save_orig: del record['original_data']
-            cPickle.dump(record, outfile, pickle_protocol)
-
-        atomically_commit_efiling(outfile, pathname + '.new', pathname)
+        try:
+            for record in records:
+                if not save_orig: del record['original_data']
+                cPickle.dump(record, outfile, pickle_protocol)
+        except:
+            os.unlink(tempname)
+            handle_error()
+        else:
+            atomically_commit_efiling(outfile, tempname, pathname)
 
     return destdir
 
