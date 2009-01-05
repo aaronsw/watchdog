@@ -515,8 +515,7 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
 
     def handle_error():
         etype, evalue, etb = sys.exc_info()
-        if isinstance(etype, basestring): eclass = str
-        else: eclass = etype
+        eclass = str if isinstance(etype, basestring) else etype
         if issubclass(eclass, KeyboardInterrupt): raise
 
         logdir = os.path.join(destdir, 'errors')
