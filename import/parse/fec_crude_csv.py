@@ -442,7 +442,7 @@ candidate_name_res = [re.compile(x, re.IGNORECASE) for x in
 
 class WrongFirstRecordError(Exception): pass
 
-def read_filing(astring, filename):
+def read_filing(astring, filename, pathname=None):
     records = readstring(astring)
     header_record = records.next()
     cover_record = records.next()
@@ -472,7 +472,7 @@ def readfile_zip(filename, handler=null_error_handler):
     zf = zipfile.ZipFile(filename)
     for name in zf.namelist():
         try:
-            yield read_filing(zf.read(name), name)
+            yield read_filing(zf.read(name), name, pathname=filename)
         except:
             handler()
 
@@ -482,7 +482,9 @@ def readfile_generic(filename, handler=null_error_handler):
             return readfile_zip(filename, handler)
         else:
             _, basename = os.path.split(filename)
-            return [read_filing(file(filename).read(), basename)]
+            return [read_filing(file(filename).read(),
+                                basename,
+                                pathname=filename)]
     except:
         handler()
         return []
