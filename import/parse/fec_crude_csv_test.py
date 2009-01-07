@@ -95,10 +95,6 @@ def test_windows_1252_characters():
     be encoded in UTF-8, in part because the Python `csv` module is
     documented to be UTF-8-safe.
 
-    Note that this test doesn’t pass yet; the SKIP option to doctest
-    was added in Python 2.5, so this test will barf 'has an invalid
-    option' on 2.4.
-
     >>> records(filing_181941_truncated)[-1]
     ... #doctest: +ELLIPSIS
     {...'occupation': 'Team Ldr \xe2\x80\x93 HRIS'...}
