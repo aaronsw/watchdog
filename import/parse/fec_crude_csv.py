@@ -449,6 +449,8 @@ def read_filing(astring, filename, pathname=None):
     if not cover_record['original_data']['form_type'].startswith('F'):
         raise WrongFirstRecordError(filename, cover_record)
 
+    cover_record['pathname'] = pathname
+
     cover_record['this_report_id'] = filename[:-4]
     if header_record.get('report_id'):  # The field may be missing or empty.
         cover_record['report_id'] = \
@@ -512,6 +514,8 @@ def atomically_commit_efiling(outfile, tempname, realname):
 def stash_efilings(destdir = None, filepattern = None, save_orig = False):
     if destdir is None: destdir = tempfile.mkdtemp()
 
+    cover_record = {}
+
     def handle_error():
         etype, evalue, etb = sys.exc_info()
         eclass = str if isinstance(etype, basestring) else etype
@@ -519,15 +523,21 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
         if issubclass(eclass, StopIteration): raise # let it propagate
         if issubclass(eclass, GeneratorExit): raise # let the generator die
 
+        pathname = cover_record.get('pathname')
+        report_id = cover_record.get('this_report_id')
+
         logdir = os.path.join(destdir, 'errors')
         if not os.path.exists(logdir): os.makedirs(logdir)
         fd, path = tempfile.mkstemp(dir=logdir, suffix = '.' + eclass.__name__)
         fo = os.fdopen(fd, 'w')
         lines_of_context = 5
+        fo.write('Surprise; last filing successfully opened was\n%s in %s\n\n' %
+                 (report_id, pathname))
         fo.write(cgitb.text((etype, evalue, etb), lines_of_context))
         fo.close()
 
-        sys.stderr.write("logged error to %s, continuing\n" % path)
+        sys.stderr.write("logged error (in %s?) to %s, continuing\n" %
+                         (report_id, path))
 
     for efiling in parse_efilings(filepattern, handle_error):
         cover_record, records = efiling
