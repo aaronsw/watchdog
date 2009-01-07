@@ -346,7 +346,7 @@ class translate_to_utf_8:
         self.fileobj.seek(0)
 
 def decode_headerline(line):
-    format_version = line[2]
+    format_version = line[2].strip()
 
     if format_version < '6':
         headerheaders = 'record_type ef_type fec_ver soft_name soft_ver ' \

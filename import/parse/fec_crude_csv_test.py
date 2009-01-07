@@ -233,6 +233,10 @@ def test_strange_headers():
     >>> cover_record(filing_48608_truncated, '48608.fec')['report_id']
     '33531'
 
+    Filing 353121 has a space on the end of the version number.
+    >>> cover_record(filing_353121_truncated, '353121.fec')['format_version']
+    '6.2'
+
     """
 
 def test_lowercase_form_type():
@@ -391,6 +395,11 @@ filing_48608_truncated = '''"HDR","FEC","3.00","Aristotle International CM4 PM4"
 "F3A","C00367854","Ballenger for Congress","PO Box 2009","","Council Bluffs","IA","51502   ","X","IA",5,"Q1","P2002",20021105,"","X","","","",20020101,20020331,45823.00,0.00,45823.00,82360.05,0.00,82360.05,205835.18,0.00,250000.00,35315.00,9508.00,44823.00,0.00,1000.00,0.00,45823.00,0.00,150000.00,0.00,150000.00,0.00,0.00,195823.00,82360.05,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,82360.05,92372.23,195823.00,288195.23,82360.05,205835.18,105938.23,2000.00,103938.23,148123.05,20.00,148103.05,,,92677.23,98.00,7000.00,6163.00,105938.23,0.00,150000.00,100000.00,250000.00,20.00,0.00,355958.23,148123.05,0.00,0.00,0.00,0.00,2000.00,0.00,0.00,2000.00,0.00,150123.05,"M Eastman Chance",20020829
 "TEXT","F3A","C00367854",""
 "SA11A1","C00367854","IND","Mark E Abel","424 Oakland Ave","","Council Bluffs","IA","51503    ","P2002","","Smith Davis & Abel","Insurance",600.00,20020209,100.00,"15","Receipt","","","","","","","","","","","",,"","","","0407200255C2471"
+'''
+
+filing_353121_truncated = '''HDR\x1cFEC\x1c6.2 \x1cMeadWestvaco Corp. Political Action Committee\x1c3.1\x1c\x1c0\x1c
+F3XN\x1cC00065987\x1cMeadWestvaco Corp. Political Action Committee\x1c\x1c11013 West Broad Street\x1c\x1cGlen Allen\x1cVA\x1c23060\x1cM7\x1c\x1c\x1c\x1c20080601\x1c20080630\x1cX\x1cStoddard\x1cAlexander\x1cH.\x1c\x1c\x1c20080718\x1c112749.30\x1c7348.18\x1c120097.48\x1c7000.00\x1c113097.48\x1c0.00\x1c0.00\x1c1840.49\x1c4434.97\x1c6275.46\x1c0.00\x1c0.00\x1c6275.46\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c1000.00\x1c72.72\x1c0.00\x1c0.00\x1c0.00\x1c7348.18\x1c7348.18\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c7000.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c7000.00\x1c7000.00\x1c6275.46\x1c0.00\x1c6275.46\x1c0.00\x1c0.00\x1c0.00\x1c103358.03\x1c2008\x1c37188.45\x1c140546.48\x1c27449.00\x1c113097.48\x1c6369.49\x1c29377.75\x1c35747.24\x1c0.00\x1c0.00\x1c35747.24\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c1000.00\x1c441.21\x1c0.00\x1c0.00\x1c0.00\x1c37188.45\x1c37188.45\x1c0.00\x1c0.00\x1c349.00\x1c349.00\x1c0.00\x1c21000.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c6100.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c27449.00\x1c27449.00\x1c35747.24\x1c0.00\x1c35747.24\x1c349.00\x1c0.00\x1c349.00
+SA11AI\x1cC00065987\x1cA2008-1323375\x1c\x1c\x1cIND\x1c\x1cBuzzard\x1cJames\x1cA\x1c\x1c\x1c584 Manakin Towne Place\x1c\x1cManakin Sabot\x1cVA\x1c23103\x1c\x1c\x1c20080630\x1c100.00\x1c600.00\x1c15\x1c\x1c\x1cMEADWESTVACO CORP\x1cPresident\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c
 '''
 
 if __name__ == "__main__":
