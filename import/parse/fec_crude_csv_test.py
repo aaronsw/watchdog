@@ -233,6 +233,25 @@ def test_strange_headers():
     >>> cover_record(filing_48608_truncated, '48608.fec')['report_id']
     '33531'
 
+    Filing 353121 has a space on the end of the version number.
+    >>> cover_record(filing_353121_truncated, '353121.fec')['format_version']
+    '6.2'
+
+    Filing 83615 (and about 100 other amendment filings produced with
+    Vocus PAC Management) have random hexadecimal crap stuck onto the
+    end of the FEC filing ID, preceded with '*BD'.  Maybe this is a
+    checksum of the original filing or something.  (I’ve verified that
+    in fact filing 63727 is a filing from the same people of the same
+    type covering the same period of time.)
+    >>> cover_record(filing_83615_truncated, '83615.fec')['report_id']
+    '63727'
+
+    Filing 217921 (and a few other filing amendments from Public
+    Affairs Support Services Inc. software) puts a space before and
+    after the dash in its original report ID.
+    >>> cover_record(filing_217921_truncated, '217921.fec')['report_id']
+    '213367'
+
     """
 
 def test_lowercase_form_type():
@@ -391,6 +410,21 @@ filing_48608_truncated = '''"HDR","FEC","3.00","Aristotle International CM4 PM4"
 "F3A","C00367854","Ballenger for Congress","PO Box 2009","","Council Bluffs","IA","51502   ","X","IA",5,"Q1","P2002",20021105,"","X","","","",20020101,20020331,45823.00,0.00,45823.00,82360.05,0.00,82360.05,205835.18,0.00,250000.00,35315.00,9508.00,44823.00,0.00,1000.00,0.00,45823.00,0.00,150000.00,0.00,150000.00,0.00,0.00,195823.00,82360.05,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,82360.05,92372.23,195823.00,288195.23,82360.05,205835.18,105938.23,2000.00,103938.23,148123.05,20.00,148103.05,,,92677.23,98.00,7000.00,6163.00,105938.23,0.00,150000.00,100000.00,250000.00,20.00,0.00,355958.23,148123.05,0.00,0.00,0.00,0.00,2000.00,0.00,0.00,2000.00,0.00,150123.05,"M Eastman Chance",20020829
 "TEXT","F3A","C00367854",""
 "SA11A1","C00367854","IND","Mark E Abel","424 Oakland Ave","","Council Bluffs","IA","51503    ","P2002","","Smith Davis & Abel","Insurance",600.00,20020209,100.00,"15","Receipt","","","","","","","","","","","",,"","","","0407200255C2471"
+'''
+
+filing_353121_truncated = '''HDR\x1cFEC\x1c6.2 \x1cMeadWestvaco Corp. Political Action Committee\x1c3.1\x1c\x1c0\x1c
+F3XN\x1cC00065987\x1cMeadWestvaco Corp. Political Action Committee\x1c\x1c11013 West Broad Street\x1c\x1cGlen Allen\x1cVA\x1c23060\x1cM7\x1c\x1c\x1c\x1c20080601\x1c20080630\x1cX\x1cStoddard\x1cAlexander\x1cH.\x1c\x1c\x1c20080718\x1c112749.30\x1c7348.18\x1c120097.48\x1c7000.00\x1c113097.48\x1c0.00\x1c0.00\x1c1840.49\x1c4434.97\x1c6275.46\x1c0.00\x1c0.00\x1c6275.46\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c1000.00\x1c72.72\x1c0.00\x1c0.00\x1c0.00\x1c7348.18\x1c7348.18\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c7000.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c7000.00\x1c7000.00\x1c6275.46\x1c0.00\x1c6275.46\x1c0.00\x1c0.00\x1c0.00\x1c103358.03\x1c2008\x1c37188.45\x1c140546.48\x1c27449.00\x1c113097.48\x1c6369.49\x1c29377.75\x1c35747.24\x1c0.00\x1c0.00\x1c35747.24\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c1000.00\x1c441.21\x1c0.00\x1c0.00\x1c0.00\x1c37188.45\x1c37188.45\x1c0.00\x1c0.00\x1c349.00\x1c349.00\x1c0.00\x1c21000.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c6100.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c27449.00\x1c27449.00\x1c35747.24\x1c0.00\x1c35747.24\x1c349.00\x1c0.00\x1c349.00
+SA11AI\x1cC00065987\x1cA2008-1323375\x1c\x1c\x1cIND\x1c\x1cBuzzard\x1cJames\x1cA\x1c\x1c\x1c584 Manakin Towne Place\x1c\x1cManakin Sabot\x1cVA\x1c23103\x1c\x1c\x1c20080630\x1c100.00\x1c600.00\x1c15\x1c\x1c\x1cMEADWESTVACO CORP\x1cPresident\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c
+'''
+
+filing_83615_truncated = '''"HDR","FEC","5.00","Vocus PAC Management","3.00.214","","FEC-63727*BDfbd0",2,""
+"F3XA","C00107771","Xcel Energy Employee Political Action Committee","1225 17th Street, Suite 900","","Denver","CO","80202","","X","12G","G2002",20021105,"",20021001,20021016,1660.56,8523.69,10184.25,10000.00,184.25,0.00,0.00,5581.22,1942.47,7523.69,0.00,0.00,7523.69,0.00,500.00,0.00,0.00,500.00,0.00,0.00,8523.69,8523.69,0.00,0.00,0.00,0.00,0.00,10000.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,10000.00,10000.00,7523.69,0.00,7523.69,0.00,0.00,0.00,21777.45,2002,86122.97,107900.42,107716.17,184.25,76166.54,7402.39,83568.93,0.00,0.00,83568.93,0.00,500.00,0.00,0.00,2000.00,54.04,0.00,86122.97,86122.97,0.00,0.00,16.17,16.17,0.00,104950.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,2750.00,107716.17,107716.17,83568.93,0.00,83568.93,16.17,0.00,16.17,"Johnston^Christine^Ms.^",20030429,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00
+"SA11ai","C00107771","IND","Evans^Cynthia A^^","432 Fillmore St","","Denver","CO","802064324","","","XS","State VP Co/Wy/Az",1125.00,,112.50,"15","","","","","","","","","","","","","","","P/R Deduction ($112.50 Monthly)","","PR720968310179","","","",""
+'''
+
+filing_217921_truncated = '''HDR,FEC,5.30,Public Affairs Support Services Inc.,3.1,,FEC - 213367,1,,
+F3XA,C00144345,sanofi-aventis group Employees PAC,300 Somerset Corp.  Blvd. MS: SC3-,,Bridgewater,NJ,08807,,X,M4,,,,20060301,20060331,99806.65,4809.28,104615.93,4005.00,100610.93,,,1920.36,2888.92,4809.28,,,4809.28,,,,,,,,4809.28,4809.28,,,5.00,5.00,,4000.00,,,,,,,,,,4005.00,4005.00,4809.28,,4809.28,5.00,,5.00,91184.25,2006,14491.68,105675.93,5065.00,100610.93,3021.68,11470.00,14491.68,,,14491.68,,,,,,,,14491.68,14491.68,,,65.00,65.00,,5000.00,,,,,,,,,,5065.00,5065.00,14491.68,,14491.68,65.00,,65.00,Timothy  Clark,20060517,,,,,,,,,,,,,
+TEXT,SA11A1,,"Please note that the PAC is aware that we follow an alternate method of itemizing payroll receipts rather than the suggested manner of disclosing a single total for the reporting period along with the amount deducted per pay period.  Because the amounts collected per pay period may change often during the time covered by a single report, we find that reporting individual deductions separately more accurately discloses how the receipts are collected.",
 '''
 
 if __name__ == "__main__":

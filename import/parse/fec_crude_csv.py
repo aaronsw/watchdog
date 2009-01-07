@@ -346,7 +346,7 @@ class translate_to_utf_8:
         self.fileobj.seek(0)
 
 def decode_headerline(line):
-    format_version = line[2]
+    format_version = line[2].strip()
 
     if format_version < '6':
         headerheaders = 'record_type ef_type fec_ver soft_name soft_ver ' \
@@ -442,17 +442,19 @@ candidate_name_res = [re.compile(x, re.IGNORECASE) for x in
 
 class WrongFirstRecordError(Exception): pass
 
-def read_filing(astring, filename):
+def read_filing(astring, filename, pathname=None):
     records = readstring(astring)
     header_record = records.next()
     cover_record = records.next()
     if not cover_record['original_data']['form_type'].startswith('F'):
         raise WrongFirstRecordError(filename, cover_record)
 
+    cover_record['pathname'] = pathname
+
     cover_record['this_report_id'] = filename[:-4]
     if header_record.get('report_id'):  # The field may be missing or empty.
         cover_record['report_id'] = \
-            re.match('(?i)fec-\s*(\d+)(\.?$|\s+)',
+            re.match('(?i)fec\s*-\s*(\d+)(\.?$|\s+|\*BD[0-9a-f]{4}$)',
                      header_record['report_id']).group(1)
     else:
         cover_record['report_id'] = cover_record['this_report_id']
@@ -472,7 +474,7 @@ def readfile_zip(filename, handler=null_error_handler):
     zf = zipfile.ZipFile(filename)
     for name in zf.namelist():
         try:
-            yield read_filing(zf.read(name), name)
+            yield read_filing(zf.read(name), name, pathname=filename)
         except:
             handler()
 
@@ -482,7 +484,9 @@ def readfile_generic(filename, handler=null_error_handler):
             return readfile_zip(filename, handler)
         else:
             _, basename = os.path.split(filename)
-            return [read_filing(file(filename).read(), basename)]
+            return [read_filing(file(filename).read(),
+                                basename,
+                                pathname=filename)]
     except:
         handler()
         return []
@@ -510,6 +514,8 @@ def atomically_commit_efiling(outfile, tempname, realname):
 def stash_efilings(destdir = None, filepattern = None, save_orig = False):
     if destdir is None: destdir = tempfile.mkdtemp()
 
+    cover_record = {}
+
     def handle_error():
         etype, evalue, etb = sys.exc_info()
         eclass = str if isinstance(etype, basestring) else etype
@@ -517,15 +523,21 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
         if issubclass(eclass, StopIteration): raise # let it propagate
         if issubclass(eclass, GeneratorExit): raise # let the generator die
 
+        pathname = cover_record.get('pathname')
+        report_id = cover_record.get('this_report_id')
+
         logdir = os.path.join(destdir, 'errors')
         if not os.path.exists(logdir): os.makedirs(logdir)
         fd, path = tempfile.mkstemp(dir=logdir, suffix = '.' + eclass.__name__)
         fo = os.fdopen(fd, 'w')
         lines_of_context = 5
+        fo.write('Surprise; last filing successfully opened was\n%s in %s\n\n' %
+                 (report_id, pathname))
         fo.write(cgitb.text((etype, evalue, etb), lines_of_context))
         fo.close()
 
-        sys.stderr.write("logged error to %s, continuing\n" % path)
+        sys.stderr.write("logged error (in %s?) to %s, continuing\n" %
+                         (report_id, path))
 
     for efiling in parse_efilings(filepattern, handle_error):
         cover_record, records = efiling
