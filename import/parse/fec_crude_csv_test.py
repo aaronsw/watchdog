@@ -237,6 +237,15 @@ def test_strange_headers():
     >>> cover_record(filing_353121_truncated, '353121.fec')['format_version']
     '6.2'
 
+    Filing 83615 (and about 100 other amendment filings produced with
+    Vocus PAC Management) have random hexadecimal crap stuck onto the
+    end of the FEC filing ID, preceded with '*BD'.  Maybe this is a
+    checksum of the original filing or something.  (I’ve verified that
+    in fact filing 63727 is a filing from the same people of the same
+    type covering the same period of time.)
+    >>> cover_record(filing_83615_truncated, '83615.fec')['report_id']
+    '63727'
+
     """
 
 def test_lowercase_form_type():
@@ -400,6 +409,11 @@ filing_48608_truncated = '''"HDR","FEC","3.00","Aristotle International CM4 PM4"
 filing_353121_truncated = '''HDR\x1cFEC\x1c6.2 \x1cMeadWestvaco Corp. Political Action Committee\x1c3.1\x1c\x1c0\x1c
 F3XN\x1cC00065987\x1cMeadWestvaco Corp. Political Action Committee\x1c\x1c11013 West Broad Street\x1c\x1cGlen Allen\x1cVA\x1c23060\x1cM7\x1c\x1c\x1c\x1c20080601\x1c20080630\x1cX\x1cStoddard\x1cAlexander\x1cH.\x1c\x1c\x1c20080718\x1c112749.30\x1c7348.18\x1c120097.48\x1c7000.00\x1c113097.48\x1c0.00\x1c0.00\x1c1840.49\x1c4434.97\x1c6275.46\x1c0.00\x1c0.00\x1c6275.46\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c1000.00\x1c72.72\x1c0.00\x1c0.00\x1c0.00\x1c7348.18\x1c7348.18\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c7000.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c7000.00\x1c7000.00\x1c6275.46\x1c0.00\x1c6275.46\x1c0.00\x1c0.00\x1c0.00\x1c103358.03\x1c2008\x1c37188.45\x1c140546.48\x1c27449.00\x1c113097.48\x1c6369.49\x1c29377.75\x1c35747.24\x1c0.00\x1c0.00\x1c35747.24\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c1000.00\x1c441.21\x1c0.00\x1c0.00\x1c0.00\x1c37188.45\x1c37188.45\x1c0.00\x1c0.00\x1c349.00\x1c349.00\x1c0.00\x1c21000.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c6100.00\x1c0.00\x1c0.00\x1c0.00\x1c0.00\x1c27449.00\x1c27449.00\x1c35747.24\x1c0.00\x1c35747.24\x1c349.00\x1c0.00\x1c349.00
 SA11AI\x1cC00065987\x1cA2008-1323375\x1c\x1c\x1cIND\x1c\x1cBuzzard\x1cJames\x1cA\x1c\x1c\x1c584 Manakin Towne Place\x1c\x1cManakin Sabot\x1cVA\x1c23103\x1c\x1c\x1c20080630\x1c100.00\x1c600.00\x1c15\x1c\x1c\x1cMEADWESTVACO CORP\x1cPresident\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c\x1c
+'''
+
+filing_83615_truncated = '''"HDR","FEC","5.00","Vocus PAC Management","3.00.214","","FEC-63727*BDfbd0",2,""
+"F3XA","C00107771","Xcel Energy Employee Political Action Committee","1225 17th Street, Suite 900","","Denver","CO","80202","","X","12G","G2002",20021105,"",20021001,20021016,1660.56,8523.69,10184.25,10000.00,184.25,0.00,0.00,5581.22,1942.47,7523.69,0.00,0.00,7523.69,0.00,500.00,0.00,0.00,500.00,0.00,0.00,8523.69,8523.69,0.00,0.00,0.00,0.00,0.00,10000.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,10000.00,10000.00,7523.69,0.00,7523.69,0.00,0.00,0.00,21777.45,2002,86122.97,107900.42,107716.17,184.25,76166.54,7402.39,83568.93,0.00,0.00,83568.93,0.00,500.00,0.00,0.00,2000.00,54.04,0.00,86122.97,86122.97,0.00,0.00,16.17,16.17,0.00,104950.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,2750.00,107716.17,107716.17,83568.93,0.00,83568.93,16.17,0.00,16.17,"Johnston^Christine^Ms.^",20030429,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00
+"SA11ai","C00107771","IND","Evans^Cynthia A^^","432 Fillmore St","","Denver","CO","802064324","","","XS","State VP Co/Wy/Az",1125.00,,112.50,"15","","","","","","","","","","","","","","","P/R Deduction ($112.50 Monthly)","","PR720968310179","","","",""
 '''
 
 if __name__ == "__main__":
