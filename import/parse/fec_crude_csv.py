@@ -335,7 +335,9 @@ class translate_to_utf_8:
         self.decoder = codecs.getdecoder('windows-1252')
     def readline(self):
         line = self.fileobj.readline()
-        unicode_string, length = self.decoder(line)
+        # replace errors here for Egl\x8f,Richard,,Mr. and M RUB\x90N
+        # HINOJOSA
+        unicode_string, length = self.decoder(line, errors='replace')
         assert length == len(line)
         rv, length = self.encoder(unicode_string)
         assert length == len(unicode_string)

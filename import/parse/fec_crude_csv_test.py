@@ -95,9 +95,13 @@ def test_windows_1252_characters():
     be encoded in UTF-8, in part because the Python `csv` module is
     documented to be UTF-8-safe.
 
-    >>> records(filing_181941_truncated)[-1]
-    ... #doctest: +ELLIPSIS
+    >>> records(filing_181941_truncated)[-1] #doctest: +ELLIPSIS
     {...'occupation': 'Team Ldr \xe2\x80\x93 HRIS'...}
+
+    Not all the non-ASCII data is encoded in Windows-1252.
+    >>> records(filing_221223_edited)[-1] #doctest: +ELLIPSIS
+    {...'candidate': 'M RUB\xef\xbf\xbdN  HINOJOSA'...}
+
     """
 
 filing_181941_truncated = u'''"HDR","FEC","5.2","Vocus PAC Management","3.00.1828","","",0,""
@@ -108,6 +112,13 @@ filing_181941_truncated = u'''"HDR","FEC","5.2","Vocus PAC Management","3.00.182
 '''.encode('iso-8859-1')
 assert chr(0x96) in filing_181941_truncated # not really an ISO-8859-1
                                             # character! Windows-1252.
+
+filing_221223_edited = '''HDR,FEC,5.3,FECfile,5.3.1.0(f16),,FEC-206415,1
+F3XA,C00105981,INVESTMENT COMPANY INSTITUTE POLITICAL ACTION COMMITTEE (ICI PAC),1401 H STREET NW SUITE 1200,,WASHINGTON,DC,20005,,X,M3,,,,20060201,20060228,243872.22,24007.99,267880.21,133054.13,134826.08,0.00,0.00,19000.00,0.00,19000.00,0.00,5000.00,24000.00,0.00,0.00,0.00,0.00,0.00,7.99,0.00,24007.99,24007.99,0.00,0.00,3756.86,3756.86,0.00,129297.27,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,133054.13,133054.13,24000.00,0.00,24000.00,3756.86,0.00,3756.86,172863.10,2006,110517.11,283380.21,148554.13,134826.08,100500.00,0.00,100500.00,0.00,10000.00,110500.00,0.00,0.00,0.00,0.00,0.00,17.11,0.00,110517.11,110517.11,0.00,0.00,3756.86,3756.86,0.00,144797.27,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,148554.13,148554.13,110500.00,0.00,110500.00,3756.86,0.00,3756.86,MAFFIA^LAWRENCE^MR.^,20060605,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00
+SA11A1,C00105981,IND,,1625 Broadway,Ste. 780,Denver,CO,80202,,,Oppenheimer Funds,Ind. Chairman & Trustee Oppenheimer Fd,5000.00,20060213,5000.00,15,,,,,,,,,,,,,,,,,SA11A1.6771,,,,,,ARMSTRONG,WILLIAM L,,MR.,
+SB23,C00105981,CCM,,417 NEW JERSEY AVENUE SE,,WASHINGTON,DC,20003,,Contribution,P2006,,20060215,1000.00,,,HINOJOSA^RUB\x90N ^M^^,H,TX,15,,,,,,,,,,SB23.6797,,,,,,,HINOJOSA FOR CONGRESS,,,,,
+'''
+assert chr(0x90) in filing_221223_edited # neither ISO-8859-1 nor Windows-1252
 
 def cover_record(data, name):
     return fec_crude_csv.read_filing(data, name)[0]
@@ -401,6 +412,7 @@ F3XA,C00179473,Regions Financial Corporation Political Action Committee,417 20th
 SA11ai,C00179473,IND,"West^Neil^","6712 Hollytree Circle","",Tyler,TX,75703,,,"Regions Bank","President",500.00,20010709,500.00,,,,,,,,,,,,,,,,,N,YEC011
 SA11ai,C00179473,IND,"Weaver^Michael^D.^","40 Cheet Road","",Oneonta,AL,35121,,,"Otelco Tel.","President",200.00,20010809,200.00,,,,,,,,,,,,,,,,,N,YEC012
 '''
+# Emacs isn't smart enough to parse the triple-quoted string.
 
 filing_48608_truncated = '''"HDR","FEC","3.00","Aristotle International CM4 PM4","Version 4.1.1","^","FEC-33531.","1"
 "F3A","C00367854","Ballenger for Congress","PO Box 2009","","Council Bluffs","IA","51502   ","X","IA",5,"Q1","P2002",20021105,"","X","","","",20020101,20020331,45823.00,0.00,45823.00,82360.05,0.00,82360.05,205835.18,0.00,250000.00,35315.00,9508.00,44823.00,0.00,1000.00,0.00,45823.00,0.00,150000.00,0.00,150000.00,0.00,0.00,195823.00,82360.05,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,82360.05,92372.23,195823.00,288195.23,82360.05,205835.18,105938.23,2000.00,103938.23,148123.05,20.00,148103.05,,,92677.23,98.00,7000.00,6163.00,105938.23,0.00,150000.00,100000.00,250000.00,20.00,0.00,355958.23,148123.05,0.00,0.00,0.00,0.00,2000.00,0.00,0.00,2000.00,0.00,150123.05,"M Eastman Chance",20020829
