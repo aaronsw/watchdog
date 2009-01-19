@@ -368,6 +368,8 @@ def decode_headerline(line):
 
     return headers
 
+class FilingFormatNotDocumented(Exception): pass
+
 # Note that normally we are reading from a zipfile, and Python’s
 # stupid zipfile interface doesn’t AFAICT give us the option of
 # streaming reads — it insists on reading the whole zipfile element at
@@ -393,7 +395,7 @@ def readstring(astring):
         # It’s probably the old 2.x format that we don’t support yet
         # because we can’t find docs; return without yielding
         # anything.
-        return
+        raise FilingFormatNotDocumented(astring[:20])
 
     headerdict = decode_headerline(headerline)
     yield headerdict
@@ -524,6 +526,9 @@ def stash_efilings(destdir = None, filepattern = None, save_orig = False):
         if issubclass(eclass, KeyboardInterrupt): raise
         if issubclass(eclass, StopIteration): raise # let it propagate
         if issubclass(eclass, GeneratorExit): raise # let the generator die
+        if issubclass(eclass, FilingFormatNotDocumented):
+            # We don't bother to log these; we know they happen.
+            return
 
         pathname = cover_record.get('pathname')
         report_id = cover_record.get('this_report_id')
