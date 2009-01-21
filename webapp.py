@@ -12,6 +12,7 @@ import config
 
 if not production_mode:
 	web.config.debug = True
+	db.printing = True
 
 options = r'(?:\.(html|xml|rdf|n3|json))'
 urls = (
@@ -27,6 +28,8 @@ urls = (
   r'/p/(.*?)/earmarks', 'politician_earmarks',
   r'/p/(.*?)/introduced', 'politician_introduced',
   r'/p/(.*?)/groups', 'politician_groups',
+  r'/p/(.*?)/contribs', 'politician_contribs',
+  r'/p/(.*?)/contrib-employers', 'politician_contrib_employers',
   r'/p/(.*?)/(\d+)', 'politician_group',
   r'/p/(.*?)%s?' % options, 'politician',
   r'/e/(.*?)%s?' % options, 'earmark',
@@ -205,6 +208,22 @@ def group_politician_similarity(politician_id, qmin=None):
     q.sort(lambda x, y: cmp(x.agreement, y.agreement), reverse=True)
     return q
 
+def politician_contributors(polid):
+    return db.query("""SELECT cn.name, cn.zip, 
+            sum(cn.amount) as amt FROM committee cm, politician_fec_ids pfi, 
+            politician p, contribution cn WHERE cn.recipient_id = cm.id 
+            AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
+            AND p.id = $polid AND cn.employer_stem != '' GROUP BY cn.name, cn.zip 
+            ORDER BY amt DESC""", vars=locals())
+
+def politician_contributor_employers(polid):
+    return db.query("""SELECT cn.employer_stem as employer, 
+            sum(cn.amount) as amt FROM committee cm, politician_fec_ids pfi, 
+            politician p, contribution cn WHERE cn.recipient_id = cm.id 
+            AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
+            AND p.id = $polid AND cn.employer_stem != '' GROUP BY cn.employer_stem 
+            ORDER BY amt DESC""", vars=locals())
+
 def bill_list(format, page=0, limit=50):
     bills = schema.Bill.select(limit=limit, offset=page*limit, order='session desc, introduced desc, number desc')
 
@@ -375,18 +394,8 @@ class politician:
           where='politician_id=$polid', vars=locals())]
 
         p.related_groups = group_politician_similarity(polid)
-        p.contributors = db.query("""SELECT cn.name, cn.zip, 
-          sum(cn.amount) as amt FROM committee cm, politician_fec_ids pfi, 
-          politician p, contribution cn WHERE cn.recipient_id = cm.id 
-          AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
-          AND p.id = $polid AND cn.employer_stem != '' GROUP BY cn.name, cn.zip 
-          ORDER BY amt DESC LIMIT 5""", vars=locals())
-        p.contributor_employers = db.query("""SELECT cn.employer_stem as employer, 
-          sum(cn.amount) as amt FROM committee cm, politician_fec_ids pfi, 
-          politician p, contribution cn WHERE cn.recipient_id = cm.id 
-          AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
-          AND p.id = $polid AND cn.employer_stem != '' GROUP BY cn.employer_stem 
-          ORDER BY amt DESC LIMIT 5""", vars=locals())
+        p.contributors = list(politician_contributors(polid))[0:5]
+        p.contributor_employers = list(politician_contributor_employers(polid))[0:5]
         out = apipublish.publish([p], format)
         if out: return out
 
@@ -473,6 +482,24 @@ class politician_groups:
         except IndexError:
             raise web.notfound()
         return render.politician_groups(pol, related)
+
+class politician_contribs:
+  def GET(self, polid):
+    try:
+        pol = schema.Politician.where(id=polid)[0]
+    except IndexError:
+        raise web.notfound()
+    contribs = politician_contributors(polid)
+    return render.politician_contribs(pol, contribs)
+
+class politician_contrib_employers:
+  def GET(self, polid):
+    try:
+        pol = schema.Politician.where(id=polid)[0]
+    except IndexError:
+        raise web.notfound()
+    contribs = politician_contributor_employers(polid)
+    return render.politician_contrib_employers(pol, contribs)
 
 class politician_group:
     def GET(self, politician_id, group_id):
