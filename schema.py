@@ -561,8 +561,9 @@ class Handshakes(sql.Table):
 
 def init():
     db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
-    db.query("CREATE INDEX contribution_recipient_id_index ON contribution (recipient_id)")
-    db.query("CREATE INDEX contribution_zip_index ON contribution (zip)")
+    db.query("CREATE INDEX contribution_recipient_id_idx ON contribution (recipient_id)")
+    db.query("CREATE INDEX contribution_zip_idx ON contribution (zip)")
+    db.query("CREATE INDEX contribution_empl_stem_idx ON contribution (LOWER(employer_stem))")
     db.query("ANALYZE contribution;")   
 
     try:
