@@ -561,8 +561,9 @@ class Handshakes(sql.Table):
 
 def init():
     db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
-    db.query("CREATE INDEX contribution_recipient_id_index ON contribution (recipient_id) WHERE employer_stem != ''")
-    db.query("ANALYZE contribution;")
+    db.query("CREATE INDEX contribution_recipient_id_index ON contribution (recipient_id)")
+    db.query("CREATE INDEX contribution_zip_index ON contribution (zip)")
+    db.query("ANALYZE contribution;")   
 
     try:
         db.query("GRANT ALL on census TO watchdog")
