@@ -36,7 +36,9 @@ urls = (
   r'/b/(.*?)%s?' % options, 'bill',
   r'/contrib/(distribution\.png|)', 'contributions',
   r'/contrib/(\d+)/' , 'contributor',
-  r'/occupation/(.+)' , 'occupation',
+  r'/occupation/(.*?)/candidates' , 'occupation_candidates',
+  r'/occupation/(.*?)/committees' , 'occupation_committees',
+  r'/occupation/(.*?)' , 'occupation',
   r'/empl/(.*?)%s?' % options, 'employer',
   r'/r/us/(.*?)%s?' % options, 'roll',
   r'/c', petition.app,
@@ -225,6 +227,25 @@ def politician_contributor_employers(polid):
             AND p.id = $polid AND cn.employer_stem != '' GROUP BY cn.employer_stem 
             ORDER BY amt DESC""", vars=locals())
 
+def candidates_by_occupation(occupation):
+    return db.query("""SELECT sum(amount) AS amt, p.firstname, 
+            p.lastname, p.id as polid, p.party FROM contribution cn, 
+            committee cm, politician_fec_ids pfi, politician p 
+            WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
+            AND pfi.politician_id = p.id 
+            AND lower(cn.occupation) = lower($occupation)
+            GROUP BY polid, p.lastname, p.firstname, p.party 
+            ORDER BY amt DESC""", vars=locals())
+
+def committees_by_occupation(occupation):
+    return db.query("""SELECT sum(amount) AS amt, cm.id, cm.name
+            FROM contribution cn, committee cm 
+            WHERE cn.recipient_id = cm.id 
+            AND lower(cn.occupation) = lower($occupation)
+            GROUP BY cm.id, cm.name
+            ORDER BY amt DESC""", vars=locals())
+
+
 def bill_list(format, page=0, limit=50):
     bills = schema.Bill.select(limit=limit, offset=page*limit, order='session desc, introduced desc, number desc')
 
@@ -286,16 +307,19 @@ class contributor:
 
 class occupation:
     def GET(self, occupation):
-        candidates = list(db.query("""SELECT sum(amount) AS amt, p.firstname, 
-            p.lastname, p.id as polid, p.party FROM contribution cn, 
-            committee cm, politician_fec_ids pfi, politician p 
-            WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
-            AND pfi.politician_id = p.id 
-            AND lower(cn.occupation) = lower($occupation)
-            GROUP BY polid, p.lastname, p.firstname,  p.party 
-            ORDER BY amt DESC""", vars=locals()))
-        num = len(candidates)
-        return render.occupation(candidates, occupation, num)        
+        candidates = list(candidates_by_occupation(occupation))[:5]
+        committees = list(committees_by_occupation(occupation))[:5]
+        return render.occupation(candidates, committees, occupation) 
+
+class occupation_candidates:
+    def GET(self, occupation):
+        candidates = candidates_by_occupation(occupation)
+        return render.occupation_candidates(candidates, occupation)     
+
+class occupation_committees:
+    def GET(self, occupation):
+        committees = committees_by_occupation(occupation)
+        return render.occupation_committees(committees, occupation)     
 
 class contributions:
     """from a corp to a pol"""
