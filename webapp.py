@@ -292,18 +292,26 @@ class contributor:
     def GET(self, zipcode):
         s = web.input(s='').s
         name = s.lower()
-        contributions = list(db.query("""SELECT count(*) AS how_many, 
+        candidates = list(db.query("""SELECT count(*) AS how_many, 
             sum(amount) AS how_much, p.firstname, p.lastname, 
-            cm.name AS committee, occupation, employer_stem as employer, 
-            max(cn.sent) as sent, p.id as polid FROM contribution cn, committee cm,
-            politician_fec_ids pfi, politician p WHERE cn.recipient_id = cm.id 
+            cm.name AS committee, cm.id as committee_id, occupation, 
+            employer_stem as employer, max(cn.sent) as sent, p.id as polid 
+            FROM contribution cn, committee cm, politician_fec_ids pfi, 
+            politician p WHERE cn.recipient_id = cm.id 
             AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
             AND lower(cn.name) = $name AND cn.zip = $zipcode 
-            GROUP BY cm.name, p.lastname, p.firstname, cn.occupation, 
+            GROUP BY cm.id, cm.name, p.lastname, p.firstname, cn.occupation, 
             cn.employer_stem, p.id ORDER BY lower(cn.employer_stem), 
             lower(occupation), sent DESC, how_much DESC""", vars=locals()))
-        num = len(contributions)
-        return render.contributor(contributions, zipcode, s, num)
+        committees = list(db.query("""SELECT count(*) AS how_many, 
+            sum(amount) AS how_much, cm.name, cm.id, occupation, 
+            employer_stem as employer, max(cn.sent) as sent
+            FROM contribution cn, committee cm WHERE cn.recipient_id = cm.id 
+            AND lower(cn.name) = $name AND cn.zip = $zipcode 
+            GROUP BY cm.id, cm.name, cn.occupation, cn.employer_stem
+            ORDER BY lower(cn.employer_stem), 
+            lower(occupation), sent DESC, how_much DESC""", vars=locals()))
+        return render.contributor(candidates, committees, zipcode, s)
 
 class occupation:
     def GET(self, occupation):
@@ -346,15 +354,20 @@ class contributions:
   
 class employer:
     def GET(self, corp_id, format=None):
-      contributions = db.query("""SELECT count(*) as how_many, 
-      sum(amount) as how_much, p.firstname, p.lastname, 
-      p.id as polid, cm.name as committee 
-      FROM contribution cn, committee cm, politician_fec_ids pfi, politician p
-      WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
-      AND pfi.politician_id = p.id AND lower(cn.employer_stem) = lower($corp_id)
-      GROUP BY cm.name, p.lastname, p.firstname, p.id 
-      ORDER BY how_much DESC""", vars=locals())
-      return render.employer(contributions, corp_id)
+        contributions = db.query("""SELECT count(*) as how_many, 
+            sum(amount) as how_much, p.firstname, p.lastname, 
+            p.id as polid, cm.name as committee, cm.id as committee_id
+            FROM contribution cn, committee cm, politician_fec_ids pfi, 
+            politician p WHERE cn.recipient_id = cm.id 
+            AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
+            AND lower(cn.employer_stem) = lower($corp_id)
+            GROUP BY cm.id, cm.name, p.lastname, p.firstname, p.id 
+            ORDER BY how_much DESC""", vars=locals())
+        total_num = db.select('contribution', 
+                            what='count(*)',
+                            where='lower(employer_stem)=lower($corp_id)', 
+                            vars=locals())[0].count
+        return render.employer(contributions, corp_id, total_num)
 
 def earmark_list(format, page=0, limit=50):
     earmarks = schema.Earmark.select(limit=limit, offset=page*limit, order='id')
