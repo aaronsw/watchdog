@@ -27,7 +27,9 @@ $for c in contributions:
         <tr style="border-bottom: 1px solid #999;">
             <td colspan="2" class="date"><strong>$name</strong>
             $if c.occupation:
-                , <span class="subtitle">$c.occupation</span>
+                , <span class="subtitle">
+                    <a href="/occupation/$urlquote(c.occupation)">$c.occupation</a>
+                  </span>
             $if c.employer:
                 , <span class="subtitle"><a href="/empl/$urlquote(c.employer)">$c.employer</a></span>
             </td>

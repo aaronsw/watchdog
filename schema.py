@@ -9,14 +9,14 @@ class State(sql.Table):
     @property
     def _uri_(self):
         return 'http://watchdog.net/us/%s#it' % self.code.lower()
-    
+
     # states.json
     code = sql.String(2, primary=True)
     name = sql.String(256)
     status = sql.String(256)
     wikipedia = sql.URL()
     fipscode = sql.String(2)
-    
+
     senators = sql.Backreference('Politician', 'district')
     districts = sql.Backreference('District', 'state', order='name asc')
 
@@ -24,16 +24,16 @@ class District(sql.Table):
     @property
     def _uri_(self):
         return 'http://watchdog.net/us/%s#it' % self.name.lower()
-    
+
     # districts.json
     name = sql.String(10, primary=True)
     district = sql.Integer()
     state = sql.Reference(State) #@@renames to state_id
     voting = sql.Boolean()
     wikipedia = sql.URL()
-    
+
     politician = sql.Backreference('Politician', 'district')
-    
+
     @property
     def districtth(self):
         if self.district == 0:
@@ -49,10 +49,10 @@ class District(sql.Table):
     median_income = sql.Dollars()
     est_population = sql.Number()      # most recent population estimate
     est_population_year = sql.Year()   # year of the estimate
-    
+
     # shapes.json
     outline = sql.String(export=False) #@@geojson
-    
+
     # centers.json
     center_lat = sql.Float() #@@ latlong type
     center_lng = sql.Float()
@@ -79,7 +79,7 @@ class Zip4(sql.Table):
 #--GRANT ALL ON zip4 TO watchdog;
 
 class GovtrackID(sql.URL):
-    towhatever = lambda f: (lambda self, x, *a: f(self, 
+    towhatever = lambda f: (lambda self, x, *a: f(self,
       'http://www.govtrack.us/congress/person.xpd?id=' + x, *a))
     toxml = towhatever(sql.URL.toxml)
     ton3 = towhatever(sql.URL.ton3)
@@ -87,12 +87,12 @@ class GovtrackID(sql.URL):
 class Politician(sql.Table):
     @property
     def _uri_(self): return 'http://watchdog.net/p/%s#it' % self.id
-    
+
     # politicians.json
     id = sql.String(256, primary=True)
     district = sql.Reference(District) #@@ renames to district_id
     wikipedia = sql.URL()
-  
+
     # govtrack.json --@@get from votesmart?
     bioguideid = sql.String()
     opensecretsid = sql.String()
@@ -102,33 +102,33 @@ class Politician(sql.Table):
     firstname = sql.String()
     middlename = sql.String()
     lastname = sql.String()
-    
+
     def xmllines(self):
         sameas = lambda x: '  <owl:sameAs xmlns:owl="http://www.w3.org/2002/07/owl#" \
 rdf:resource="%s" />' % x
         return [sameas(x) for x in self.akas()]
-    
+
     def n3lines(self, indent):
         sameas = lambda x: indent + '<http://www.w3.org/2002/07/owl#sameAs> <%s>;' % x
         return [sameas(x) for x in self.akas()]
-    
+
     def akas(self):
         if self.bioguideid:
             yield 'http://www.rdfabout.com/rdf/usgov/congress/people/' + self.bioguideid
         if self.wikipedia:
             yield 'http://dbpedia.org/resource/' + self.wikipedia.split('/')[-1]
-    
+
     @property
     def name(self):
         if hasattr(self, 'nickname') and self.nickname:
             return self.nickname + ' ' + self.lastname
         else:
             return self.fullname
-    
+
     @property
     def fullname(self):
         return (self.firstname or '') + ' ' + (self.middlename or '') + ' ' + (self.lastname or '')
-    
+
     @property
     def title(self):
         dist = self.district_id
@@ -140,55 +140,55 @@ rdf:resource="%s" />' % x
                     'where politician_id=$self.id '
                     'order by year desc, pol2corp+corp2pol desc',
                     vars=locals()).list()
-        
+
     officeurl = sql.URL()
     party = sql.String()
     religion = sql.String()
-    
+
     n_bills_introduced = sql.Number()
     n_bills_enacted = sql.Number()
     n_bills_debated = sql.Number()
     n_bills_cosponsored = sql.Number()
     n_speeches = sql.Number()
     words_per_speech = sql.Number()
-  
+
     # voteview.json
     icpsrid = sql.Integer()
     nominate = sql.Float() #@@
     predictability = sql.Percentage()
-  
+
     # earmarks.json
     amt_earmark_requested = sql.Dollars(default=0)
     n_earmark_requested = sql.Number(default=0)
     n_earmark_received = sql.Number(default=0)
     amt_earmark_received = sql.Dollars(default=0)
-    
+
     # photos.json
     photo_path = sql.URL()
     photo_credit_url = sql.URL()
     photo_credit_text = sql.String()
-  
+
     # fec
     money_raised = sql.Dollars()
     pct_spent = sql.Percentage()
     pct_self = sql.Percentage()
     pct_indiv = sql.Percentage()
     pct_pac = sql.Percentage()
-  
+
     # votesmart
     nickname = sql.String()
     votesmartid = sql.String()
     birthplace = sql.String()
     education = sql.String()
-  
+
     # punch
     chips2008 = sql.Percentage()
     progressive2008 = sql.Percentage()
     progressiveall = sql.Percentage()
-  
+
     # opensecrets
     pct_pac_business = sql.Percentage()
-    
+
     # almanac.json
     n_vote_received = sql.Number()
     pct_vote_received = sql.Percentage()
@@ -221,7 +221,7 @@ class Bill(sql.Table):
     @property
     def _uri_(self):
         return 'http://watchdog.net/b/%s#it' % self.id
-    
+
     id = sql.String(primary=True)
     session = sql.Integer()
     type = sql.String(5)
@@ -231,24 +231,24 @@ class Bill(sql.Table):
     sponsor = sql.Reference(Politician) #@@rename to sponsor_id
     summary = sql.String()
     maplightid = sql.String(10)
-    
+
     interest_group_support = sql.Backreference('Interest_group_bill_support', 'bill', order='support desc')
-    
+
     @property
     def name(self):
         typemap = {
-          'h': 'H.R.', 
-          's': 'S.', 
-          'hj': 'H.J.Res.', 
+          'h': 'H.R.',
+          's': 'S.',
+          'hj': 'H.J.Res.',
           'sj': 'S.J.Res.',
           'hc': 'H.Con.Res.',
           'sc': 'S.Con.Res.',
           'hr': 'H.Res.',
           'sr': 'S.Res.'
         }
-        
+
         return typemap[self.type] + ' ' + str(self.number)
-    
+
     @property
     def votes_by_party(self):
         """Get the votes of the political parties for a bill."""
@@ -265,19 +265,19 @@ class Bill(sql.Table):
             d.setdefault(r.party, {})
             d[r.party][r.vote] = r.count
         return d
-    
+
     @property
     def votes_by_caucus(self):
         caucuses = json.load(file('import/load/manual/caucuses.json'))
         members = sum([x['members'] for x in caucuses], [])
         result = db.select(['position'],
-            where=web.sqlors('politician_id=', members) + 
+            where=web.sqlors('politician_id=', members) +
               'AND bill_id=' + web.sqlquote(self.id),
             vars=locals()
             ).list()
-        
+
         if not result: return None
-        
+
         votemap = dict((r.politician_id, r.vote) for r in result)
         d = {}
         for c in caucuses:
@@ -295,7 +295,7 @@ class Roll(sql.Table):
     required = sql.String()
     result = sql.String()
     bill = sql.Reference(Bill)
-    
+
     #@@@@@ DON'T REPEAT YOURSELF
     @property
     def votes_by_party(self):
@@ -313,19 +313,19 @@ class Roll(sql.Table):
             d.setdefault(r.party, {})
             d[r.party][r.vote] = r.count
         return d
-    
+
     @property
     def votes_by_caucus(self):
         caucuses = json.load(file('import/load/manual/caucuses.json'))
         members = sum([x['members'] for x in caucuses], [])
         result = db.select(['vote'],
-            where=web.sqlors('politician_id=', members) + 
+            where=web.sqlors('politician_id=', members) +
               'AND roll_id=' + web.sqlquote(self.id),
             vars=locals()
             ).list()
-        
+
         if not result: return None
-        
+
         votemap = dict((r.politician_id, r.vote) for r in result)
         d = {}
         for c in caucuses:
@@ -373,7 +373,7 @@ class Committee (sql.Table):
     state = sql.String()
     zip = sql.String()
     connected_org_name = sql.String()
-    candidate_id = sql.String()    
+    candidate_id = sql.String()
 
 class Contribution (sql.Table):
     id = sql.Serial(primary=True)
@@ -391,7 +391,7 @@ class Contribution (sql.Table):
     employer = sql.String()
     employer_stem = sql.String()
     committee = sql.String() # sigh: sometimes committee, sometimes candidate
-    
+
     sent = sql.Date()
     amount = sql.Float()
 
@@ -417,7 +417,7 @@ class Earmark(sql.Table):
     undisclosed = sql.String()
     intended_recipient = sql.String()
     recipient_stem = sql.String()
-    notes = sql.String()    
+    notes = sql.String()
     sponsors = sql.Backreference('Earmark_sponsor', 'earmark')
 
 class Earmark_sponsor(sql.Table):
@@ -493,7 +493,7 @@ class Expenditure (sql.Table):
     amount = sql.String(20)
 
 class SOI(sql.Table):
-    #district_id = sql.String(10, primary=True) 
+    #district_id = sql.String(10, primary=True)
     district = sql.Reference(District, primary=True)
     # irs/soi
     bracket_low = sql.Integer(primary=True)
@@ -520,7 +520,7 @@ class Census_meta(sql.Table):
     label = sql.String()
 
 class Census_data(sql.Table):
-    #district_id = sql.String(10, primary=True) 
+    #district_id = sql.String(10, primary=True)
     district = sql.Reference(District, primary=True)
     internal_key = sql.String(10, primary=True)
     census_type = sql.Integer(primary=True)
@@ -550,7 +550,7 @@ class Census_Population(sql.Table):
     sumlev = sql.String(16)      # SUMLEV
     area_land = sql.Integer()    # AREALAND
     area_land.sql_type = 'bigint'
-    population = sql.Integer()   
+    population = sql.Integer()
 
 class Handshakes(sql.Table):
     politician = sql.Reference(Politician, primary=True)
@@ -561,6 +561,11 @@ class Handshakes(sql.Table):
 
 def init():
     db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
+    db.query("CREATE INDEX contribution_recipient_id_idx ON contribution (recipient_id)")
+    db.query("CREATE INDEX contribution_zip_idx ON contribution (zip)")
+    db.query("CREATE INDEX contribution_empl_stem_idx ON contribution (LOWER(employer_stem))")
+    db.query("ANALYZE contribution;")   
+
     try:
         db.query("GRANT ALL on census TO watchdog")
     except:
