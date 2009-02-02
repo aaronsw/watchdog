@@ -498,10 +498,9 @@ def readfile_generic(filename, handler=null_error_handler):
 EFILINGS_PATH = '../data/crawl/fec/electronic/'
 DEFAULT_EFILINGS_FILEPATTERN = EFILINGS_PATH + '*.zip'
 
-def parse_efilings(filepattern=DEFAULT_EFILINGS_FILEPATTERN,
-                   handler=null_error_handler):
+def parse_efilings(filenames, handler=null_error_handler):
     last_time = time.time()
-    for filename in glob.glob(filepattern):
+    for filename in filenames:
         sys.stderr.write('parsing efilings file %s\n' % filename)
         for parsed_file in readfile_generic(filename, handler):
             yield parsed_file
@@ -549,7 +548,7 @@ def stash_efilings(destdir=None,
         sys.stderr.write("logged error (in %s?) to %s, continuing\n" %
                          (report_id, path))
 
-    for efiling in parse_efilings(filepattern, handle_error):
+    for efiling in parse_efilings(glob.glob(filepattern), handle_error):
         cover_record, records = efiling
         report_id = cover_record['report_id']
         dirpath = os.path.join(destdir, report_id[-2:], report_id)
