@@ -515,21 +515,7 @@ def atomically_commit_efiling(outfile, tempname, realname):
 
     os.rename(tempname, realname)
 
-def stash_efilings(destdir=None,
-                   filepattern=DEFAULT_EFILINGS_FILEPATTERN,
-                   save_orig=False):
-    """Parse a bunch of electronic FEC filings, from zip files or CSV
-    files, and store the parsed data in pickle files in a directory
-    structure indexed by filing ID.
-
-    * `destdir` is the directory to put the results in.
-    * `filepattern` gives the filenames to find the filings in.
-    * `save_orig` determines whether to include the full filing data
-      in the pickled output, for debugging
-
-    """
-    if destdir is None: destdir = tempfile.mkdtemp()
-
+def stash_efilings_worker(destdir, filenames, save_orig):
     cover_record = {}
 
     def handle_error():
@@ -558,7 +544,7 @@ def stash_efilings(destdir=None,
         sys.stderr.write("logged error (in %s?) to %s, continuing\n" %
                          (report_id, path))
 
-    for efiling in parse_efilings(glob.glob(filepattern), handle_error):
+    for efiling in parse_efilings(filenames, handle_error):
         cover_record, records = efiling
         report_id = cover_record['report_id']
         dirpath = os.path.join(destdir, report_id[-2:], report_id)
@@ -586,17 +572,60 @@ def stash_efilings(destdir=None,
         else:
             atomically_commit_efiling(outfile, tempname, pathname)
 
-    return destdir
+def stash_efilings(destdir=None,
+                   filepattern=DEFAULT_EFILINGS_FILEPATTERN,
+                   save_orig=False,
+                   nprocs=1):
+    """Parse a bunch of electronic FEC filings, from zip files or CSV
+    files, and store the parsed data in pickle files in a directory
+    structure indexed by filing ID.
 
+    * `destdir` is the directory to put the results in.
+    * `filepattern` gives the filenames to find the filings in.
+    * `save_orig` determines whether to include the full filing data
+      in the pickled output, for debugging
+    * `nprocs` specifies the number of worker processes to do the
+      work.  The filenames are divided up as evenly as possible
+      between them.  Because not every file takes the same time to
+      process, one process may finish a few files ahead of another,
+      but the loss of efficiency to that should be small.
+
+    """
+    if destdir is None: destdir = tempfile.mkdtemp()
+    filenames = glob.glob(filepattern)
+    children = []
+
+    for ii in range(nprocs):
+        pid = os.fork()
+        if pid == 0:                    # child process
+            try:
+                myfiles = [filenames[jj] for jj in range(len(filenames))
+                           if jj % nprocs == ii]
+                stash_efilings_worker(destdir=destdir,
+                                      filenames=myfiles,
+                                      save_orig=save_orig)
+            except:
+                try:
+                    cgitb.Hook(format='text').handle()
+                except:
+                    pass
+            finally:
+                os._exit(0)
+        else:
+            children.append(pid)
+
+    for pid in children:
+        os.waitpid(pid, 0)              # options=0
+    
 if __name__ == '__main__':
     cgitb.enable(format='text')
     if sys.argv[1] == '--stash-in':
         sys.argv.pop(1)
         destdir = sys.argv.pop(1)
         if len(sys.argv) > 1:
-            stash_efilings(destdir=destdir, filepattern=sys.argv[1])
+            stash_efilings(destdir=destdir, filepattern=sys.argv[1], nprocs=8)
         else:
-            stash_efilings(destdir=destdir)
+            stash_efilings(destdir=destdir, nprocs=8)
 
     else:
         # pprint is unacceptable --- it made the script run 40× slower.
