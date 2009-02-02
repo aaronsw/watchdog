@@ -518,6 +518,16 @@ def atomically_commit_efiling(outfile, tempname, realname):
 def stash_efilings(destdir=None,
                    filepattern=DEFAULT_EFILINGS_FILEPATTERN,
                    save_orig=False):
+    """Parse a bunch of electronic FEC filings, from zip files or CSV
+    files, and store the parsed data in pickle files in a directory
+    structure indexed by filing ID.
+
+    * `destdir` is the directory to put the results in.
+    * `filepattern` gives the filenames to find the filings in.
+    * `save_orig` determines whether to include the full filing data
+      in the pickled output, for debugging
+
+    """
     if destdir is None: destdir = tempfile.mkdtemp()
 
     cover_record = {}
