@@ -496,9 +496,10 @@ def readfile_generic(filename, handler=null_error_handler):
         return []
 
 EFILINGS_PATH = '../data/crawl/fec/electronic/'
+DEFAULT_EFILINGS_FILEPATTERN = EFILINGS_PATH + '*.zip'
 
-def parse_efilings(filepattern=None, handler=null_error_handler):
-    if filepattern is None: filepattern = EFILINGS_PATH + '*.zip'
+def parse_efilings(filepattern=DEFAULT_EFILINGS_FILEPATTERN,
+                   handler=null_error_handler):
     last_time = time.time()
     for filename in glob.glob(filepattern):
         sys.stderr.write('parsing efilings file %s\n' % filename)
@@ -515,7 +516,9 @@ def atomically_commit_efiling(outfile, tempname, realname):
 
     os.rename(tempname, realname)
 
-def stash_efilings(destdir = None, filepattern = None, save_orig = False):
+def stash_efilings(destdir=None,
+                   filepattern=DEFAULT_EFILINGS_FILEPATTERN,
+                   save_orig=False):
     if destdir is None: destdir = tempfile.mkdtemp()
 
     cover_record = {}
@@ -581,8 +584,11 @@ if __name__ == '__main__':
     if sys.argv[1] == '--stash-in':
         sys.argv.pop(1)
         destdir = sys.argv.pop(1)
-        pattern = sys.argv[1] if len(sys.argv) > 1 else None
-        stash_efilings(destdir=destdir, filepattern=pattern)
+        if len(sys.argv) > 1:
+            stash_efilings(destdir=destdir, filepattern=sys.argv[1])
+        else:
+            stash_efilings(destdir=destdir)
+
     else:
         # pprint is unacceptable --- it made the script run 40× slower.
         for filename in sys.argv[1:]:

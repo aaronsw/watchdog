@@ -100,7 +100,7 @@ def load_fec_contributions():
         if n % 10000 == 0: t.commit(); t = db.transaction(); print n
 
 
-def load_fec_efilings(filepattern=None):
+def load_fec_efilings(filepattern=fec_crude_csv.DEFAULT_EFILINGS_FILEPATTERN):
     for f, schedules in fec_crude_csv.parse_efilings(filepattern):
         for s in schedules:
             if s.get('type') == 'contribution':
