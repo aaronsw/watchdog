@@ -61,13 +61,15 @@ March 22, 2006
 '''
 
 def test_v2_02_data():
-    """We can’t handle version 2.x data yet, so we should just skip
-    it until we find a spec for it.  Raising an exception is not
-    acceptable.
+    '''We can’t handle version 2.x data yet, so we should just skip
+    it until we find a spec for it, by means of raising an exception.
 
     >>> records(filing_30458_truncated)
-    []
-    """
+    Traceback (most recent call last):
+    ...
+    FilingFormatNotDocumented: /* Header
+    FEC_Ver_# 
+    '''
 
 filing_30458_truncated = '''/* Header
 FEC_Ver_# = 2.02

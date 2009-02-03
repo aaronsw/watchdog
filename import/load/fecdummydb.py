@@ -15,4 +15,7 @@ class DummyDB:
 if __name__ == '__main__':
     cgitb.enable(format='text')
     fec.db = DummyDB()
-    fec.load_fec_efilings(sys.argv[1] if len(sys.argv) > 1 else None)
+    if len(sys.argv) > 1:
+        fec.load_fec_efilings(sys.argv[1])
+    else:
+        fec.load_fec_efilings()

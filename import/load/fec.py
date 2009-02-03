@@ -9,6 +9,7 @@ from tools import db
 from parse import fec_cobol, fec_csv, fec_crude_csv
 import psycopg2 # @@sigh
 import cgitb
+import glob
 
 fec2pol = {}
 def load_fec_ids():
@@ -100,8 +101,8 @@ def load_fec_contributions():
         if n % 10000 == 0: t.commit(); t = db.transaction(); print n
 
 
-def load_fec_efilings(filepattern=None):
-    for f, schedules in fec_crude_csv.parse_efilings(filepattern):
+def load_fec_efilings(filepattern=fec_crude_csv.DEFAULT_EFILINGS_FILEPATTERN):
+    for f, schedules in fec_crude_csv.parse_efilings(glob.glob(filepattern)):
         for s in schedules:
             if s.get('type') == 'contribution':
                 # XXX all this code for politician_id is currently

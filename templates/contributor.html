@@ -40,7 +40,7 @@ $for c in candidates:
         <td class="paying">
             <strong>\$$commify(int(c.how_much))</strong> to <a href="/p/$c.polid">$c.firstname $c.lastname</a>, 
             <a href="/committee/$c.committee_id">$c.committee.title()</a> on
-            <strong>$c.sent</strong>
+            <strong>$datestr(c.sent)</strong>
         </td>
     </tr>
     $ prev_occupation = c.occupation.lower()

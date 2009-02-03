@@ -5,9 +5,9 @@ General Utilities
 """
 
 __all__ = [
-  "Storage", "storage", "storify", 
-  "iters", 
-  "rstrips", "lstrips", "strips", 
+  "Storage", "storage", "storify",
+  "iters",
+  "rstrips", "lstrips", "strips",
   "safeunicode", "safestr", "utf8",
   "TimeoutError", "timelimit",
   "Memoize", "memoize",
@@ -35,7 +35,7 @@ class Storage(dict):
     """
     A Storage object is like a dictionary except `obj.foo` can be used
     in addition to `obj['foo']`.
-    
+
         >>> o = storage(a=1)
         >>> o.a
         1
@@ -49,24 +49,24 @@ class Storage(dict):
         Traceback (most recent call last):
             ...
         AttributeError: 'a'
-    
+
     """
-    def __getattr__(self, key): 
+    def __getattr__(self, key):
         try:
             return self[key]
         except KeyError, k:
             raise AttributeError, k
-    
-    def __setattr__(self, key, value): 
+
+    def __setattr__(self, key, value):
         self[key] = value
-    
+
     def __delattr__(self, key):
         try:
             del self[key]
         except KeyError, k:
             raise AttributeError, k
-    
-    def __repr__(self):     
+
+    def __repr__(self):
         return '<Storage ' + dict.__repr__(self) + '>'
 
 storage = Storage
@@ -74,16 +74,16 @@ storage = Storage
 def storify(mapping, *requireds, **defaults):
     """
     Creates a `storage` object from dictionary `mapping`, raising `KeyError` if
-    d doesn't have all of the keys in `requireds` and using the default 
+    d doesn't have all of the keys in `requireds` and using the default
     values for keys found in `defaults`.
 
     For example, `storify({'a':1, 'c':3}, b=2, c=0)` will return the equivalent of
     `storage({'a':1, 'b':2, 'c':3})`.
-    
-    If a `storify` value is a list (e.g. multiple values in a form submission), 
-    `storify` returns the last element of the list, unless the key appears in 
+
+    If a `storify` value is a list (e.g. multiple values in a form submission),
+    `storify` returns the last element of the list, unless the key appears in
     `defaults` as a list. Thus:
-    
+
         >>> storify({'a':[1, 2]}).a
         2
         >>> storify({'a':[1, 2]}, a=[]).a
@@ -92,19 +92,19 @@ def storify(mapping, *requireds, **defaults):
         [1]
         >>> storify({}, a=[]).a
         []
-    
+
     Similarly, if the value has a `value` attribute, `storify will return _its_
     value, unless the key appears in `defaults` as a dictionary.
-    
+
         >>> storify({'a':storage(value=1)}).a
         1
         >>> storify({'a':storage(value=1)}, a={}).a
         <Storage {'value': 1}>
         >>> storify({}, a={}).a
         {}
-        
+
     Optionally, keyword parameter `_unicode` can be passed to convert all values to unicode.
-    
+
         >>> storify({'x': 'a'}, _unicode=True)
         <Storage {'x': u'a'}>
     """
@@ -112,13 +112,13 @@ def storify(mapping, *requireds, **defaults):
     def unicodify(s):
         if _unicode and isinstance(s, str): return safeunicode(s)
         else: return s
-        
+
     def getvalue(x):
         if hasattr(x, 'value'):
             return unicodify(x.value)
         else:
             return unicodify(x)
-    
+
     stor = Storage()
     for key in requireds + tuple(mapping.keys()):
         value = mapping[key]
@@ -135,12 +135,12 @@ def storify(mapping, *requireds, **defaults):
 
     for (key, value) in defaults.iteritems():
         result = value
-        if hasattr(stor, key): 
+        if hasattr(stor, key):
             result = stor[key]
-        if value == () and not isinstance(result, tuple): 
+        if value == () and not isinstance(result, tuple):
             result = (result,)
         setattr(stor, key, result)
-    
+
     return stor
 
 iters = [list, tuple]
@@ -153,9 +153,9 @@ if sys.version_info < (2,6): # sets module deprecated in 2.6
     try:
         from sets import Set
         iters.append(Set)
-    except ImportError: 
+    except ImportError:
         pass
-    
+
 class _hack(tuple): pass
 iters = _hack(iters)
 iters.__doc__ = """
@@ -164,13 +164,13 @@ of lists, tuples, sets, and Sets are available in this version of Python.
 """
 
 def _strips(direction, text, remove):
-    if direction == 'l': 
-        if text.startswith(remove): 
+    if direction == 'l':
+        if text.startswith(remove):
             return text[len(remove):]
     elif direction == 'r':
-        if text.endswith(remove):   
+        if text.endswith(remove):
             return text[:-len(remove)]
-    else: 
+    else:
         raise ValueError, "Direction needs to be r or l."
     return text
 
@@ -180,17 +180,17 @@ def rstrips(text, remove):
 
         >>> rstrips("foobar", "bar")
         'foo'
-    
+
     """
     return _strips('r', text, remove)
 
 def lstrips(text, remove):
     """
     removes the string `remove` from the left of `text`
-    
+
         >>> lstrips("foobar", "foo")
         'bar'
-    
+
     """
     return _strips('l', text, remove)
 
@@ -199,13 +199,13 @@ def strips(text, remove):
 
         >>> strips("foobarfoo", "foo")
         'bar'
-    
+
     """
     return rstrips(lstrips(text, remove), remove)
 
 def safeunicode(obj, encoding='utf-8'):
     r"""Converts any given object to unicode string.
-    
+
         >>> safeunicode('hello')
         u'hello'
         >>> safeunicode(2)
@@ -222,10 +222,10 @@ def safeunicode(obj, encoding='utf-8'):
             return unicode(obj)
         else:
             return str(obj).decode(encoding)
-    
+
 def safestr(obj, encoding='utf-8'):
-    r"""Converts any given object to utf-8 encoded string. 
-    
+    r"""Converts any given object to utf-8 encoded string.
+
         >>> safestr('hello')
         'hello'
         >>> safestr(u'\u1234')
@@ -242,18 +242,18 @@ def safestr(obj, encoding='utf-8'):
 
 # for backward-compatibility
 utf8 = safestr
-    
+
 class TimeoutError(Exception): pass
 def timelimit(timeout):
     """
     A decorator to limit a function to `timeout` seconds, raising `TimeoutError`
     if it takes longer.
-    
+
         >>> import time
         >>> def meaningoflife():
         ...     time.sleep(.2)
         ...     return 42
-        >>> 
+        >>>
         >>> timelimit(.1)(meaningoflife)()
         Traceback (most recent call last):
             ...
@@ -261,7 +261,7 @@ def timelimit(timeout):
         >>> timelimit(1)(meaningoflife)()
         42
 
-    _Caveat:_ The function isn't stopped after `timeout` seconds but continues 
+    _Caveat:_ The function isn't stopped after `timeout` seconds but continues
     executing in a separate thread. (There seems to be no way to kill a thread.)
 
     inspired by <http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/473878>
@@ -296,7 +296,7 @@ def timelimit(timeout):
 class Memoize:
     """
     'Memoizes' a function, caching its return values for each input.
-    
+
         >>> import time
         >>> def meaningoflife():
         ...     time.sleep(.2)
@@ -312,14 +312,14 @@ class Memoize:
         42
         >>> timelimit(.1)(fastlife)()
         42
-    
+
     """
-    def __init__(self, func): 
+    def __init__(self, func):
         self.func = func
         self.cache = {}
     def __call__(self, *args, **keywords):
         key = (args, tuple(keywords.items()))
-        if key not in self.cache: 
+        if key not in self.cache:
             self.cache[key] = self.func(*args, **keywords)
         return self.cache[key]
 
@@ -331,16 +331,16 @@ A memoized version of re.compile.
 """
 
 class _re_subm_proxy:
-    def __init__(self): 
+    def __init__(self):
         self.match = None
-    def __call__(self, match): 
+    def __call__(self, match):
         self.match = match
         return ''
 
 def re_subm(pat, repl, string):
     """
     Like re.sub, but returns the replacement _and_ the match object.
-    
+
         >>> t, m = re_subm('g(oo+)fball', r'f\\1lish', 'goooooofball')
         >>> t
         'foooooolish'
@@ -352,25 +352,25 @@ def re_subm(pat, repl, string):
     compiled_pat.sub(proxy.__call__, string)
     return compiled_pat.sub(repl, string), proxy.match
 
-def group(seq, size): 
+def group(seq, size):
     """
     Returns an iterator over a series of lists of length size from iterable.
 
         >>> list(group([1,2,3,4], 2))
         [[1, 2], [3, 4]]
     """
-    if not hasattr(seq, 'next'):  
+    if not hasattr(seq, 'next'):
         seq = iter(seq)
-    while True: 
+    while True:
         yield [seq.next() for i in xrange(size)]
 
 class IterBetter:
     """
-    Returns an object that can be used as an iterator 
-    but can also be used via __getitem__ (although it 
-    cannot go backwards -- that is, you cannot request 
+    Returns an object that can be used as an iterator
+    but can also be used via __getitem__ (although it
+    cannot go backwards -- that is, you cannot request
     `iterbetter[0]` after requesting `iterbetter[1]`).
-    
+
         >>> import itertools
         >>> c = iterbetter(itertools.count())
         >>> c[1]
@@ -382,24 +382,24 @@ class IterBetter:
             ...
         IndexError: already passed 3
     """
-    def __init__(self, iterator): 
+    def __init__(self, iterator):
         self.i, self.c = iterator, 0
-    def __iter__(self): 
-        while 1:    
+    def __iter__(self):
+        while 1:
             yield self.i.next()
             self.c += 1
     def __getitem__(self, i):
         #todo: slices
-        if i < self.c: 
+        if i < self.c:
             raise IndexError, "already passed "+str(i)
         try:
-            while i > self.c: 
+            while i > self.c:
                 self.i.next()
                 self.c += 1
             # now self.c == i
             self.c += 1
             return self.i.next()
-        except StopIteration: 
+        except StopIteration:
             raise IndexError, str(i)
 iterbetter = IterBetter
 
@@ -412,23 +412,23 @@ def dictreverse(mapping):
 
 def dictfind(dictionary, element):
     """
-    Returns a key whose value in `dictionary` is `element` 
+    Returns a key whose value in `dictionary` is `element`
     or, if none exists, None.
-    
+
         >>> d = {1:2, 3:4}
         >>> dictfind(d, 4)
         3
         >>> dictfind(d, 5)
     """
     for (key, value) in dictionary.iteritems():
-        if element is value: 
+        if element is value:
             return key
 
 def dictfindall(dictionary, element):
     """
     Returns the keys whose values in `dictionary` are `element`
     or, if none exists, [].
-    
+
         >>> d = {1:4, 3:4}
         >>> dictfindall(d, 4)
         [1, 3]
@@ -443,9 +443,9 @@ def dictfindall(dictionary, element):
 
 def dictincr(dictionary, element):
     """
-    Increments `element` in `dictionary`, 
+    Increments `element` in `dictionary`,
     setting it to one if it doesn't exist.
-    
+
         >>> d = {1:2, 3:4}
         >>> dictincr(d, 1)
         3
@@ -464,7 +464,7 @@ def dictadd(*dicts):
     """
     Returns a dictionary consisting of the keys in the argument dictionaries.
     If they share a key, the value from the last argument is used.
-    
+
         >>> dictadd({1: 0, 2: 0}, {2: 1, 3: 1})
         {1: 0, 2: 1, 3: 1}
     """
@@ -476,21 +476,21 @@ def dictadd(*dicts):
 def listget(lst, ind, default=None):
     """
     Returns `lst[ind]` if it exists, `default` otherwise.
-    
+
         >>> listget(['a'], 0)
         'a'
         >>> listget(['a'], 1)
         >>> listget(['a'], 1, 'b')
         'b'
     """
-    if len(lst)-1 < ind: 
+    if len(lst)-1 < ind:
         return default
     return lst[ind]
 
 def intget(integer, default=None):
     """
     Returns `integer` as an int or `default` if it can't.
-    
+
         >>> intget('3')
         3
         >>> intget('3a')
@@ -505,7 +505,7 @@ def intget(integer, default=None):
 def datestr(then, now=None):
     """
     Converts a (UTC) datetime object to a nice string representation.
-    
+
         >>> from datetime import datetime, timedelta
         >>> d = datetime(1970, 5, 1)
         >>> datestr(d, now=d)
@@ -582,12 +582,12 @@ def datestr(then, now=None):
 def numify(string):
     """
     Removes all non-digit characters from `string`.
-    
+
         >>> numify('800-555-1212')
         '8005551212'
         >>> numify('800.555.1212')
         '8005551212'
-    
+
     """
     return ''.join([c for c in str(string) if c.isdigit()])
 
@@ -595,10 +595,10 @@ def denumify(string, pattern):
     """
     Formats `string` according to `pattern`, where the letter X gets replaced
     by characters from `string`.
-    
+
         >>> denumify("8005551212", "(XXX) XXX-XXXX")
         '(800) 555-1212'
-    
+
     """
     out = []
     for c in pattern:
@@ -623,7 +623,7 @@ def commify(n):
         '1,234,567,890'
         >>> commify(None)
         >>>
-    
+
     """
     if n is None: return None
     r = []
@@ -657,14 +657,14 @@ def nthstr(n):
         ['111th', '112th', '113th', '114th', '115th']
 
     """
-    
+
     assert n >= 0
     if n % 100 in [11, 12, 13]: return '%sth' % n
     return {1: '%sst', 2: '%snd', 3: '%srd'}.get(n % 10, '%sth') % n
 
 def cond(predicate, consequence, alternative=None):
     """Function replacement for if-else to use in expressions.
-        
+
         >>> x = 2
         >>> cond(x % 2 == 0, "even", "odd")
         'even'
@@ -679,15 +679,15 @@ def cond(predicate, consequence, alternative=None):
 class CaptureStdout:
     """
     Captures everything `func` prints to stdout and returns it instead.
-    
+
         >>> def idiot():
         ...     print "foo"
         >>> capturestdout(idiot)()
         'foo\\n'
-    
+
     **WARNING:** Not threadsafe!
     """
-    def __init__(self, func): 
+    def __init__(self, func):
         self.func = func
     def __call__(self, *args, **keywords):
         from cStringIO import StringIO
@@ -695,9 +695,9 @@ class CaptureStdout:
         out = StringIO()
         oldstdout = sys.stdout
         sys.stdout = out
-        try: 
+        try:
             self.func(*args, **keywords)
-        finally: 
+        finally:
             sys.stdout = oldstdout
         return out.getvalue()
 
@@ -707,14 +707,14 @@ class Profile:
     """
     Profiles `func` and returns a tuple containing its output
     and a string with human-readable profiling information.
-        
+
         >>> import time
         >>> out, inf = profile(time.sleep)(.001)
         >>> out
         >>> inf[:10].strip()
         'took 0.0'
     """
-    def __init__(self, func): 
+    def __init__(self, func):
         self.func = func
     def __call__(self, *args): ##, **kw):   kw unused
         import hotshot, hotshot.stats, tempfile ##, time already imported
@@ -732,7 +732,7 @@ class Profile:
             stats.sort_stats('time', 'calls')
             stats.print_stats(40)
             stats.print_callers()
-    
+
         x =  '\n\ntook '+ str(stime) + ' seconds\n'
         x += capturestdout(print_stats)()
 
@@ -753,31 +753,31 @@ if not hasattr(traceback, 'format_exc'):
 
 def tryall(context, prefix=None):
     """
-    Tries a series of functions and prints their results. 
-    `context` is a dictionary mapping names to values; 
+    Tries a series of functions and prints their results.
+    `context` is a dictionary mapping names to values;
     the value will only be tried if it's callable.
-    
+
         >>> tryall(dict(j=lambda: True))
         j: True
         ----------------------------------------
         results:
            True: 1
 
-    For example, you might have a file `test/stuff.py` 
-    with a series of functions testing various things in it. 
+    For example, you might have a file `test/stuff.py`
+    with a series of functions testing various things in it.
     At the bottom, have a line:
 
         if __name__ == "__main__": tryall(globals())
 
-    Then you can run `python test/stuff.py` and get the results of 
+    Then you can run `python test/stuff.py` and get the results of
     all the tests.
     """
     context = context.copy() # vars() would update
     results = {}
     for (key, value) in context.iteritems():
-        if not hasattr(value, '__call__'): 
+        if not hasattr(value, '__call__'):
             continue
-        if prefix and not key.startswith(prefix): 
+        if prefix and not key.startswith(prefix):
             continue
         print key + ':',
         try:
@@ -788,15 +788,15 @@ def tryall(context, prefix=None):
             print 'ERROR'
             dictincr(results, 'ERROR')
             print '   ' + '\n   '.join(traceback.format_exc().split('\n'))
-        
+
     print '-'*40
     print 'results:'
     for (key, value) in results.iteritems():
         print ' '*2, str(key)+':', value
-        
+
 class ThreadedDict:
     """Thread local storage.
-    
+
         >>> d = ThreadedDict()
         >>> d.x = 1
         >>> d.x
@@ -818,7 +818,7 @@ class ThreadedDict:
     def __delattr__(self, key):
         return delattr(self._getd(), key)
 
-    def __hash__(self): 
+    def __hash__(self):
         return id(self)
 
     def _getd(self):
@@ -838,25 +838,25 @@ threadeddict = ThreadedDict
 def autoassign(self, locals):
     """
     Automatically assigns local variables to `self`.
-    
+
         >>> self = storage()
         >>> autoassign(self, dict(a=1, b=2))
         >>> self
         <Storage {'a': 1, 'b': 2}>
-    
+
     Generally used in `__init__` methods, as in:
 
         def __init__(self, foo, bar, baz=1): autoassign(self, locals())
     """
     for (key, value) in locals.iteritems():
-        if key == 'self': 
+        if key == 'self':
             continue
         setattr(self, key, value)
 
 def to36(q):
     """
     Converts an integer to base 36 (a useful scheme for human-sayable IDs).
-    
+
         >>> to36(35)
         'z'
         >>> to36(119292)
@@ -867,9 +867,9 @@ def to36(q):
         '0'
         >>> to36(-393)
         Traceback (most recent call last):
-            ... 
+            ...
         ValueError: must supply a positive integer
-    
+
     """
     if q < 0: raise ValueError, "must supply a positive integer"
     letters = "0123456789abcdefghijklmnopqrstuvwxyz"
@@ -900,12 +900,12 @@ def safemarkdown(text):
 def sendmail(from_address, to_address, subject, message, headers=None, **kw):
     """
     Sends the email message `message` with mail and envelope headers
-    for from `from_address_` to `to_address` with `subject`. 
-    Additional email headers can be specified with the dictionary 
+    for from `from_address_` to `to_address` with `subject`.
+    Additional email headers can be specified with the dictionary
     `headers.
 
     If `web.config.smtp_server` is set, it will send the message
-    to that SMTP server. Otherwise it will look for 
+    to that SMTP server. Otherwise it will look for
     `/usr/sbin/sendmail`, the typical location for the sendmail-style
     binary. To use sendmail from a different path, set `web.config.sendmail_path`.
     """
@@ -913,12 +913,12 @@ def sendmail(from_address, to_address, subject, message, headers=None, **kw):
         import webapi
     except ImportError:
         webapi = Storage(config=Storage())
-    
+
     if headers is None: headers = {}
-    
+
     cc = kw.get('cc', [])
     bcc = kw.get('bcc', [])
-    
+
     def listify(x):
         if not isinstance(x, list):
             return [safestr(x)]
@@ -932,7 +932,7 @@ def sendmail(from_address, to_address, subject, message, headers=None, **kw):
     bcc = listify(bcc)
 
     recipients = to_address + cc + bcc
-    
+
     headers = dictadd({
       'MIME-Version': '1.0',
       'Content-Type': 'text/plain; charset=UTF-8',
@@ -944,7 +944,7 @@ def sendmail(from_address, to_address, subject, message, headers=None, **kw):
 
     if cc:
         headers['Cc'] = ", ".join(cc)
-    
+
     import email.Utils
     from_address = email.Utils.parseaddr(from_address)[1]
     recipients = [email.Utils.parseaddr(r)[1] for r in recipients]
@@ -954,7 +954,7 @@ def sendmail(from_address, to_address, subject, message, headers=None, **kw):
     if webapi.config.get('smtp_server'):
         server = webapi.config.get('smtp_server')
         port = webapi.config.get('smtp_port', 0)
-        username = webapi.config.get('smtp_username') 
+        username = webapi.config.get('smtp_username')
         password = webapi.config.get('smtp_password')
         debug_level = webapi.config.get('smtp_debuglevel', None)
         starttls = webapi.config.get('smtp_starttls', False)
@@ -977,7 +977,7 @@ def sendmail(from_address, to_address, subject, message, headers=None, **kw):
         smtpserver.quit()
     else:
         sendmail = webapi.config.get('sendmail_path', '/usr/sbin/sendmail')
-        
+
         assert not from_address.startswith('-'), 'security'
         for r in recipients:
             assert not r.startswith('-'), 'security'
