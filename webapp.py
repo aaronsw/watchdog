@@ -245,6 +245,12 @@ def committees_by_occupation(occupation):
             GROUP BY cm.id, cm.name
             ORDER BY amt DESC""", vars=locals())
 
+def politician_lob_contributions(polid, page, limit):
+    return db.select(['lob_organization', 'lob_filing', 'lob_contribution', 'lob_person'], 
+                where="politician_id = $polid and lob_filing.id = filing_id and lob_organization.id = org_id and lob_person.id = lobbyist_id", 
+                order='amount desc', limit=limit, offset=page*limit,
+                vars=locals())
+
 
 def bill_list(format, page=0, limit=50):
     bills = schema.Bill.select(limit=limit, offset=page*limit, order='session desc, introduced desc, number desc')
@@ -447,6 +453,7 @@ class politician:
         p.related_groups = group_politician_similarity(polid)
         p.contributors = list(politician_contributors(polid))[0:5]
         p.contributor_employers = list(politician_contributor_employers(polid))[0:5]
+        p.lob_contribs = politician_lob_contributions(polid, 0, 5)
         out = apipublish.publish([p], format)
         if out: return out
 
@@ -461,10 +468,7 @@ class politician_lobby:
                 what='SUM(amount)',
                 where="politician_id = $polid AND lob_filing.id = filing_id",
                 vars=locals())[0].sum
-        c = db.select(['lob_organization', 'lob_filing', 'lob_contribution', 'lob_person'], 
-                where="politician_id = $polid and lob_filing.id = filing_id and lob_organization.id = org_id and lob_person.id = lobbyist_id", 
-                order='amount desc', limit=limit, offset=page*limit,
-                vars=locals())
+        c = politician_lob_contributions(polid, page, limit)
         return render.politician_lobby(c, a, limit)
 class lob_filing:
     def GET(self, filing_id):
