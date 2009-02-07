@@ -12,12 +12,15 @@ from xml.dom import pulldom
 import web
 import tools
 
+from pprint import pformat, pprint
+
 def parse_basics():
     dom = pulldom.parse(STATS_XML % 'people')
     for event, node in dom:
         if event == "START_ELEMENT" and node.tagName == "person":
             out = web.storage(node.attributes.items())
             dom.expandNode(node)
+            out.roles = map(lambda r: web.storage(r.attributes.items()), node.getElementsByTagName('role'))
             
             if out.get('district'):
                 out.represents = out.state + '-' + out.district.zfill(2)
