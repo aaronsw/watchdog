@@ -90,7 +90,7 @@ class Politician(sql.Table):
 
     # politicians.json
     id = sql.String(256, primary=True)
-    district = sql.Reference(District) #@@ renames to district_id
+    district = sql.Reference(District) # Moved to Congress table
     wikipedia = sql.URL()
 
     # govtrack.json --@@get from votesmart?
@@ -102,6 +102,7 @@ class Politician(sql.Table):
     firstname = sql.String()
     middlename = sql.String()
     lastname = sql.String()
+    election_status = sql.String()
 
     def xmllines(self):
         sameas = lambda x: '  <owl:sameAs xmlns:owl="http://www.w3.org/2002/07/owl#" \
@@ -142,7 +143,7 @@ rdf:resource="%s" />' % x
                     vars=locals()).list()
 
     officeurl = sql.URL()
-    party = sql.String()
+    party = sql.String() # Moved to Congress table
     religion = sql.String()
 
     n_bills_introduced = sql.Number()
@@ -196,6 +197,16 @@ rdf:resource="%s" />' % x
 
     bills_sponsored = sql.Backreference('Bill', 'sponsor')
     earmarks_sponsored = sql.Backreference('Earmark_sponsor', 'politician')
+
+class Congress(sql.Table):
+    politician = sql.Reference(Politician, primary=True)
+    congress_num = sql.Integer(primary=True)
+    #district = sql.Reference(District) #@@ renames to district_id
+    district_id = sql.String(10, primary=True) # Can't make this a reference to district. District table only has CURRENT districts in it.
+    party = sql.String()
+    current_member = sql.Boolean()
+
+#db.query("CREATE VIEW cur_politician AS SELECT * FROM politician, congress WHERE politician.id = politician_id AND congress_num='110th' AND current_member")
 
 class Politician_FEC_IDs(sql.Table):
     politician = sql.Reference(Politician, primary=True)

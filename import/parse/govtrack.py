@@ -2,8 +2,9 @@
 parse data from govtrack.us
 """
 
-#@@ implicit 110 assumption
-STATS_XML = '../data/crawl/govtrack/us/110/repstats/%s.xml'
+from settings import current_session
+
+STATS_XML = '../data/crawl/govtrack/us/%s/repstats/' % current_session + '%s.xml'
 FEC_XML = '../data/crawl/govtrack/us/fec/campaigns-2008.xml'
 METRICS = ['enacted', 'novote', 'verbosity', 'speeches', 
   'spectrum', 'introduced', 'cosponsor']
@@ -11,34 +12,41 @@ METRICS = ['enacted', 'novote', 'verbosity', 'speeches',
 from xml.dom import pulldom
 import web
 import tools
+import glob
 
 def parse_basics():
-    dom = pulldom.parse(STATS_XML % 'people')
-    for event, node in dom:
-        if event == "START_ELEMENT" and node.tagName == "person":
-            out = web.storage(node.attributes.items())
-            dom.expandNode(node)
-            
-            if out.get('district'):
-                out.represents = out.state + '-' + out.district.zfill(2)
-            else:
-                if out.get('state'):
-                    out.represents = out.state
-                    assert out.title == 'Sen.'
-            
-            if 'current-committee-assignment' in [
-              hasattr(x, 'tagName') and x.tagName for x in node.childNodes
-            ]:
-                out.active = True
+    for fn in glob.glob(STATS_XML % 'people'):
+        dom = pulldom.parse(fn)
+        for event, node in dom:
+            if event == "START_ELEMENT" and node.tagName == "person":
+                out = web.storage(node.attributes.items())
+                dom.expandNode(node)
+                out.roles = map(lambda r: web.storage(r.attributes.items()), node.getElementsByTagName('role'))
+                
+                if out.get('district'):
+                    out.represents = out.state + '-' + out.district.zfill(2)
+                else:
+                    if out.get('state'):
+                        out.represents = out.state
+                        assert out.title == 'Sen.'
+                
+                if 'current-committee-assignment' in [
+                  hasattr(x, 'tagName') and x.tagName for x in node.childNodes
+                ]:
+                    out.active = True
 
-            yield out
+                yield out
 
 def parse_stats(metrics=METRICS):
     for metric in metrics:
-        dom = pulldom.parse(STATS_XML % metric)
-        for event, node in dom:
-            if event == "START_ELEMENT" and node.tagName == 'representative':
-                yield web.storage(node.attributes.items())
+        for fn in glob.glob(STATS_XML % metric):
+            try:
+                dom = pulldom.parse(fn)
+            except IOError:
+                continue
+            for event, node in dom:
+                if event == "START_ELEMENT" and node.tagName == 'representative':
+                    yield web.storage(node.attributes.items())
 
 def parse_fec():
     dom = pulldom.parse(FEC_XML)
@@ -54,4 +62,4 @@ def parse_fec():
 if __name__ == "__main__":
     tools.export(parse_basics())
     tools.export(parse_stats())
-    tools.export(parse_fec())
+    if current_session == 110: tools.export(parse_fec())

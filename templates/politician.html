@@ -1,6 +1,6 @@
 $def with (pol, pos)
 
-$var head: <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script> <script src="/static/js/gmap-wms.js"></script> <script src="/static/js/distmap.js"></script> <script type="text/javascript">distcenter('googlemap', '$pol.district.name.replace('-0', '').replace('-', '')', [$pol.district.center_lat, $pol.district.center_lng, $pol.district.zoom_level - 2])</script>
+$var head: <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script> <script src="/static/js/gmap-wms.js"></script> <script src="/static/js/distmap.js"></script> <script type="text/javascript">distcenter('googlemap', '$(pol.district and pol.district.name or '').replace('-0', '').replace('-', '')', [$(pol.district and pol.district.center_lat or 0.0), $(pol.district and pol.district.center_lng or 0.0), $(pol.district and pol.district.zoom_level and (pol.district.zoom_level - 2) or 0.0)])</script>
 
 $var title: $pol.firstname $pol.middlename $pol.lastname
 
@@ -33,7 +33,7 @@ $if pol.photo_path:
       b. $pol.birthday\
       $if pol.birthplace: , $pol.birthplace\
       <br />
-  represents <a href="/us/$pol.district.name">$pol.district.name</a><br />
+  represents <a href="/us/$(pol.district and pol.district.name or '')">$(pol.district and pol.district.name or 'None')</a><br />
   $pol.party, $pol.religion<br />
   <a href="$pol.officeurl">Official website</a>
 
