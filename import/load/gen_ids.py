@@ -1,5 +1,8 @@
+"""Generating govtrack to watchdog id mapping."""
+
+import web
 import os, sys
-import json
+import simplejson as json
 import tools
 from parse import govtrack, votesmart
 
@@ -58,7 +61,11 @@ def generate_ids():
             # instead.
             assert(pol.represents)
         else:
-            assert(not pol.get('represents'))
+            try:
+                assert(not pol.get('represents'))
+            except:
+                print "no watchdog id for", web.safestr(pol.name), web.safestr(pol.represents)
+                continue
             watchdog_id = gen_pol_id(pol)
             if watchdog_id in wd_to_gt and \
                     wd_to_gt[watchdog_id]['govtrack_id'] != pol.id: 
@@ -91,7 +98,7 @@ def generate_ids():
 
 
 if __name__ == "__main__": 
-    if not os.path.isfile(ALL_PEOPLE_FILE):
+    if not os.path.isfile(ALL_PEOPLE_FILE) or os.path.getsize(ALL_PEOPLE_FILE) == 0:
         print "Generating govtrack to watchdog id mapping."
         fd = open(ALL_PEOPLE_FILE,'w')
         fd.write(json.dumps(generate_ids(), indent=2, sort_keys=True))
