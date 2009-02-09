@@ -19,7 +19,7 @@ def makemarkdone(done):
     def markdone(func):
         def internal(fn, *a, **kw):
             mtime = str(os.stat(fn).st_mtime)
-            if fn not in done or done[fn] != mtime:
+            if not done.has_key(fn) or done[fn] != mtime:
                     try:
                         func(fn)
                         done[fn] = mtime
@@ -29,7 +29,8 @@ def makemarkdone(done):
     return markdone
 
 def fixvote(s):
-    return {'0': None, '+': 1, '-': -1, 'P': 0}[s]
+    try: return {'0': None, '+': 1, '-': -1, 'P': 0}[s]
+    except: return None
 
 def bill2dict(bill):
     d = web.storage()
