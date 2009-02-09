@@ -218,11 +218,30 @@ $for c in pol.contributors:
 $for c in pol.contributor_employers:
     <tr class="$loop.parity">
         <th>$loop.index <a href="/empl/$c.employer">$c.employer.title()</a></th>
-        <td>\$$commify(int(c.amt) )</td>
+        <td>\$$commify(int(c.amt))</td>
     </tr>
 </table>
 
 <p><a href="/p/$pol.id/contrib-employers" class="footer">More...</a></p>
+
+</td>
+    
+</tr>
+
+<tr>
+<td colspan="2" class="rule">
+<h2 class="rep">Top Lobby Contributors</h2>
+<table class="charted structure contributors" style="width: 100%">
+$for c in pol.lob_contribs:
+    $def whom():
+		${(c.contact_name if c.contact_name else ((c.prefix or '') + ' ' + (c.firstname or '') + ' ' + (c.middlename or '') + ' ' + (c.lastname or '') + ' ' + (c.suffix or ''))).title()}
+    <tr class="$loop.parity">
+        <th>$loop.index <a href="/l/f/$c.filing_id">$:whom(), $c.name.title()</a></th>
+		<td>\$$commify(c.amount)</td>
+    </tr>
+</table>
+
+<p><a href="/p/$pol.id/lobby" class="footer">More...</a></p>
 
 </td>
     
