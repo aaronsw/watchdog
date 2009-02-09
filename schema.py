@@ -575,6 +575,7 @@ def init():
     db.query("CREATE INDEX contribution_empl_stem_idx ON contribution (LOWER(employer_stem))")
     db.query("ANALYZE contribution;")
     db.query("CREATE VIEW curr_politician AS SELECT politician.* FROM politician, congress WHERE politician.id = politician_id AND congress_num='111' AND current_member = 't' ;")
+    db.query("GRANT ALL on curr_politician TO watchdog;")
 
     try:
         db.query("GRANT ALL on census TO watchdog")

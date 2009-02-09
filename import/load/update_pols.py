@@ -20,7 +20,9 @@ def create_or_update(polid, dist):
     if db.select('politician', where='id=$polid', vars=locals()):
         db.update('politician', where='id=$polid', district_id=dist, last_elected_year='2008', vars=locals())
     else:
-        db.insert('politician', seqname=False, id=polid, last_elected_year='2008', district_id=dist)
+        first, last = id.split('_', 1)
+        first, last = first.title(), last.title()
+        db.insert('politician', seqname=False, id=polid, firstname=first, lastname=last, last_elected_year='2008', district_id=dist)
 
 def update_congress(polid, dist):
     db.insert('congress', seqname=False, politician_id=polid, district_id=dist, congress_num=111, current_member='t')

@@ -455,7 +455,7 @@ class politician:
         p.contributors = list(politician_contributors(polid))[0:5]
         p.contributor_employers = list(politician_contributor_employers(polid))[0:5]
         p.lob_contribs = politician_lob_contributions(polid, 0, 5)
-        p.capitolwords = get_capitolwords(p.bioguideid)
+        p.capitolwords = p.bioguideid and get_capitolwords(p.bioguideid)
         out = apipublish.publish([p], format)
         if out: return out
 
