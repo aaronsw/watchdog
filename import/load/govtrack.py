@@ -110,7 +110,7 @@ def load_govtrack():
 def main():
     watchdog_map = combine()
     with db.transaction():
-        db.delete('congress', where='1=1')
+        #db.delete('congress', where='1=1')
         #db.delete('politician', where='1=1')
         for polid, pol in watchdog_map.items():
             roles = pol.pop('roles')
