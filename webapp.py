@@ -9,6 +9,7 @@ import settings
 from settings import db, render, production_mode
 import schema
 import config
+import datetime, capitolwords
 
 if not production_mode:
 	web.config.debug = True
@@ -454,10 +455,19 @@ class politician:
         p.contributors = list(politician_contributors(polid))[0:5]
         p.contributor_employers = list(politician_contributor_employers(polid))[0:5]
         p.lob_contribs = politician_lob_contributions(polid, 0, 5)
+        p.capitolwords = get_capitolwords(p.bioguideid)
         out = apipublish.publish([p], format)
         if out: return out
 
         return render.politician(p, sparkpos)
+
+def get_capitolwords(id, limit=5):
+    """
+    get the capitolwords said by politician with bioguideid `id` in last year
+    """
+    today = datetime.date.today()
+    return capitolwords.lawmaker(id, today.year-1, today.month, today.day, 
+                                    today.year, today.month, today.day, maxrows=limit)        
 
 class politician_lobby:
     def GET(self, polid, format=None):
