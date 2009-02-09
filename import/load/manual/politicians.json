@@ -1,4 +1,8 @@
 {
+  "aaron_shock": {
+    "district_id": "IL-18", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Aaron_Shock"
+  }, 
   "adam_putnam": {
     "district_id": "FL-12", 
     "wikipedia": "http://en.wikipedia.org/wiki/Adam_Putnam"
@@ -23,6 +27,10 @@
     "district_id": "TX-09", 
     "wikipedia": "http://en.wikipedia.org/wiki/Al_Green_(politician)"
   }, 
+  "alan_grayson": {
+    "district_id": "FL-08", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Alan_Grayson"
+  }, 
   "alan_mollohan": {
     "district_id": "WV-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Alan_Mollohan"
@@ -43,6 +51,10 @@
     "district_id": "PA-13", 
     "wikipedia": "http://en.wikipedia.org/wiki/Allyson_Schwartz"
   }, 
+  "amy_klobuchar": {
+    "district_id": "MN", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Amy_Klobuchar"
+  }, 
   "ander_crenshaw": {
     "district_id": "FL-04", 
     "wikipedia": "http://en.wikipedia.org/wiki/Ander_Crenshaw"
@@ -50,6 +62,14 @@
   "andre_carson": {
     "district_id": "IN-07", 
     "wikipedia": "http://en.wikipedia.org/wiki/Andr%C3%A9_Carson"
+  }, 
+  "anh_cao": {
+    "district_id": "LA-02", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Anh_Cao"
+  }, 
+  "ann_kirkpatrick": {
+    "district_id": "AZ-01", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ann_Kirkpatrick"
   }, 
   "anna_eshoo": {
     "district_id": "CA-14", 
@@ -59,17 +79,25 @@
     "district_id": "NY-09", 
     "wikipedia": "http://en.wikipedia.org/wiki/Anthony_Weiner"
   }, 
+  "arlen_specter": {
+    "district_id": "PA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Arlen_Specter"
+  }, 
   "artur_davis": {
     "district_id": "AL-07", 
     "wikipedia": "http://en.wikipedia.org/wiki/Artur_Davis"
   }, 
-  "barbara_cubin": {
-    "district_id": "WY-00", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Barbara_Cubin"
+  "barbara_boxer": {
+    "district_id": "CA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Barbara_Boxer"
   }, 
   "barbara_lee": {
     "district_id": "CA-09", 
     "wikipedia": "http://en.wikipedia.org/wiki/Barbara_Lee"
+  }, 
+  "barbara_mikulski": {
+    "district_id": "MD", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Barbara_Mikulski"
   }, 
   "barney_frank": {
     "district_id": "MA-04", 
@@ -87,13 +115,33 @@
     "district_id": "MI-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Bart_Stupak"
   }, 
+  "ben_cardin": {
+    "district_id": "MD", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Ben_Cardin"
+  }, 
   "ben_chandler": {
     "district_id": "KY-06", 
     "wikipedia": "http://en.wikipedia.org/wiki/Ben_Chandler"
   }, 
+  "ben_lujan": {
+    "district_id": "NM-03", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ben_Lujan"
+  }, 
+  "ben_nelson": {
+    "district_id": "NE", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Ben_Nelson"
+  }, 
   "bennie_thompson": {
     "district_id": "MS-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Bennie_Thompson"
+  }, 
+  "bernie_sanders": {
+    "district_id": "VT", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Bernie_Sanders"
+  }, 
+  "betsy_markey": {
+    "district_id": "CO-04", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Betsy_Markey"
   }, 
   "betty_mccollum": {
     "district_id": "MN-04", 
@@ -103,6 +151,10 @@
     "district_id": "OH-13", 
     "wikipedia": "http://en.wikipedia.org/wiki/Betty_Sutton"
   }, 
+  "bill_cassidy": {
+    "district_id": "LA-06", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Bill_Cassidy"
+  }, 
   "bill_delahunt": {
     "district_id": "MA-10", 
     "wikipedia": "http://en.wikipedia.org/wiki/Bill_Delahunt"
@@ -111,13 +163,17 @@
     "district_id": "IL-14", 
     "wikipedia": "http://en.wikipedia.org/wiki/Bill_Foster_(Illinois_politician)"
   }, 
+  "bill_nelson": {
+    "district_id": "FL", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Bill_Nelson_%28politician%29"
+  }, 
   "bill_pascrell": {
     "district_id": "NJ-08", 
     "wikipedia": "http://en.wikipedia.org/wiki/Bill_Pascrell"
   }, 
-  "bill_sali": {
-    "district_id": "ID-01", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Bill_Sali"
+  "bill_posey": {
+    "district_id": "FL-15", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Bill_Posey"
   }, 
   "bill_shuster": {
     "district_id": "PA-09", 
@@ -127,9 +183,25 @@
     "district_id": "FL-10", 
     "wikipedia": "http://en.wikipedia.org/wiki/Bill_Young"
   }, 
+  "blaine_luetkemeyer": {
+    "district_id": "M0-09", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Blaine_Luetkemeyer"
+  }, 
+  "blanche_lincoln": {
+    "district_id": "AR", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Blanche_Lincoln"
+  }, 
   "bob_brady": {
     "district_id": "PA-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Bob_Brady"
+  }, 
+  "bob_casey": {
+    "district_id": "PA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Bob_Casey%2C_Jr."
+  }, 
+  "bob_corker": {
+    "district_id": "TN", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Bob_Corker"
   }, 
   "bob_etheridge": {
     "district_id": "NC-02", 
@@ -151,6 +223,14 @@
     "district_id": "OH-05", 
     "wikipedia": "http://en.wikipedia.org/wiki/Bob_Latta"
   }, 
+  "bob_menendez": {
+    "district_id": "NJ", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Bob_Menendez"
+  }, 
+  "bobby_bright": {
+    "district_id": "AL-02", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Bobby_Bright"
+  }, 
   "bobby_rush": {
     "district_id": "IL-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Bobby_Rush"
@@ -166,6 +246,10 @@
   "brad_sherman": {
     "district_id": "CA-27", 
     "wikipedia": "http://en.wikipedia.org/wiki/Brad_Sherman"
+  }, 
+  "brett_guthrie": {
+    "district_id": "KY-02", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Brett_Guthrie"
   }, 
   "brian_baird": {
     "district_id": "WA-03", 
@@ -183,13 +267,17 @@
     "district_id": "IA-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Bruce_Braley"
   }, 
-  "bud_cramer": {
-    "district_id": "AL-05", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Bud_Cramer"
+  "byron_dorgan": {
+    "district_id": "ND", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Byron_Dorgan"
   }, 
   "candice_miller": {
     "district_id": "MI-10", 
     "wikipedia": "http://en.wikipedia.org/wiki/Candice_Miller"
+  }, 
+  "carl_levin": {
+    "district_id": "MI", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Carl_Levin"
   }, 
   "carol_shea-porter": {
     "district_id": "NH-01", 
@@ -215,6 +303,10 @@
     "district_id": "PA-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Chaka_Fattah"
   }, 
+  "charles_a._wilson": {
+    "district_id": "OH-06", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Charlie_Wilson_(Ohio_politician)"
+  }, 
   "charles_boustany": {
     "district_id": "LA-07", 
     "wikipedia": "http://en.wikipedia.org/wiki/Charles_Boustany"
@@ -222,6 +314,10 @@
   "charles_rangel": {
     "district_id": "NY-15", 
     "wikipedia": "http://en.wikipedia.org/wiki/Charles_Rangel"
+  }, 
+  "charles_schumer": {
+    "district_id": "NY", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Charles_Schumer"
   }, 
   "charlie_dent": {
     "district_id": "PA-15", 
@@ -235,33 +331,25 @@
     "district_id": "LA-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Charlie_Melancon"
   }, 
-  "charles_a._wilson": {
-    "district_id": "OH-06", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Charlie_Wilson_(Ohio_politician)"
+  "chellie_pingree": {
+    "district_id": "ME-01", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Chellie_Pingree"
   }, 
   "chet_edwards": {
     "district_id": "TX-17", 
     "wikipedia": "http://en.wikipedia.org/wiki/Chet_Edwards"
   }, 
-  "chip_pickering": {
-    "district_id": "MS-03", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Chip_Pickering"
-  }, 
-  "chris_cannon": {
-    "district_id": "UT-03", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Chris_Cannon"
-  }, 
   "chris_carney": {
     "district_id": "PA-10", 
     "wikipedia": "http://en.wikipedia.org/wiki/Chris_Carney"
   }, 
+  "chris_lee": {
+    "district_id": "NY-26", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Chris_Lee"
+  }, 
   "chris_murphy": {
     "district_id": "CT-05", 
     "wikipedia": "http://en.wikipedia.org/wiki/Chris_Murphy_(politician)"
-  }, 
-  "chris_shays": {
-    "district_id": "CT-04", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Chris_Shays"
   }, 
   "chris_smith": {
     "district_id": "NJ-04", 
@@ -271,9 +359,21 @@
     "district_id": "MD-08", 
     "wikipedia": "http://en.wikipedia.org/wiki/Chris_Van_Hollen"
   }, 
+  "christopher_dodd": {
+    "district_id": "CT", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Christopher_Dodd"
+  }, 
+  "chuck_grassley": {
+    "district_id": "IA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Chuck_Grassley"
+  }, 
   "ciro_rodriguez": {
     "district_id": "TX-23", 
     "wikipedia": "http://en.wikipedia.org/wiki/Ciro_Rodriguez"
+  }, 
+  "claire_mccaskill": {
+    "district_id": "MO", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Claire_McCaskill"
   }, 
   "cliff_stearns": {
     "district_id": "FL-06", 
@@ -290,6 +390,10 @@
   "corrine_brown": {
     "district_id": "FL-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Corrine_Brown"
+  }, 
+  "cynthia_lummis": {
+    "district_id": "WY-00", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Cynthia_Lummis"
   }, 
   "dale_kildee": {
     "district_id": "MI-05", 
@@ -311,25 +415,29 @@
     "district_id": "CA-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Dan_Lungren"
   }, 
+  "dan_maffei": {
+    "district_id": "NY-25", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Dan_Maffei"
+  }, 
   "dana_rohrabacher": {
     "district_id": "CA-46", 
     "wikipedia": "http://en.wikipedia.org/wiki/Dana_Rohrabacher"
+  }, 
+  "daniel_akaka": {
+    "district_id": "HI", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Daniel_Akaka"
+  }, 
+  "daniel_inouye": {
+    "district_id": "HI", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Daniel_Inouye"
   }, 
   "danny_k._davis": {
     "district_id": "IL-07", 
     "wikipedia": "http://en.wikipedia.org/wiki/Danny_K._Davis"
   }, 
-  "darlene_hooley": {
-    "district_id": "OR-05", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Darlene_Hooley"
-  }, 
   "darrell_issa": {
     "district_id": "CA-49", 
     "wikipedia": "http://en.wikipedia.org/wiki/Darrell_Issa"
-  }, 
-  "dave_hobson": {
-    "district_id": "OH-07", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Dave_Hobson"
   }, 
   "dave_obey": {
     "district_id": "WI-07", 
@@ -339,17 +447,17 @@
     "district_id": "WA-08", 
     "wikipedia": "http://en.wikipedia.org/wiki/Dave_Reichert"
   }, 
-  "dave_weldon": {
-    "district_id": "FL-15", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Dave_Weldon"
-  }, 
-  "david_l._davis": {
-    "district_id": "TN-01", 
-    "wikipedia": "http://en.wikipedia.org/wiki/David_Davis_(Tennessee_politician)"
+  "david_a._scott": {
+    "district_id": "GA-13", 
+    "wikipedia": "http://en.wikipedia.org/wiki/David_Scott_(politician)"
   }, 
   "david_dreier": {
     "district_id": "CA-26", 
     "wikipedia": "http://en.wikipedia.org/wiki/David_Dreier"
+  }, 
+  "david_eugene_price": {
+    "district_id": "NC-04", 
+    "wikipedia": "http://en.wikipedia.org/wiki/David_Price_(American_politician)"
   }, 
   "david_lee_camp": {
     "district_id": "MI-04", 
@@ -359,13 +467,9 @@
     "district_id": "IA-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/David_Loebsack"
   }, 
-  "david_eugene_price": {
-    "district_id": "NC-04", 
-    "wikipedia": "http://en.wikipedia.org/wiki/David_Price_(American_politician)"
-  }, 
-  "david_a._scott": {
-    "district_id": "GA-13", 
-    "wikipedia": "http://en.wikipedia.org/wiki/David_Scott_(politician)"
+  "david_vitter": {
+    "district_id": "LA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/David_Vitter"
   }, 
   "david_wu": {
     "district_id": "OR-01", 
@@ -375,13 +479,17 @@
     "district_id": "NV-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Dean_Heller"
   }, 
+  "debbie_halvorson": {
+    "district_id": "IL-11", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Debbie_Halvorson"
+  }, 
+  "debbie_stabenow": {
+    "district_id": "MI", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Debbie_Stabenow"
+  }, 
   "debbie_wasserman_schultz": {
     "district_id": "FL-20", 
     "wikipedia": "http://en.wikipedia.org/wiki/Debbie_Wasserman_Schultz"
-  }, 
-  "deborah_pryce": {
-    "district_id": "OH-15", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Deborah_Pryce"
   }, 
   "dennis_cardoza": {
     "district_id": "CA-18", 
@@ -411,14 +519,18 @@
     "district_id": "CA-33", 
     "wikipedia": "http://en.wikipedia.org/wiki/Diane_Watson"
   }, 
+  "dianne_feinstein": {
+    "district_id": "CA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Dianne_Feinstein"
+  }, 
+  "dina_titus": {
+    "district_id": "NV-03", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Dina_Titus"
+  }, 
   "doc_hastings": {
     "district_id": "WA-04", 
     "wikipedia": "http://en.wikipedia.org/wiki/Doc_Hastings"
   }, 
-  "don_cazayoux": {
-    "district_id": "LA-06",
-    "wikipedia": "http://en.wikipedia.org/wiki/Don_Cazayoux"
-  },
   "don_young": {
     "district_id": "AK-00", 
     "wikipedia": "http://en.wikipedia.org/wiki/Don_Young"
@@ -523,13 +635,33 @@
     "district_id": "VA-07", 
     "wikipedia": "http://en.wikipedia.org/wiki/Eric_Cantor"
   }, 
-  "frank_lobiondo": {
-    "district_id": "NJ-02", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Frank_LoBiondo"
+  "eric_massa": {
+    "district_id": "NY-29", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Eric_Massa"
+  }, 
+  "erik_paulsen": {
+    "district_id": "MN-03", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Erik_Paulsen"
+  }, 
+  "evan_bayh": {
+    "district_id": "IN", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Evan_Bayh"
   }, 
   "frank_d._lucas": {
     "district_id": "OK-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Frank_Lucas_(politician)"
+  }, 
+  "frank_kratovil": {
+    "district_id": "MD-01", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Frank_Kratovil"
+  }, 
+  "frank_lautenberg": {
+    "district_id": "NJ", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Frank_Lautenberg"
+  }, 
+  "frank_lobiondo": {
+    "district_id": "NJ-02", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Frank_LoBiondo"
   }, 
   "frank_pallone": {
     "district_id": "NJ-06", 
@@ -559,6 +691,10 @@
     "district_id": "CA-42", 
     "wikipedia": "http://en.wikipedia.org/wiki/Gary_Miller"
   }, 
+  "gary_peters": {
+    "district_id": "MI-09", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Gary_Peters"
+  }, 
   "gene_green": {
     "district_id": "TX-29", 
     "wikipedia": "http://en.wikipedia.org/wiki/Gene_Green"
@@ -579,9 +715,25 @@
     "district_id": "CA-19", 
     "wikipedia": "http://en.wikipedia.org/wiki/George_Radanovich"
   }, 
+  "george_voinovich": {
+    "district_id": "OH", 
+    "wikipedia": "http://en.wikipedia.org//wiki/George_Voinovich"
+  }, 
+  "gerry_connolly": {
+    "district_id": "VA-11", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Gerry_Connolly"
+  }, 
   "ginny_brown-waite": {
     "district_id": "FL-05", 
     "wikipedia": "http://en.wikipedia.org/wiki/Ginny_Brown-Waite"
+  }, 
+  "glenn_nye": {
+    "district_id": "VA-02", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Glenn_Nye"
+  }, 
+  "glenn_thompson": {
+    "district_id": "PA-05", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Glenn_Thompson"
   }, 
   "grace_napolitano": {
     "district_id": "CA-38", 
@@ -590,6 +742,14 @@
   "greg_walden": {
     "district_id": "OR-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Greg_Walden"
+  }, 
+  "gregg_harper": {
+    "district_id": "MS-03", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Gregg_Harper"
+  }, 
+  "gregorio_sablan": {
+    "district_id": "NM-00", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Gregorio_Sablan"
   }, 
   "gregory_meeks": {
     "district_id": "NY-06", 
@@ -619,13 +779,17 @@
     "district_id": "AZ-05", 
     "wikipedia": "http://en.wikipedia.org/wiki/Harry_Mitchell"
   }, 
+  "harry_reid": {
+    "district_id": "NV", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Harry_Reid"
+  }, 
+  "harry_teague": {
+    "district_id": "MN-02", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Harry_Teague"
+  }, 
   "heath_shuler": {
     "district_id": "NC-11", 
     "wikipedia": "http://en.wikipedia.org/wiki/Heath_Shuler"
-  }, 
-  "heather_wilson": {
-    "district_id": "NM-01", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Heather_Wilson"
   }, 
   "henry_cuellar": {
     "district_id": "TX-28", 
@@ -638,6 +802,10 @@
   "henry_waxman": {
     "district_id": "CA-30", 
     "wikipedia": "http://en.wikipedia.org/wiki/Henry_Waxman"
+  }, 
+  "herbert_kohl": {
+    "district_id": "WI", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Herbert_Kohl_%28senator%29"
   }, 
   "hilda_solis": {
     "district_id": "CA-32", 
@@ -667,13 +835,17 @@
     "district_id": "GA-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jack_Kingston"
   }, 
+  "jack_reed": {
+    "district_id": "RI", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Jack_Reed"
+  }, 
   "jackie_speier": {
     "district_id": "CA-12", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jackie_Speier"
   }, 
-  "james_t._walsh": {
-    "district_id": "NY-25", 
-    "wikipedia": "http://en.wikipedia.org/wiki/James_T._Walsh"
+  "james_inhofe": {
+    "district_id": "OK", 
+    "wikipedia": "http://en.wikipedia.org//wiki/James_Inhofe"
   }, 
   "jan_schakowsky": {
     "district_id": "IL-09", 
@@ -683,21 +855,41 @@
     "district_id": "CA-36", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jane_Harman"
   }, 
+  "jared_polis": {
+    "district_id": "CO-02", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Jared_Polis"
+  }, 
   "jason_altmire": {
     "district_id": "PA-04", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jason_Altmire"
+  }, 
+  "jason_chaffetz": {
+    "district_id": "UT-03", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Jason_Chaffetz"
   }, 
   "jay_inslee": {
     "district_id": "WA-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jay_Inslee"
   }, 
+  "jay_rockefeller": {
+    "district_id": "WV", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Jay_Rockefeller"
+  }, 
   "jean_schmidt": {
     "district_id": "OH-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jean_Schmidt"
   }, 
+  "jeanne_shaheen": {
+    "district_id": "NH", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Jeanne_Shaheen"
+  }, 
   "jeb_hensarling": {
     "district_id": "TX-05", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jeb_Hensarling"
+  }, 
+  "jeff_bingaman": {
+    "district_id": "NM", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Jeff_Bingaman"
   }, 
   "jeff_flake": {
     "district_id": "AZ-06", 
@@ -707,9 +899,17 @@
     "district_id": "NE-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jeff_Fortenberry"
   }, 
+  "jeff_merkley": {
+    "district_id": "OR", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Jeff_Merkley"
+  }, 
   "jeff_miller": {
     "district_id": "FL-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jeff_Miller"
+  }, 
+  "jeff_sessions": {
+    "district_id": "AL", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Jeff_Sessions"
   }, 
   "jerrold_nadler": {
     "district_id": "NY-08", 
@@ -731,13 +931,17 @@
     "district_id": "KS-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jerry_Moran"
   }, 
-  "jerry_weller": {
-    "district_id": "IL-11", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Jerry_Weller"
-  }, 
   "jesse_jackson,_jr.": {
     "district_id": "IL-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jesse_Jackson,_Jr."
+  }, 
+  "jim_bunning": {
+    "district_id": "KY", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Jim_Bunning"
+  }, 
+  "jim_c._marshall": {
+    "district_id": "GA-08", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Jim_Marshall_(U.S._politician)"
   }, 
   "jim_clyburn": {
     "district_id": "SC-06", 
@@ -751,29 +955,29 @@
     "district_id": "CA-20", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jim_Costa"
   }, 
+  "jim_d._jordan": {
+    "district_id": "OH-04", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Jim_Jordan_(Ohio_politician)"
+  }, 
+  "jim_demint": {
+    "district_id": "SC", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Jim_DeMint"
+  }, 
   "jim_gerlach": {
     "district_id": "PA-06", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jim_Gerlach"
   }, 
-  "jim_d._jordan": {
-    "district_id": "OH-04", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Jim_Jordan_(Ohio_politician)"
+  "jim_himes": {
+    "district_id": "CT-04", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Jim_Himes"
   }, 
   "jim_langevin": {
     "district_id": "RI-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jim_Langevin"
   }, 
-  "jim_c._marshall": {
-    "district_id": "GA-08", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Jim_Marshall_(U.S._politician)"
-  }, 
   "jim_matheson": {
     "district_id": "UT-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jim_Matheson"
-  }, 
-  "jim_mccrery": {
-    "district_id": "LA-04", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Jim_McCrery"
   }, 
   "jim_mcdermott": {
     "district_id": "WA-07", 
@@ -791,21 +995,17 @@
     "district_id": "MN-08", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jim_Oberstar"
   }, 
-  "jim_ramstad": {
-    "district_id": "MN-03", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Jim_Ramstad"
-  }, 
-  "jim_saxton": {
-    "district_id": "NJ-03", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Jim_Saxton"
+  "jim_risch": {
+    "district_id": "ID", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Jim_Risch"
   }, 
   "jim_sensenbrenner": {
     "district_id": "WI-05", 
     "wikipedia": "http://en.wikipedia.org/wiki/Jim_Sensenbrenner"
   }, 
-  "john_james_duncan,_jr.": {
-    "district_id": "TN-02", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Jimmy_Duncan_(U.S._politician)"
+  "jim_webb": {
+    "district_id": "VA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Jim_Webb"
   }, 
   "jo_ann_emerson": {
     "district_id": "MO-08", 
@@ -831,9 +1031,9 @@
     "district_id": "IN-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Joe_Donnelly"
   }, 
-  "joe_knollenberg": {
-    "district_id": "MI-09", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Joe_Knollenberg"
+  "joe_lieberman": {
+    "district_id": "CT", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Joe_Lieberman"
   }, 
   "joe_pitts": {
     "district_id": "PA-16", 
@@ -843,13 +1043,29 @@
     "district_id": "PA-07", 
     "wikipedia": "http://en.wikipedia.org/wiki/Joe_Sestak"
   }, 
+  "john_a._sullivan": {
+    "district_id": "OK-01", 
+    "wikipedia": "http://en.wikipedia.org/wiki/John_Sullivan_(U.S._Rep)"
+  }, 
+  "john_adler": {
+    "district_id": "NJ-03", 
+    "wikipedia": "http://en.wikipedia.org/wiki/John_Adler"
+  }, 
   "john_b._t._campbell_iii": {
     "district_id": "CA-48", 
     "wikipedia": "http://en.wikipedia.org/wiki/John_B._T._Campbell_III"
   }, 
+  "john_barrasso": {
+    "district_id": "WY", 
+    "wikipedia": "http://en.wikipedia.org//wiki/John_Barrasso"
+  }, 
   "john_barrow": {
     "district_id": "GA-12", 
     "wikipedia": "http://en.wikipedia.org/wiki/John_Barrow_(U.S._politician)"
+  }, 
+  "john_boccieri": {
+    "district_id": "OH-16", 
+    "wikipedia": "http://en.wikipedia.org/wiki/John_Boccieri"
   }, 
   "john_boehner": {
     "district_id": "OH-08", 
@@ -859,13 +1075,13 @@
     "district_id": "AR-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/John_Boozman"
   }, 
-  "john_r._carter": {
-    "district_id": "TX-31", 
-    "wikipedia": "http://en.wikipedia.org/wiki/John_Carter_(Texas_politician)"
-  }, 
   "john_conyers": {
     "district_id": "MI-14", 
     "wikipedia": "http://en.wikipedia.org/wiki/John_Conyers"
+  }, 
+  "john_cornyn": {
+    "district_id": "TX", 
+    "wikipedia": "http://en.wikipedia.org//wiki/John_Cornyn"
   }, 
   "john_culberson": {
     "district_id": "TX-07", 
@@ -875,33 +1091,33 @@
     "district_id": "MI-15", 
     "wikipedia": "http://en.wikipedia.org/wiki/John_Dingell"
   }, 
-  "john_doolittle": {
-    "district_id": "CA-04", 
-    "wikipedia": "http://en.wikipedia.org/wiki/John_Doolittle"
-  }, 
-  "john_e._peterson": {
-    "district_id": "PA-05", 
-    "wikipedia": "http://en.wikipedia.org/wiki/John_E._Peterson"
+  "john_ensign": {
+    "district_id": "NV", 
+    "wikipedia": "http://en.wikipedia.org//wiki/John_Ensign"
   }, 
   "john_f._tierney": {
     "district_id": "MA-06", 
     "wikipedia": "http://en.wikipedia.org/wiki/John_F._Tierney"
   }, 
+  "john_fleming": {
+    "district_id": "LA-04", 
+    "wikipedia": "http://en.wikipedia.org/wiki/John_Fleming"
+  }, 
   "john_j._hall": {
     "district_id": "NY-19", 
     "wikipedia": "http://en.wikipedia.org/wiki/John_Hall_(New_York)"
   }, 
-  "john_kline": {
-    "district_id": "MN-02", 
-    "wikipedia": "http://en.wikipedia.org/wiki/John_Kline_(politician)"
+  "john_james_duncan,_jr.": {
+    "district_id": "TN-02", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Jimmy_Duncan_(U.S._politician)"
+  }, 
+  "john_kerry": {
+    "district_id": "MA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/John_Kerry"
   }, 
   "john_larson": {
     "district_id": "CT-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/John_Larson"
-  }, 
-  "john_r._lewis": {
-    "district_id": "GA-05", 
-    "wikipedia": "http://en.wikipedia.org/wiki/John_Lewis_(politician)"
   }, 
   "john_linder": {
     "district_id": "GA-07", 
@@ -910,6 +1126,10 @@
   "john_m._mchugh": {
     "district_id": "NY-23", 
     "wikipedia": "http://en.wikipedia.org/wiki/John_M._McHugh"
+  }, 
+  "john_mccain": {
+    "district_id": "AZ", 
+    "wikipedia": "http://en.wikipedia.org//wiki/John_McCain"
   }, 
   "john_mica": {
     "district_id": "FL-07", 
@@ -922,6 +1142,14 @@
   "john_olver": {
     "district_id": "MA-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/John_Olver"
+  }, 
+  "john_r._carter": {
+    "district_id": "TX-31", 
+    "wikipedia": "http://en.wikipedia.org/wiki/John_Carter_(Texas_politician)"
+  }, 
+  "john_r._lewis": {
+    "district_id": "GA-05", 
+    "wikipedia": "http://en.wikipedia.org/wiki/John_Lewis_(politician)"
   }, 
   "john_s._tanner": {
     "district_id": "TN-08", 
@@ -947,25 +1175,37 @@
     "district_id": "SC-05", 
     "wikipedia": "http://en.wikipedia.org/wiki/John_Spratt"
   }, 
-  "john_a._sullivan": {
-    "district_id": "OK-01", 
-    "wikipedia": "http://en.wikipedia.org/wiki/John_Sullivan_(U.S._Rep)"
+  "john_thune": {
+    "district_id": "SD", 
+    "wikipedia": "http://en.wikipedia.org//wiki/John_Thune"
   }, 
   "john_yarmuth": {
     "district_id": "KY-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/John_Yarmuth"
   }, 
-  "jon_porter": {
-    "district_id": "NV-03", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Jon_Porter"
+  "johnny_isakson": {
+    "district_id": "GA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Johnny_Isakson"
+  }, 
+  "jon_kyl": {
+    "district_id": "AZ", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Jon_Kyl"
+  }, 
+  "jon_tester": {
+    "district_id": "MT", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Jon_Tester"
+  }, 
+  "jose_serrano": {
+    "district_id": "NY-16", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Jos%C3%A9_Serrano"
   }, 
   "joseph_crowley": {
     "district_id": "NY-07", 
     "wikipedia": "http://en.wikipedia.org/wiki/Joseph_Crowley"
   }, 
-  "jose_serrano": {
-    "district_id": "NY-16", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Jos%C3%A9_Serrano"
+  "judd_gregg": {
+    "district_id": "NH", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Judd_Gregg"
   }, 
   "judy_biggert": {
     "district_id": "IL-13", 
@@ -975,9 +1215,21 @@
     "district_id": "FL-11", 
     "wikipedia": "http://en.wikipedia.org/wiki/Kathy_Castor"
   }, 
+  "kathy_dahlkemper": {
+    "district_id": "PA-03", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kathy_Dahlkemper"
+  }, 
+  "kay_bailey_hutchison": {
+    "district_id": "TX", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Kay_Bailey_Hutchison"
+  }, 
   "kay_granger": {
     "district_id": "TX-12", 
     "wikipedia": "http://en.wikipedia.org/wiki/Kay_Granger"
+  }, 
+  "kay_hagan": {
+    "district_id": "NC", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kay_Hagan"
   }, 
   "keith_ellison": {
     "district_id": "MN-05", 
@@ -999,6 +1251,10 @@
     "district_id": "TX-24", 
     "wikipedia": "http://en.wikipedia.org/wiki/Kenny_Marchant"
   }, 
+  "kent_conrad": {
+    "district_id": "ND", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Kent_Conrad"
+  }, 
   "kevin_brady": {
     "district_id": "TX-08", 
     "wikipedia": "http://en.wikipedia.org/wiki/Kevin_Brady"
@@ -1011,9 +1267,29 @@
     "district_id": "NY-20", 
     "wikipedia": "http://en.wikipedia.org/wiki/Kirsten_Gillibrand"
   }, 
+  "kit_bond": {
+    "district_id": "MO", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Kit_Bond"
+  }, 
+  "kristen_gillibrand": {
+    "district_id": "NY", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kristen_Gillibrand"
+  }, 
+  "kurt_schrader": {
+    "district_id": "OR-05", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Kurt_Schrader"
+  }, 
+  "lamar_alexander": {
+    "district_id": "TN", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Lamar_Alexander"
+  }, 
   "lamar_s._smith": {
     "district_id": "TX-21", 
     "wikipedia": "http://en.wikipedia.org/wiki/Lamar_S._Smith"
+  }, 
+  "larry_kissell": {
+    "district_id": "NC-08", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Larry_Kissell"
   }, 
   "laura_richardson": {
     "district_id": "CA-37", 
@@ -1027,6 +1303,10 @@
     "district_id": "IA-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Leonard_Boswell"
   }, 
+  "leonard_lance": {
+    "district_id": "NJ-07", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Leonard_Lance"
+  }, 
   "lincoln_davis": {
     "district_id": "TN-04", 
     "wikipedia": "http://en.wikipedia.org/wiki/Lincoln_Davis"
@@ -1038,6 +1318,14 @@
   "linda_sanchez": {
     "district_id": "CA-39", 
     "wikipedia": "http://en.wikipedia.org/wiki/Linda_Sanchez"
+  }, 
+  "lindsey_graham": {
+    "district_id": "SC", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Lindsey_Graham"
+  }, 
+  "lisa_murkowski": {
+    "district_id": "AK", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Lisa_Murkowski"
   }, 
   "lloyd_doggett": {
     "district_id": "TX-25", 
@@ -1063,13 +1351,13 @@
     "district_id": "CA-34", 
     "wikipedia": "http://en.wikipedia.org/wiki/Lucille_Roybal-Allard"
   }, 
-  "luis_fortuno": {
-    "district_id": "PR-00", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Luis_Fortu%C3%B1o"
-  }, 
   "luis_gutierrez": {
     "district_id": "IL-04", 
     "wikipedia": "http://en.wikipedia.org/wiki/Luis_Gutierrez"
+  }, 
+  "lynn_jenkins": {
+    "district_id": "KS-02", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Lynn_Jenkins"
   }, 
   "lynn_westmoreland": {
     "district_id": "GA-03", 
@@ -1095,9 +1383,9 @@
     "district_id": "OH-09", 
     "wikipedia": "http://en.wikipedia.org/wiki/Marcy_Kaptur"
   }, 
-  "marilyn_musgrave": {
-    "district_id": "CO-04", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Marilyn_Musgrave"
+  "maria_cantwell": {
+    "district_id": "WA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Maria_Cantwell"
   }, 
   "mario_diaz-balart": {
     "district_id": "FL-25", 
@@ -1107,21 +1395,41 @@
     "district_id": "AR-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Marion_Berry"
   }, 
+  "mark_begich": {
+    "district_id": "AK", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Mark_Begich"
+  }, 
   "mark_kirk": {
     "district_id": "IL-10", 
     "wikipedia": "http://en.wikipedia.org/wiki/Mark_Kirk"
+  }, 
+  "mark_pryor": {
+    "district_id": "AR", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Mark_Pryor"
+  }, 
+  "mark_schauer": {
+    "district_id": "MI-07", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Mark_Schauer"
   }, 
   "mark_souder": {
     "district_id": "IN-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Mark_Souder"
   }, 
   "mark_udall": {
-    "district_id": "CO-02", 
+    "district_id": "CO", 
     "wikipedia": "http://en.wikipedia.org/wiki/Mark_Udall"
+  }, 
+  "mark_warner": {
+    "district_id": "VA", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Mark_Warner"
   }, 
   "marsha_blackburn": {
     "district_id": "TN-07", 
     "wikipedia": "http://en.wikipedia.org/wiki/Marsha_Blackburn"
+  }, 
+  "martin_heinrich": {
+    "district_id": "NM-01", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Martin_Heinrich"
   }, 
   "mary_bono_mack": {
     "district_id": "CA-45", 
@@ -1131,9 +1439,21 @@
     "district_id": "OK-05", 
     "wikipedia": "http://en.wikipedia.org/wiki/Mary_Fallin"
   }, 
+  "mary_kilroy": {
+    "district_id": "OH-15", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Mary_Jo_Kilroy"
+  }, 
+  "mary_landrieu": {
+    "district_id": "LA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Mary_Landrieu"
+  }, 
   "maurice_hinchey": {
     "district_id": "NY-22", 
     "wikipedia": "http://en.wikipedia.org/wiki/Maurice_Hinchey"
+  }, 
+  "max_baucus": {
+    "district_id": "MT", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Max_Baucus"
   }, 
   "maxine_waters": {
     "district_id": "CA-35", 
@@ -1142,6 +1462,10 @@
   "mazie_hirono": {
     "district_id": "HI-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Mazie_Hirono"
+  }, 
+  "mel_martinez": {
+    "district_id": "FL", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Mel_Martinez"
   }, 
   "mel_watt": {
     "district_id": "NC-12", 
@@ -1155,6 +1479,10 @@
     "district_id": "NY-24", 
     "wikipedia": "http://en.wikipedia.org/wiki/Michael_Arcuri"
   }, 
+  "michael_bennet": {
+    "district_id": "CO", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michael_Bennet"
+  }, 
   "michael_c._burgess": {
     "district_id": "TX-26", 
     "wikipedia": "http://en.wikipedia.org/wiki/Michael_C._Burgess"
@@ -1162,6 +1490,10 @@
   "michael_castle": {
     "district_id": "DE-00", 
     "wikipedia": "http://en.wikipedia.org/wiki/Michael_Castle"
+  }, 
+  "michael_enzi": {
+    "district_id": "WY", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Michael_Enzi"
   }, 
   "michael_f._doyle": {
     "district_id": "PA-14", 
@@ -1171,9 +1503,9 @@
     "district_id": "TX-10", 
     "wikipedia": "http://en.wikipedia.org/wiki/Michael_McCaul"
   }, 
-  "michael_mcnulty": {
-    "district_id": "NY-21", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Michael_McNulty"
+  "michael_mcmahon": {
+    "district_id": "NY-13", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Michael_McMahon"
   }, 
   "michele_bachmann": {
     "district_id": "MN-06", 
@@ -1183,17 +1515,21 @@
     "district_id": "MA-08", 
     "wikipedia": "http://en.wikipedia.org/wiki/Mike_Capuano"
   }, 
+  "mike_coffman": {
+    "district_id": "CO-06", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Mike_Coffman"
+  }, 
   "mike_conaway": {
     "district_id": "TX-11", 
     "wikipedia": "http://en.wikipedia.org/wiki/Mike_Conaway"
   }, 
+  "mike_crapo": {
+    "district_id": "ID", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Mike_Crapo"
+  }, 
   "mike_d._rogers": {
     "district_id": "AL-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Mike_D._Rogers"
-  }, 
-  "mike_a._ferguson": {
-    "district_id": "NJ-07", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Mike_Ferguson_(New_Jersey)"
   }, 
   "mike_honda": {
     "district_id": "CA-15", 
@@ -1202,6 +1538,10 @@
   "mike_j._rogers": {
     "district_id": "MI-08", 
     "wikipedia": "http://en.wikipedia.org/wiki/Mike_J._Rogers"
+  }, 
+  "mike_johanns": {
+    "district_id": "NE", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Mike_Johanns"
   }, 
   "mike_mcintyre": {
     "district_id": "NC-07", 
@@ -1231,9 +1571,9 @@
     "district_id": "OH-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Mike_Turner"
   }, 
-  "nancy_boyda": {
-    "district_id": "KS-02", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Nancy_Boyda"
+  "mitch_mcconnell": {
+    "district_id": "KY", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Mitch_McConnell"
   }, 
   "nancy_pelosi": {
     "district_id": "CA-08", 
@@ -1247,10 +1587,6 @@
     "district_id": "HI-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Neil_Abercrombie"
   }, 
-  "nick_lampson": {
-    "district_id": "TX-22", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Nick_Lampson"
-  }, 
   "nick_rahall": {
     "district_id": "WV-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Nick_Rahall"
@@ -1263,6 +1599,10 @@
     "district_id": "NY-18", 
     "wikipedia": "http://en.wikipedia.org/wiki/Nita_Lowey"
   }, 
+  "norm_coleman": {
+    "district_id": "MN", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Norm_Coleman"
+  }, 
   "norm_dicks": {
     "district_id": "WA-06", 
     "wikipedia": "http://en.wikipedia.org/wiki/Norm_Dicks"
@@ -1270,6 +1610,22 @@
   "nydia_velazquez": {
     "district_id": "NY-12", 
     "wikipedia": "http://en.wikipedia.org/wiki/Nydia_Vel%C3%A1zquez"
+  }, 
+  "olympia_snowe": {
+    "district_id": "ME", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Olympia_Snowe"
+  }, 
+  "orrin_hatch": {
+    "district_id": "UT", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Orrin_Hatch"
+  }, 
+  "parker_griffith": {
+    "district_id": "AL-05", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Parker_Griffith"
+  }, 
+  "pat_roberts": {
+    "district_id": "KS", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Pat_Roberts"
   }, 
   "pat_tiberi": {
     "district_id": "OH-12", 
@@ -1279,6 +1635,10 @@
     "district_id": "RI-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Patrick_J._Kennedy"
   }, 
+  "patrick_leahy": {
+    "district_id": "VT", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Patrick_Leahy"
+  }, 
   "patrick_mchenry": {
     "district_id": "NC-10", 
     "wikipedia": "http://en.wikipedia.org/wiki/Patrick_McHenry"
@@ -1286,6 +1646,10 @@
   "patrick_murphy": {
     "district_id": "PA-08", 
     "wikipedia": "http://en.wikipedia.org/wiki/Patrick_Murphy_(politician)"
+  }, 
+  "patty_murray": {
+    "district_id": "WA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Patty_Murray"
   }, 
   "paul_broun": {
     "district_id": "GA-10", 
@@ -1303,9 +1667,21 @@
     "district_id": "WI-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Paul_Ryan_(politician)"
   }, 
+  "paul_tonko": {
+    "district_id": "NY-21", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Paul_Tonko"
+  }, 
+  "pedro_pierluisi": {
+    "district_id": "PR-00", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pedro_Pierluisi"
+  }, 
   "pete_hoekstra": {
     "district_id": "MI-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Pete_Hoekstra"
+  }, 
+  "pete_olson": {
+    "district_id": "TX-22", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Pete_Olson"
   }, 
   "pete_sessions": {
     "district_id": "TX-32", 
@@ -1335,10 +1711,6 @@
     "district_id": "VT-00", 
     "wikipedia": "http://en.wikipedia.org/wiki/Peter_Welch"
   }, 
-  "phil_english": {
-    "district_id": "PA-03", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Phil_English"
-  }, 
   "phil_gingrey": {
     "district_id": "GA-11", 
     "wikipedia": "http://en.wikipedia.org/wiki/Phil_Gingrey"
@@ -1346,6 +1718,10 @@
   "phil_hare": {
     "district_id": "IL-17", 
     "wikipedia": "http://en.wikipedia.org/wiki/Phil_Hare"
+  }, 
+  "phil_roe": {
+    "district_id": "TN-01", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Phil_Roe"
   }, 
   "rahm_emanuel": {
     "district_id": "IL-05", 
@@ -1355,37 +1731,37 @@
     "district_id": "TX-04", 
     "wikipedia": "http://en.wikipedia.org/wiki/Ralph_Hall"
   }, 
-  "ralph_regula": {
-    "district_id": "OH-16", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Ralph_Regula"
-  }, 
   "randy_forbes": {
     "district_id": "VA-04", 
     "wikipedia": "http://en.wikipedia.org/wiki/Randy_Forbes"
-  }, 
-  "randy_kuhl": {
-    "district_id": "NY-29", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Randy_Kuhl"
   }, 
   "randy_neugebauer": {
     "district_id": "TX-19", 
     "wikipedia": "http://en.wikipedia.org/wiki/Randy_Neugebauer"
   }, 
-  "ray_lahood": {
-    "district_id": "IL-18", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Ray_LaHood"
-  }, 
   "raul_grijalva": {
     "district_id": "AZ-07", 
     "wikipedia": "http://en.wikipedia.org/wiki/Raul_Grijalva"
   }, 
-  "ric_keller": {
-    "district_id": "FL-08", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Ric_Keller"
+  "richard_burr": {
+    "district_id": "NC", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Richard_Burr"
+  }, 
+  "richard_durbin": {
+    "district_id": "IL", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Richard_Durbin"
+  }, 
+  "richard_lugar": {
+    "district_id": "IN", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Richard_Lugar"
   }, 
   "richard_neal": {
     "district_id": "MA-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Richard_Neal"
+  }, 
+  "richard_shelby": {
+    "district_id": "AL", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Richard_Shelby"
   }, 
   "rick_boucher": {
     "district_id": "VA-09", 
@@ -1394,10 +1770,6 @@
   "rick_larsen": {
     "district_id": "WA-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Rick_Larsen"
-  }, 
-  "rick_renzi": {
-    "district_id": "AZ-01", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Rick_Renzi"
   }, 
   "rob_andrews": {
     "district_id": "NJ-01", 
@@ -1415,6 +1787,14 @@
     "district_id": "AL-04", 
     "wikipedia": "http://en.wikipedia.org/wiki/Robert_Aderholt"
   }, 
+  "robert_bennett": {
+    "district_id": "UT", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Robert_Foster_Bennett"
+  }, 
+  "robert_byrd": {
+    "district_id": "WV", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Robert_Byrd"
+  }, 
   "robert_c._scott": {
     "district_id": "VA-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Robert_C._Scott"
@@ -1422,10 +1802,6 @@
   "robert_wexler": {
     "district_id": "FL-19", 
     "wikipedia": "http://en.wikipedia.org/wiki/Robert_Wexler"
-  }, 
-  "robin_hayes": {
-    "district_id": "NC-08", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Robin_Hayes"
   }, 
   "rodney_alexander": {
     "district_id": "LA-05", 
@@ -1435,6 +1811,14 @@
     "district_id": "NJ-11", 
     "wikipedia": "http://en.wikipedia.org/wiki/Rodney_Frelinghuysen"
   }, 
+  "roger_wicker": {
+    "district_id": "MS", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Roger_Wicker"
+  }, 
+  "roland_burris": {
+    "district_id": "IL", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Roland_Burris"
+  }, 
   "ron_kind": {
     "district_id": "WI-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Ron_Kind"
@@ -1443,13 +1827,13 @@
     "district_id": "FL-22", 
     "wikipedia": "http://en.wikipedia.org/wiki/Ron_Klein"
   }, 
-  "ron_lewis": {
-    "district_id": "KY-02", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Ron_Lewis"
-  }, 
   "ron_paul": {
     "district_id": "TX-14", 
     "wikipedia": "http://en.wikipedia.org/wiki/Ron_Paul"
+  }, 
+  "ron_wyden": {
+    "district_id": "OR", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Ron_Wyden"
   }, 
   "rosa_delauro": {
     "district_id": "CT-03", 
@@ -1475,6 +1859,14 @@
     "district_id": "MO-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Russ_Carnahan"
   }, 
+  "russ_feingold": {
+    "district_id": "WI", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Russ_Feingold"
+  }, 
+  "sam_brownback": {
+    "district_id": "KS", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Sam_Brownback"
+  }, 
   "sam_farr": {
     "district_id": "CA-17", 
     "wikipedia": "http://en.wikipedia.org/wiki/Sam_Farr"
@@ -1495,6 +1887,10 @@
     "district_id": "GA-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Sanford_Bishop"
   }, 
+  "saxby_chambliss": {
+    "district_id": "GA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Saxby_Chambliss"
+  }, 
   "scott_garrett": {
     "district_id": "NJ-05", 
     "wikipedia": "http://en.wikipedia.org/wiki/Scott_Garrett"
@@ -1503,6 +1899,10 @@
     "district_id": "TX-18", 
     "wikipedia": "http://en.wikipedia.org/wiki/Sheila_Jackson-Lee"
   }, 
+  "sheldon_whitehouse": {
+    "district_id": "RI", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Sheldon_Whitehouse"
+  }, 
   "shelley_berkley": {
     "district_id": "NV-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Shelley_Berkley"
@@ -1510,6 +1910,10 @@
   "shelley_moore_capito": {
     "district_id": "WV-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Shelley_Moore_Capito"
+  }, 
+  "sherrod_brown": {
+    "district_id": "OH", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Sherrod_Brown"
   }, 
   "silvestre_reyes": {
     "district_id": "TX-16", 
@@ -1535,17 +1939,21 @@
     "district_id": "MA-09", 
     "wikipedia": "http://en.wikipedia.org/wiki/Stephen_Lynch_(politician)"
   }, 
+  "steve_austria": {
+    "district_id": "OH-07", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Steve_Austria"
+  }, 
   "steve_buyer": {
     "district_id": "IN-04", 
     "wikipedia": "http://en.wikipedia.org/wiki/Steve_Buyer"
   }, 
-  "steve_chabot": {
-    "district_id": "OH-01", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Steve_Chabot"
-  }, 
   "steve_cohen": {
     "district_id": "TN-09", 
     "wikipedia": "http://en.wikipedia.org/wiki/Steve_Cohen"
+  }, 
+  "steve_driehaus": {
+    "district_id": "OH-01", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Steve_Driehaus"
   }, 
   "steve_israel": {
     "district_id": "NY-02", 
@@ -1579,65 +1987,65 @@
     "district_id": "NC-09", 
     "wikipedia": "http://en.wikipedia.org/wiki/Sue_Myrick"
   }, 
+  "susan_collins": {
+    "district_id": "ME", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Susan_Collins"
+  }, 
   "susan_davis": {
     "district_id": "CA-53", 
     "wikipedia": "http://en.wikipedia.org/wiki/Susan_Davis"
+  }, 
+  "suzanne_kosmas": {
+    "district_id": "FL-24", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Suzanne_Kosmas"
   }, 
   "tammy_baldwin": {
     "district_id": "WI-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Tammy_Baldwin"
   }, 
+  "ted_kaufman": {
+    "district_id": "DE", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Ted_Kaufman"
+  }, 
+  "ted_kennedy": {
+    "district_id": "MA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Ted_Kennedy"
+  }, 
   "ted_poe": {
     "district_id": "TX-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Ted_Poe"
   }, 
-  "terry_everett": {
-    "district_id": "AL-02", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Terry_Everett"
+  "thad_cochran": {
+    "district_id": "MS", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Thad_Cochran"
   }, 
   "thaddeus_mccotter": {
     "district_id": "MI-11", 
     "wikipedia": "http://en.wikipedia.org/wiki/Thaddeus_McCotter"
   }, 
-  "thelma_drake": {
-    "district_id": "VA-02", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Thelma_Drake"
-  }, 
-  "thomas_m._davis": {
-    "district_id": "VA-11", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Thomas_M._Davis"
-  }, 
-  "thomas_m._reynolds": {
-    "district_id": "NY-26", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Thomas_M._Reynolds"
-  }, 
-  "thomas_tancredo": {
-    "district_id": "CO-06", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Thomas_Tancredo"
+  "thomas_carper": {
+    "district_id": "DE", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Thomas_R._Carper"
   }, 
   "tim_bishop": {
     "district_id": "NY-01", 
     "wikipedia": "http://en.wikipedia.org/wiki/Tim_Bishop"
   }, 
-  "tim_holden": {
-    "district_id": "PA-17", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Tim_Holden"
-  }, 
-  "tim_mahoney": {
-    "district_id": "FL-16", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Tim_Mahoney"
-  }, 
   "tim_f._murphy": {
     "district_id": "PA-18", 
     "wikipedia": "http://en.wikipedia.org/wiki/Tim_Murphy_(congressman)"
   }, 
+  "tim_holden": {
+    "district_id": "PA-17", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tim_Holden"
+  }, 
+  "tim_johnson": {
+    "district_id": "SD", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Tim_Johnson_%28South_Dakota%29"
+  }, 
   "tim_ryan": {
     "district_id": "OH-17", 
     "wikipedia": "http://en.wikipedia.org/wiki/Tim_Ryan"
-  }, 
-  "tim_walberg": {
-    "district_id": "MI-07", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Tim_Walberg"
   }, 
   "tim_walz": {
     "district_id": "MN-01", 
@@ -1659,32 +2067,44 @@
     "district_id": "KS-04", 
     "wikipedia": "http://en.wikipedia.org/wiki/Todd_Tiahrt"
   }, 
-  "tom_allen": {
-    "district_id": "ME-01", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Tom_Allen"
+  "tom_coburn": {
+    "district_id": "OK", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Tom_Coburn"
   }, 
   "tom_cole": {
     "district_id": "OK-04", 
     "wikipedia": "http://en.wikipedia.org/wiki/Tom_Cole"
   }, 
-  "tom_feeney": {
-    "district_id": "FL-24", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Tom_Feeney"
+  "tom_e._price": {
+    "district_id": "GA-06", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tom_Price_(US_politician)"
+  }, 
+  "tom_harkin": {
+    "district_id": "IA", 
+    "wikipedia": "http://en.wikipedia.org//wiki/Tom_Harkin"
   }, 
   "tom_latham": {
     "district_id": "IA-04", 
     "wikipedia": "http://en.wikipedia.org/wiki/Tom_Latham"
   }, 
+  "tom_mcclintock": {
+    "district_id": "CA-04", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tom_McClintock"
+  }, 
+  "tom_perriello": {
+    "district_id": "VA-05", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tom_Perriello"
+  }, 
   "tom_petri": {
     "district_id": "WI-06", 
     "wikipedia": "http://en.wikipedia.org/wiki/Tom_Petri"
   }, 
-  "tom_e._price": {
-    "district_id": "GA-06", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Tom_Price_(US_politician)"
+  "tom_rooney": {
+    "district_id": "FL-16", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Tom_Rooney"
   }, 
   "tom_udall": {
-    "district_id": "NM-03", 
+    "district_id": "NM", 
     "wikipedia": "http://en.wikipedia.org/wiki/Tom_Udall"
   }, 
   "travis_childers": {
@@ -1707,33 +2127,21 @@
     "district_id": "AR-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Vic_Snyder"
   }, 
-  "virgil_goode": {
-    "district_id": "VA-05", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Virgil_Goode"
-  }, 
   "virginia_foxx": {
     "district_id": "NC-05", 
     "wikipedia": "http://en.wikipedia.org/wiki/Virginia_Foxx"
-  }, 
-  "vito_fossella": {
-    "district_id": "NY-13", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Vito_Fossella"
   }, 
   "wally_herger": {
     "district_id": "CA-02", 
     "wikipedia": "http://en.wikipedia.org/wiki/Wally_Herger"
   }, 
+  "walt_minnick": {
+    "district_id": "ID-01", 
+    "wikipedia": "http://en.wikipedia.org/wiki/Walt_Minnick"
+  }, 
   "walter_b._jones": {
     "district_id": "NC-03", 
     "wikipedia": "http://en.wikipedia.org/wiki/Walter_B._Jones"
-  }, 
-  "wayne_gilchrest": {
-    "district_id": "MD-01", 
-    "wikipedia": "http://en.wikipedia.org/wiki/Wayne_Gilchrest"
-  }, 
-  "william_j._jefferson": {
-    "district_id": "LA-02", 
-    "wikipedia": "http://en.wikipedia.org/wiki/William_J._Jefferson"
   }, 
   "william_lacy_clay,_jr.": {
     "district_id": "MO-01", 
@@ -1758,409 +2166,5 @@
   "zoe_lofgren": {
     "district_id": "CA-16", 
     "wikipedia": "http://en.wikipedia.org/wiki/Zoe_Lofgren"
-  },
-
-
-
-  "richard_shelby": {
-	  "district_id": "AL",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Richard_Shelby"
-  },
-  "jeff_sessions": {
-	  "district_id": "AL",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Jeff_Sessions"
-  },
-  "ted_stevens": {
-	  "district_id": "AK",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Ted_Stevens"
-  },
-  "lisa_murkowski": {
-	  "district_id": "AK",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Lisa_Murkowski"
-  },
-  "john_mccain": {
-	  "district_id": "AZ",
-	  "wikipedia":"http://en.wikipedia.org//wiki/John_McCain"
-  },
-  "jon_kyl": {
-	  "district_id": "AZ",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Jon_Kyl"
-  },
-  "blanche_lincoln": {
-	  "district_id": "AR",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Blanche_Lincoln"
-  },
-  "mark_pryor": {
-	  "district_id": "AR",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Mark_Pryor"
-  },
-  "dianne_feinstein": {
-	  "district_id": "CA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Dianne_Feinstein"
-  },
-  "barbara_boxer": {
-	  "district_id": "CA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Barbara_Boxer"
-  },
-  "wayne_allard": {
-	  "district_id": "CO",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Wayne_Allard"
-  },
-  "ken_salazar": {
-	  "district_id": "CO",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Ken_Salazar"
-  },
-  "christopher_dodd": {
-	  "district_id": "CT",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Christopher_Dodd"
-  },
-  "joe_lieberman": {
-	  "district_id": "CT",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Joe_Lieberman"
-  },
-  "joe_biden": {
-	  "district_id": "DE",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Joe_Biden"
-  },
-  "thomas_carper": {
-	  "district_id": "DE",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Thomas_R._Carper"
-  },
-  "bill_nelson": {
-	  "district_id": "FL",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Bill_Nelson_%28politician%29"
-  },
-  "mel_martinez": {
-	  "district_id": "FL",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Mel_Martinez"
-  },
-  "saxby_chambliss": {
-	  "district_id": "GA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Saxby_Chambliss"
-  },
-  "johnny_isakson": {
-	  "district_id": "GA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Johnny_Isakson"
-  },
-  "daniel_inouye": {
-	  "district_id": "HI",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Daniel_Inouye"
-  },
-  "daniel_akaka": {
-	  "district_id": "HI",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Daniel_Akaka"
-  },
-  "larry_craig": {
-	  "district_id": "ID",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Larry_Craig"
-  },
-  "mike_crapo": {
-	  "district_id": "ID",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Mike_Crapo"
-  },
-  "richard_durbin": {
-	  "district_id": "IL",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Richard_Durbin"
-  },
-  "barack_obama": {
-	  "district_id": "IL",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Barack_Obama"
-  },
-  "richard_lugar": {
-	  "district_id": "IN",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Richard_Lugar"
-  },
-  "evan_bayh": {
-	  "district_id": "IN",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Evan_Bayh"
-  },
-  "chuck_grassley": {
-	  "district_id": "IA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Chuck_Grassley"
-  },
-  "tom_harkin": {
-	  "district_id": "IA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Tom_Harkin"
-  },
-  "sam_brownback": {
-	  "district_id": "KS",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Sam_Brownback"
-  },
-  "pat_roberts": {
-	  "district_id": "KS",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Pat_Roberts"
-  },
-  "mitch_mcconnell": {
-	  "district_id": "KY",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Mitch_McConnell"
-  },
-  "jim_bunning": {
-	  "district_id": "KY",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Jim_Bunning"
-  },
-  "mary_landrieu": {
-	  "district_id": "LA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Mary_Landrieu"
-  },
-  "david_vitter": {
-	  "district_id": "LA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/David_Vitter"
-  },
-  "olympia_snowe": {
-	  "district_id": "ME",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Olympia_Snowe"
-  },
-  "susan_collins": {
-	  "district_id": "ME",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Susan_Collins"
-  },
-  "barbara_mikulski": {
-	  "district_id": "MD",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Barbara_Mikulski"
-  },
-  "ben_cardin": {
-	  "district_id": "MD",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Ben_Cardin"
-  },
-  "ted_kennedy": {
-	  "district_id": "MA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Ted_Kennedy"
-  },
-  "john_kerry": {
-	  "district_id": "MA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/John_Kerry"
-  },
-  "carl_levin": {
-	  "district_id": "MI",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Carl_Levin"
-  },
-  "debbie_stabenow": {
-	  "district_id": "MI",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Debbie_Stabenow"
-  },
-  "norm_coleman": {
-	  "district_id": "MN",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Norm_Coleman"
-  },
-  "amy_klobuchar": {
-	  "district_id": "MN",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Amy_Klobuchar"
-  },
-  "thad_cochran": {
-	  "district_id": "MS",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Thad_Cochran"
-  },
-  "roger_wicker": {
-	  "district_id": "MS",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Roger_Wicker"
-  },
-  "kit_bond": {
-	  "district_id": "MO",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Kit_Bond"
-  },
-  "claire_mccaskill": {
-	  "district_id": "MO",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Claire_McCaskill"
-  },
-  "max_baucus": {
-	  "district_id": "MT",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Max_Baucus"
-  },
-  "jon_tester": {
-	  "district_id": "MT",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Jon_Tester"
-  },
-  "chuck_hagel": {
-	  "district_id": "NE",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Chuck_Hagel"
-  },
-  "ben_nelson": {
-	  "district_id": "NE",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Ben_Nelson"
-  },
-  "harry_reid": {
-	  "district_id": "NV",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Harry_Reid"
-  },
-  "john_ensign": {
-	  "district_id": "NV",
-	  "wikipedia":"http://en.wikipedia.org//wiki/John_Ensign"
-  },
-  "judd_gregg": {
-	  "district_id": "NH",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Judd_Gregg"
-  },
-  "john_sununu": {
-	  "district_id": "NH",
-	  "wikipedia":"http://en.wikipedia.org//wiki/John_E._Sununu"
-  },
-  "frank_lautenberg": {
-	  "district_id": "NJ",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Frank_Lautenberg"
-  },
-  "bob_menendez": {
-	  "district_id": "NJ",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Bob_Menendez"
-  },
-  "pete_domenici": {
-	  "district_id": "NM",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Pete_Domenici"
-  },
-  "jeff_bingaman": {
-	  "district_id": "NM",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Jeff_Bingaman"
-  },
-  "charles_schumer": {
-	  "district_id": "NY",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Charles_Schumer"
-  },
-  "hillary_clinton": {
-	  "district_id": "NY",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Hillary_Clinton"
-  },
-  "elizabeth_dole": {
-	  "district_id": "NC",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Elizabeth_Dole"
-  },
-  "richard_burr": {
-	  "district_id": "NC",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Richard_Burr"
-  },
-  "kent_conrad": {
-	  "district_id": "ND",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Kent_Conrad"
-  },
-  "byron_dorgan": {
-	  "district_id": "ND",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Byron_Dorgan"
-  },
-  "george_voinovich": {
-	  "district_id": "OH",
-	  "wikipedia":"http://en.wikipedia.org//wiki/George_Voinovich"
-  },
-  "sherrod_brown": {
-	  "district_id": "OH",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Sherrod_Brown"
-  },
-  "james_inhofe": {
-	  "district_id": "OK",
-	  "wikipedia":"http://en.wikipedia.org//wiki/James_Inhofe"
-  },
-  "tom_coburn": {
-	  "district_id": "OK",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Tom_Coburn"
-  },
-  "ron_wyden": {
-	  "district_id": "OR",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Ron_Wyden"
-  },
-  "gordon_smith": {
-	  "district_id": "OR",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Gordon_Harold_Smith"
-  },
-  "arlen_specter": {
-	  "district_id": "PA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Arlen_Specter"
-  },
-  "bob_casey": {
-	  "district_id": "PA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Bob_Casey%2C_Jr."
-  },
-  "jack_reed": {
-	  "district_id": "RI",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Jack_Reed"
-  },
-  "sheldon_whitehouse": {
-	  "district_id": "RI",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Sheldon_Whitehouse"
-  },
-  "lindsey_graham": {
-	  "district_id": "SC",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Lindsey_Graham"
-  },
-  "jim_demint": {
-	  "district_id": "SC",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Jim_DeMint"
-  },
-  "tim_johnson": {
-	  "district_id": "SD",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Tim_Johnson_%28South_Dakota%29"
-  },
-  "john_thune": {
-	  "district_id": "SD",
-	  "wikipedia":"http://en.wikipedia.org//wiki/John_Thune"
-  },
-  "lamar_alexander": {
-	  "district_id": "TN",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Lamar_Alexander"
-  },
-  "bob_corker": {
-	  "district_id": "TN",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Bob_Corker"
-  },
-  "kay_bailey_hutchison": {
-	  "district_id": "TX",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Kay_Bailey_Hutchison"
-  },
-  "john_cornyn": {
-	  "district_id": "TX",
-	  "wikipedia":"http://en.wikipedia.org//wiki/John_Cornyn"
-  },
-  "orrin_hatch": {
-	  "district_id": "UT",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Orrin_Hatch"
-  },
-  "robert_bennett": {
-	  "district_id": "UT",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Robert_Foster_Bennett"
-  },
-  "patrick_leahy": {
-	  "district_id": "VT",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Patrick_Leahy"
-  },
-  "bernie_sanders": {
-	  "district_id": "VT",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Bernie_Sanders"
-  },
-  "john_warner": {
-	  "district_id": "VA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/John_Warner"
-  },
-  "jim_webb": {
-	  "district_id": "VA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Jim_Webb"
-  },
-  "patty_murray": {
-	  "district_id": "WA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Patty_Murray"
-  },
-  "maria_cantwell": {
-	  "district_id": "WA",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Maria_Cantwell"
-  },
-  "robert_byrd": {
-	  "district_id": "WV",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Robert_Byrd"
-  },
-  "jay_rockefeller": {
-	  "district_id": "WV",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Jay_Rockefeller"
-  },
-  "herbert_kohl": {
-	  "district_id": "WI",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Herbert_Kohl_%28senator%29"
-  },
-  "russ_feingold": {
-	  "district_id": "WI",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Russ_Feingold"
-  },
-  "michael_enzi": {
-	  "district_id": "WY",
-	  "wikipedia":"http://en.wikipedia.org//wiki/Michael_Enzi"
-  },
-  "john_barrasso": {
-	  "district_id": "WY",
-	  "wikipedia":"http://en.wikipedia.org//wiki/John_Barrasso"
   }
 }
-
