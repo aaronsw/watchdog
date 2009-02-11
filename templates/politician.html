@@ -30,8 +30,7 @@ $if pol.photo_path:
 
   $if pol.nickname: known as "$pol.nickname"<br />
   $if pol.birthday:
-      b. $pol.birthday\
-      $if pol.birthplace: , $pol.birthplace\
+      born $(pol.birthplace and (pol.birthday+', '+pol.birthplace) or pol.birthday)
       <br />
   represents <a href="/us/$(pol.district and pol.district.name or '')">$(pol.district and pol.district.name or 'None')</a><br />
   $pol.party, $pol.religion<br />
