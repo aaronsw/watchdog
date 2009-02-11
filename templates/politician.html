@@ -200,7 +200,7 @@ $if pol.handshakes:
 <table class="charted structure contributors" style="width: 100%">
 $for c in pol.contributors:
     <tr class="$loop.parity">
-        <th>$loop.index <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name)</a></th>
+        <th>$loop.index <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name.title())</a></th>
         <td>\$$commify(int(c.amt))</td>
     </tr>
 </table>
