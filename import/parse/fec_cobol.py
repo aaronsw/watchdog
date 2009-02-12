@@ -31,15 +31,15 @@ def string(d):
 
 def date99(d):
     """where `d` is like MMDDYY"""
-    return '19' + d[4:6] + "-" + d[0:2] + "-" + d[2:4]
+    return ('19' + d[4:6] + "-" + d[0:2] + "-" + d[2:4]).replace(' ', '0')
 
 def date(d):
     """where `d` is like MMDDYYYY"""
-    return d[4:8] + "-" + d[0:2] + "-" + d[2:4]
+    return (d[4:8] + "-" + d[0:2] + "-" + d[2:4]).replace(' ', '0')
 
 def date2(d):
     "??DDMMYYYY"
-    return d[6:10] + "-" + d[4:6] + "-" + d[2:4]
+    return (d[6:10] + "-" + d[4:6] + "-" + d[2:4]).replace(' ', '0')
 
 party = enum(**{"1": "Democratic", "2": "Republican", "3": "Other"})
 ico = enum(**{" ": " ", "I": "Incumbent", "C": "Challenger", "O": "Open Seat"})
@@ -670,10 +670,12 @@ def parse_candidates():
         print>>sys.stderr, fn
         for elt in parse_file(def_cn, file(fn)):
             yield elt
-def parse_committees(latest=False):
+def parse_committees(latest=False, reverse=False):
     fns = sorted(glob.glob('../data/crawl/fec/*/cm.dat'))
     if latest:
         fns = [fns[-1]]
+    if reverse:
+        fns = reversed(fns)
     for fn in fns:
         print>>sys.stderr, fn
         fh = file(fn)

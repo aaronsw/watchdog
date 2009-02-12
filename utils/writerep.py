@@ -44,6 +44,7 @@ def send(frm, to, subj, msg, user_details, source_id=None, env={}):
     user_details.subject = user_details.ptitle
     status = writerep(to, user_details, env)
     if status: messages.update_msg_status(msgid, status)
+    return msgid
 
 def send_msgs(uid, i, source_id, pols=[], env={}):
     """
@@ -51,9 +52,11 @@ def send_msgs(uid, i, source_id, pols=[], env={}):
     district defined by zip5, zip4, address in i
     """
     pols = pols or getpols(i.zip5,  i.zip4, i.addr1+i.addr2)
+    msgids = {}
     for pol in pols:
-	    send(uid, pol, i.ptitle, i.msg, i, source_id, env.get(pol, {}))
-
+	    msgids[pol] = send(uid, pol, i.ptitle, i.msg, i, source_id, env.get(pol, {}))
+    return msgids
+        
 def compose_msg(polid, msg):
     #@@ compose msg here
     p = db.select('politician', where='id=$polid', 

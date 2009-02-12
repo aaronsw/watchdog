@@ -49,6 +49,6 @@ def load_phones(phones):
             db.insert('pol_phones', seqname=False, politician_id=polid, city=city, **v)
     
 if __name__ == '__main__':
-    pols = db.select('politician', what='id, votesmartid')
+    pols = db.select('curr_politician', what='id, votesmartid')
     phones = get_votesmart_phones(pols)
     load_phones(phones)

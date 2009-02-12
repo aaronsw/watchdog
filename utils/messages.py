@@ -37,18 +37,17 @@ def get_responses(msgid):
     """
     return db.select('responses', where='msg_id=$msgid', vars=locals())
 
-def query(frm=None, to=None, source_id=None, limit=None, offset=0, order=None):
+def query(frm=None, to=None, source_id=None, limit=None, offset=None, order=None):
     """queries for matching messsages and returns their ids
     """
     where = ''
     if frm: where += 'from_id = $frm and '
     if to:  where += 'to_id = $to and '
     if source_id: where += 'source_id = $source_id and '
-    if where:
-	    web.rstrips(where, 'and ')
-	    where = 'where ' + where
+    web.rstrips(where, 'and ')
+    
     try:
-	    return db.select('messages', where=where, limit=limit, offset=offset, order=order)
+	    return db.select('messages', where=where or None, limit=limit, offset=offset, order=order)
     except Exception, details:
 	    print where, details
 

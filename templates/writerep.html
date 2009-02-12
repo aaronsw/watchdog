@@ -16,7 +16,7 @@ fieldset input#email {width:170px;}
 $if msg:
     $var msg: $:msg
 
-<form name="writerepform" method="POST">
+<form name="writerep" method="POST">
     $if not form.valid:
          $if form.note: <p class="error">$form.note</p>
          $else: <p class="error">Please try again after fixing the errors highlighted below:</p>

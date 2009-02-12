@@ -3,7 +3,7 @@
 """Import FEC data.
 
 """
-import csv, sys, cgitb, fixed_width, zipfile, cStringIO, os, glob, time
+import csv, sys, cgitb, fixed_width, zipfile, cStringIO, os, glob, time, cPickle
 import codecs, re, field_mapper, simplejson, itertools, tempfile, web.utils
 
 def strip(text):
@@ -335,7 +335,9 @@ class translate_to_utf_8:
         self.decoder = codecs.getdecoder('windows-1252')
     def readline(self):
         line = self.fileobj.readline()
-        unicode_string, length = self.decoder(line)
+        # replace errors here for Egl\x8f,Richard,,Mr. and M RUB\x90N
+        # HINOJOSA
+        unicode_string, length = self.decoder(line, errors='replace')
         assert length == len(line)
         rv, length = self.encoder(unicode_string)
         assert length == len(unicode_string)
@@ -346,7 +348,7 @@ class translate_to_utf_8:
         self.fileobj.seek(0)
 
 def decode_headerline(line):
-    format_version = line[2]
+    format_version = line[2].strip()
 
     if format_version < '6':
         headerheaders = 'record_type ef_type fec_ver soft_name soft_ver ' \
@@ -365,6 +367,8 @@ def decode_headerline(line):
     assert headers['name_delim'] in '>^' # I want to know if not!
 
     return headers
+
+class FilingFormatNotDocumented(Exception): pass
 
 # Note that normally we are reading from a zipfile, and Python’s
 # stupid zipfile interface doesn’t AFAICT give us the option of
@@ -391,7 +395,7 @@ def readstring(astring):
         # It’s probably the old 2.x format that we don’t support yet
         # because we can’t find docs; return without yielding
         # anything.
-        return
+        raise FilingFormatNotDocumented(astring[:20])
 
     headerdict = decode_headerline(headerline)
     yield headerdict
@@ -440,22 +444,21 @@ candidate_name_res = [re.compile(x, re.IGNORECASE) for x in
 # "Friends of Connie Morella for Congress Committee"
 # "Committee to Elect McHugh"
 
-def warn(string):
-    sys.stderr.write(string + "\n")
-    sys.stderr.flush()
+class WrongFirstRecordError(Exception): pass
 
-def read_filing(astring, filename):
+def read_filing(astring, filename, pathname=None):
     records = readstring(astring)
     header_record = records.next()
     cover_record = records.next()
     if not cover_record['original_data']['form_type'].startswith('F'):
-        warn("skipping %r: its first record is %r" % (filename, cover_record))
-        return
+        raise WrongFirstRecordError(filename, cover_record)
+
+    cover_record['pathname'] = pathname
 
     cover_record['this_report_id'] = filename[:-4]
     if header_record.get('report_id'):  # The field may be missing or empty.
         cover_record['report_id'] = \
-            re.match('(?i)fec-\s*(\d+)(\.?$|\s+)',
+            re.match('(?i)fec\s*-\s*(\d+)(\.?$|\s+|\*BD[0-9a-f]{4}$)',
                      header_record['report_id']).group(1)
     else:
         cover_record['report_id'] = cover_record['this_report_id']
@@ -469,26 +472,37 @@ def read_filing(astring, filename):
                 break
     return cover_record, records
 
-def readfile_zip(filename):
+def null_error_handler(): raise
+
+def readfile_zip(filename, handler=null_error_handler):
     zf = zipfile.ZipFile(filename)
     for name in zf.namelist():
-        yield read_filing(zf.read(name), name)
+        try:
+            yield read_filing(zf.read(name), name, pathname=filename)
+        except:
+            handler()
 
-def readfile_generic(filename):
-    if filename.endswith('.zip'):
-        return readfile_zip(filename)
-    else:
-        _, basename = os.path.split(filename)
-        return [read_filing(file(filename).read(), basename)]
+def readfile_generic(filename, handler=null_error_handler):
+    try:
+        if filename.endswith('.zip'):
+            return readfile_zip(filename, handler)
+        else:
+            _, basename = os.path.split(filename)
+            return [read_filing(file(filename).read(),
+                                basename,
+                                pathname=filename)]
+    except:
+        handler()
+        return []
 
 EFILINGS_PATH = '../data/crawl/fec/electronic/'
+DEFAULT_EFILINGS_FILEPATTERN = EFILINGS_PATH + '*.zip'
 
-def parse_efilings(filepattern = None):
-    if filepattern is None: filepattern = EFILINGS_PATH + '*.zip'
+def parse_efilings(filenames, handler=null_error_handler):
     last_time = time.time()
-    for filename in glob.glob(filepattern):
+    for filename in filenames:
         sys.stderr.write('parsing efilings file %s\n' % filename)
-        for parsed_file in readfile_generic(filename):
+        for parsed_file in readfile_generic(filename, handler):
             yield parsed_file
         now = time.time()
         sys.stderr.write('parsing took %.1f seconds\n' % (now - last_time))
@@ -501,41 +515,118 @@ def atomically_commit_efiling(outfile, tempname, realname):
 
     os.rename(tempname, realname)
 
-def stash_efilings(destdir = None, filepattern = None, save_orig = False):
-    if destdir is None: destdir = tempfile.mkdtemp()
+def stash_efilings_worker(destdir, filenames, save_orig):
+    cover_record = {}
 
-    for cover_record, records in parse_efilings(filepattern):
+    def handle_error():
+        etype, evalue, etb = sys.exc_info()
+        eclass = str if isinstance(etype, basestring) else etype
+        if issubclass(eclass, KeyboardInterrupt): raise
+        if issubclass(eclass, StopIteration): raise # let it propagate
+        if issubclass(eclass, GeneratorExit): raise # let the generator die
+        if issubclass(eclass, FilingFormatNotDocumented):
+            # We don't bother to log these; we know they happen.
+            return
+
+        pathname = cover_record.get('pathname')
+        report_id = cover_record.get('this_report_id')
+
+        logdir = os.path.join(destdir, 'errors')
+        if not os.path.exists(logdir): os.makedirs(logdir)
+        fd, path = tempfile.mkstemp(dir=logdir, suffix = '.' + eclass.__name__)
+        fo = os.fdopen(fd, 'w')
+        lines_of_context = 5
+        fo.write('Surprise; last filing successfully opened was\n%s in %s\n\n' %
+                 (report_id, pathname))
+        fo.write(cgitb.text((etype, evalue, etb), lines_of_context))
+        fo.close()
+
+        sys.stderr.write("logged error (in %s?) to %s, continuing\n" %
+                         (report_id, path))
+
+    for efiling in parse_efilings(filenames, handle_error):
+        cover_record, records = efiling
         report_id = cover_record['report_id']
         dirpath = os.path.join(destdir, report_id[-2:], report_id)
         if not os.path.exists(dirpath): os.makedirs(dirpath)
 
         pathname = os.path.join(dirpath,
-                                '%s.json' % cover_record['this_report_id'])
+                                '%s.pck' % cover_record['this_report_id'])
 
         if os.path.exists(pathname):
             continue
 
-        outfile = file(pathname + '.new', 'w') # hoping we’re the only ones
+        tempname = pathname + '.new'  # hoping for no concurrent writes
+        outfile = file(tempname, 'w')
         if not save_orig: del cover_record['original_data']
-        simplejson.dump(cover_record, outfile)
-        outfile.write('\n')
+        pickle_protocol = 2
+        cPickle.dump(cover_record, outfile, pickle_protocol)
 
-        for record in records:
-            if not save_orig: del record['original_data']
-            simplejson.dump(record, outfile)
-            outfile.write('\n')
+        try:
+            for record in records:
+                if not save_orig: del record['original_data']
+                cPickle.dump(record, outfile, pickle_protocol)
+        except:
+            os.unlink(tempname)
+            handle_error()
+        else:
+            atomically_commit_efiling(outfile, tempname, pathname)
 
-        atomically_commit_efiling(outfile, pathname + '.new', pathname)
+def stash_efilings(destdir=None,
+                   filepattern=DEFAULT_EFILINGS_FILEPATTERN,
+                   save_orig=False,
+                   nprocs=1):
+    """Parse a bunch of electronic FEC filings, from zip files or CSV
+    files, and store the parsed data in pickle files in a directory
+    structure indexed by filing ID.
 
-    return destdir
+    * `destdir` is the directory to put the results in.
+    * `filepattern` gives the filenames to find the filings in.
+    * `save_orig` determines whether to include the full filing data
+      in the pickled output, for debugging
+    * `nprocs` specifies the number of worker processes to do the
+      work.  The filenames are divided up as evenly as possible
+      between them.  Because not every file takes the same time to
+      process, one process may finish a few files ahead of another,
+      but the loss of efficiency to that should be small.
 
+    """
+    if destdir is None: destdir = tempfile.mkdtemp()
+    filenames = glob.glob(filepattern)
+    children = []
+
+    for ii in range(nprocs):
+        pid = os.fork()
+        if pid == 0:                    # child process
+            try:
+                myfiles = [filenames[jj] for jj in range(len(filenames))
+                           if jj % nprocs == ii]
+                stash_efilings_worker(destdir=destdir,
+                                      filenames=myfiles,
+                                      save_orig=save_orig)
+            except:
+                try:
+                    cgitb.Hook(format='text').handle()
+                except:
+                    pass
+            finally:
+                os._exit(0)
+        else:
+            children.append(pid)
+
+    for pid in children:
+        os.waitpid(pid, 0)              # options=0
+    
 if __name__ == '__main__':
     cgitb.enable(format='text')
     if sys.argv[1] == '--stash-in':
         sys.argv.pop(1)
         destdir = sys.argv.pop(1)
-        pattern = sys.argv[1] if len(sys.argv) > 1 else None
-        stash_efilings(destdir=destdir, filepattern=pattern)
+        if len(sys.argv) > 1:
+            stash_efilings(destdir=destdir, filepattern=sys.argv[1], nprocs=8)
+        else:
+            stash_efilings(destdir=destdir, nprocs=8)
+
     else:
         # pprint is unacceptable --- it made the script run 40× slower.
         for filename in sys.argv[1:]:

@@ -2,12 +2,14 @@
 FEC data loader.
 """
 from __future__ import with_statement
-import itertools
+import itertools, datetime
 import web
 import tools
 from tools import db
 from parse import fec_cobol, fec_csv, fec_crude_csv
+import psycopg2 # @@sigh
 import cgitb
+import glob
 
 fec2pol = {}
 def load_fec_ids():
@@ -43,25 +45,30 @@ def load_fec_cans():
             )
 
 def load_fec_committees():
-    for f in fec_cobol.parse_committees(latest=True):
+    db.delete('contribution', '1=1')
+    db.delete('committee', '1=1')
+    for f in fec_cobol.parse_committees(reverse=True):
         f = web.storage(f)
-
-        db.insert('committee', seqname=False,
-          id = f.committee_id,
-          name = f.committee_name,
-          treasurer = f.treasurer_name,
-          street1 = f.street_one,
-          street2 = f.street_two,
-          city = f.city,
-          state = f.state,
-          zip = f.zip,
-          connected_org_name = f.connected_org_name,
-          candidate_id = f.candidate_id
-        )
+        try:
+            db.insert('committee', seqname=False,
+              id = f.committee_id,
+              name = f.committee_name,
+              treasurer = f.treasurer_name,
+              street1 = f.street_one,
+              street2 = f.street_two,
+              city = f.city,
+              state = f.state,
+              zip = f.zip,
+              connected_org_name = f.connected_org_name,
+              candidate_id = f.candidate_id
+            )
+        except psycopg2.IntegrityError:
+            pass # already imported
 
 def load_fec_contributions():
+    t = db.transaction(); n = 0
     db.delete('contribution', '1=1')
-    for f in fec_cobol.parse_contributions(latest=True):
+    for f in fec_cobol.parse_contributions():
         f = web.storage(f)
         f.occupation = f.occupation.replace('N/A', '')
         if '/' in f.occupation:
@@ -69,9 +76,14 @@ def load_fec_contributions():
         else:
             employer = ''
             occupation = f.occupation
-
+        
+        try:
+            datetime.date(*[int(x) for x in f.date.split('-')])
+        except ValueError:
+            f.date = None
+        
         db.insert('contribution',
-          fec_record_id = f.fec_record_id,
+          fec_record_id = f.get('fec_record_id'),
           microfilm_loc = f.microfilm_loc,
           recipient_id = f.filer_id,
           name = f.name,
@@ -86,10 +98,13 @@ def load_fec_contributions():
           sent = f.date,
           amount = f.amount
         )
+        n += 1
+        if n % 10000 == 0: t.commit(); t = db.transaction(); print n
+    t.commit()
 
 
-def load_fec_efilings(filepattern=None):
-    for f, schedules in fec_crude_csv.parse_efilings(filepattern):
+def load_fec_efilings(filepattern=fec_crude_csv.DEFAULT_EFILINGS_FILEPATTERN):
+    for f, schedules in fec_crude_csv.parse_efilings(glob.glob(filepattern)):
         for s in schedules:
             if s.get('type') == 'contribution':
                 # XXX all this code for politician_id is currently

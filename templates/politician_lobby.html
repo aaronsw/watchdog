@@ -5,8 +5,9 @@ $var color: white
 
 $var title: Lobbyist Contributions
 
+<h1>Lobbyist Contributions</h1>
 
-<p>Total amount: \$$commify(total)</p>
+<p><strong>Total amount:</strong> \$$commify(total).    </p>
 <table class="structure" width=100%>
 <tr>
 <th class="header">Amount</th>
@@ -21,8 +22,8 @@ $for i, c in enumerate(contributions):
 	<tr class="${'odd' if i%2 else 'even'}">
 		<td>\$$commify(c.amount)</td>
 		<td>$:whom()</td>
-		<td>$c.name</td>
-	<td><a href="/l/f/$c.filing_id">(filing&nbsp;details)</a></td>
+		<td>$c.name.title()</td>
+	<td><a href="/l/f/$c.filing_id">View details</a></td>
 	</tr>
 </table>
 

@@ -1,7 +1,7 @@
 """Browser to test web applications.
 (from web.py)
 """
-from utils import re_compile
+from utils import re_compile, utf8
 from net import htmlunquote
 
 import httplib, urllib, urllib2
@@ -65,7 +65,7 @@ class Browser:
     def open(self, url, data=None, headers={}):
         """Opens the specified url."""
         url = urllib.basejoin(self.url, url)
-        req = urllib2.Request(url, data, headers)
+        req = urllib2.Request(utf8(url), data, headers)
         return self.do_request(req)
 
     def show(self):

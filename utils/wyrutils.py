@@ -63,15 +63,15 @@ def has_captcha(pol):
 
 def pol2dist(pol):
     try:
-        return db.select('politician', what='district_id', where='politician.id=$pol', vars=locals())[0].district_id
+        return db.select('curr_politician', what='district_id', where='curr_politician.id=$pol', vars=locals())[0].district_id
     except KeyError:
         return
 
 def dist2pols(dist):
     if not dist: return []
-    where = 'politician.district_id=$dist or politician.district_id=$dist[:2]'
+    where = 'curr_politician.district_id=$dist or curr_politician.district_id=$dist[:2]'
     try:
-        return [p.id for p in db.select('politician', what='id', where=where, vars=locals())]
+        return [p.id for p in db.select('curr_politician', what='id', where=where, vars=locals())]
     except KeyError:
         return []
 

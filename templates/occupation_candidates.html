@@ -1,0 +1,25 @@
+$def with (candidates, occupation)
+
+$var width: 90%
+$var color: white
+
+$var title: $occupation
+
+<h1>$occupation</h1>
+
+<h2>Candidates</h2>
+  
+<table class="structure" width="500">
+$ trclass = "odd"
+
+$for c in candidates:
+    $if trclass == "odd":
+        $ trclass = "even"
+    $else:
+        $ trclass = "odd"
+    <tr class="$trclass">
+        <td>$loop.index. <a href="/p/$c.polid">$c.firstname $c.lastname</a>, $c.party</td>
+        <td style="text-align: right;">\$$commify(int(c.amt))</td>
+    </tr>
+   
+</table>

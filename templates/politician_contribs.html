@@ -1,0 +1,36 @@
+$def with (pol, contribs)
+
+$var width: 90%
+$var color: white
+
+$var title: Contributors
+
+<style>
+.header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
+</style>
+
+<p><a href="/p/$pol.id">&laquo; Back to $pol.name</a></p>
+
+<h1>Contributors</h1>
+
+<table class="structure" width="100%">
+<tr><td class="header">Name</td><td class="header">Amount</td></tr>
+$ trclass = "odd"
+
+$for c in contribs:
+    $if trclass == "odd":
+        $ trclass = "even"
+    $else:
+        $ trclass = "odd"
+    <tr class="$trclass">
+        <td>$loop.index <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name)</a></td>
+        <td>\$$commify(int(c.amt))</td>
+    </tr>
+   
+</table>
+
+<p><a href="/p/$pol.id">&laquo; Back to $pol.name</a></p>
+
+<div class="sources">
+  Money data from the <a href="http://www.fec.gov/">FEC</a>.
+</div>

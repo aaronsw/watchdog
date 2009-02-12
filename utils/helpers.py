@@ -130,6 +130,7 @@ g = web.template.Template.globals
 g['slice'] = slice
 g['commify'] = web.commify
 g['int'] = int
+g['round'] = round
 g['abs'] = abs
 g['len'] = len
 g['changequery'] = web.changequery

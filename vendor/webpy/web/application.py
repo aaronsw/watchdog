@@ -202,22 +202,21 @@ class application:
         
     def handle_with_processors(self):
         def process(processors):
-            try:
-                web.ctx.app_stack.append(self)
-                if processors:
-                    p, processors = processors[0], processors[1:]
-                    return p(lambda: process(processors))
-                else:
-                    return self.handle()
-            except web.HTTPError:
-                raise
-            except:
-                print >> web.debug, traceback.format_exc()
-                raise self.internalerror()
+	    web.ctx.app_stack.append(self)
+	    if processors:
+		p, processors = processors[0], processors[1:]
+		return p(lambda: process(processors))
+	    else:
+		return self.handle()
                     
         try:
             # processors must be applied in the resvere order. (??)
             return process(self.processors)
+	except web.HTTPError:
+	    raise
+	except:
+	    print >> web.debug, traceback.format_exc()
+	    raise self.internalerror()
         finally:
             web.ctx.app_stack = web.ctx.app_stack[:-1]
                         

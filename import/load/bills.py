@@ -1,14 +1,15 @@
 """
 load bill data
 
-from: data/crawl/govtrack/us/110/{bills,rolls}
+from: data/crawl/govtrack/us/*/{bills,rolls}
 """
 from __future__ import with_statement
 import os, sys, glob, anydbm
 from psycopg2 import IntegrityError #@@level-breaker
 import xmltramp
 import web
-from tools import db, govtrackp
+from tools import govtrackp
+from settings import db
 
 DATA_DIR = '../data'
 GOVTRACK_CRAWL = DATA_DIR+'/crawl/govtrack'
@@ -29,7 +30,8 @@ def makemarkdone(done):
     return markdone
 
 def fixvote(s):
-    return {'0': None, '+': 1, '-': -1, 'P': 0}[s]
+    d = {'0': None, '+': 1, '-': -1, 'P': 0}
+    return d.get(s)
 
 def bill2dict(bill):
     d = web.storage()
@@ -115,18 +117,24 @@ def loadroll(fn):
                 pass #@@!--check again after load_everyone
                 # print "\nMissing rep: %s" % voter('id')
 
-def main():
+def main(session):
     done = anydbm.open('.bills', 'c')
     markdone = makemarkdone(done)
         
-    for fn in sorted(glob.glob(GOVTRACK_CRAWL+'/us/*/bills/*.xml')):
+    for fn in sorted(glob.glob(GOVTRACK_CRAWL+'/us/%s/bills/*.xml' % session)):
         print >>sys.stderr,'\r  %-25s' % fn,; sys.stderr.flush()
         markdone(loadbill)(fn)
     
-    for fn in sorted(glob.glob(GOVTRACK_CRAWL+'/us/*/rolls/*.xml')):
+    for fn in sorted(glob.glob(GOVTRACK_CRAWL+'/us/%s/rolls/*.xml' % session)):
         print >>sys.stderr,'\r  %-25s' % fn,; sys.stderr.flush()
         markdone(loadroll)(fn)
     print >>sys.stderr, '\r' + ' '*72
 
 if __name__ == "__main__":
-    main()
+    from settings import current_session
+    if current_session:
+	    session = current_session # load nth session bills and rolls, specified in settings
+    else:
+	    session = '*' 	# load all bills and rolls sessions
+
+    main(session)

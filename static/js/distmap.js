@@ -45,8 +45,9 @@ function distcenter(element_id, districtid, center, mapinfo) {
     map.addControl(new GSmallZoomControl());
     
     var WMS_URL = 'http://www.govtrack.us/perl/wms-cd.cgi?';
-    var G_MAP_LAYER_FILLED = createWMSTileLayer(WMS_URL, "cd-filled,district="+districtid, null, "image/gif", null, null, null, .25);
-    var G_MAP_LAYER_OUTLINES = createWMSTileLayer(WMS_URL, "cd-outline,district="+districtid, null, "image/gif", null, null, null, .66, "Data from GovTrack.us");
+    var dist_or_state = districtid.length == 2 ? "state" : "district";
+    var G_MAP_LAYER_FILLED = createWMSTileLayer(WMS_URL, "cd-filled," + dist_or_state + "=" + districtid, null, "image/gif", null, null, null, .25);
+    var G_MAP_LAYER_OUTLINES = createWMSTileLayer(WMS_URL, "cd-outline," + dist_or_state + "=" + districtid, null, "image/gif", null, null, null, .66, "Data from GovTrack.us");
     var G_MAP_OVERLAY = createWMSOverlayMapType([G_NORMAL_MAP.getTileLayers()[0], G_MAP_LAYER_FILLED, G_MAP_LAYER_OUTLINES], "Overlay");
 
     map.addMapType(G_MAP_OVERLAY);
