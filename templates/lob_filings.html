@@ -4,32 +4,38 @@ $var width: 90%
 $var color: white
 
 $var title: Lobbyist Filings
+
+<style>
+.header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
+</style>
+
+
+<h1>Lobbyist Filings</h1>
+
+$def fixcase(n):
+	$n[0].upper()$n[1::].lower()
+	
 $def lobLink(f):
 	$if f.lobbyist.contact_name:
-		<a href="/l/pe/$f.lobbyist_id">$f.lobbyist.contact_name</a>
+		<a href="/l/pe/$f.lobbyist_id">$fixcase(f.lobbyist.contact_name)</a>
 	$else:
 		<a href="/l/pe/$f.lobbyist_id">$f.lobbyist.prefix $f.lobbyist.firstname $f.lobbyist.lastname $f.lobbyist.suffix</a>
 
 <table class="structure" width=100%>
 	<tr>
-	<th class="header">id</th>
-	<th class="header">amendment</th>
-	<th class="header">year</th>
-	<th class="header">signed_date</th>
-	<th class="header">lobbyist_id</th>
-	<th class="header">house_id</th>
-	<th class="header">senate_id</th>
-	<th class="header">filer_type</th>
-	<th class="header">type</th>
-	<th class="header">org_id</th>
-	<th class="header">certified</th>
-	<th class="header">comments</th>
-	<th class="header">pacs</th>
-	<th class="header">contributions</th>
+	<td class="header">ID</td>
+	<td class="header">Amendment</td>
+	<td class="header">Year</td>
+	<td class="header" style="white-space: nowrap">Signed Date</td>
+	<td class="header">Lobbyist ID</td>
+	<td class="header">Org ID</td>
+	<td class="header">Certified</td>
+	<td class="header">PACs</td>
+	<td class="header">Contributions</td>
 	</tr>
 $for i,f in enumerate(filings):
 	<tr class="${'odd' if i%2 else 'even'}">
-	<td><a href="$f.house_url">$f.id</a></td>
+    <td><a href="$f.house_url">$f.id</a></td>	
 	<td>$f.amendment</td>
 	<td>$f.year</td>
 	<td>$f.signed_date</td>
@@ -37,19 +43,14 @@ $for i,f in enumerate(filings):
 		$if f.lobbyist: 
 			$:lobLink(f)
 	</td>
-	<td>$f.house_id</td>
-	<td>$f.senate_id</td>
-	<td>$f.filer_type</td>
-	<td>$f.type</td>
 	<td>
 		$if f.org:
-			<a href="/l/o/$f.org_id">$f.org.name</a>
+			<a href="/l/o/$f.org_id">$fixcase(f.org.name)</a>
 	</td>
 	<td>$f.certified</td>
-	<td>$f.comments</td>
 	<td>
 		$if f.pacs:
-			<a href="/l/pa/?filing_id=$f.id">Pacs</a>
+			<a href="/l/pa/?filing_id=$f.id">PACs</a>
 		$#	$for p in f.pacs: 
 		$#		<a href="/l/pa/$p.pac.id">$p.pac.name</a><br>
 	</td>
@@ -62,12 +63,23 @@ $for i,f in enumerate(filings):
 	</tr>
 </table>
 
+<br />
+	<b>Identification Numbers:</b> House ID $f.house_id, Senate ID $f.senate_id, Filer Type $f.filer_type, Type $f.type.
+
+<br />
+	$if f.comments:
+		<b>Comments:</b> $f.comments
+
+
 $ page = int(query_param("page", 0))
 
+<br /><br />
+
 $if page != 0:
-    &lt;&lt;<a href="$changequery(page=page - 1)">Prev</a>
+    <span style="color: #EE4400">&larr;&nbsp;<a href="$changequery(page=page - 1)" class="more">Prev</a></span>&nbsp;&nbsp;&nbsp;
+
+    <span style="color: #EE4400"><a href="/l/f/" class="more">Browse Filings Index</a></span>&nbsp;&nbsp;&nbsp;
 
 $if len(filings) == limit:
-     | <a href="$changequery(page=page + 1)">Next</a> &gt;&gt;
-
+     <span style="color: #EE4400"><a href="$changequery(page=page + 1)" class="more">Next</a>&nbsp;&rarr;</span>
 

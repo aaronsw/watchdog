@@ -35,7 +35,6 @@ $if pol.photo_path:
       <br />
   represents <a href="/us/$(pol.district and pol.district.name or '')">$(pol.district and pol.district.name or 'None')</a><br />
   $pol.party, $pol.religion<br />
-  <a href="$pol.officeurl">Official website</a>
 
 $#$if pol.capitolwords:
 $#    $for w in pol.capitolwords:
@@ -43,14 +42,19 @@ $#        <p>$w.word &nbsp; &nbsp; $w.word_count</p>
 
 
 $if pol.education:
-    <p>Education: $pol.education</p>
+    Education: $pol.education<br />
 $if pol.last_elected_year:
-	<p>Last elected in $pol.last_elected_year receiving $commify(pol.n_vote_received) ($pol.pct_vote_received%) votes.</p>
+	Last elected in $pol.last_elected_year receiving $commify(pol.n_vote_received) ($pol.pct_vote_received%) votes.<br />
+  <a href="$pol.officeurl">Official website</a><br /><br />
+
+  <a href="/writerep" class="more">Write $pol.firstname $pol.lastname</a>
+  <span style="color:#EE4400; font-style:italic;">or call at 000-000-0000</a></span>
+
 </td>
 
 </tr><tr>
 
-<td style="padding-top: 3px; margin: 0px; color: #EE4400"><a href="/writerep" class="more">Write $pol.firstname $pol.lastname</a>&nbsp;&rarr;</td>
+<td style="padding-top: 3px; margin: 0px; color: #EE4400"></td>
 
 </tr></table>
 </div>
@@ -60,7 +64,7 @@ $if pol.last_elected_year:
 
 $def spark(label, data, polid, by, unit='', url=None):
     $if label:
-        <th style="white-space:nowrap; padding-left: 6px;">$:label</th>
+        <td style="white-space:nowrap; padding-left: 6px;">$:label</td>
     $if not data:
         $ data = 0
     $ display = commify(data) + ' ' + unit
@@ -84,14 +88,14 @@ $if pol.money_raised:
     </tr><tr class="odd">
       $:spark('Spent', pol.pct_spent, pol.id, 'pct_spent', '%')
     </tr><tr class="even">
-      $:spark('From self', pol.pct_self, pol.id, 'pct_self', '%')</th>
+      $:spark('From self', pol.pct_self, pol.id, 'pct_self', '%')</td>
     </tr><tr class="odd">
-      $:spark('From individuals', pol.pct_indiv, pol.id, 'pct_indiv', '%')</th>
+      $:spark('From individuals', pol.pct_indiv, pol.id, 'pct_indiv', '%')</td>
     </tr><tr class="even">
       $:spark('From <acronym title="Political Action Committees">PAC</acronym>s', pol.pct_pac, pol.id, 'pct_pac', '%')
     </tr>
 $else:
-    <tr><th>No information available.</th></tr>
+    <tr><th>No information available.</td></tr>
 </tbody></table>
 </td><td class="width: 50%">
 <h2 class="rep">Earmarks</h2>
@@ -106,7 +110,7 @@ $else:
   </tr><tr class="odd">
     $:spark('Total cost', pol.amt_earmark_received, pol.id, 'amt_earmark_received', '$')
   </tr>
-  <tr><th colspan="2">Data for fiscal year 2008</th></tr>
+  <tr><td colspan="2">Data for fiscal year 2008</td></tr>
 </tbody></table>
 </td></tr><tr><td width="50%" class="rule">
 <h2 class="rep">Bills</h2>
@@ -134,7 +138,7 @@ $else:
   </tr><tr class="odd">
     $:spark('Avg. length', pol.words_per_speech, pol.id, 'words_per_speech', 'words')
   </tr>
-  <tr><th colspan="2">Data for 110th Congress</th></tr>
+  <tr><td colspan="2">Data for 110th Congress</td></tr>
 </tbody></table>
 </td></tr>
 
@@ -151,7 +155,7 @@ $if pol.predictability:
     <tr class="odd">
     $:spark('Predictable', pol.predictability, pol.id, 'predictability', '%')
     </tr>
-    <tr><th colspan="2">Unpredictable equals maverick</th></tr>
+    <tr><td colspan="2">Unpredictable equals maverick</td></tr>
     
 </tbody></table>
 
@@ -164,17 +168,16 @@ $if pol.predictability:
 <h2 class="rep">Interest Group Alignment</h2>
 
 <table cellpadding="0" cellspacing="0" width="100%" class="interest_group_agreement">
-<tbody><tr><th style="padding-left: 6px;">Group</th><th>Agreement</th></tr>
+<tbody><tr><td style="padding-left: 6px;">Group</td><th>Agreement</td></tr>
 $ trclass = "odd"
-<tbody><tr><th>Group</th><th>Agreement</th></tr>
+<tbody><tr><th>Group</td><th>Agreement</td></tr>
 $for group in pol.related_groups:
     <tr class="$loop.parity">
       <td style="padding-left: 6px;">$group.longname</td>
       <td>$int(group.agreement * 100)% (<a href="/p/$pol.id/$group.id">$group.agreed/$group.total votes</a>)</td>
-    </tr>
+  <tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/groups" class="more">More interest groups</a>&nbsp;&rarr;</span></td></tr>        
 </tbody></table>
 
-<p><a href="/p/$pol.id/groups" class="footer">More...</a></p>
 </td></tr>
 
 </td>
@@ -186,10 +189,10 @@ $if pol.handshakes:
     <h2 class="rep">Handshakes</h2>
     <table cellpadding="0" cellspacing="0" width="100%" class="handshakes">
     <tbody><tr>
-            <th width='50%'>Corporation</th>
-            <th colspan="2">Donations</th>
-            <th>Earmarks</th>
-            <th>Year</th></tr>
+            <td width='50%'>Corporation</td>
+            <td colspan="2">Donations</td>
+            <th>Earmarks</td>
+            <th>Year</td></tr>
     $for h in pol.handshakes:
         $ corporation = h.corporation.replace(' ', '-')
         <tr class="$loop.parity">
@@ -214,10 +217,9 @@ $if pol.handshakes:
 <table class="charted structure contributors" style="width: 100%">
 $for c in pol.contributors:
     <tr class="$loop.parity">
-        <th>$loop.index <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name)</a></th>
+        <th>$loop.index <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name)</a></td>
         <td>\$$commify(int(c.amt))</td>
     </tr>
-    $ num = num + 1
     $if trclass == "odd":
         $ trclass = "even"
     $else:

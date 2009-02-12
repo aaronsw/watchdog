@@ -5,15 +5,23 @@ $var color: white
 
 $var title: Lobbyist Organizations
 
+<style>
+.header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
+</style>
 
+<h1>Lobbyist Organizations</h1>
+
+$def fixcase(n):
+	$n[0].upper()$n[1::].lower()
+	
 <table class="structure" width=100%>
 <tr>
-	<th class="header">name</th>
-	<th class="header">filings</th>
+	<td class="header">Name</td>
+	<td class="header">Filings</td>
 </tr>
 $for i, o in enumerate(orgs):
 	<tr class="${'odd' if i%2 else 'even'}">
-	<td>$o.name</td>
+	$if o.name: <td>$fixcase(o.name)</td>
 	<td>
 		$for f in o.filings:
 			<a href="/l/f/$f.id">$f.id</a><br>
@@ -24,10 +32,13 @@ $for i, o in enumerate(orgs):
 
 $ page = int(query_param("page", 0))
 
+<br />
+
 $if page != 0:
-    &lt;&lt;<a href="$changequery(page=page - 1)">Prev</a>
+    <span style="color: #EE4400">&larr;&nbsp;<a href="$changequery(page=page - 1)" class="more">Prev</a></span>&nbsp;&nbsp;&nbsp;
+
+    <span style="color: #EE4400">&larr;&nbsp;<a href="/l/f/" class="more">Browse Filings Index</a></span>&nbsp;&nbsp;&nbsp;
 
 $if len(orgs) == limit:
-     | <a href="$changequery(page=page + 1)">Next</a> &gt;&gt;
-
+     <span style="color: #EE4400"><a href="$changequery(page=page + 1)" class="more">Next</a>&nbsp;&rarr;</span>
 
