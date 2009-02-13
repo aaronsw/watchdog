@@ -39,7 +39,7 @@ $for c in candidates:
     <tr class="even">
         <td class="paying">
             <strong>\$$commify(int(c.how_much))</strong> to <a href="/p/$c.polid">$c.firstname $c.lastname</a>, 
-            $c.committee.title() on
+            <strong>$c.committee.title()</strong> on
             <strong>$datestr(c.sent)</strong>
         </td>
     </tr>

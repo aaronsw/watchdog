@@ -175,6 +175,9 @@ rdf:resource="%s" />' % x
     pct_self = sql.Percentage()
     pct_indiv = sql.Percentage()
     pct_pac = sql.Percentage()
+    pct_labor = sql.Percentage()
+    pct_instate = sql.Percentage()
+    pct_smalldonor = sql.Percentage()
 
     # votesmart
     nickname = sql.String()
@@ -385,6 +388,7 @@ class Committee (sql.Table):
     zip = sql.String()
     connected_org_name = sql.String()
     candidate_id = sql.String()
+    type = sql.String()
 
 class Contribution (sql.Table):
     id = sql.Serial(primary=True)
