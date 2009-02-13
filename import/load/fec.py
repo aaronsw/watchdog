@@ -165,17 +165,16 @@ def load_cans_fec_data():
             num_labor = db.query("""SELECT count(*) 
                 FROM committee cm, politician_fec_ids pfi, politician p, contribution cn 
                 WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
-                AND pfi.politician_id = p.id AND p.id = $polid 
-                AND cm.type = 'L'""", vars=locals())[0].count
+                AND pfi.politician_id = p.id AND cm.type = 'L' 
+                AND p.id = $polid""", vars=locals())[0].count
             labor_pct = num_labor/float(num)
             num_instate = db.query("""SELECT count(*) 
                 FROM committee cm, politician_fec_ids pfi, politician p, 
                 contribution cn, district d, state s
                 WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
                 AND pfi.politician_id = p.id AND p.district_id = d.name 
-                AND p.id = $polid AND d.state_id = s.code     
-                AND lower(cn.state) = (s.code);
-                """, vars=locals())[0].count
+                AND d.state_id = s.code AND lower(cn.state) = lower(s.code)
+                AND p.id = $polid""", vars=locals())[0].count
             instate_pct = num_instate/float(num)
             num_smalldonor = db.query("""SELECT count(*) 
                 FROM committee cm, politician_fec_ids pfi, politician p, contribution cn 
@@ -199,6 +198,6 @@ if __name__ == "__main__":
     #load_fec_ids()
     #load_fec_cans()
     #load_fec_committees()
-    load_fec_contributions()
+    #load_fec_contributions()
     #load_fec_efilings()
     load_cans_fec_data()
