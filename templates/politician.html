@@ -36,6 +36,11 @@ $if pol.photo_path:
   $pol.party, $pol.religion<br />
   <a href="$pol.officeurl">Official website</a>
 
+$#$if pol.capitolwords:
+$#    $for w in pol.capitolwords:
+$#        <p>$w.word &nbsp; &nbsp; $w.word_count</p>
+
+
 $if pol.education:
     <p>Education: $pol.education</p>
 $if pol.last_elected_year:

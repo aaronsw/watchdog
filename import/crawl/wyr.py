@@ -32,7 +32,7 @@ def urlopen(u, data=None):
 
 def pol2dist(pol):
     try:
-        return db.select('politician', what='district_id', where='politician.id=$pol', vars=locals())[0].district_id
+        return db.select('curr_politician', what='district_id', where='curr_politician.id=$pol', vars=locals())[0].district_id
     except KeyError:
         return
 
@@ -210,7 +210,7 @@ def get_votesmart_contacts(pols):
     d = {}
     websites = json.load(file(votesmart_websites))
     pols = tuple(pols)
-    rs = db.select('politician', what='id, votesmartid', where='id in $pols', vars=locals())
+    rs = db.select('curr_politician', what='id, votesmartid', where='id in $pols', vars=locals())
     
     for r in rs:
         _url, contacttype = None, None
@@ -233,7 +233,7 @@ def get_votesmart_contacts(pols):
 def get_from_officeurls(pols):
     # look for link to contact form on the home page, if not proceed to contact page and look there for a form
     d = {}
-    rs = db.select('politician', what='id, officeurl', where='id in $tuple(pols)', vars=locals())
+    rs = db.select('curr_politician', what='id, officeurl', where='id in $tuple(pols)', vars=locals())
     for r in rs:
         link, contacttype = get_contactform_link(r.officeurl)
         if not contacttype:
@@ -264,7 +264,7 @@ def get_manual_contacts(pols):
 def main(fname='../data/crawl/votesmart/wyr.json'):
     #@@@ PVS data has few false positives for WYR form. 
     # So, better get reps having wyr forms in house.gov and then proceed to PVS data and then to manually created json
-    all_pols = [r.id for r in db.select('politician', what='id')]
+    all_pols = [r.id for r in db.select('curr_politician', what='id')]
 
     print 'total pols', len(all_pols)
     d = get_wyr_forms(all_pols)

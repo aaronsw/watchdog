@@ -209,8 +209,6 @@ class Congress(sql.Table):
     party = sql.String()
     current_member = sql.Boolean()
 
-#db.query("CREATE VIEW cur_politician AS SELECT * FROM politician, congress WHERE politician.id = politician_id AND congress_num='110th' AND current_member")
-
 class Politician_FEC_IDs(sql.Table):
     politician = sql.Reference(Politician, primary=True)
     fec_id = sql.String(primary=True)
@@ -579,7 +577,9 @@ def init():
     db.query("CREATE INDEX contribution_recipient_id_idx ON contribution (recipient_id)")
     db.query("CREATE INDEX contribution_zip_idx ON contribution (zip)")
     db.query("CREATE INDEX contribution_empl_stem_idx ON contribution (LOWER(employer_stem))")
-    db.query("ANALYZE contribution;")   
+    db.query("ANALYZE contribution;")
+    db.query("CREATE VIEW curr_politician AS SELECT politician.* FROM politician, congress WHERE politician.id = politician_id AND congress_num='111' AND current_member = 't' ;")
+    db.query("GRANT ALL on curr_politician TO watchdog;")
 
     try:
         db.query("GRANT ALL on census TO watchdog")

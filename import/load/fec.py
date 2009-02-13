@@ -45,6 +45,7 @@ def load_fec_cans():
             )
 
 def load_fec_committees():
+    db.delete('contribution', '1=1')
     db.delete('committee', '1=1')
     for f in fec_cobol.parse_committees(reverse=True):
         f = web.storage(f)
@@ -100,6 +101,7 @@ def load_fec_contributions():
         )
         n += 1
         if n % 10000 == 0: t.commit(); t = db.transaction(); print n
+    t.commit()
 
 def load_fec_efilings(filepattern=fec_crude_csv.DEFAULT_EFILINGS_FILEPATTERN):
     for f, schedules in fec_crude_csv.parse_efilings(glob.glob(filepattern)):
