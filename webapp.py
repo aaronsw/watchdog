@@ -437,6 +437,7 @@ class politician:
         except IndexError:
             raise web.notfound()
 
+        p.is_current = bool(db.select('curr_politician', where='id=$polid', vars=locals()))
         #@@move into schema
         p.fec_ids = [x.fec_id for x in db.select('politician_fec_ids', what='fec_id',
           where='politician_id=$polid', vars=locals())]
