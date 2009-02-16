@@ -460,7 +460,7 @@ def get_capitolwords(id, limit=5):
     try:
         return capitolwords.lawmaker(id, today.year-1, today.month, today.day, 
                                     today.year, today.month, today.day, maxrows=limit)
-    except:
+    except capitolwords.CwodApiError:
         pass
 
 class politician_lobby:
