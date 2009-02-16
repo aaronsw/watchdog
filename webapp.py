@@ -174,7 +174,7 @@ class district:
         try:
             d = schema.District.where(name=district.upper())[0]
         except IndexError:
-            raise web.notfound
+            raise web.notfound()
             
         zip = '33149'
         d.contributors = db.query("""SELECT cn.name, sum(cn.amount) as amt
