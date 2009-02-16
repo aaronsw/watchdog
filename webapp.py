@@ -466,8 +466,11 @@ def get_capitolwords(id, limit=5):
     get the capitolwords said by politician with bioguideid `id` in last year
     """
     today = datetime.date.today()
-    return capitolwords.lawmaker(id, today.year-1, today.month, today.day, 
-                                    today.year, today.month, today.day, maxrows=limit)        
+    try:
+        return capitolwords.lawmaker(id, today.year-1, today.month, today.day, 
+                                    today.year, today.month, today.day, maxrows=limit)
+    except:
+        pass
 
 class politician_lobby:
     def GET(self, polid, format=None):
