@@ -1397,6 +1397,12 @@
     "voting": true, 
     "wikipedia": "http://en.wikipedia.org/wiki/Missouri's_9th_congressional_district"
   }, 
+  "MP-00": {
+    "district": 0,
+    "state_id": "MP",
+    "voting": true,
+    "wikipedia": "http://en.wikipedia.org/wiki/Northern_Mariana_Islands%27s_At-large_congressional_district"
+  },
   "MS-01": {
     "district": 1, 
     "state_id": "MS", 
