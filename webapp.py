@@ -175,17 +175,7 @@ class district:
             d = schema.District.where(name=district.upper())[0]
         except IndexError:
             raise web.notfound()
-            
-        zip = '33149'
-        d.contributors = db.query("""SELECT cn.name, sum(cn.amount) as amt
-          FROM contribution cn 
-          WHERE cn.zip = $zip AND cn.employer != '' GROUP BY cn.name 
-          ORDER BY amt DESC LIMIT 5""", vars=locals())
-        d.contributor_employers = db.query("""SELECT cn.employer, 
-          sum(cn.amount) as amt FROM contribution cn 
-          WHERE cn.zip = $zip AND cn.employer != '' GROUP BY cn.employer 
-          ORDER BY amt DESC LIMIT 5""", vars=locals())
-        
+
         out = apipublish.publish([d], format)
         if out: return out
         
