@@ -38,7 +38,7 @@ LOADERS = .schema .manual \
           .bills .interests .votesmart .photos .lobbyist \
 		  .fec .handshakes .census .soi .earmarks .wyr .phones .saveusers .restoreusers
 
-all: database .se
+all: database ../se
 clean:
 	rm $(LOADERS)
 
