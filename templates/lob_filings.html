@@ -6,9 +6,9 @@ $var color: white
 $var title: Lobbyist Filings
 $def lobLink(f):
 	$if f.lobbyist.contact_name:
-		<a href="/l/pe/$f.lobbyist_id">$f.lobbyist.contact_name</a>
+		<a href="/lob/pe/$f.lobbyist_id">$f.lobbyist.contact_name</a>
 	$else:
-		<a href="/l/pe/$f.lobbyist_id">$f.lobbyist.prefix $f.lobbyist.firstname $f.lobbyist.lastname $f.lobbyist.suffix</a>
+		<a href="/lob/pe/$f.lobbyist_id">$f.lobbyist.prefix $f.lobbyist.firstname $f.lobbyist.lastname $f.lobbyist.suffix</a>
 
 <table class="structure" width=100%>
 	<tr>
@@ -43,19 +43,19 @@ $for i,f in enumerate(filings):
 	<td>$f.type</td>
 	<td>
 		$if f.org:
-			<a href="/l/o/$f.org_id">$f.org.name</a>
+			<a href="/lob/o/$f.org_id">$f.org.name</a>
 	</td>
 	<td>$f.certified</td>
 	<td>$f.comments</td>
 	<td>
 		$if f.pacs:
-			<a href="/l/pa/?filing_id=$f.id">Pacs</a>
+			<a href="/lob/pa/?filing_id=$f.id">Pacs</a>
 		$#	$for p in f.pacs: 
-		$#		<a href="/l/pa/$p.pac.id">$p.pac.name</a><br>
+		$#		<a href="/lob/pa/$p.pac.id">$p.pac.name</a><br>
 	</td>
 	<td>
 	$if f.contributions:
-		<a href="/l/c/$f.id">Contributions</a>
+		<a href="/lob/c/$f.id">Contributions</a>
 		$#	$for c in f.contributions: 
 		$#		\$$commify(c.amount)<br>
 	</td>

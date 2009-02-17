@@ -242,7 +242,7 @@ $for c in pol.lob_contribs:
     $def whom():
 		${(c.contact_name if c.contact_name else ((c.prefix or '') + ' ' + (c.firstname or '') + ' ' + (c.middlename or '') + ' ' + (c.lastname or '') + ' ' + (c.suffix or ''))).title()}
     <tr class="$loop.parity">
-        <th>$loop.index <a href="/l/f/$c.filing_id">$:whom(), $c.name.title()</a></th>
+        <th>$loop.index <a href="/lob/f/$c.filing_id">$:whom(), $c.name.title()</a></th>
 		<td>\$$commify(c.amount)</td>
     </tr>
 </table>
