@@ -9,7 +9,7 @@ import settings
 from settings import db, render, production_mode
 import schema
 import config
-import datetime, capitolwords
+import os, simplejson
 
 if not production_mode:
 	web.config.debug = True
@@ -454,17 +454,13 @@ class politician:
 
         return render.politician(p, sparkpos)
 
-def get_capitolwords(id, limit=5):
-    """
-    get the capitolwords said by politician with bioguideid `id` in last year
-    """
-    today = datetime.date.today()
-    try:
-        return capitolwords.lawmaker(id, today.year-1, today.month, today.day, 
-                                    today.year, today.month, today.day, maxrows=limit)
-    except capitolwords.CwodApiError:
-        pass
-
+def get_capitolwords(bioguideid):
+    capitolwords_path = 'data/crawl/capitolwords'
+    fn = "%s/%s.json" % (capitolwords_path, bioguideid)
+    if os.path.isfile(fn):
+        words = simplejson.load(file(fn))
+        return [web.storage(w) for w in words]
+    
 class politician_lobby:
     def GET(self, polid, format=None):
         limit = 50

@@ -1400,7 +1400,7 @@
   "MP-00": {
     "district": 0,
     "state_id": "MP",
-    "voting": true,
+    "voting": false,
     "wikipedia": "http://en.wikipedia.org/wiki/Northern_Mariana_Islands%27s_At-large_congressional_district"
   },
   "MS-01": {

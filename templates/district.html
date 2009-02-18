@@ -73,7 +73,8 @@ $if d.cook_index:
   <tr class="odd">
       $:spark('Area:', d.area_sqmi, d.name, 'area_sqmi', ' sq. mi.')
   </tr><tr class="even">
-      $:spark('Population:', d.est_population, d.name, 'est_population', '(%d est.)' % d.est_population_year)
+    $if d.est_population_year:
+        $:spark('Population:', d.est_population, d.name, 'est_population', '(%d est.)' % d.est_population_year)
   </tr><tr class="odd">
       $:spark('Poverty rate:', d.poverty_pct, d.name, 'poverty_pct', '%')
   </tr><tr class="even">
