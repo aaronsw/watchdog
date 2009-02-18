@@ -3,7 +3,7 @@ load data from govtrack.us
 """
 from __future__ import with_statement
 import datetime
-import json
+import simplejson as json
 import web
 
 from parse import govtrack
