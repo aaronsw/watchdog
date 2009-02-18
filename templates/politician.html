@@ -200,14 +200,15 @@ $if pol.handshakes:
     </tbody></table>
     </td></tr>
 
-
 <tr>
 <td colspan="2" class="rule">
 <h2 class="rep">Top Contributors</h2>
 <table class="charted structure contributors" style="width: 100%">
 $for c in pol.contributors:
+    $ names = c.name.lower().replace(' ', '').split(',')
+    $ name = names[-1]+'_'+'_'.join(names[:-1])
     <tr class="$loop.parity">
-        <th>$loop.index <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name.title())</a></th>
+        <th>$loop.index <a href="/contrib/$c.zip/$name">$format_name(c.name.title())</a></th>
         <td>\$$commify(int(c.amt))</td>
     </tr>
 </table>
@@ -217,13 +218,16 @@ $for c in pol.contributors:
 </td>
 </tr>
 
+$def niceurl(url):
+    $:url.lower().replace(' ', '_')
+
 <tr>
 <td colspan="2" class="rule">
 <h2 class="rep">Top Contributor Employers</h2>
 <table class="charted structure contributors" style="width: 100%">
 $for c in pol.contributor_employers:
     <tr class="$loop.parity">
-        <th>$loop.index <a href="/empl/$c.employer">$c.employer.title()</a></th>
+        <th>$loop.index <a href="/empl/$:niceurl(c.employer_stem)">$c.employer_stem.title()</a></th>
         <td>\$$commify(int(c.amt))</td>
     </tr>
 </table>

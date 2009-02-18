@@ -36,7 +36,7 @@ urls = (
   r'/e/(.*?)%s?' % options, 'earmark',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/contrib/(distribution\.png|)', 'contributions',
-  r'/contrib/(\d+)/' , 'contributor',
+  r'/contrib/(\d+)/(.*?)' , 'contributor',
   r'/occupation/(.*?)/candidates' , 'occupation_candidates',
   r'/occupation/(.*?)/committees' , 'occupation_committees',
   r'/occupation/(.*?)' , 'occupation',
@@ -211,7 +211,7 @@ def politician_contributors(polid):
             ORDER BY amt DESC""", vars=locals())
 
 def politician_contributor_employers(polid):
-    return db.query("""SELECT cn.employer_stem as employer, 
+    return db.query("""SELECT cn.employer_stem, 
             sum(cn.amount) as amt FROM committee cm, politician_fec_ids pfi, 
             politician p, contribution cn WHERE cn.recipient_id = cm.id 
             AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
@@ -286,9 +286,10 @@ class bill:
         return render.bill(b)
         
 class contributor:
-    def GET(self, zipcode):
-        s = web.input(s='').s
-        name = s.lower()
+    def GET(self, zipcode, name):
+        names = name.lower().replace('_', ' ').split(' ')
+        if len(names) > 1: name = names[-1]+', '+' '.join(names[:-1])
+        else: name = names[0]
         candidates = list(db.query("""SELECT count(*) AS how_many, 
             sum(amount) AS how_much, p.firstname, p.lastname, 
             cm.name AS committee, cm.id as committee_id, occupation, 
@@ -308,7 +309,7 @@ class contributor:
             GROUP BY cm.id, cm.name, cn.occupation, cn.employer_stem
             ORDER BY lower(cn.employer_stem), 
             lower(occupation), sent DESC, how_much DESC""", vars=locals()))
-        return render.contributor(candidates, committees, zipcode, s)
+        return render.contributor(candidates, committees, zipcode, name)
 
 class occupation:
     def GET(self, occupation):
@@ -351,13 +352,14 @@ class contributions:
   
 class employer:
     def GET(self, corp_id, format=None):
+        corp_id = corp_id.lower().replace('_', ' ')
         contributions = db.query("""SELECT count(*) as how_many, 
             sum(amount) as how_much, p.firstname, p.lastname, 
             p.id as polid, cm.name as committee, cm.id as committee_id
             FROM contribution cn, committee cm, politician_fec_ids pfi, 
             politician p WHERE cn.recipient_id = cm.id 
             AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
-            AND lower(cn.employer_stem) = lower($corp_id)
+            AND lower(cn.employer_stem) = $corp_id
             GROUP BY cm.id, cm.name, p.lastname, p.firstname, p.id 
             ORDER BY how_much DESC""", vars=locals())
         total_num = db.select('contribution', 
