@@ -195,9 +195,9 @@ def load_cans_fec_data():
 
 if __name__ == "__main__":
     cgitb.enable(format='text')
-    #load_fec_ids()
-    #load_fec_cans()
-    #load_fec_committees()
-    #load_fec_contributions()
-    #load_fec_efilings()
+    load_fec_ids()
+    load_fec_cans()
+    load_fec_committees()
+    load_fec_contributions()
+    load_fec_efilings()
     load_cans_fec_data()
