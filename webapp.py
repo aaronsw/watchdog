@@ -9,6 +9,7 @@ import settings
 from settings import db, render, production_mode
 import schema
 import config
+import os, simplejson
 
 if not production_mode:
 	web.config.debug = True
@@ -445,12 +446,19 @@ class politician:
         p.contributors = list(politician_contributors(polid))[0:5]
         p.contributor_employers = list(politician_contributor_employers(polid))[0:5]
         p.lob_contribs = politician_lob_contributions(polid, 0, 5)
-        p.capitolwords = None
+        p.capitolwords = p.bioguideid and get_capitolwords(p.bioguideid)
         out = apipublish.publish([p], format)
         if out: return out
 
         return render.politician(p, sparkpos)
 
+def get_capitolwords(bioguideid):
+    capitolwords_path = 'data/crawl/capitolwords'
+    fn = "%s/%s.json" % (capitolwords_path, bioguideid)
+    if os.path.isfile(fn):
+        words = simplejson.load(file(fn))
+        return [web.storage(w) for w in words]
+    
 class politician_lobby:
     def GET(self, polid, format=None):
         limit = 50
