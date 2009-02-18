@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """get capitolwords jsons and store in load/capitolwords/"""
 
+import sys
 import urllib2
 import datetime
 from settings import db
@@ -27,6 +28,7 @@ def save_capitolwords(bioguide_id, limit=5):
         file(fn, 'w').write(json)
 
 if __name__ == "__main__":
-    pols = db.select('curr_politician', what='bioguideid', where='bioguideid is not null').list()
-    for p in pols[:2]:
+    pols = db.select('curr_politician', what='id, bioguideid', where='bioguideid is not null').list()
+    for p in pols:
+        print >>sys.stderr,'\rGetting capitol words for %-25s' % p.id,; sys.stderr.flush()
         save_capitolwords(p.bioguideid)
