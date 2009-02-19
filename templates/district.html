@@ -31,12 +31,17 @@ $var maxi: True
 </div>
 
 <div id="mapinfo">
-$if d.politician and d.politician[0].id and d.politician[0].firstname:
-    $if d.politician[0].photo_path:
-        <div style="float: left; padding-right: 12px; padding-bottom: 12px;"><a href="/p/$d.politician[0].id"><img src="http://watchdog.net$d.politician[0].photo_path" 
+$if d.politician and d.politician.id and d.politician.firstname:
+    $if d.politician.photo_path:
+        <div style="float: left; padding-right: 12px; padding-bottom: 12px;"><a href="/p/$d.politician.id"><img src="http://watchdog.net$d.politician.photo_path" 
           width="5em" style="margin: 0em; padding: 5px; border: 1px solid #666;" alt="Headshot" class="smallheadshot" /></a></div>
     
-    <div class="subhead-blue">Represented by <a href="/p/$d.politician[0].id">$d.politician[0].name</a>.</div>
+    <div class="subhead-blue">Represented by <a href="/p/$d.politician.id">
+        $if d.politician.nickname:
+            $d.politician.nickname $d.politician.lastname
+        $else:
+            $d.politician.firstname $d.politician.middlename $d.politician.lastname
+    </a>.</div>
 $else:
     <br /><br />
 
