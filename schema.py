@@ -17,7 +17,7 @@ class State(sql.Table):
     wikipedia = sql.URL()
     fipscode = sql.String(2)
 
-    senators = sql.Backreference('Politician', 'district')
+    #senators = sql.Backreference('Politician', 'district')
     districts = sql.Backreference('District', 'state', order='name asc')
 
 class District(sql.Table):
@@ -32,7 +32,7 @@ class District(sql.Table):
     voting = sql.Boolean()
     wikipedia = sql.URL()
 
-    politician = sql.Backreference('Politician', 'district')
+    #politician = sql.Backreference('Politician', 'district')
 
     @property
     def districtth(self):
