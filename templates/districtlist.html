@@ -10,12 +10,15 @@ $var title: The United States
 
 <ul>
 $for d in dists:
+    <li><a href="/us/$d.name.lower()">$d.name</a>
 	$if d.politician: 
 		$for p in d.politician:
-			<li><a href="/us/$d.name.lower()">$d.name</a> (<a href="/p/$p.id" class="secondary">$p.title $p.name</a>)
-	$else:
-		<li><a href="/us/$d.name.lower()">$d.name</a> 
-    </li>
+		    $if p.nickname:
+		        $ name = p.nickname+' '+p.lastname
+            $else:
+                $ name = (p.firstname or '')+' '+(p.middlename or '')+' '+(p.lastname or '')
+			(<a href="/p/$p.id" class="secondary">Rep. $name</a>)
+	</li>
 </ul>
 
 <p><strong>Developers:</strong> Get this page in <a href="index.n3">N3</a>, <a href="index.xml">XML</a>, or <a href="index.json">JSON</a>.</p>

@@ -107,7 +107,7 @@ class find:
         dists = None
         if not i.get('q'):
             i.q = i.get('zip')
-        
+
         if i.q:
             if pzip4.match(i.q):
                 zip, plus4 = i.q.split('-')
@@ -121,7 +121,9 @@ class find:
                     return render.find_badaddr(i.q, i.address)
             
             if dists:
-                d_dists = schema.District.select(where=web.sqlors('name=', dists))
+                d_dists = list(schema.District.select(where=web.sqlors('name=', dists)))
+                for d in d_dists:
+                    d.politician = db.select('curr_politician', where='district_id = $d.name', vars=locals())[0]
                 out = apipublish.publish(d_dists, format)
                 if out: return out
 
@@ -147,7 +149,9 @@ class find:
                     raise web.notfound()
 
         else:
-            index = schema.District.select(order='name asc')
+            index = list(schema.District.select(order='name asc'))
+            for i in index:
+                i.politician = list(db.select('curr_politician', where='district_id = $i.name', vars=locals()))
             out = apipublish.publish(index, format)
             if out: return out
 
