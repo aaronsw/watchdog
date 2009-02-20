@@ -157,10 +157,7 @@ class state:
     def GET(self, state, format=None):
         try:
             state = schema.State.where(code=state.upper())[0]
-            state.senators = db.select(['curr_politician p', 'congress'], what='p.*',
-                    where="""p.id = politician_id::text AND congress_num='111' 
-                             AND current_member = 't' AND p.district_id = $state.code""",
-                    vars=locals())
+            state.senators = db.select('curr_politician', where='district_id = $state.code', vars=locals())
         except IndexError:
             raise web.notfound()
 
