@@ -288,20 +288,6 @@ $for c in pol.lob_contribs:
 
 </tr><tr>
 
-$if pol.contributor_employers:
-     <td colspan="2" class="rule">
-     <h2 class="rep">Top Contributor Employers</h2>
-     <table class="charted structure contributors" style="width: 100%">
-     $for c in pol.contributor_employers:
-         <tr class="$loop.parity">
-             <th>$loop.index <a href="/empl/$c.employer">$c.employer.title()</a></th>
-             <td>\$$commify(int(c.amt))</td>
-         </tr>
-       <tr><td colspan="2" style="text-align: left;"><span style="color: #EE4400"><a href="/p/$pol.id/contrib-employers" class="more">More contributor employers</a>&nbsp;&rarr;</span></td></tr>        
-     </table>
-     </td>
-    
-</tr><tr>
 
 $if pol.lob_contribs:
      <td colspan="2" class="rule">
