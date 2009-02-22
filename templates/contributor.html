@@ -1,13 +1,13 @@
-$def with (candidates, committees, zip, s)
+$def with (candidates, committees, zip, name)
 
 $var width: 90%
 $var color: white
 
-$ name = format_name(s)
+$ name = format_name(name)
 
 $var title: $name
 
-<h1><span class="header_em">$(len(candidates)+len(committees))</span> results for <span class="header_em">$name</span> in <span class="header_em">$zip</span></h1>
+<h1>$name.title(), $zip</h1>
 
 <h2>Candidates</h2>
 
@@ -27,10 +27,10 @@ $ prev_employer = None
 $for c in candidates:
     $if c.occupation.lower() != prev_occupation or c.employer.lower() != prev_employer:
         <tr style="border-bottom: 1px solid #999;">
-            <td colspan="2" class="date"><strong>$name</strong>
+            <td colspan="2" class="date"><strong>$name.title()</strong>
             $if c.occupation:
                 , <span class="subtitle">
-                    <a href="/occupation/$urlquote(c.occupation)">$c.occupation</a>
+                    <a href="/occupation/$urlquote(c.occupation)">$c.occupation.title()</a>
                   </span>
             $if c.employer:
                 , <span class="subtitle"><a href="/empl/$urlquote(c.employer)">$c.employer</a></span>
@@ -39,7 +39,7 @@ $for c in candidates:
     <tr class="even">
         <td class="paying">
             <strong>\$$commify(int(c.how_much))</strong> to <a href="/p/$c.polid">$c.firstname $c.lastname</a>, 
-            <a href="/committee/$c.committee_id">$c.committee.title()</a> on
+            $c.committee.title() on
             <strong>$datestr(c.sent)</strong>
         </td>
     </tr>
@@ -55,18 +55,18 @@ $ prev_employer = None
 $for c in committees:
     $if c.occupation.lower() != prev_occupation or c.employer.lower() != prev_employer:
         <tr style="border-bottom: 1px solid #999;">
-            <td colspan="2" class="date"><strong>$name</strong>
+            <td colspan="2" class="date"><strong>$name.title()</strong>
             $if c.occupation:
                 , <span class="subtitle">
-                    <a href="/occupation/$urlquote(c.occupation)">$c.occupation</a>
+                    <a href="/occupation/$urlquote(c.occupation)">$c.occupation.title()</a>
                   </span>
             $if c.employer:
-                , <span class="subtitle"><a href="/empl/$urlquote(c.employer)">$c.employer</a></span>
+                , <span class="subtitle"><a href="/empl/$urlquote(c.employer)">$c.employer.title()</a></span>
             </td>
         </tr>
     <tr class="even">
         <td class="paying">
-            <strong>\$$commify(int(c.how_much))</strong> to <a href="/committee/$c.id">$c.name.title()</a>, 
+            <strong>\$$commify(int(c.how_much))</strong> to $c.name.title(), 
             on <strong>$c.sent</strong>
         </td>
     </tr>

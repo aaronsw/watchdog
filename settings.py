@@ -8,4 +8,4 @@ render_plain = web.template.render('templates/', cache=production_mode) #without
 db = web.database(dbn=os.environ.get('DATABASE_ENGINE', 'postgres'),
                   db=os.environ.get('WATCHDOG_TABLE', 'watchdog_dev'))
 db.printing = False
-current_session = 111   #'*' to load data from all sessions
+current_session = '*' # * to load data from all sessions; 'xxx' to load data of that session

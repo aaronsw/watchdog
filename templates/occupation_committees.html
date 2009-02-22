@@ -18,7 +18,7 @@ $for c in committees:
     $else:
         $ trclass = "odd"
     <tr class="$trclass">
-        <td>$loop.index. <a href="/committee/$c.id">$c.name.title()</a></td>
+        <td>$loop.index. $c.name.title()</td>
         <td style="text-align: right;">\$$commify(int(c.amt))</td>
     </tr>
    

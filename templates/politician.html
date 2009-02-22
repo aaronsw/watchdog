@@ -1,12 +1,14 @@
 $def with (pol, pos)
 
-$var head: <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script> <script src="/static/js/gmap-wms.js"></script> <script src="/static/js/distmap.js"></script> <script type="text/javascript">distcenter('googlemap', '$(pol.district and pol.district.name or '').replace('-0', '').replace('-', '')', [$(pol.district and pol.district.center_lat or 0.0), $(pol.district and pol.district.center_lng or 0.0), $(pol.district and pol.district.zoom_level and (pol.district.zoom_level - 2) or 0.0)])</script>
+$if pol.is_current:
+    $var head: <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA32O3YO3sztAoMSWYheUtTBQYu38vSyEOJo4J0P8Mwlrd5U_lzhQ2ZoxaOYKY-qh7R36VeBWvCtHU5g" type="text/javascript"></script> <script src="/static/js/gmap-wms.js"></script> <script src="/static/js/distmap.js"></script> <script type="text/javascript">distcenter('googlemap', "$((pol.district and pol.district.name or '').replace('-0', '').replace('-', ''))", [$(pol.district and pol.district.center_lat or 0.0), $(pol.district and pol.district.center_lng or 0.0), $(pol.district and pol.district.zoom_level and (pol.district.zoom_level - 2) or 0.0)])</script>
 
 $var title: $pol.firstname $pol.middlename $pol.lastname
 
 $var sidebar: None
 
-$var pretext: <div id="sidebarmap"  style="clear: right; margin-top: -24px;"><div id="googlemap" class="sidemap"></div><!--<input type="text" name="zip" class="zipcode" value="Enter your zip" />--><div class="postit" style="margin: 10px 0px 10px 0px !important; text-align: center; padding: 3px;"><a href="/share?url=$getpath()&title=$pol.firstname $pol.middlename $pol.lastname"><strong>Share this page</strong></a></div></div>
+$if pol.is_current:
+    $var pretext: <div id="sidebarmap"  style="clear: right; margin-top: -24px;"><div id="googlemap" class="sidemap"></div><!--<input type="text" name="zip" class="zipcode" value="Enter your zip" />--><div class="postit" style="margin: 10px 0px 10px 0px !important; text-align: center; padding: 3px;"><a href="/share?url=$getpath()&title=$pol.firstname $pol.middlename $pol.lastname"><strong>Share this page</strong></a></div></div>
     
 $var width: 90%
 $var color: white
@@ -30,10 +32,10 @@ $if pol.photo_path:
 
   $if pol.nickname: known as "$pol.nickname"<br />
   $if pol.birthday:
-      b. $pol.birthday\
-      $if pol.birthplace: , $pol.birthplace\
+      born $(pol.birthplace and (pol.birthday+', '+pol.birthplace) or pol.birthday)
       <br />
-  represents <a href="/us/$(pol.district and pol.district.name or '')">$(pol.district and pol.district.name or 'None')</a><br />
+  $if pol.district:
+      represents <a href="/us/$pol.district.name">$pol.district.name</a><br />
   $pol.party, $pol.religion<br />
 
 $#$if pol.capitolwords:
@@ -210,14 +212,15 @@ $if pol.handshakes:
     </tbody></table>
     </td></tr>
 
-
 <tr>
 <td colspan="2" class="rule">
 <h2 class="rep">Top Contributors</h2>
 <table class="charted structure contributors" style="width: 100%">
 $for c in pol.contributors:
+    $ names = c.name.lower().replace(' ', '').split(',')
+    $ name = names[-1]+'_'+'_'.join(names[:-1])
     <tr class="$loop.parity">
-        <th>$loop.index <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name)</a></td>
+        <th>$loop.index <a href="/contrib/$c.zip/$name">$format_name(c.name.title())</a></th>
         <td>\$$commify(int(c.amt))</td>
     </tr>
     $if trclass == "odd":
@@ -229,13 +232,16 @@ $for c in pol.contributors:
 </td>
 </tr>
 
+$def niceurl(url):
+    $:url.lower().replace(' ', '_')
+
 <tr>
 <td colspan="2" class="rule">
 <h2 class="rep">Top Contributor Employers</h2>
 <table class="charted structure contributors" style="width: 100%">
 $for c in pol.contributor_employers:
     <tr class="$loop.parity">
-        <th>$loop.index <a href="/empl/$c.employer">$c.employer.title()</a></th>
+        <th>$loop.index <a href="/empl/$:niceurl(c.employer_stem)">$c.employer_stem.title()</a></th>
         <td>\$$commify(int(c.amt))</td>
     </tr>
 </table>
@@ -254,7 +260,7 @@ $for c in pol.lob_contribs:
     $def whom():
 		${(c.contact_name if c.contact_name else ((c.prefix or '') + ' ' + (c.firstname or '') + ' ' + (c.middlename or '') + ' ' + (c.lastname or '') + ' ' + (c.suffix or ''))).title()}
     <tr class="$loop.parity">
-        <th>$loop.index <a href="/l/f/$c.filing_id">$:whom(), $c.name.title()</a></th>
+        <th>$loop.index <a href="/lob/f/$c.filing_id">$:whom(), $c.name.title()</a></th>
 		<td>\$$commify(c.amount)</td>
     </tr>
 </table>

@@ -60,7 +60,8 @@ def load_fec_committees():
               state = f.state,
               zip = f.zip,
               connected_org_name = f.connected_org_name,
-              candidate_id = f.candidate_id
+              candidate_id = f.candidate_id,
+              type = f.committee_type
             )
         except psycopg2.IntegrityError:
             pass # already imported
@@ -101,7 +102,6 @@ def load_fec_contributions():
         n += 1
         if n % 10000 == 0: t.commit(); t = db.transaction(); print n
     t.commit()
-
 
 def load_fec_efilings(filepattern=fec_crude_csv.DEFAULT_EFILINGS_FILEPATTERN):
     for f, schedules in fec_crude_csv.parse_efilings(glob.glob(filepattern)):
@@ -150,6 +150,48 @@ def load_fec_efilings(filepattern=fec_crude_csv.DEFAULT_EFILINGS_FILEPATTERN):
                 print "ignoring record of type %s" % \
                       s['original_data'].get('form_type')
 
+def load_cans_fec_data():
+    """Calculate percentage from business versus labor PACs
+    Calculate percentage money within-state
+    Calculate percentage money from small donors """
+    for p in db.query("""SELECT id FROM politician"""):
+        polid = p.id
+        num = db.query("""SELECT count(*) 
+                FROM committee cm, politician_fec_ids pfi, 
+                politician p, contribution cn WHERE cn.recipient_id = cm.id 
+                AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
+                AND p.id = $polid""", vars=locals())[0].count
+        if num:
+            num_labor = db.query("""SELECT count(*) 
+                FROM committee cm, politician_fec_ids pfi, politician p, contribution cn 
+                WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
+                AND pfi.politician_id = p.id AND cm.type = 'L' 
+                AND p.id = $polid""", vars=locals())[0].count
+            labor_pct = num_labor/float(num)
+            num_instate = db.query("""SELECT count(*) 
+                FROM committee cm, politician_fec_ids pfi, politician p, 
+                contribution cn, district d, state s
+                WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
+                AND pfi.politician_id = p.id AND p.district_id = d.name 
+                AND d.state_id = s.code AND lower(cn.state) = lower(s.code)
+                AND p.id = $polid""", vars=locals())[0].count
+            instate_pct = num_instate/float(num)
+            num_smalldonor = db.query("""SELECT count(*) 
+                FROM committee cm, politician_fec_ids pfi, politician p, contribution cn 
+                WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
+                AND pfi.politician_id = p.id AND p.id = $polid 
+                AND cn.amount < 250""", vars=locals())[0].count
+            smalldonor_pct = num_smalldonor/float(num)
+        else:
+            labor_pct = 0
+            instate_pct = 0
+            smalldonor_pct = 0
+        db.update('politician', where='id = $polid', vars=locals(),
+          pct_labor = labor_pct,
+          pct_instate = instate_pct,
+          pct_smalldonor = smalldonor_pct
+        )
+        print polid, labor_pct, instate_pct, smalldonor_pct
 
 if __name__ == "__main__":
     cgitb.enable(format='text')
@@ -157,3 +199,5 @@ if __name__ == "__main__":
     load_fec_cans()
     load_fec_committees()
     load_fec_contributions()
+    load_fec_efilings()
+    load_cans_fec_data()

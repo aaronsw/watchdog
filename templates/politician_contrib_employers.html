@@ -11,6 +11,9 @@ $var title: Contributor employers
 
 <p><a href="/p/$pol.id">&laquo; Back to $pol.name</a></p>
 
+$def niceurl(url):
+    $:url.lower().replace(' ', '_')
+
 <h1>Contributor employers</h1>
 
 <table class="structure" width="100%">
@@ -23,7 +26,7 @@ $for c in contribs:
     $else:
         $ trclass = "odd"
     <tr class="$loop.parity">
-        <td>$loop.index <a href="/empl/$c.employer">$c.employer.title()</a></td>
+        <td>$loop.index <a href="/empl/$:niceurl(c.employer_stem)">$c.employer_stem.title()</a></td>
         <td>\$$commify(int(c.amt) )</td>
     </tr>   
 </table>

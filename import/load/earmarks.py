@@ -161,10 +161,12 @@ def calculate_per_capita():
     for d in schema.District.select():
         if d.name == d.state_id: continue # Don't set for states.
         congress_people = set()
-        if d.state.senators:
-            congress_people.update(p.id for p in d.state.senators)
-        if d.politician:
-            congress_people.update(p.id for p in d.politician)
+        senators = db.select('curr_politician', where='district_id = $d.state.code', vars=locals())
+        if senators:
+            congress_people.update(p.id for p in senators)
+        politician = db.select('curr_politician', where='district_id = $d.name', vars=locals())
+        if politician:
+            congress_people.update(p.id for p in politician)
         ems = db.select('earmark_sponsor', what='distinct(earmark_id)', where=web.sqlors('politician_id=',congress_people))
         empc = sum(map(lambda x: pc.get(x, 0.0), set(e.earmark_id for e in ems)))
         #print d.name, empc

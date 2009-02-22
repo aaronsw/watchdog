@@ -9,7 +9,7 @@ import settings
 from settings import db, render, production_mode
 import schema
 import config
-import datetime, capitolwords
+import os, simplejson
 
 if not production_mode:
 	web.config.debug = True
@@ -36,7 +36,7 @@ urls = (
   r'/e/(.*?)%s?' % options, 'earmark',
   r'/b/(.*?)%s?' % options, 'bill',
   r'/contrib/(distribution\.png|)', 'contributions',
-  r'/contrib/(\d+)/' , 'contributor',
+  r'/contrib/(\d+)/(.*?)' , 'contributor',
   r'/occupation/(.*?)/candidates' , 'occupation_candidates',
   r'/occupation/(.*?)/committees' , 'occupation_committees',
   r'/occupation/(.*?)' , 'occupation',
@@ -44,11 +44,11 @@ urls = (
   r'/r/us/(.*?)%s?' % options, 'roll',
   r'/c', petition.app,
   r'/u', users.app,
-  r'/l/c/?(.*?)', 'lob_contrib',
-  r'/l/f/?(.*?)', 'lob_filing',
-  r'/l/o/?(.*?)', 'lob_org',
-  r'/l/pa/?(.*?)', 'lob_pac',
-  r'/l/pe/?(.*?)', 'lob_person',
+  r'/lob/c/?(.*?)', 'lob_contrib',
+  r'/lob/f/?(.*?)', 'lob_filing',
+  r'/lob/o/?(.*?)', 'lob_org',
+  r'/lob/pa/?(.*?)', 'lob_pac',
+  r'/lob/pe/?(.*?)', 'lob_person',
   r'/writerep', wyrapp.app,
   r'/api', api.app,
   r'/about(/?)', 'about',
@@ -107,7 +107,7 @@ class find:
         dists = None
         if not i.get('q'):
             i.q = i.get('zip')
-        
+
         if i.q:
             if pzip4.match(i.q):
                 zip, plus4 = i.q.split('-')
@@ -121,7 +121,9 @@ class find:
                     return render.find_badaddr(i.q, i.address)
             
             if dists:
-                d_dists = schema.District.select(where=web.sqlors('name=', dists))
+                d_dists = list(schema.District.select(where=web.sqlors('name=', dists)))
+                for d in d_dists:
+                    d.politician = db.select('curr_politician', where='district_id = $d.name', vars=locals())[0]
                 out = apipublish.publish(d_dists, format)
                 if out: return out
 
@@ -147,7 +149,9 @@ class find:
                     raise web.notfound()
 
         else:
-            index = schema.District.select(order='name asc')
+            index = list(schema.District.select(order='name asc'))
+            for i in index:
+                i.politician = list(db.select('curr_politician', where='district_id = $i.name', vars=locals()))
             out = apipublish.publish(index, format)
             if out: return out
 
@@ -157,6 +161,7 @@ class state:
     def GET(self, state, format=None):
         try:
             state = schema.State.where(code=state.upper())[0]
+            state.senators = db.select('curr_politician', where='district_id = $state.code', vars=locals())
         except IndexError:
             raise web.notfound()
 
@@ -173,19 +178,10 @@ class district:
     def GET(self, district, format=None):
         try:
             d = schema.District.where(name=district.upper())[0]
+            d.politician = list(db.select('curr_politician', where='district_id = $d.name', vars=locals()))[0]
         except IndexError:
-            raise web.notfound
-            
-        zip = '33149'
-        d.contributors = db.query("""SELECT cn.name, sum(cn.amount) as amt
-          FROM contribution cn 
-          WHERE cn.zip = $zip AND cn.employer != '' GROUP BY cn.name 
-          ORDER BY amt DESC LIMIT 5""", vars=locals())
-        d.contributor_employers = db.query("""SELECT cn.employer, 
-          sum(cn.amount) as amt FROM contribution cn 
-          WHERE cn.zip = $zip AND cn.employer != '' GROUP BY cn.employer 
-          ORDER BY amt DESC LIMIT 5""", vars=locals())
-        
+            raise web.notfound()
+
         out = apipublish.publish([d], format)
         if out: return out
         
@@ -221,7 +217,7 @@ def politician_contributors(polid):
             ORDER BY amt DESC""", vars=locals())
 
 def politician_contributor_employers(polid):
-    return db.query("""SELECT cn.employer_stem as employer, 
+    return db.query("""SELECT cn.employer_stem, 
             sum(cn.amount) as amt FROM committee cm, politician_fec_ids pfi, 
             politician p, contribution cn WHERE cn.recipient_id = cm.id 
             AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
@@ -296,9 +292,10 @@ class bill:
         return render.bill(b)
         
 class contributor:
-    def GET(self, zipcode):
-        s = web.input(s='').s
-        name = s.lower()
+    def GET(self, zipcode, name):
+        names = name.lower().replace('_', ' ').split(' ')
+        if len(names) > 1: name = names[-1]+', '+' '.join(names[:-1])
+        else: name = names[0]
         candidates = list(db.query("""SELECT count(*) AS how_many, 
             sum(amount) AS how_much, p.firstname, p.lastname, 
             cm.name AS committee, cm.id as committee_id, occupation, 
@@ -318,7 +315,7 @@ class contributor:
             GROUP BY cm.id, cm.name, cn.occupation, cn.employer_stem
             ORDER BY lower(cn.employer_stem), 
             lower(occupation), sent DESC, how_much DESC""", vars=locals()))
-        return render.contributor(candidates, committees, zipcode, s)
+        return render.contributor(candidates, committees, zipcode, name)
 
 class occupation:
     def GET(self, occupation):
@@ -361,13 +358,14 @@ class contributions:
   
 class employer:
     def GET(self, corp_id, format=None):
+        corp_id = corp_id.lower().replace('_', ' ')
         contributions = db.query("""SELECT count(*) as how_many, 
             sum(amount) as how_much, p.firstname, p.lastname, 
             p.id as polid, cm.name as committee, cm.id as committee_id
             FROM contribution cn, committee cm, politician_fec_ids pfi, 
             politician p WHERE cn.recipient_id = cm.id 
             AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
-            AND lower(cn.employer_stem) = lower($corp_id)
+            AND lower(cn.employer_stem) = $corp_id
             GROUP BY cm.id, cm.name, p.lastname, p.firstname, p.id 
             ORDER BY how_much DESC""", vars=locals())
         total_num = db.select('contribution', 
@@ -447,6 +445,7 @@ class politician:
         except IndexError:
             raise web.notfound()
 
+        p.is_current = bool(db.select('curr_politician', where='id=$polid', vars=locals()))
         #@@move into schema
         p.fec_ids = [x.fec_id for x in db.select('politician_fec_ids', what='fec_id',
           where='politician_id=$polid', vars=locals())]
@@ -461,14 +460,13 @@ class politician:
 
         return render.politician(p, sparkpos)
 
-def get_capitolwords(id, limit=5):
-    """
-    get the capitolwords said by politician with bioguideid `id` in last year
-    """
-    today = datetime.date.today()
-    return capitolwords.lawmaker(id, today.year-1, today.month, today.day, 
-                                    today.year, today.month, today.day, maxrows=limit)        
-
+def get_capitolwords(bioguideid):
+    capitolwords_path = 'data/crawl/capitolwords'
+    fn = "%s/%s.json" % (capitolwords_path, bioguideid)
+    if os.path.isfile(fn):
+        words = simplejson.load(file(fn))
+        return [web.storage(w) for w in words]
+    
 class politician_lobby:
     def GET(self, polid, format=None):
         limit = 50

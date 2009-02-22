@@ -17,7 +17,7 @@ class State(sql.Table):
     wikipedia = sql.URL()
     fipscode = sql.String(2)
 
-    senators = sql.Backreference('Politician', 'district')
+    #senators = sql.Backreference('Politician', 'district')
     districts = sql.Backreference('District', 'state', order='name asc')
 
 class District(sql.Table):
@@ -32,7 +32,7 @@ class District(sql.Table):
     voting = sql.Boolean()
     wikipedia = sql.URL()
 
-    politician = sql.Backreference('Politician', 'district')
+    #politician = sql.Backreference('Politician', 'district')
 
     @property
     def districtth(self):
@@ -175,6 +175,9 @@ rdf:resource="%s" />' % x
     pct_self = sql.Percentage()
     pct_indiv = sql.Percentage()
     pct_pac = sql.Percentage()
+    pct_labor = sql.Percentage()
+    pct_instate = sql.Percentage()
+    pct_smalldonor = sql.Percentage()
 
     # votesmart
     nickname = sql.String()
@@ -383,6 +386,7 @@ class Committee (sql.Table):
     zip = sql.String()
     connected_org_name = sql.String()
     candidate_id = sql.String()
+    type = sql.String()
 
 class Contribution (sql.Table):
     id = sql.Serial(primary=True)
