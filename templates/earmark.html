@@ -6,17 +6,15 @@ $var color: white
 $var title: Earmark for: $em.description
 
 <!-- <br />  ID: $em.id -->
-<table class="structure" style="width: 100%;"><tr><td style="vertical-align: top; text-align: right; border-bottom: 1px solid #ccc;">
-<h1 style="padding-bottom: 0px; margin-bottom: 12px;">\$$commify(em.final_amt)</h1>
-</td><td style="vertical-align: top; padding-top: 9px; border-bottom: 1px solid #ccc; width: 100%;"> 
-<h2 style="padding-bottom: 0px; margin-bottom: 12px;">for $em.description</h2>
+<table class="structure" style="width: 100%;"><tr><td style="vertical-align: bottom; text-align: right; border-bottom: 1px solid #ccc;"><h1 style="padding-bottom: 0px; margin-bottom: 12px;">\$$commify(em.final_amt)</h1></td><td style="vertical-align: top; padding-top: 9px; border-bottom: 1px solid #ccc; width: 100%;"> 
+<h2 style="padding-bottom: 0px; margin-bottom: 12px;">Earmark for $em.description</h2>
 </td></tr><tr><td style="vertical-align: top; text-align: right; padding-top: 10px; white-space: nowrap">
 
 <!-- Sponsors -->
 $if em.sponsors:
 	<h3 style="padding-bottom: 0px; margin-bottom: 0px; padding-top: 0px; margin-top: 0px;">Sponsors:</h3>
 	$for s in em.sponsors:
-		<a href="/p/$s.politician.id">$s.politician.title $s.politician.name</a><br /> 
+		<a href="/p/$s.politician.id/earmarks">$s.politician.title $s.politician.name</a><br /> 
 
 </td><td style="padding-top: 10px;">
 
@@ -48,7 +46,8 @@ $if em.project_heading:
 $if em.notes:
 	<b>Notes:</b> $em.notes <br /> 
 $if em.undisclosed:
-	<b>Undisclosed:</b> $em.undisclosed <br /> 
+	<b>Undisclosed:</b> $em.undisclosed <br />
+	
 
 	<!-- Who's the benificary -->
 $if em.recipient_stem:

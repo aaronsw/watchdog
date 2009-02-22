@@ -5,34 +5,39 @@ $var color: white
 
 $var title: Lobbyist Contributions
 
+<style>
+.header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
+</style>
+
 <h1>Lobbyist Contributions</h1>
 
-<p><strong>Total amount:</strong> \$$commify(total).    </p>
+<h2>Total amount:</strong> \$$commify(total).</h2>
 <table class="structure" width=100%>
 <tr>
-<th class="header">Amount</th>
-<th class="header">From</th>
-<th class="header">Representing</th>
-<th class="header"></th>
+<td class="header" style="text-align: right">Amount</td>
+<td class="header">From</td>
+<td class="header">Representing</td>
+<td class="header"></td>
 </tr>
 
 $for i, c in enumerate(contributions):
 	$def whom():
 		${(c.contact_name if c.contact_name else ((c.prefix or '') + ' ' + (c.firstname or '') + ' ' + (c.middlename or '') + ' ' + (c.lastname or '') + ' ' + (c.suffix or ''))).title()}
 	<tr class="${'odd' if i%2 else 'even'}">
-		<td>\$$commify(c.amount)</td>
+		<td style="text-align: right">\$$commify(c.amount)</td>
 		<td>$:whom()</td>
 		<td>$c.name.title()</td>
 	<td><a href="/lob/f/$c.filing_id">View details</a></td>
 	</tr>
 </table>
+<br/>
 
 $ page = int(query_param("page", 0))
 
 $if page != 0:
-    &lt;&lt;<a href="$changequery(page=page - 1)">Prev</a>
+    <span style="color: #EE4400">&larr;&nbsp;<a href="$changequery(page=page - 1)" class="more">Prev</a>&nbsp;&nbsp;|&nbsp;</span>
 
 $if len(contributions) == limit:
-     | <a href="$changequery(page=page + 1)">Next</a> &gt;&gt;
+    <span style="color: #EE4400"><a href="$changequery(page=page + 1)" class="more">Next</a>&nbsp;&rarr;</span>
 
 

@@ -9,15 +9,14 @@ $var title: Contributor employers
 .header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
 </style>
 
-<p><a href="/p/$pol.id">&laquo; Back to $pol.name</a></p>
 
 $def niceurl(url):
     $:url.lower().replace(' ', '_')
 
-<h1>Contributor employers</h1>
+<h1>Contributor employers of  $pol.title $pol.name</h1>
 
 <table class="structure" width="100%">
-<tr><td class="header">Employer</td><td class="header">Amount</td></tr>
+<tr><td class="header" style="text-align: right;">#</td><td class="header" style="width: 100%">Employer</td><td class="header">Amount</td></tr>
 $ trclass = "odd"
 
 $for c in contribs:
@@ -26,12 +25,13 @@ $for c in contribs:
     $else:
         $ trclass = "odd"
     <tr class="$loop.parity">
-        <td>$loop.index <a href="/empl/$:niceurl(c.employer_stem)">$c.employer_stem.title()</a></td>
-        <td>\$$commify(int(c.amt) )</td>
+        <td style="text-align: right;">$loop.index</td><td><a href="/empl/$:niceurl(c.employer_stem)">$c.employer_stem.title()</a></td>
+        <td style="text-align: right;">\$$commify(int(c.amt) )</td>
     </tr>   
 </table>
 
-<p><a href="/p/$pol.id">&laquo; Back to $pol.name</a></p>
+<br />
+<span style="color: #EE4400">&larr;&nbsp;<a href="/p/$pol.id" class="more">Back to $pol.title $pol.name</a></span>
 
 <div class="sources">
   Money data from the <a href="http://www.fec.gov/">FEC</a>.

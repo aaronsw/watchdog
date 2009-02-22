@@ -5,9 +5,11 @@ $var color: white
 
 $var title: Politicians
 
+<h1>List of Politicians</h1>
+
 <ul>
 $for p in pols:
-    <li>$p.district.name: <a href="/p/$p.id">$p.name</a></li>
+    <li>$p.district.name: <a href="/p/$p.id">$p.title $p.name</a> $p.party</li>
 </ul>
 
 <p><strong>Developers:</strong> Get this page in <a href="index.n3">N3</a>, <a href="index.xml">XML</a>, or <a href="index.json">JSON</a>.</p>

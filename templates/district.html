@@ -1,5 +1,7 @@
 $def with (d, pos)
 
+$var map: True
+
 $var width: 90%
 $var color: white
 
@@ -17,16 +19,16 @@ $var head:
                [$d.center_lat, $d.center_lng, $d.zoom_level - 1],
                'mapinfo')
     </script>
-    <style>
-    #main { width: 100%;}
-    .bigmap { width: 100%; height: 800px; margin-bottom: 2em; background-color: rgb(229, 227, 223);}
-    </style>
 
 $var sidebar: None
 $var maxi: True
 
-<h1>$d.state.name’s $d.districtth congressional district</h1>
-
+    <style>
+	html, body, #map, #googlemap	{ width: 100%; height: 100%; }
+    #main { width: 100%; height: 100%}
+    .bigmap { width: 100%; height: 100% background-color: rgb(229, 227, 223);}
+    </style>
+    
 <div id="googlemap" class="bigmap">
 </div>
 
@@ -35,8 +37,9 @@ $if d.politician and d.politician.id and d.politician.firstname:
     $if d.politician.photo_path:
         <div style="float: left; padding-right: 12px; padding-bottom: 12px;"><a href="/p/$d.politician.id"><img src="http://watchdog.net$d.politician.photo_path" 
           width="5em" style="margin: 0em; padding: 5px; border: 1px solid #666;" alt="Headshot" class="smallheadshot" /></a></div>
-    
-    <div class="subhead-blue">Represented by <a href="/p/$d.politician.id">
+        <div class="fakeh1">$d.name</div>
+        <div class="subhead-blue" style="margin-top: 0px; padding-top: 0px;">$d.state.name’s $d.districtth congressional district<br />
+        Represented by <a href="/p/$d.politician.id">
         $if d.politician.nickname:
             $d.politician.nickname $d.politician.lastname
         $else:
@@ -64,10 +67,8 @@ $def spark(lable, data, polid, by, unit='', url=None):
                  class="sparkline" /></a></td>
     <td class="sparknum"><sup>(#${pos('district',by,polid)})</sup></td>
 
-
-<a href="/us/${d.state.code.lower()}">More about $d.state.name...</a>
 <br clear="both" />
-<table class="charted" cellpadding="0" cellspacing="0" border="0"><tbody>
+<table class="charted" cellpadding="0" cellspacing="0" border="0" style="width: 400px;"><tbody>
 $if d.cook_index:
     <tr class="even">
       <th>Cook <acronym title="Partisan Voting Index">PVI</acronym>:</th>
@@ -88,14 +89,23 @@ $if d.cook_index:
   </tr><tr class="odd">
       $:spark('Earmarks received per capita:', d.earmark_per_capita, d.name, 'earmark_per_capita', '$')
   </tr>
-</tbody></table>
-</div>
-
-<div class="sources">
-  District information from 
+<tr>
+<td colspan="4" class="disclaimer" style="text-align: left; border-top: 1px solid #ccc; padding-top: 6px;">
+  <span style="color: #638f45">District information from 
   <cite><a href="$d.almanac" class="external">The Almanac of American Politics 2008</a></cite>. 
   Maps from the <a href="http://www.census.gov/geo/www/cob/cd110.html" class="external">US Census Bureau</a>
-  and <a href="http://www.govtrack.us/congress/findyourreps.xpd?state=$d.state&amp;district=$d.district" class="external">GovTrack</a>.
+  and <a href="http://www.govtrack.us/congress/findyourreps.xpd?state=$d.state&amp;district=$d.district" class="external">GovTrack</a>.</span> 
+  <span style="color: #0f5b89"><strong>Developers:</strong> Get this page in <a href="${d.name.lower()}.n3">N3</a>, <a href="${d.name.lower()}.xml">XML</a>, or <a href="${d.name.lower()}.json">JSON</a>.</span>
+</td></tr></table>
+
+<div style="color: #EE4400">&larr;&nbsp;<a href="/us/${d.state.code.lower()}" class="more">More about $d.state.name...</a>
+
 </div>
 
-<p><strong>Developers:</strong> Get this page in <a href="${d.name.lower()}.n3">N3</a>, <a href="${d.name.lower()}.xml">XML</a>, or <a href="${d.name.lower()}.json">JSON</a>.</p>
+</div>
+
+
+
+
+</div>
+

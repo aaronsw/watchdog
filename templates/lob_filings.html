@@ -9,17 +9,13 @@ $var title: Lobbyist Filings
 .header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
 </style>
 
-
 <h1>Lobbyist Filings</h1>
 
-$def fixcase(n):
-	$n[0].upper()$n[1::].lower()
-	
 $def lobLink(f):
 	$if f.lobbyist.contact_name:
-		<a href="/lob/pe/$f.lobbyist_id">$fixcase(f.lobbyist.contact_name)</a>
+		<a href="/lob/pe/$f.lobbyist_id">$f.lobbyist.contact_name.title()</a>
 	$else:
-		<a href="/lob/pe/$f.lobbyist_id">$f.lobbyist.prefix $f.lobbyist.firstname $f.lobbyist.lastname $f.lobbyist.suffix</a>
+		<a href="/lob/pe/$f.lobbyist_id">$f.lobbyist.prefix $f.lobbyist.firstname.title() $f.lobbyist.lastname.title() $f.lobbyist.suffix</a>
 
 <table class="structure" width=100%>
 	<tr>
@@ -45,7 +41,11 @@ $for i,f in enumerate(filings):
 	</td>
 	<td>
 		$if f.org:
+<<<<<<< Updated upstream:templates/lob_filings.html
 			<a href="/lob/o/$f.org_id">$fixcase(f.org.name)</a>
+=======
+			<a href="/l/o/$f.org_id">$f.org.name.title()</a>
+>>>>>>> Stashed changes:templates/lob_filings.html
 	</td>
 	<td>$f.certified</td>
 	<td>

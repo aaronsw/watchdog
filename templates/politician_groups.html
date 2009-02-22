@@ -9,12 +9,10 @@ $var title: Interest Group Alignment
 .header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
 </style>
 
-<p><a href="/p/$pol.id">&laquo; Back to $pol.name</a></p>
-
-<h1>Interest Group Alignment</h1>
+<h1>Interest Group Alignment of $pol.title $pol.name</h1>
 
 <table class="structure" width="100%">
-<tr><td class="header">Group</td><td class="header">Agreement</td></tr>
+<tr><td class="header" style="text-align: right;">#</td><td class="header" style="width: 100%">Group</td><td class="header">Agreement</td></tr>
 $ trclass = "odd"
 
 $for group in related:
@@ -22,11 +20,12 @@ $for group in related:
         $ trclass = "even"
     $else:
         $ trclass = "odd"
-    <tr class="$trclass"><td>$group.longname</td><td>$int(group.agreement * 100)% (<a href="/p/$pol.id/$group.id">$group.agreed/$group.total votes</a>)</td></tr>
+    <tr class="$trclass"><td style="text-align: right;">$loop.index</td><td>$group.longname</td><td style="white-space: nowrap">$int(group.agreement * 100)% (<a href="/p/$pol.id/$group.id">$group.agreed/$group.total votes</a>)</td></tr>
    
 </table>
 
-<p><a href="/p/$pol.id">&laquo; Back to $pol.name</a></p>
+<br />
+<span style="color: #EE4400">&larr;&nbsp;<a href="/p/$pol.id" class="more">Back to $pol.title $pol.name</a></span>
 
 <div class="sources">
   Bill data comes from <a href="http://www.govtrack.us/" class="external">GovTrack</a>.

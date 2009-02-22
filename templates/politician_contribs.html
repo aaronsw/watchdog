@@ -9,12 +9,10 @@ $var title: Contributors
 .header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
 </style>
 
-<p><a href="/p/$pol.id">&laquo; Back to $pol.name</a></p>
-
-<h1>Contributors</h1>
+<h1>Contributors to $pol.title $pol.name</h1>
 
 <table class="structure" width="100%">
-<tr><td class="header">Name</td><td class="header">Amount</td></tr>
+<tr><td class="header" style="text-align: right;">#</td><td class="header" style="width: 100%">Name</td><td class="header">Amount</td></tr>
 $ trclass = "odd"
 
 $for c in contribs:
@@ -23,13 +21,14 @@ $for c in contribs:
     $else:
         $ trclass = "odd"
     <tr class="$trclass">
-        <td>$loop.index <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name)</a></td>
+        <td style="text-align: right;">$loop.index</td><td> <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name.title())</a></td>
         <td>\$$commify(int(c.amt))</td>
     </tr>
    
 </table>
 
-<p><a href="/p/$pol.id">&laquo; Back to $pol.name</a></p>
+<br />
+<span style="color: #EE4400">&larr;&nbsp;<a href="/p/$pol.id" class="more">Back to $pol.title $pol.name</a></span>
 
 <div class="sources">
   Money data from the <a href="http://www.fec.gov/">FEC</a>.
