@@ -26,6 +26,12 @@ def load_all():
     for name, district in items('districts'):
         db.insert('district', seqname=False, name=name, **unidecode(district))
 
+    at_large_dists = db.select('district', what='name', where="name like '__-00'")
+    for d in at_large_dists:
+        state = db.select('district', what='center_lng, center_lat', where='name=$d.name[:2]', vars=locals()).list()
+        if state:
+            db.update('district', center_lng=state[0].center_lng, center_lat=state[0].center_lat, where='name=$d.name', vars=locals())
+    
     db.update('congress', where="current_member='t'", current_member=False)
     for polid, pol in items('politicians'):
         db.insert('politician', seqname=False, id=polid, **unidecode(pol))
