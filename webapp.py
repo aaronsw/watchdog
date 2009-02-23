@@ -605,8 +605,9 @@ class dproperty:
                 item.id = 'd' + item.name
                 item.path = '/us/' + item.name.lower()
             elif table == 'politician':
-                item.name = '%s %s (%s-%s)' % (item.firstname, item.lastname,
-                  (item.party or 'I')[0], item.district_id.split('-')[0])
+                state = '-'+item.district_id.split('-')[0] if item.district_id else ''
+                item.name = '%s %s (%s%s)' % (item.firstname, item.lastname,
+                  (item.party or 'I')[0], state)
                 item.path = '/p/' + item.id
         return render.dproperty(items, what)
 

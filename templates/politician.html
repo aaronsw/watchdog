@@ -245,10 +245,6 @@ $for c in pol.contributors:
         <th>$loop.index <a href="/contrib/$c.zip/$name">$format_name(c.name.title())</a></th>
         <td>\$$commify(int(c.amt))</td>
     </tr>
-    $if trclass == "odd":
-        $ trclass = "even"
-    $else:
-        $ trclass = "odd"
   <tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/contribs" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr>        
 </tbody></table>
 </td>
