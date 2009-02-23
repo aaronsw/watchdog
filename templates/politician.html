@@ -267,11 +267,12 @@ $for c in pol.contributor_employers:
 
 </td>
 </tr>
-
+<tr>
+    
 $if pol.lob_contribs:
-     <tr><td colspan="2" class="rule"><tbody>
+     <td colspan="2" class="rule">
      <h2 class="rep">Top Lobby Contributors</h2>
-     <table class="charted structure contributors" style="width: 100%">
+     <table class="charted structure contributors" style="width: 100%"><tbody>
      $for c in pol.lob_contribs:
          $def whom():
      		${(c.contact_name if c.contact_name else ((c.prefix or '') + ' ' + (c.firstname or '') + ' ' + (c.middlename or '') + ' ' + (c.lastname or '') + ' ' + (c.suffix or ''))).title()}
@@ -281,8 +282,8 @@ $if pol.lob_contribs:
          </tr>
      <tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/lobby" class="more">More lobby contributors</a>&nbsp;&rarr;</span></td></tr>        
      </tbody></table>
-     </td></tr>
-    
+     </td>
+</tr>
 </table>
 
 <div class="sources">
