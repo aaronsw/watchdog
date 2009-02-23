@@ -32,8 +32,8 @@ $for c in candidates:
                 , <span class="subtitle">
                     <a href="/occupation/$urlquote(c.occupation)">$c.occupation.title()</a>
                   </span>
-            $if c.employer:
-                , <span class="subtitle"><a href="/empl/$urlquote(c.employer)">$c.employer.title()</a></span>
+            $if c.employer_stem:
+                , <span class="subtitle"><a href="/empl/$urlquote(c.employer_stem)">$c.employer.title()</a></span>
             </td>
         </tr>
     <tr class="even">
@@ -44,7 +44,7 @@ $for c in candidates:
         </td>
     </tr>
     $ prev_occupation = c.occupation.title()
-    $ prev_employer = c.employer.title()
+    $ prev_employer = c.employer_stem.title()
 </table>
 
 <h2>Committees</h2>
@@ -53,15 +53,15 @@ $for c in candidates:
 $ prev_occupation = None
 $ prev_employer = None
 $for c in committees:
-    $if c.occupation.title() != prev_occupation or c.employer.title() != prev_employer:
+    $if c.occupation.title() != prev_occupation or c.employer_stem.title() != prev_employer:
         <tr style="border-bottom: 1px solid #999;">
             <td colspan="2" class="date"><strong>$name.title()</strong>
             $if c.occupation:
                 , <span class="subtitle">
                     <a href="/occupation/$urlquote(c.occupation)">$c.occupation.title()</a>
                   </span>
-            $if c.employer:
-                , <span class="subtitle"><a href="/empl/$urlquote(c.employer)">$c.employer.title()</a></span>
+            $if c.employer_stem:
+                , <span class="subtitle"><a href="/empl/$urlquote(c.employer_stem)">$c.employer.title()</a></span>
             </td>
         </tr>
     <tr class="even">
@@ -71,5 +71,5 @@ $for c in committees:
         </td>
     </tr>
     $ prev_occupation = c.occupation.title()
-    $ prev_employer = c.employer.title()    
+    $ prev_employer = c.employer_stem.title()    
 </table>
