@@ -224,23 +224,27 @@ def politician_contributor_employers(polid):
             AND p.id = $polid AND cn.employer_stem != '' GROUP BY cn.employer_stem 
             ORDER BY amt DESC""", vars=locals())
 
-def candidates_by_occupation(occupation):
-    return db.query("""SELECT sum(amount) AS amt, p.firstname, 
+def candidates_by_occupation(occupation, limit=None):
+    query = """SELECT sum(amount) AS amt, p.firstname, 
             p.lastname, p.id as polid, p.party FROM contribution cn, 
             committee cm, politician_fec_ids pfi, politician p 
             WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
             AND pfi.politician_id = p.id 
             AND lower(cn.occupation) = lower($occupation)
             GROUP BY polid, p.lastname, p.firstname, p.party 
-            ORDER BY amt DESC""", vars=locals())
+            ORDER BY amt DESC"""
+    if limit: query += " limit 5"
+    return db.query(query, vars=locals())
 
-def committees_by_occupation(occupation):
-    return db.query("""SELECT sum(amount) AS amt, cm.id, cm.name
+def committees_by_occupation(occupation, limit=None):
+    query = """SELECT sum(amount) AS amt, cm.id, cm.name
             FROM contribution cn, committee cm 
             WHERE cn.recipient_id = cm.id 
             AND lower(cn.occupation) = lower($occupation)
             GROUP BY cm.id, cm.name
-            ORDER BY amt DESC""", vars=locals())
+            ORDER BY amt DESC"""
+    if limit: query += " limit 5"
+    return db.query(query, vars=locals())
 
 def politician_lob_contributions(polid, page, limit):
     return db.select(['lob_organization', 'lob_filing', 'lob_contribution', 'lob_person'], 
@@ -319,8 +323,8 @@ class contributor:
 
 class occupation:
     def GET(self, occupation):
-        candidates = list(candidates_by_occupation(occupation))[:5]
-        committees = list(committees_by_occupation(occupation))[:5]
+        candidates = candidates_by_occupation(occupation, 5)
+        committees = committees_by_occupation(occupation, 5)
         return render.occupation(candidates, committees, occupation) 
 
 class occupation_candidates:
