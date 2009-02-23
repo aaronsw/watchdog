@@ -58,7 +58,6 @@ def combine():
         if not wd: continue
         current_member = wd.get('current_member')
         watchdog_id = wd['watchdog_id']
-
         govtrack_map[pol.id] = watchdog_map[watchdog_id] = newpol = web.storage()
 
         newpol['current_member'] = current_member
@@ -87,7 +86,6 @@ def combine():
         if pol.get('Speeches'):
             newpol.n_speeches = int(pol.Speeches)
             newpol.words_per_speech = int(pol.WordsPerSpeech)
-    
     return watchdog_map
 
 
@@ -116,6 +114,8 @@ def main():
             roles = pol.pop('roles')
             # Load the Politician table
             if db.select('politician', where='id=$polid',vars=locals()): #pol.get('current_member'):
+                if roles and pol.current_member:
+                    pol.officeurl = roles[-1].get('url')
                 db.update('politician', where='id=$polid', vars=locals(), 
                         **unidecode(filter_dict(schema.Politician.columns.keys(),
                             pol)))
