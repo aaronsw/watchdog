@@ -41,11 +41,7 @@ $for i,f in enumerate(filings):
 	</td>
 	<td>
 		$if f.org:
-<<<<<<< Updated upstream:templates/lob_filings.html
 			<a href="/lob/o/$f.org_id">$fixcase(f.org.name)</a>
-=======
-			<a href="/l/o/$f.org_id">$f.org.name.title()</a>
->>>>>>> Stashed changes:templates/lob_filings.html
 	</td>
 	<td>$f.certified</td>
 	<td>
