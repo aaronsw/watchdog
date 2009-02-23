@@ -41,7 +41,7 @@ $for i,f in enumerate(filings):
 	</td>
 	<td>
 		$if f.org:
-			<a href="/lob/o/$f.org_id">$fixcase(f.org.name)</a>
+			<a href="/lob/o/$f.org_id">$f.org.name.title()</a>
 	</td>
 	<td>$f.certified</td>
 	<td>
