@@ -18,6 +18,7 @@ $var color: white
     table.contributors { width: 100%; }
     table.contributors td { text-align: right;}
     table.contributors th { font-weight: normal;}
+    table.interest_group_agreement td { text-align: right;}
 </style>
 
 <div class="rep-info">
@@ -237,7 +238,7 @@ $if pol.handshakes:
 <tr>
 <td colspan="2" class="rule">
 <h2 class="rep">Top Contributors</h2>
-<table class="charted structure contributors" style="width: 100%">
+<table class="charted structure contributors" style="width: 100%"><tbody>
 $for c in pol.contributors:
     $ names = c.name.lower().replace(' ', '').split(',')
     $ name = names[-1]+'_'+'_'.join(names[:-1])
@@ -256,21 +257,19 @@ $def niceurl(url):
 <tr>
 <td colspan="2" class="rule">
 <h2 class="rep">Top Contributor Employers</h2>
-<table class="charted structure contributors" style="width: 100%">
+<table class="charted structure contributors" style="width: 100%"><tbody>
 $for c in pol.contributor_employers:
     <tr class="$loop.parity">
         <th>$loop.index <a href="/empl/$:niceurl(c.employer_stem)">$c.employer_stem.title()</a></th>
         <td>\$$commify(int(c.amt))</td>
     </tr>
-</table>
-
-<p><a href="/p/$pol.id/contrib-employers" class="footer">More...</a></p>
+<tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/contrib-employers" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr></tbody></table>
 
 </td>
-</tr><tr>
+</tr>
 
 $if pol.lob_contribs:
-     <td colspan="2" class="rule">
+     <tr><td colspan="2" class="rule"><tbody>
      <h2 class="rep">Top Lobby Contributors</h2>
      <table class="charted structure contributors" style="width: 100%">
      $for c in pol.lob_contribs:
@@ -280,11 +279,11 @@ $if pol.lob_contribs:
              <th>$loop.index <a href="/lob/f//$c.filing_id">$:whom() - $c.name.title()</a></th>
      		<td>\$$commify(c.amount)</td>
          </tr>
-       <tr><td colspan="2" style="text-align: left;"><span style="color: #EE4400"><a href="/p/$pol.id/lobby" class="more">More lobby contributors</a>&nbsp;&rarr;</span></td></tr>        
-     </table>
-     </td>
+     <tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/lobby" class="more">More lobby contributors</a>&nbsp;&rarr;</span></td></tr>        
+     </tbody></table>
+     </td></tr>
     
-</tr></table>
+</table>
 
 <div class="sources">
   Money data from <nobr><a href="http://www.fec.gov/" class="external">the FEC</a>.</nobr>
