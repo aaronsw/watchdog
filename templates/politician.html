@@ -269,22 +269,6 @@ $for c in pol.contributor_employers:
 </td>
 </tr><tr>
 
-<tr>
-<td colspan="2" class="rule">
-<h2 class="rep">Top Lobby Contributors</h2>
-<table class="charted structure contributors" style="width: 100%">
-$for c in pol.lob_contribs:
-    $def whom():
-		${(c.contact_name if c.contact_name else ((c.prefix or '') + ' ' + (c.firstname or '') + ' ' + (c.middlename or '') + ' ' + (c.lastname or '') + ' ' + (c.suffix or ''))).title()}
-    <tr class="$loop.parity">
-        <th>$loop.index <a href="/lob/f/$c.filing_id">$:whom(), $c.name.title()</a></th>
-		<td>\$$commify(c.amount)</td>
-    </tr>
-</table>
-
-</tr><tr>
-
-
 $if pol.lob_contribs:
      <td colspan="2" class="rule">
      <h2 class="rep">Top Lobby Contributors</h2>
