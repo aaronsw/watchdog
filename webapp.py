@@ -138,7 +138,7 @@ class find:
                 raise web.seeother('/us/%s' % i.q)
             
             results = se.query(i.q)
-            reps = db.select('curr_politician', where=web.sqlors('id=', results))
+            reps = db.select('politician', where=web.sqlors('id=', results))
             if len(reps) > 1:
                 return render.find_multi_reps(reps)
             else:
