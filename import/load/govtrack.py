@@ -116,6 +116,7 @@ def main():
             if db.select('politician', where='id=$polid',vars=locals()): #pol.get('current_member'):
                 if roles and pol.current_member:
                     pol.officeurl = roles[-1].get('url')
+                    pol.party = roles[-1].get('party')
                 db.update('politician', where='id=$polid', vars=locals(), 
                         **unidecode(filter_dict(schema.Politician.columns.keys(),
                             pol)))
