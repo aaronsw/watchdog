@@ -206,11 +206,11 @@ $if pol.related_groups:
 <tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/groups" class="more">More interest groups</a>&nbsp;&rarr;</span></td></tr>        
     </tbody></table>
 
-</td></tr><tr>
+</td></tr>
 
 
 $if pol.handshakes:
-    <td colspan="2" class="rule">
+    <tr><td colspan="2" class="rule">
     <h2 class="rep">Handshakes</h2>
     <table cellpadding="0" cellspacing="0" width="100%" class="handshakes">
     <tbody><tr>
@@ -235,42 +235,38 @@ $if pol.handshakes:
     </tbody></table>
     </td></tr>
 
-<tr>
-<td colspan="2" class="rule">
-<h2 class="rep">Top Contributors</h2>
-<table class="charted structure contributors" style="width: 100%"><tbody>
-$for c in pol.contributors:
-    $ names = c.name.lower().replace(' ', '').split(',')
-    $ name = names[-1]+'_'+'_'.join(names[:-1])
-    <tr class="$loop.parity">
-        <th>$loop.index <a href="/contrib/$c.zip/$name">$format_name(c.name.title())</a></th>
-        <td>\$$commify(int(c.amt))</td>
-    </tr>
-  <tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/contribs" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr>        
-</tbody></table>
-</td>
-</tr>
+$if pol.contributors:
+    <tr><td colspan="2" class="rule">
+        <h2 class="rep">Top Contributors</h2>
+        <table class="charted structure contributors" style="width: 100%"><tbody>
+        $for c in pol.contributors:
+            $ names = c.name.lower().replace(' ', '').split(',')
+            $ name = names[-1]+'_'+'_'.join(names[:-1])
+            <tr class="$loop.parity">
+                <th>$loop.index <a href="/contrib/$c.zip/$name">$format_name(c.name.title())</a></th>
+                <td>\$$commify(int(c.amt))</td>
+            </tr>
+            <tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/contribs" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr>
+        </tbody></table>
+    </td></tr>
 
 $def niceurl(url):
     $:url.lower().replace(' ', '_')
 
-<tr>
-<td colspan="2" class="rule">
-<h2 class="rep">Top Contributor Employers</h2>
-<table class="charted structure contributors" style="width: 100%"><tbody>
-$for c in pol.contributor_employers:
-    <tr class="$loop.parity">
-        <th>$loop.index <a href="/empl/$:niceurl(c.employer_stem)">$c.employer_stem.title()</a></th>
-        <td>\$$commify(int(c.amt))</td>
-    </tr>
-<tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/contrib-employers" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr></tbody></table>
-
-</td>
-</tr>
-<tr>
+$if pol.contributors:
+    <tr><td colspan="2" class="rule">
+        <h2 class="rep">Top Contributor Employers</h2>
+        <table class="charted structure contributors" style="width: 100%"><tbody>
+        $for c in pol.contributor_employers:
+            <tr class="$loop.parity">
+            <th>$loop.index <a href="/empl/$:niceurl(c.employer_stem)">$c.employer_stem.title()</a></th>
+            <td>\$$commify(int(c.amt))</td>
+            </tr>
+        <tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/contrib-employers" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr></tbody></table>
+    </td></tr>
     
 $if pol.lob_contribs:
-     <td colspan="2" class="rule">
+     <tr><td colspan="2" class="rule">
      <h2 class="rep">Top Lobby Contributors</h2>
      <table class="charted structure contributors" style="width: 100%"><tbody>
      $for c in pol.lob_contribs:
@@ -282,8 +278,8 @@ $if pol.lob_contribs:
          </tr>
      <tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/lobby" class="more">More lobby contributors</a>&nbsp;&rarr;</span></td></tr>        
      </tbody></table>
-     </td>
-</tr>
+     </td></tr>
+
 </table>
 
 <div class="sources">
