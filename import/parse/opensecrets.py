@@ -1,4 +1,4 @@
-import glob
+import glob, re
 import web
 import xmltramp
 
@@ -27,6 +27,22 @@ def parse_can(opensecretsid, year=2008):
     out.badmoney = bad
 
     return out
+
+r_row = re.compile(r"<tr><td>([A-Za-z ]+)</td><td class='number'>\$([\d,]+)</td><td class='number'>\$([\d,]+)</td><td class='number'>\$([\d,]+)</td></tr>")
+
+def parse_sector():
+    fhout = file('sectors.tsv', 'w')
+    fhout.write('opensecretsid\tsector\ttotal\tpacs\tindividuals\n')
+    for fn in glob.glob('*.html'):
+        opensecretsid = fn.split('.')[0]
+        fh = file(fn).read()
+        for (sector, total, pacs, indivs) in r_row.findall(fh):
+            total = total.replace(',', '')
+            pacs = pacs.replace(',', '')
+            indivs = indivs.replace(',', '')
+            fhout.write('\t'.join([opensecretsid, sector, total, pacs, indivs]) + '\n')
+
+    fhout.close()
 
 def parse_all():
     for fn in glob.glob(CANSUM % (2008, '*')):
