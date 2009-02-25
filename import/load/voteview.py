@@ -8,7 +8,7 @@ from settings import db
 
 def main():
     for pol in voteview.parse():
-        if pol.congress != 110 or not pol.get('district_id'): continue #@@
+        if not pol.get('district_id'): continue #@@
     
         if not tools.districtp(pol.district_id) and pol.district_id.endswith('01'):
             pol.district_id = pol.district_id.split('-')[0] + '-' + '00'

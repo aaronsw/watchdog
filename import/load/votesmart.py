@@ -33,6 +33,7 @@ bios_mapping = {
   'nickName':'nickname',
   'gender':'gender',
   'birthDate':'birthday',
+  'birthPlace':'birthplace',
   'education':'education',
   'religion':'religion',
 }
