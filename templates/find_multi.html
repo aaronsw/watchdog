@@ -11,12 +11,7 @@ $var title: Multiple districts
 
 <ul>
 $for d in districts:
-    $if d.politician.nickname:
-        $ name = d.politician.nickname+' '+d.politician.lastname
-    $else:
-        $ name = d.politician.firstname+' '+d.politician.middlename+' '+d.politician.lastname
-
-    <li><a href="/us/$d.name.lower()">$d.name</a> (Rep. $name)</li>
+    <li><a href="/us/$d.name.lower()">$d.name</a> (Rep. $d.politician.name)</li>
 </ul>
 
 <form method="GET" action="/us/">
