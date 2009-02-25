@@ -54,7 +54,6 @@
     "govtrack_id": "409577"
   }, 
   "aaron_schock": {
-    "collision": true, 
     "votesmart_id": "33428"
   }, 
   "aaron_shaw": {
@@ -388,7 +387,8 @@
   }, 
   "alan_grayson": {
     "current_member": true, 
-    "govtrack_id": "412276"
+    "govtrack_id": "412276", 
+    "votesmart_id": "68184"
   }, 
   "alan_hansen": {
     "votesmart_id": "94202"
@@ -1604,14 +1604,16 @@
   }, 
   "anh_cao": {
     "current_member": true, 
-    "govtrack_id": "412268"
+    "govtrack_id": "412268", 
+    "votesmart_id": "93967"
   }, 
   "anibal_acevedovila": {
     "govtrack_id": "400002"
   }, 
   "ann_kirkpatrick": {
     "current_member": true, 
-    "govtrack_id": "412286"
+    "govtrack_id": "412286", 
+    "votesmart_id": "28425"
   }, 
   "anna_eshoo": {
     "current_member": true, 
@@ -2283,9 +2285,6 @@
     "govtrack_id": "400629", 
     "votesmart_id": "9490"
   }, 
-  "barack_obama_jr": {
-    "votesmart_id": "9490"
-  }, 
   "barbara_boxer": {
     "current_member": true, 
     "govtrack_id": "300011", 
@@ -2452,10 +2451,6 @@
     "govtrack_id": "406106"
   }, 
   "ben_lujan": {
-    "govtrack_id": "412293", 
-    "votesmart_id": "102842"
-  }, 
-  "ben_lujan_jr": {
     "votesmart_id": "102842"
   }, 
   "ben_morris": {
@@ -2951,7 +2946,8 @@
   }, 
   "betsy_markey": {
     "current_member": true, 
-    "govtrack_id": "412298"
+    "govtrack_id": "412298", 
+    "votesmart_id": "106225"
   }, 
   "betty_mccollum": {
     "current_member": true, 
@@ -2986,7 +2982,8 @@
   }, 
   "bill_cassidy": {
     "current_member": true, 
-    "govtrack_id": "412269"
+    "govtrack_id": "412269", 
+    "votesmart_id": "69494"
   }, 
   "bill_delahunt": {
     "current_member": true, 
@@ -3019,7 +3016,8 @@
   }, 
   "bill_posey": {
     "current_member": true, 
-    "govtrack_id": "412309"
+    "govtrack_id": "412309", 
+    "votesmart_id": "24280"
   }, 
   "bill_sali": {
     "current_member": true, 
@@ -3072,7 +3070,8 @@
   }, 
   "blaine_luetkemeyer": {
     "current_member": true, 
-    "govtrack_id": "412292"
+    "govtrack_id": "412292", 
+    "votesmart_id": "20400"
   }, 
   "blair_lee": {
     "govtrack_id": "406692"
@@ -3168,7 +3167,8 @@
   }, 
   "bobby_bright": {
     "current_member": true, 
-    "govtrack_id": "412267"
+    "govtrack_id": "412267", 
+    "votesmart_id": "104839"
   }, 
   "bobby_jindal": {
     "govtrack_id": "400634"
@@ -3661,6 +3661,9 @@
   "carlos_french": {
     "govtrack_id": "404321"
   }, 
+  "carlos_monteagudo": {
+    "votesmart_id": "110932"
+  }, 
   "carlos_moorhead": {
     "govtrack_id": "407899"
   }, 
@@ -3744,6 +3747,9 @@
   }, 
   "carville_benson": {
     "govtrack_id": "401378"
+  }, 
+  "cary_capparelli": {
+    "votesmart_id": "110926"
   }, 
   "case_broderick": {
     "govtrack_id": "401813"
@@ -5003,6 +5009,9 @@
   "charles_wharton": {
     "govtrack_id": "411484"
   }, 
+  "charles_wheelan": {
+    "votesmart_id": "110913"
+  }, 
   "charles_wheeler": {
     "govtrack_id": "411493"
   }, 
@@ -5096,7 +5105,8 @@
   }, 
   "chellie_pingree": {
     "current_member": true, 
-    "govtrack_id": "412307"
+    "govtrack_id": "412307", 
+    "votesmart_id": "6586"
   }, 
   "cherubusco_newton": {
     "govtrack_id": "408161"
@@ -5213,7 +5223,8 @@
   }, 
   "chris_lee": {
     "current_member": true, 
-    "govtrack_id": "412291"
+    "govtrack_id": "412291", 
+    "votesmart_id": "110348"
   }, 
   "chris_murphy": {
     "current_member": true, 
@@ -5863,7 +5874,8 @@
   }, 
   "cynthia_lummis": {
     "current_member": true, 
-    "govtrack_id": "412294"
+    "govtrack_id": "412294", 
+    "votesmart_id": "15546"
   }, 
   "cynthia_mckinney": {
     "govtrack_id": "400513"
@@ -5961,7 +5973,8 @@
   }, 
   "dan_maffei": {
     "current_member": true, 
-    "govtrack_id": "412297"
+    "govtrack_id": "412297", 
+    "votesmart_id": "68959"
   }, 
   "dan_meuser": {
     "votesmart_id": "102438"
@@ -6167,6 +6180,9 @@
   }, 
   "daniel_jones": {
     "govtrack_id": "406110"
+  }, 
+  "daniel_kay": {
+    "votesmart_id": "110928"
   }, 
   "daniel_kerr": {
     "govtrack_id": "406300"
@@ -6431,6 +6447,9 @@
   "david_aitken": {
     "govtrack_id": "400728"
   }, 
+  "david_anderson": {
+    "votesmart_id": "110535"
+  }, 
   "david_armstrong": {
     "govtrack_id": "400919"
   }, 
@@ -6544,8 +6563,7 @@
   }, 
   "david_davis": {
     "collision": true, 
-    "govtrack_id": "403233", 
-    "votesmart_id": "753"
+    "govtrack_id": "403233"
   }, 
   "david_de_armond": {
     "govtrack_id": "403299"
@@ -6710,9 +6728,6 @@
     "current_member": true, 
     "govtrack_id": "400058", 
     "votesmart_id": "26911"
-  }, 
-  "david_lee_hobson": {
-    "votesmart_id": "27014"
   }, 
   "david_levy": {
     "collision": true, 
@@ -6945,9 +6960,6 @@
   "david_watson": {
     "govtrack_id": "411371"
   }, 
-  "david_weldon": {
-    "votesmart_id": "22159"
-  }, 
   "david_white": {
     "govtrack_id": "411525"
   }, 
@@ -7031,6 +7043,9 @@
   "dean_taylor": {
     "govtrack_id": "410655"
   }, 
+  "deb_gordils": {
+    "votesmart_id": "110919"
+  }, 
   "debbie_halvorson": {
     "current_member": true, 
     "govtrack_id": "412279", 
@@ -7045,10 +7060,6 @@
     "current_member": true, 
     "govtrack_id": "400623", 
     "votesmart_id": "24301"
-  }, 
-  "deborah_halvorson": {
-    "collision": true, 
-    "votesmart_id": "9531"
   }, 
   "deborah_pryce": {
     "current_member": true, 
@@ -7205,7 +7216,8 @@
   }, 
   "dina_titus": {
     "current_member": true, 
-    "govtrack_id": "412318"
+    "govtrack_id": "412318", 
+    "votesmart_id": "2629"
   }, 
   "dirk_kempthorne": {
     "govtrack_id": "406256"
@@ -7366,7 +7378,8 @@
   }, 
   "donna_christian-christensen": {
     "current_member": true, 
-    "govtrack_id": "400073"
+    "govtrack_id": "400073", 
+    "votesmart_id": "1032"
   }, 
   "donna_edwards": {
     "current_member": true, 
@@ -7480,10 +7493,9 @@
     "govtrack_id": "404155"
   }, 
   "duncan_hunter": {
-    "collision": true, 
     "current_member": true, 
     "govtrack_id": "412283", 
-    "votesmart_id": "26776"
+    "votesmart_id": "104308"
   }, 
   "duncan_mcarthur": {
     "govtrack_id": "407314"
@@ -9136,14 +9148,16 @@
   }, 
   "eric_massa": {
     "current_member": true, 
-    "govtrack_id": "412299"
+    "govtrack_id": "412299", 
+    "votesmart_id": "69120"
   }, 
   "eric_roberson": {
     "votesmart_id": "102229"
   }, 
   "erik_paulsen": {
     "current_member": true, 
-    "govtrack_id": "412303"
+    "govtrack_id": "412303", 
+    "votesmart_id": "3833"
   }, 
   "erland_hedrick": {
     "govtrack_id": "405308"
@@ -9800,7 +9814,8 @@
     "govtrack_id": "405225"
   }, 
   "frank_annunzio": {
-    "govtrack_id": "400895"
+    "govtrack_id": "400895", 
+    "votesmart_id": "110935"
   }, 
   "frank_ballance_jr": {
     "govtrack_id": "400014"
@@ -10009,10 +10024,6 @@
   "frank_kratovil": {
     "current_member": true, 
     "govtrack_id": "412289", 
-    "votesmart_id": "101875"
-  }, 
-  "frank_kratovil_jr": {
-    "collision": true, 
     "votesmart_id": "101875"
   }, 
   "frank_lausche": {
@@ -10659,7 +10670,8 @@
   }, 
   "gary_peters": {
     "current_member": true, 
-    "govtrack_id": "412305"
+    "govtrack_id": "412305", 
+    "votesmart_id": "8749"
   }, 
   "gaston_robbins": {
     "govtrack_id": "409271"
@@ -11932,7 +11944,8 @@
   }, 
   "gerry_connolly": {
     "current_member": true, 
-    "govtrack_id": "412272"
+    "govtrack_id": "412272", 
+    "votesmart_id": "95078"
   }, 
   "gerry_hazelton": {
     "govtrack_id": "405285"
@@ -12073,7 +12086,8 @@
   }, 
   "glenn_nye": {
     "current_member": true, 
-    "govtrack_id": "412301"
+    "govtrack_id": "412301", 
+    "votesmart_id": "109342"
   }, 
   "glenn_poshard": {
     "govtrack_id": "408839"
@@ -12081,9 +12095,6 @@
   "glenn_thompson": {
     "current_member": true, 
     "govtrack_id": "412317", 
-    "votesmart_id": "24046"
-  }, 
-  "glenn_thompson_jr": {
     "votesmart_id": "24046"
   }, 
   "glenni_scofield": {
@@ -12118,9 +12129,6 @@
   }, 
   "gordon_canfield": {
     "govtrack_id": "402265"
-  }, 
-  "gordon_harold_smith": {
-    "votesmart_id": "425"
   }, 
   "gordon_humphrey": {
     "govtrack_id": "405795"
@@ -12237,7 +12245,6 @@
     "votesmart_id": "2979"
   }, 
   "gregg_harper": {
-    "collision": true, 
     "current_member": true, 
     "govtrack_id": "412280", 
     "votesmart_id": "101985"
@@ -12245,6 +12252,9 @@
   "gregorio_sablan": {
     "current_member": true, 
     "govtrack_id": "412312"
+  }, 
+  "gregory_bedell": {
+    "votesmart_id": "110934"
   }, 
   "gregory_carman": {
     "govtrack_id": "402307"
@@ -12376,9 +12386,6 @@
   }, 
   "h_allen_smith": {
     "govtrack_id": "410027"
-  }, 
-  "h_james_saxton": {
-    "votesmart_id": "26953"
   }, 
   "h_l_callahan": {
     "govtrack_id": "400500"
@@ -12786,7 +12793,6 @@
     "votesmart_id": "102927"
   }, 
   "harry_teague": {
-    "collision": true, 
     "votesmart_id": "102408"
   }, 
   "harry_thayer": {
@@ -16762,8 +16768,7 @@
   }, 
   "james_walsh": {
     "collision": true, 
-    "govtrack_id": "411277", 
-    "votesmart_id": "26990"
+    "govtrack_id": "411277"
   }, 
   "james_ward": {
     "govtrack_id": "411309"
@@ -16849,6 +16854,9 @@
   "jamie_whitten": {
     "govtrack_id": "411587"
   }, 
+  "jan_donatelli": {
+    "votesmart_id": "110936"
+  }, 
   "jan_meyers": {
     "govtrack_id": "407669"
   }, 
@@ -16879,7 +16887,8 @@
   }, 
   "jared_polis": {
     "current_member": true, 
-    "govtrack_id": "412308"
+    "govtrack_id": "412308", 
+    "votesmart_id": "106220"
   }, 
   "jared_sanders": {
     "govtrack_id": "409552"
@@ -16904,7 +16913,8 @@
   }, 
   "jason_chaffetz": {
     "current_member": true, 
-    "govtrack_id": "412270"
+    "govtrack_id": "412270", 
+    "votesmart_id": "103482"
   }, 
   "jason_decuir": {
     "votesmart_id": "93465"
@@ -17441,7 +17451,8 @@
   }, 
   "jim_himes": {
     "current_member": true, 
-    "govtrack_id": "412282"
+    "govtrack_id": "412282", 
+    "votesmart_id": "106744"
   }, 
   "jim_langevin": {
     "current_member": true, 
@@ -17743,7 +17754,8 @@
   }, 
   "john_adler": {
     "current_member": true, 
-    "govtrack_id": "412264"
+    "govtrack_id": "412264", 
+    "votesmart_id": "4171"
   }, 
   "john_ahl": {
     "govtrack_id": "400720"
@@ -17997,7 +18009,6 @@
     "govtrack_id": "401525"
   }, 
   "john_boccieri": {
-    "collision": true, 
     "current_member": true, 
     "govtrack_id": "412266", 
     "votesmart_id": "45694"
@@ -18760,7 +18771,8 @@
   }, 
   "john_fleming": {
     "current_member": true, 
-    "govtrack_id": "412275"
+    "govtrack_id": "412275", 
+    "votesmart_id": "108811"
   }, 
   "john_floyd": {
     "collision": true, 
@@ -18817,6 +18829,9 @@
   }, 
   "john_french": {
     "govtrack_id": "404323"
+  }, 
+  "john_fritchey": {
+    "votesmart_id": "9550"
   }, 
   "john_fulton": {
     "govtrack_id": "412041"
@@ -20063,8 +20078,7 @@
   }, 
   "john_peterson": {
     "collision": true, 
-    "govtrack_id": "408664", 
-    "votesmart_id": "251"
+    "govtrack_id": "408664"
   }, 
   "john_pettit": {
     "collision": true, 
@@ -21042,9 +21056,6 @@
   "jon_christensen": {
     "govtrack_id": "402516"
   }, 
-  "jon_christopher_porter_sr": {
-    "votesmart_id": "2612"
-  }, 
   "jon_corzine": {
     "govtrack_id": "300028"
   }, 
@@ -21066,6 +21077,9 @@
     "current_member": true, 
     "govtrack_id": "400324", 
     "votesmart_id": "2612"
+  }, 
+  "jon_stewart": {
+    "votesmart_id": "18328"
   }, 
   "jon_tester": {
     "current_member": true, 
@@ -21342,9 +21356,6 @@
   }, 
   "joseph_biddle": {
     "govtrack_id": "401428"
-  }, 
-  "joseph_biden_jr": {
-    "votesmart_id": "53279"
   }, 
   "joseph_blackburn": {
     "govtrack_id": "401487"
@@ -22431,6 +22442,9 @@
   "justin_morrill": {
     "govtrack_id": "407937"
   }, 
+  "justin_oberman": {
+    "votesmart_id": "110914"
+  }, 
   "justin_whiting": {
     "govtrack_id": "411574"
   }, 
@@ -22718,7 +22732,6 @@
     "votesmart_id": "103298"
   }, 
   "kurt_schrader": {
-    "collision": true, 
     "current_member": true, 
     "govtrack_id": "412315", 
     "votesmart_id": "10813"
@@ -22826,7 +22839,6 @@
     "votesmart_id": "102242"
   }, 
   "larry_kissell": {
-    "collision": true, 
     "current_member": true, 
     "govtrack_id": "412287", 
     "votesmart_id": "57769"
@@ -23134,7 +23146,8 @@
   }, 
   "leonard_lance": {
     "current_member": true, 
-    "govtrack_id": "412290"
+    "govtrack_id": "412290", 
+    "votesmart_id": "4443"
   }, 
   "leonard_myers": {
     "govtrack_id": "408093"
@@ -23896,7 +23909,8 @@
   }, 
   "lynn_jenkins": {
     "current_member": true, 
-    "govtrack_id": "412284"
+    "govtrack_id": "412284", 
+    "votesmart_id": "18594"
   }, 
   "lynn_martin": {
     "govtrack_id": "407215"
@@ -24018,7 +24032,8 @@
   }, 
   "marcia_fudge": {
     "current_member": true, 
-    "govtrack_id": "412327"
+    "govtrack_id": "412327", 
+    "votesmart_id": "110640"
   }, 
   "marco_gonzales": {
     "votesmart_id": "102416"
@@ -24147,6 +24162,9 @@
   "mark_andrews": {
     "govtrack_id": "400881"
   }, 
+  "mark_arnold_fredrickson": {
+    "votesmart_id": "33732"
+  }, 
   "mark_bacon": {
     "govtrack_id": "401023"
   }, 
@@ -24220,7 +24238,8 @@
   }, 
   "mark_schauer": {
     "current_member": true, 
-    "govtrack_id": "412313"
+    "govtrack_id": "412313", 
+    "votesmart_id": "12023"
   }, 
   "mark_sibley": {
     "govtrack_id": "409893"
@@ -24245,10 +24264,8 @@
     "votesmart_id": "12329"
   }, 
   "mark_warner": {
-    "collision": true, 
     "current_member": true, 
-    "govtrack_id": "412321", 
-    "votesmart_id": "53356"
+    "govtrack_id": "412321"
   }, 
   "mark_welyczko": {
     "votesmart_id": "103217"
@@ -24358,7 +24375,6 @@
     "govtrack_id": "405267"
   }, 
   "martin_heinrich": {
-    "collision": true, 
     "current_member": true, 
     "govtrack_id": "412281", 
     "votesmart_id": "74517"
@@ -24456,10 +24472,6 @@
   }, 
   "mary_farrington": {
     "govtrack_id": "403996"
-  }, 
-  "mary_jo_kilroy": {
-    "collision": true, 
-    "votesmart_id": "95759"
   }, 
   "mary_kilroy": {
     "current_member": true, 
@@ -24563,6 +24575,9 @@
   }, 
   "matthew_quay": {
     "govtrack_id": "408969"
+  }, 
+  "matthew_reichel": {
+    "votesmart_id": "110927"
   }, 
   "matthew_rinaldo": {
     "govtrack_id": "409237"
@@ -24953,7 +24968,8 @@
   }, 
   "michael_mcmahon": {
     "current_member": true, 
-    "govtrack_id": "412296"
+    "govtrack_id": "412296", 
+    "votesmart_id": "44728"
   }, 
   "michael_mcnulty": {
     "current_member": true, 
@@ -25073,7 +25089,8 @@
   }, 
   "mike_coffman": {
     "current_member": true, 
-    "govtrack_id": "412271"
+    "govtrack_id": "412271", 
+    "votesmart_id": "1535"
   }, 
   "mike_conaway": {
     "current_member": true, 
@@ -25133,6 +25150,9 @@
     "current_member": true, 
     "govtrack_id": "400315", 
     "votesmart_id": "34024"
+  }, 
+  "mike_quigley": {
+    "votesmart_id": "83310"
   }, 
   "mike_ross": {
     "current_member": true, 
@@ -26440,7 +26460,8 @@
   }, 
   "parker_griffith": {
     "current_member": true, 
-    "govtrack_id": "412277"
+    "govtrack_id": "412277", 
+    "votesmart_id": "60357"
   }, 
   "parmenio_adams": {
     "govtrack_id": "400703"
@@ -26551,6 +26572,9 @@
   "patrick_norton": {
     "govtrack_id": "408238"
   }, 
+  "patrick_oconnor": {
+    "votesmart_id": "110923"
+  }, 
   "patrick_osullivan": {
     "govtrack_id": "408311"
   }, 
@@ -26588,6 +26612,9 @@
   }, 
   "paul_brown": {
     "govtrack_id": "401894"
+  }, 
+  "paul_bryar": {
+    "votesmart_id": "110931"
   }, 
   "paul_coverdell": {
     "govtrack_id": "400558"
@@ -26723,7 +26750,8 @@
   }, 
   "paul_tonko": {
     "current_member": true, 
-    "govtrack_id": "412319"
+    "govtrack_id": "412319", 
+    "votesmart_id": "4403"
   }, 
   "paul_trapier": {
     "govtrack_id": "410925"
@@ -26754,7 +26782,8 @@
   }, 
   "pedro_pierluisi": {
     "current_member": true, 
-    "govtrack_id": "412306"
+    "govtrack_id": "412306", 
+    "votesmart_id": "110894"
   }, 
   "pehr_holmes": {
     "govtrack_id": "405592"
@@ -26825,7 +26854,6 @@
     "votesmart_id": "26910"
   }, 
   "pete_olson": {
-    "collision": true, 
     "current_member": true, 
     "govtrack_id": "412302", 
     "votesmart_id": "102008"
@@ -26871,6 +26899,9 @@
   }, 
   "peter_costello": {
     "govtrack_id": "402915"
+  }, 
+  "peter_dagher": {
+    "votesmart_id": "33362"
   }, 
   "peter_de_muth": {
     "govtrack_id": "403317"
@@ -27088,7 +27119,8 @@
   }, 
   "phil_roe": {
     "current_member": true, 
-    "govtrack_id": "412310"
+    "govtrack_id": "412310", 
+    "votesmart_id": "65306"
   }, 
   "philadelph_van_trump": {
     "govtrack_id": "411102"
@@ -28131,9 +28163,6 @@
   "richard_ray": {
     "govtrack_id": "409060"
   }, 
-  "richard_renzi": {
-    "votesmart_id": "28172"
-  }, 
   "richard_ridgely": {
     "govtrack_id": "409222"
   }, 
@@ -28536,9 +28565,6 @@
   "robert_craig": {
     "govtrack_id": "402974"
   }, 
-  "robert_cramer": {
-    "votesmart_id": "26714"
-  }, 
   "robert_cranston": {
     "govtrack_id": "402992"
   }, 
@@ -28713,9 +28739,6 @@
   }, 
   "robert_hawley": {
     "govtrack_id": "405246"
-  }, 
-  "robert_hayes": {
-    "votesmart_id": "1641"
   }, 
   "robert_hayne": {
     "govtrack_id": "405265"
@@ -29360,6 +29383,9 @@
   "roger_slaughter": {
     "govtrack_id": "409969"
   }, 
+  "roger_thompson_iii": {
+    "votesmart_id": "110930"
+  }, 
   "roger_vose": {
     "govtrack_id": "411174"
   }, 
@@ -29496,6 +29522,9 @@
     "current_member": true, 
     "govtrack_id": "400103", 
     "votesmart_id": "26788"
+  }, 
+  "rosanna_pulido": {
+    "votesmart_id": "110933"
   }, 
   "roscoe_bartlett": {
     "current_member": true, 
@@ -30565,6 +30594,9 @@
   "santiago_polancoabreu": {
     "govtrack_id": "408798"
   }, 
+  "sara_feigenholtz": {
+    "votesmart_id": "6323"
+  }, 
   "saxby_chambliss": {
     "current_member": true, 
     "govtrack_id": "300021", 
@@ -30945,6 +30977,9 @@
   }, 
   "simon_larned": {
     "govtrack_id": "406604"
+  }, 
+  "simon_ribeiro": {
+    "votesmart_id": "56930"
   }, 
   "simon_schermerhorn": {
     "govtrack_id": "409631"
@@ -31431,9 +31466,6 @@
   "steve_stockman": {
     "govtrack_id": "410396"
   }, 
-  "steven_austria": {
-    "votesmart_id": "23398"
-  }, 
   "steven_ayres": {
     "govtrack_id": "401004"
   }, 
@@ -31443,14 +31475,8 @@
   "steven_derounian": {
     "govtrack_id": "403402"
   }, 
-  "steven_driehaus": {
-    "votesmart_id": "45110"
-  }, 
   "steven_gunderson": {
     "govtrack_id": "404869"
-  }, 
-  "steven_guthrie": {
-    "votesmart_id": "18829"
   }, 
   "steven_hudson": {
     "votesmart_id": "101898"
@@ -31524,7 +31550,8 @@
   }, 
   "suzanne_kosmas": {
     "current_member": true, 
-    "govtrack_id": "412288"
+    "govtrack_id": "412288", 
+    "votesmart_id": "12851"
   }, 
   "sydenham_alexander": {
     "govtrack_id": "400760"
@@ -31812,8 +31839,7 @@
   }, 
   "thomas_allen": {
     "collision": true, 
-    "govtrack_id": "400803", 
-    "votesmart_id": "380"
+    "govtrack_id": "400803"
   }, 
   "thomas_amlie": {
     "govtrack_id": "400831"
@@ -33288,6 +33314,12 @@
     "govtrack_id": "400131", 
     "votesmart_id": "12856"
   }, 
+  "tom_geoghegan": {
+    "votesmart_id": "110929"
+  }, 
+  "tom_hanson": {
+    "votesmart_id": "33366"
+  }, 
   "tom_harkin": {
     "current_member": true, 
     "govtrack_id": "300051", 
@@ -33312,7 +33344,8 @@
   }, 
   "tom_mcclintock": {
     "current_member": true, 
-    "govtrack_id": "412295"
+    "govtrack_id": "412295", 
+    "votesmart_id": "9715"
   }, 
   "tom_moorehead": {
     "govtrack_id": "407897"
@@ -33322,7 +33355,8 @@
   }, 
   "tom_perriello": {
     "current_member": true, 
-    "govtrack_id": "412304"
+    "govtrack_id": "412304", 
+    "votesmart_id": "109344"
   }, 
   "tom_petri": {
     "current_member": true, 
@@ -33331,13 +33365,11 @@
   }, 
   "tom_rooney": {
     "current_member": true, 
-    "govtrack_id": "412311"
+    "govtrack_id": "412311", 
+    "votesmart_id": "107800"
   }, 
   "tom_stout": {
     "govtrack_id": "410441"
-  }, 
-  "tom_tancredo": {
-    "votesmart_id": "17030"
   }, 
   "tom_udall": {
     "current_member": true, 
@@ -33543,6 +33575,9 @@
   "victor_fazio_jr": {
     "govtrack_id": "404013"
   }, 
+  "victor_forys": {
+    "votesmart_id": "110920"
+  }, 
   "victor_frazer": {
     "govtrack_id": "404298"
   }, 
@@ -33707,7 +33742,8 @@
   }, 
   "walt_minnick": {
     "current_member": true, 
-    "govtrack_id": "412300"
+    "govtrack_id": "412300", 
+    "votesmart_id": "436"
   }, 
   "walter_albaugh": {
     "govtrack_id": "400731"
@@ -36221,9 +36257,6 @@
   }, 
   "william_sackett": {
     "govtrack_id": "409527"
-  }, 
-  "william_sali": {
-    "votesmart_id": "2916"
   }, 
   "william_salmon": {
     "govtrack_id": "409538"

@@ -1,24 +1,19 @@
 import simplejson as json
 
-DATA_DIR='../data'
-
+DATA_DIR='../data/crawl/votesmart/111'
 
 def items(fname):
     print 'loading', fname
     return json.load(file(DATA_DIR + '/%s.json' % fname)).iteritems()
 
-
 def candidates():
-    return items('crawl/votesmart/candidates')
-
+    return items('candidates')
 
 def bios():
-    return items('crawl/votesmart/bios')
-
+    return items('bios')
 
 def websites():
-    return items('crawl/votesmart/websites')
-
+    return items('websites')
 
 def districts():
-    return items('crawl/votesmart/districts')
+    return items('districts')
