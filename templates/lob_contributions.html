@@ -46,7 +46,7 @@ $ page = int(query_param("page", 0))
 $if page != 0:
     <span style="color: #EE4400">&larr;&nbsp;<a href="$changequery(page=page - 1)" class="more">Prev</a></span>&nbsp;&nbsp;&nbsp;
 
-    <span style="color: #EE4400">&larr;&nbsp;<a href="/lob/f//" class="more">Browse Filings Index</a></span>&nbsp;&nbsp;&nbsp;
+    <span style="color: #EE4400">&larr;&nbsp;<a href="/lob/f/" class="more">Browse Filings Index</a></span>&nbsp;&nbsp;&nbsp;
 
 $if len(contributions) == limit:
      <span style="color: #EE4400"><a href="$changequery(page=page + 1)" class="more">Next</a>&nbsp;&rarr;</span>
