@@ -122,8 +122,6 @@ class find:
             
             if dists:
                 d_dists = list(schema.District.select(where=web.sqlors('name=', dists)))
-                for d in d_dists:
-                    d.politician = db.select('curr_politician', where='district_id = $d.name', vars=locals())[0]
                 out = apipublish.publish(d_dists, format)
                 if out: return out
 
@@ -482,6 +480,7 @@ class politician_lobby:
                 vars=locals())[0].sum
         c = politician_lob_contributions(polid, page, limit)
         return render.politician_lobby(c, a, limit)
+
 class lob_filing:
     def GET(self, filing_id):
         limit = 50
@@ -491,6 +490,7 @@ class lob_filing:
         else:
             f = schema.lob_filing.select(limit=limit, offset=page*limit)
         return render.lob_filings(f,limit)
+
 class lob_contrib:
     def GET(self, filing_id):
         limit = 50
@@ -500,6 +500,7 @@ class lob_contrib:
         else:
             c = schema.lob_contribution.select(limit=limit, offset=page*limit, order='amount desc')
         return render.lob_contributions(c, limit)
+
 class lob_pac:
     def GET(self, pac_id):
         limit = 50
@@ -512,6 +513,7 @@ class lob_pac:
         else:
             p = schema.lob_pac.select(limit=limit, offset=page*limit)
         return render.lob_pacs(p,limit)
+
 class lob_org:
     def GET(self, org_id):
         limit = 50
@@ -522,6 +524,7 @@ class lob_org:
         else:
             o = schema.lob_organization.select(limit=limit, offset=page*limit, order='name asc')
         return render.lob_orgs(o,limit)
+
 class lob_person:
     def GET(self, person_id):
         limit = 50

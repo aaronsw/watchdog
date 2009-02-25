@@ -40,6 +40,12 @@ class District(sql.Table):
             return 'at-large'
         else:
             return web.nthstr(self.district)
+    
+    @property 
+    def representatives(self):
+        ids = [x.id for x in db.select(
+          'curr_politician', where="district_id = $self.name", vars=locals())]
+        return Politician.select(where=web.sqlors('id=', ids))
 
     # almanac.json
     almanac = sql.URL()
