@@ -489,7 +489,9 @@ class lob_filing:
             f = schema.lob_filing.select(where='id=$filing_id', limit=limit, offset=page*limit, vars=locals())
         else:
             f = schema.lob_filing.select(limit=limit, offset=page*limit)
-        return render.lob_filings(f,limit)
+
+        if not f: raise web.notfound()
+        return render.lob_filings(f, limit)
 
 class lob_contrib:
     def GET(self, filing_id):
@@ -499,6 +501,8 @@ class lob_contrib:
             c = schema.lob_contribution.select(where='filing_id=$filing_id', limit=limit, offset=page*limit, order='amount desc', vars=locals())
         else:
             c = schema.lob_contribution.select(limit=limit, offset=page*limit, order='amount desc')
+
+        if not c: raise web.notfound()
         return render.lob_contributions(c, limit)
 
 class lob_pac:
@@ -512,7 +516,9 @@ class lob_pac:
             p = schema.lob_pac.select(where='id=$pac_id',limit=limit, offset=page*limit, vars=locals())
         else:
             p = schema.lob_pac.select(limit=limit, offset=page*limit)
-        return render.lob_pacs(p,limit)
+
+        if not p: raise web.notfound()
+        return render.lob_pacs(p, limit)
 
 class lob_org:
     def GET(self, org_id):
@@ -523,6 +529,8 @@ class lob_org:
             o = schema.lob_organization.select(where='id=$org_id', limit=limit, offset=page*limit, order='name asc', vars=locals())
         else:
             o = schema.lob_organization.select(limit=limit, offset=page*limit, order='name asc')
+
+        if not o: raise web.notfound()
         return render.lob_orgs(o,limit)
 
 class lob_person:
@@ -534,7 +542,9 @@ class lob_person:
             p = schema.lob_person.select(where='id=$person_id', limit=limit, offset=page*limit, order='lastname asc', vars=locals())
         else:
             p = schema.lob_person.select(limit=limit, offset=page*limit, order='lastname asc')
-        return render.lob_person(p,limit)
+
+        if not p: raise web.notfound()
+        return render.lob_person(p, limit)
 
 class politician_introduced:
     def GET(self, politician_id):
