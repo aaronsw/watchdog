@@ -484,7 +484,11 @@ class politician_lobby:
 class lob_filing:
     def GET(self, filing_id):
         limit = 50
-        page = int(web.input(page=0).page)
+        try:
+            filing_id = int(filing_id)
+            page = int(web.input(page=0).page)
+        except ValueError:
+            raise web.notfound()
         if filing_id:
             f = schema.lob_filing.select(where='id=$filing_id', limit=limit, offset=page*limit, vars=locals())
         else:
