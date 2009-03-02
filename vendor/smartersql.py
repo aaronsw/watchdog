@@ -47,7 +47,7 @@ def lazylookup(obj, column_name):
                 setattr(xobj.__class__, column_name, newobjs[k])
     
         # Finally, we need to return it:
-        return newobjs.get(getattr(obj, local_column))
+        return newobjs.get(getattr(obj, local_column), [])
     return inner
     
 ## table generation
