@@ -3,9 +3,11 @@ from web import form
 from settings import db
 from wyrutils import getdist
 from auth import loginuser
+import re
 
 email_regex = r'[\w\.-]+@[\w\.-]+\.[a-zA-Z]{1,4}'
 email_list_regex = r'^%s$|^(%s *, *)*(%s)?$' % (email_regex, email_regex, email_regex)
+html_link_regex = r'.*<\s*a\s*href\s*=.*'
 
 def petitionnotexists(pid):
     "Return True if petition with id `pid` does not exist"
@@ -14,6 +16,11 @@ def petitionnotexists(pid):
 
 def getstates():
     return [(s.code, s.name) for s in db.select('state', what='code, name', order='name')]
+
+def no_html_link(comment):
+    """don't allow HTML links in comments"""
+    regx = re.compile(html_link_regex)
+    return not bool(regx.match(comment))
 
 class ZipValidator:
     def valid(self, i):
@@ -80,7 +87,8 @@ signform = form.Form(
             post=' *',
             size='30'),
     form.Checkbox('share_with', value='off', description="Share my email with the author of this petition"),
-    form.Textarea('comment', description='Personal comment (explain how this affects you):', cols=70, rows=4)
+    form.Textarea('comment', form.Validator("Comment cannot contain HTML links", no_html_link),
+            description='Personal comment (explain how this affects you):', cols=70, rows=4)
     )
 
 passwordform = form.Form(
