@@ -6,6 +6,8 @@ $def with (page)
       <title>watchdog.net: $:page.title.strip()</title>
   $else:
       <title>$:page.title.strip() (watchdog.net)</title>
+
+$if page.get('noindex'): <meta name="robots" content="noindex, nofollow">
   <link href="/static/css/style.css" type="text/css" rel="stylesheet" />
   <script type="text/javascript" src="/static/js/jquery.js"></script>
   $:page.get('head')

@@ -1,4 +1,4 @@
-$def with (title, url, sender, description=None, track_id=None)
+$def with (title, url, sender, description=None, is_draft=False, track_id=None)
 
 Dear Friend,
 
@@ -7,7 +7,10 @@ $if track_id:
 $else:
         $ full_url = "http://watchdog.net" + url
 
-$if description:
+$if is_draft:
+    Could you please review the draft of the petition "$:title" at $full_url 
+    and let me know your comments on it?
+$elif description:
        I hope you'll join me in signing the petition "$:title". You can do so right now at:
        
        $full_url

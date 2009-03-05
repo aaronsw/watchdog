@@ -1,4 +1,4 @@
-$def with (pform, cform, title="Create a new petition", target="/c/new", captchas='', msg=None)
+$def with (pform, cform, title="Create a new petition", target="/c/new", captchas='', is_draft=None, msg=None)
 
 $var width: 90%
 $var color: white
@@ -41,6 +41,7 @@ $else:
    	  <strong>http://watchdog.net/c/</strong> $:pform.pid.render() <span id="note_pid"></span>
    	  <span>(Letters, numbers and dashes only.)</span>
     $else:
+        <input type="hidden" name='pid' value="$:pform.pid.value" />
    	    <p><strong>http://watchdog.net/c/$:pform.pid.value</strong></p>
     
     <label for="msg">Give it a description</label>
@@ -81,8 +82,13 @@ $else:
     </div>
 </fieldset>
 
-$if target == '/c/new':
-    <button type="submit" style="font-size: 1.2em">Create my petition</button>
+$if not is_draft:
+    <button type="submit" style="font-size: 1.2em" name="publish">Create my petition</button>
 $else:
-    <button type="submit" style="font-size: 1.2em">Save my petition</button>
+    <button type="submit" style="font-size: 1.2em" name="publish">Save and Publish</button>
+
+$if target == '/c/new' or is_draft:
+    <button type="submit" style="font-size: 1.2em" name="save">Save Draft</button>
+$else:
+    <button type="submit" style="font-size: 1.2em" name="publish">Save my petition</button>
 </form>

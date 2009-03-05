@@ -38,7 +38,7 @@ class index:
     def GET(self):
         petitions = db.select(['petition', 'signatory'],
                     what='petition.id, petition.title, count(signatory.user_id) as signature_count',
-                    where='petition.id = signatory.petition_id and petition.deleted is null',
+                    where='petition.id = signatory.petition_id and petition.deleted is null and petition.published is not null',
                     group='petition.id, petition.title',
                     order='count(signatory.user_id) desc'
                     )
@@ -51,19 +51,34 @@ def send_to_congress(uid, i, signid):
     env = simplejson.loads(i.get('captcha_env', '{}'))
     i.msg = i.msg + '\n' + i.get('comment', '')
     send_msgs(uid, i, source_id='s%s' % signid, env=env)
-        
+
 def create_petition(i, email):
     tocongress = i.get('tocongress', 'off') == 'on'
     i.pid = i.pid.replace(' ', '-')
     u = helpers.get_user_by_email(email)
+    is_draft = 'save' in i
+    published = None if is_draft else datetime.now()
     try:
-        db.insert('petition', seqname=False, id=i.pid, title=i.ptitle,
+        db.insert('petition', seqname=False, id=i.pid, title=i.ptitle, 
+                    created=datetime.now(), published=published,
                     description=i.msg, owner_id=u.id, to_congress=tocongress)
     except: return
+    
+    if is_draft:
+        msg = """Petition saved for publishing later."""
+        helpers.set_msg(msg)
+    else:
+        create_signature(i, u.email)
+
+def create_signature(i, email):
+    tocongress = i.get('tocongress', 'off') == 'on'
+    i.pid = i.pid.replace(' ', '-')
+    u = helpers.get_user_by_email(email)    
     signid = save_signature(i, i.pid, u.id)
     if tocongress: send_to_congress(u.id, i, signid)
+    sendmail_to_signatory(u, i.pid)
     msg = """Congratulations, you've created your petition.
-             Now sign and share it with all your friends."""
+             Now share it with all your friends."""
     helpers.set_msg(msg)
     
 class new:
@@ -209,6 +224,9 @@ def get_referrer(pid, uid):
     if referrer != uid:
         return referrer
 
+def is_draft(p):
+    return not bool(p.published)
+
 class petition:
     def GET(self, pid, sf=None, wf=None):
         i = web.input()
@@ -239,9 +257,10 @@ class petition:
         useremail = helpers.get_loggedin_email() or helpers.get_unverified_email()
         isauthor = is_author(useremail, pid)
         issignatory = is_signatory(useremail, pid)
+        isdraft = is_draft(p)
         p.signatory_count = get_num_signs(pid)
         msg, msg_type = helpers.get_delete_msg()
-        return render.petition(p, sf, useremail, isauthor, issignatory, wf, captcha_html, msg)
+        return render.petition(p, sf, useremail, isauthor, issignatory, wf, captcha_html, isdraft, msg)
 
     @auth.require_login
     def GET_edit(self, pid):
@@ -253,8 +272,9 @@ class petition:
             pf.fill(userid=u.id, email=user_email, pid=p.id, ptitle=p.title, msg=p.description, tocongress=p.to_congress)
             wf = forms.wyrform()
             fill_user_details(wf)
+            isdraft = is_draft(p)
             title = "Edit your petition"
-            return render.petitionform(pf, wf, title, target='/c/%s?m=edit' % (pid))
+            return render.petitionform(pf, wf, title, target='/c/%s?m=edit' % (pid), is_draft=isdraft)
         elif user_email:
             msg = "You don't have permissions to edit this petition."
         else:    
@@ -346,8 +366,13 @@ class petition:
         wyr_valid = (not(tocongress) or wf.validates(i))
         if not pf.validates(i) or not wyr_valid:
             title = "Edit petition"
-            return render.petitionform(pf, wf, title, target='/c/%s?m=edit' % (pid))
-        db.update('petition', where='id=$pid', title=i.ptitle, description=i.msg, to_congress=tocongress, vars=locals())
+            return render.petitionform(pf, wf, title, target='/c/%s?m=edit' % (pid), is_draft=is_draft)
+        
+        p = dict(title=i.ptitle, description=i.msg, to_congress=tocongress)
+        if 'publish' in i: p['published'] = datetime.now()
+        db.update('petition', where='id=$pid', vars=locals(), **p)
+        if 'publish' in i:
+            create_signature(i, i.email)
         update_user_details(i)
         raise web.seeother('/%s' % pid)
 
@@ -406,7 +431,8 @@ class share:
         contacts = get_contacts(user_id)
         sender = helpers.get_user_by_email(helpers.get_loggedin_email() or helpers.get_unverified_email())
 
-        page_or_petition = 'page'    
+        page_or_petition = 'page'
+        isdraft = False
         if not emailform:
             emailform = forms.emailform()
             track_id, description = None, None
@@ -414,12 +440,12 @@ class share:
                 url = url.rstrip('/')
                 pid = web.lstrips(url, '/c/')
                 p = get_petition_by_id(pid)
+                isdraft = is_draft(p)
                 description = p and p.description
-                track_id = helpers.get_trackid(user_id, pid)
+                track_id = helpers.get_trackid(user_id, pid) if not isdraft else None
                 contacts = filter(lambda c: not is_signatory(c.email, pid), contacts)
                 page_or_petition = 'petition'
-
-            msg = render_plain.share_mail(title, url, sender, description, track_id)
+            msg = render_plain.share_mail(title, url, sender, description, isdraft, track_id)
             emailform.fill(subject=title, body=msg)
 
         loadcontactsform = loadcontactsform or forms.loadcontactsform()

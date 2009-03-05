@@ -1,9 +1,12 @@
-$def with (p, signform, useremail, isauthor, issignatory, wyrform=None, captchas='', msg=None)
+$def with (p, signform, useremail, isauthor, issignatory, wyrform=None, captchas='', is_draft=None, msg=None)
 
 $var width: 90%
 $var color: white
 
 $var title: $p.title
+
+$if is_draft:
+    $var noindex: True
 
 <script type="text/javascript" src="/static/js/petition.js"></script>
 $if wyrform:
@@ -27,24 +30,26 @@ $if msg:
 
 $:format(p.description)
 
-<!-- <h2>$p.title</h2> -->
-
 <div id="upperbar">
-$if p.signatory_count == 0:
-        <h2>Be the first to sign this petition!</h2>
-$else:
-	$if p.signatory_count == 1:
-		$ ppl = 'person</a></strong> has'
-	$else:
-		$ ppl = 'people</a></strong> have'
-	$if issignatory:
-	    $ signed = ', including <em>you</em>'
-	$else:
-	    $ signed = ''
+$if is_draft:
+    <h2>&nbsp;</h2>
+$else:    
+    $if p.signatory_count == 0:
+            <h2>Be the first to sign this petition!</h2>
+    $else:
+    	$if p.signatory_count == 1:
+    		$ ppl = 'person</a></strong> has'
+    	$else:
+    		$ ppl = 'people</a></strong> have'
+    	$if issignatory:
+    	    $ signed = ', including <em>you</em>'
+    	$else:
+    	    $ signed = ''
 	<h2> <strong><a href='/c/$p.id/signatories'>$p.signatory_count $:ppl signed this petition$:signed.</h2>
 
 <div id="uppermenu">
-  <a href="/share?url=/c/$p.id/&title=$p.title">Share</a>&nbsp;
+$ share = 'Share Draft' if is_draft else 'Share'    
+  <a href="/share?url=/c/$p.id/&title=$p.title">$share</a>&nbsp;
 $if isauthor:
     <a href="?m=edit">Edit</a>
     <a href="?m=delete">Delete</a>

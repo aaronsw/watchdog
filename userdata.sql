@@ -30,8 +30,10 @@ CREATE TABLE petition(
     title text,
     description text,
     owner_id int references users,
-    created timestamp default now(),
+    created timestamp,
     deleted timestamp,
+    published timestamp, -- null for drafts; same as created if published
+    last_modified timestamp default now(),
     to_congress boolean
 );
 
