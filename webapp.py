@@ -485,7 +485,7 @@ class lob_filing:
     def GET(self, filing_id):
         limit = 50
         try:
-            filing_id = int(filing_id)
+            filing_id = int(filing_id or 0)
             page = int(web.input(page=0).page)
         except ValueError:
             raise web.notfound()
