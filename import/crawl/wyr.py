@@ -7,7 +7,7 @@ import urllib2
 from urlparse import urljoin
 
 manual_websites = '../import/load/manual/websites.json'
-votesmart_websites = '../data/crawl/votesmart/websites.json'
+votesmart_websites = '../data/crawl/votesmart/111/websites.json'
 WYR_URL = 'https://writerep.house.gov/writerep/welcome.shtml'
 OLD_WYR_URL = 'https://forms.house.gov/wyr/welcome.shtml'
 
