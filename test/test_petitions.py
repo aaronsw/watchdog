@@ -44,8 +44,10 @@ class PetitionTest(webtest.TestCase):
     def _test_create(self, to_congress=False, captcha=False):
         self.b.open('/c/new')
         form = self.b.select_form()
-        self.fill_petition_form(form, 'save the world',
+        ptitle = 'save the world'
+        self.fill_petition_form(form, ptitle,
             'Make the world better place to live!', to_congress=to_congress, captcha=captcha)
+        return ptitle
 
     def _test_L(self, to_congress=False):
         """for a logged-in-user"""
@@ -111,6 +113,32 @@ class PetitionTest(webtest.TestCase):
         self.assertTrue(test_pid in b.data)
         self.assertTrue(test_pid_to_cong in b.data)
 
+    def test_draft_L(self):
+        b = self.browser()
+        self.login()
+        b.open('/c/new')
+        ptitle = self._test_create()
+        # save and make sure that it doesn't come into list in /c/ and share is okay 
+        b.submit(name='save')
+        self.assertTrue('Petition saved for publishing later' in b.data)
+        self.assertTrue('Share Draft' in b.data)
+        b.follow_link(text='Share Draft')
+        self.assertTrue('Could you please review the draft of the petition' in b.data)
+        b.open('/c/')
+        self.assertTrue(ptitle not in b.data)
+        
+        #now open it back, publish it and make sure that it comes in list in /c/
+        pid = ptitle.replace(' ', '-')
+        b.open('/c/%s?m=edit' % pid)
+        b.select_form(name='petition')
+        b.submit(name='publish')
+        self.assertTrue('Congratulations' in b.data)
+        self.assertTrue('1 person has signed this petition')
+        b.follow_link(text='Share')
+        self.assertTrue('join me in signing the petition' in b.data)
+        b.open('/c')
+        self.assertTrue(ptitle in b.data)
+        
     def test_edit_by_owner(self):
         b = self.browser()
         self.login()
@@ -138,7 +166,7 @@ class PetitionTest(webtest.TestCase):
         b.select_form(name='delete')
         b.submit()
         b.open('/c/save-the-world')
-        self.assertEquals(b.status, 404)
+        self.assertEquals(b.status, 404)        
 
 class SignTest(webtest.TestCase):
     def make_sign_NL(self, to_congress):
