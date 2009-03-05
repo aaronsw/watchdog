@@ -15,7 +15,7 @@ db.printing = False
 from webapp import app
 
 import loaddb
-loaddb.loaddb()
+loaddb.loaddb(db)
 
 debug = web.debug
 

@@ -6,13 +6,12 @@ test_passwd = 'secret4test'
 test_pid = 'test_petition'
 test_pid_to_cong = 'test_petition_to_congress'
 
-def loaddb():
-    create_test_user()
-    create_test_petition()
-    create_test_petition_to_congress()
+def loaddb(db):
+    create_test_user(db)
+    create_test_petition(db)
+    create_test_petition_to_congress(db)
     
-def create_test_user():
-    from webtest import db
+def create_test_user(db):
     userexists = db.select('users', where='email=$test_email', vars=dict(test_email=test_email))
     if not userexists:
         b = AppBrowser(app)
@@ -25,8 +24,7 @@ def create_test_user():
         b.open('/c/new')
         assert 'Hi,' in b.data, 'creating test user failed'
 
-def create_test_petition():
-    from webtest import db
+def create_test_petition(db):
     petition_exists = db.select('petition', where='id=$test_pid', vars=dict(test_pid=test_pid))
     if not petition_exists:
         b = AppBrowser(app)
@@ -43,8 +41,7 @@ def create_test_petition():
         b.submit()
         assert 'Congratulations' in b.data, 'creating test petition failed'
 
-def create_test_petition_to_congress():
-    from webtest import db
+def create_test_petition_to_congress(db):
     petition_exists = db.select('petition', where='id=$test_pid_to_cong', vars=dict(test_pid_to_cong=test_pid_to_cong))
     if not petition_exists:
         b = AppBrowser(app)
