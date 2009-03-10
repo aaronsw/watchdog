@@ -235,8 +235,8 @@ $if pol.contributors:
         <h2 class="rep">Top Contributors</h2>
         <table class="charted structure contributors" style="width: 100%"><tbody>
         $for c in pol.contributors:
-            $ names = c.name.lower().replace(' ', '').split(',')
-            $ name = names[-1]+'_'+'_'.join(names[:-1])
+            $ names = c.name.lower().replace(',', '').split(' ')
+            $ name = '_'.join(names[1:])+'_'+names[0]
             <tr class="$loop.parity">
                 <th>$loop.index <a href="/contrib/$c.zip/$name">$format_name(c.name.title())</a></th>
                 <td>\$$commify(int(c.amt))</td>
