@@ -113,20 +113,16 @@ class PetitionTest(webtest.TestCase):
         self.assertTrue(test_pid in b.data)
         self.assertTrue(test_pid_to_cong in b.data)
 
-    def test_draft_L(self):
-        b = self.browser()
-        self.login()
-        b.open('/c/new')
-        ptitle = self._test_create()
-        # save and make sure that it doesn't come into list in /c/ and share is okay 
-        b.submit(name='save')
+    def _test_save_draft(self, b, ptitle):    
+        # make sure that it doesn't come into list in /c/ and share is okay 
         self.assertTrue('Petition saved for publishing later' in b.data)
         self.assertTrue('Share Draft' in b.data)
         b.follow_link(text='Share Draft')
         self.assertTrue('Could you please review the draft of the petition' in b.data)
         b.open('/c/')
         self.assertTrue(ptitle not in b.data)
-        
+    
+    def _test_publish_draft(self, b, ptitle):
         #now open it back, publish it and make sure that it comes in list in /c/
         pid = ptitle.replace(' ', '-')
         b.open('/c/%s?m=edit' % pid)
@@ -138,6 +134,29 @@ class PetitionTest(webtest.TestCase):
         self.assertTrue('join me in signing the petition' in b.data)
         b.open('/c')
         self.assertTrue(ptitle in b.data)
+
+    def test_draft_L(self):
+        b = self.browser()
+        self.login()
+        b.open('/c/new')
+        ptitle = self._test_create()
+        b.submit(name='save')
+        self._test_save_draft(b, ptitle)
+        self._test_publish_draft(b, ptitle)
+        
+    def test_draft_NL(self):
+        b = self.browser()
+        b.open('/c/new')
+        ptitle = self._test_create()
+        b.submit(name='save')
+        self.assertEquals(b.path, '/c/new')
+        form = b.select_form(name='login')
+        b['useremail'] = test_email
+        b['password'] = test_passwd
+        b.submit()
+        self._test_save_draft(b, ptitle)
+        self._test_publish_draft(b, ptitle)
+        
         
     def test_edit_by_owner(self):
         b = self.browser()

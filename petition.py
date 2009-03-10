@@ -120,7 +120,8 @@ class login:
         lf, sf = forms.loginform(), forms.signupform()
         pf, wf = forms.petitionform(), (wf or forms.wyrform())
         pf.fill(i), wf.fill(i)
-        return render.petitionlogin(lf, sf, pf, wf)
+        is_draft = 'save' in i
+        return render.petitionlogin(lf, sf, pf, wf, is_draft=is_draft)
 
     def POST(self):
         i = web.input()
