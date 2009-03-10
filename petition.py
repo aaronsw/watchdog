@@ -38,7 +38,8 @@ class index:
     def GET(self):
         petitions = db.select(['petition', 'signatory'],
                     what='petition.id, petition.title, count(signatory.user_id) as signature_count',
-                    where='petition.id = signatory.petition_id and petition.deleted is null and petition.published is not null',
+                    where='petition.deleted is null and petition.published is not null '
+                            'and petition.id = signatory.petition_id  and signatory.deleted is null',
                     group='petition.id, petition.title',
                     order='count(signatory.user_id) desc'
                     )
