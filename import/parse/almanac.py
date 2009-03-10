@@ -14,7 +14,7 @@ def scrape_photo_alt(fname, rv, alt):
                               r'(-At Large)?\)',
                            alt)
     if photo_parts is None:
-        raise "couldn't understand caption " + alt + " in " + fname
+        raise Exception("couldn't understand caption " + alt + " in " + fname)
     for field in 'name party title'.split():
         rv[field] = photo_parts.group(field)
 
@@ -201,7 +201,7 @@ def scrape_state(fname):
 
 def main(files):
     import pprint
-    if not files: raise "usage: %s foo.html [bar.html ...]" % sys.argv[0]
+    if not files: raise Exception("usage: %s foo.html [bar.html ...]" % sys.argv[0])
     for fname in files:
         print "%s as person:" % fname
         print pprint.pprint(scrape_person(fname))

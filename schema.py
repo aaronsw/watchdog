@@ -578,6 +578,14 @@ class Handshakes(sql.Table):
     corp2pol = sql.Dollars()
     year = sql.Integer()
 
+class Past_Elections(sql.Table):
+    politician = sql.Reference(Politician, primary=True)
+    district = sql.Reference(District, primary=True)
+    year = sql.Year(primary=True)
+    votes_received = sql.Integer()
+    pct_votes_received = sql.Percentage()
+    expenditure = sql.Dollars()
+
 def init():
     db.query("CREATE VIEW census AS select * from census_meta NATURAL JOIN census_data")
     db.query("CREATE INDEX contribution_recipient_id_idx ON contribution (recipient_id)")

@@ -4,7 +4,6 @@ import tools
 from settings import db
 from parse import almanac
 sys.excepthook = cgitb.Hook(format='text', file=sys.stderr)
-from pprint import pprint, pformat
 
 DATA_DIR = '../data'
 ALMANAC_DIR = DATA_DIR + '/crawl/almanac/nationaljournal.com/pubs/almanac/2008/'
@@ -23,34 +22,59 @@ def coalesce_population(data, fields):
         if pop is not None: return (year, pop)
     return (None, None)
 
-def load_election_results(d, distname):
-    (year, votes, vote_pct) = (0,'0','0')
-    if 'name' not in d: 
-        print "No name for the congress person for: ",distname
+def load_into_db(pname, distname, electionresults, recent_election_year):
+    pol=db.select('politician', what='id',
+            where="district_id=$distname AND %s" % web.sqlors('lastname ilike ', pname.split(' ')),
+            vars=locals()).list()
+    if len(pol) != 1:
+        print "Couldn't find an id for %s representing %s." % (pname, distname)
         return
+        
+    polid=pol[0].id
+    with db.transaction():
+        for r in electionresults:
+            if r.year == recent_election_year:
+                db.update('politician', where='id=$polid', 
+                    n_vote_received=r.votes,
+                    pct_vote_received=r.vote_pct,
+                    last_elected_year=r.year, vars=locals())
+            db.insert('past_elections', seqname=False, politician_id=polid, district_id=distname,
+                    votes_received=r.votes, pct_votes_received=r.vote_pct,
+                    year=r.year, expenditure=r.expenditure)
+
+def validate(d, distname):
+    if 'name' not in d:
+        print "No name for the congress person for: ", distname
+    elif 'electionresults' not in d: 
+        print "No election results for %s repsenting %s." % (d['name'], distname)
+    else:
+        return d
+
+def process(d):
+    election_results = []
     pname = d['name'].lower()
-    if 'electionresults' not in d: 
-        print "No election results for %s repsenting %s." % (d['name'],distname)
-        return
     for e in d['electionresults']:
         if 'candidate' in e and 'primary' not in e['election'] and \
-                pname.replace(' ','') in e['candidate'].lower().replace(' ',''):
-            if int(e['election'][0:4]) > year: 
-                (year,votes) = (int(e['election'][0:4]), e['totalvotes'])
-                if 'percent' in e: vote_pct = e['percent']
-    #print year, votes, vote_pct, d['name'], distname
-    if year:
-        pol=db.select('politician', what='id', 
-                where="district_id='"+distname+"' AND "+web.sqlors('lastname ilike ',pname.split(' ')),
-                vars=locals()).list()
-        if pol and len(pol)==1: 
-            polid=pol[0].id
-            db.update('politician', where='id=$polid', 
-                    n_vote_received=votes.replace(',','').replace('Unopposed','0'),
-                    pct_vote_received=vote_pct.replace('%',''), 
-                    last_elected_year=year, vars=locals());
-        else: print "Couldn't find an id for %s representing %s." % (d['name'], distname)
-    else: print "Didn't find a recent election for %s representing %s." %(d['name'], distname) #, pformat(d['electionresults'])
+               pname.replace(' ','') in e['candidate'].lower().replace(' ',''):
+            r = web.storage(candidate=e['candidate'])
+            r.year =  int(e['election'][0:4])
+            r.votes = e['totalvotes'].replace(',','').replace('Unopposed','0')
+            r.vote_pct = 100 if e['totalvotes'] == 'Unopposed' else e['percent'].replace('%', '')
+            r.expenditure = e['expenditures'].lstrip('$').replace(',', '')
+            election_results.append(r)
+    return election_results
+    
+def load_election_results(d, distname):    
+    d = validate(d, distname)
+    if not d: return
+    pname = d['name'].lower()
+    election_results = process(d)
+    if not election_results:
+        print "Didn't find a recent election for %s representing %s." %(d['name'], distname)
+        return
+
+    recent_election_year = max([e.year for e in election_results])
+    load_into_db(pname, distname, election_results, recent_election_year)
 
 def demog_to_dist(demog, district):
     if demog:
