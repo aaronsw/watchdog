@@ -321,6 +321,7 @@ class contributor:
 
 class occupation:
     def GET(self, occupation):
+        if occupation != occupation.lower(): raise web.seeother('/occupation/%s' % occupation.lower())
         candidates = candidates_by_occupation(occupation, 5)
         committees = committees_by_occupation(occupation, 5)
         return render.occupation(candidates, committees, occupation) 
@@ -362,13 +363,12 @@ class employer:
     def GET(self, corp_id, format=None):
         corp_id = corp_id.lower().replace('_', ' ')
         contributions = db.query("""SELECT count(*) as how_many, 
-            sum(amount) as how_much, p.firstname, p.lastname, 
-            p.id as polid, cm.name as committee, cm.id as committee_id
+            sum(amount) as how_much, p.firstname, p.lastname, p.id as polid
             FROM contribution cn, committee cm, politician_fec_ids pfi, 
             politician p WHERE cn.recipient_id = cm.id 
             AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
             AND lower(cn.employer_stem) = $corp_id
-            GROUP BY cm.id, cm.name, p.lastname, p.firstname, p.id 
+            GROUP BY p.lastname, p.firstname, p.id 
             ORDER BY how_much DESC""", vars=locals())
         total_num = db.select('contribution', 
                             what='count(*)',

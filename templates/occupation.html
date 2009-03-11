@@ -5,7 +5,7 @@ $var color: white
 
 $var title: $occupation
 
-<h1>$occupation</h1>
+<h1>$occupation.title()</h1>
 
 <h2>Top candidates</h2>
   
@@ -18,7 +18,7 @@ $for c in candidates:
     $else:
         $ trclass = "odd"
     <tr class="$trclass">
-        <td>$loop.index. <a href="/p/$c.polid">$c.firstname $c.lastname</a>, $c.party</td>
+        <td>$loop.index. <a href="/p/$c.polid">$c.firstname $c.lastname</a>$(c.party and ', '+c.party or '')</td>
         <td style="text-align: right;">\$$commify(int(c.amt))</td>
     </tr>
    

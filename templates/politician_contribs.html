@@ -16,12 +16,14 @@ $var title: Contributors
 $ trclass = "odd"
 
 $for c in contribs:
+    $ names = c.name.lower().replace(',', '').split(' ')
+    $ name = '_'.join(names[1:])+'_'+names[0]
     $if trclass == "odd":
         $ trclass = "even"
     $else:
         $ trclass = "odd"
     <tr class="$trclass">
-        <td style="text-align: right;">$loop.index</td><td> <a href="/contrib/$c.zip/?s=$urlquote(c.name)">$format_name(c.name.title())</a></td>
+        <td style="text-align: right;">$loop.index</td><td> <a href="/contrib/$c.zip/$name">$format_name(c.name.title())</a></td>
         <td>\$$commify(int(c.amt))</td>
     </tr>
    

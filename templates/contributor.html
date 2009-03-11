@@ -27,20 +27,20 @@ $ prev_employer = None
 $for c in candidates:
     $if c.occupation.title() != prev_occupation or c.employer.title() != prev_employer:
         <tr style="border-bottom: 1px solid #999;">
-            <td colspan="2" class="date"><strong>$name.title()</strong>
+            <td colspan="2" class="date"><strong>$name.title()</strong>$((c.occupation or c.employer_stem ) and ',' or '')
             $if c.occupation:
-                , <span class="subtitle">
-                    <a href="/occupation/$urlquote(c.occupation)">$c.occupation.title()</a>
+                <span class="subtitle">
+                    <a href="/occupation/$urlquote(c.occupation)">$c.occupation.title()</a>$(c.employer_stem and ',' or '')
                   </span>
             $if c.employer_stem:
-                , <span class="subtitle"><a href="/empl/$urlquote(c.employer_stem)">$c.employer.title()</a></span>
+                <span class="subtitle"><a href="/empl/$urlquote(c.employer_stem)">$c.employer.title()</a></span>
             </td>
         </tr>
     <tr class="even">
         <td class="paying">
-            <strong>\$$commify(int(c.how_much))</strong> to <a href="/p/$c.polid">$c.firstname $c.lastname</a>, 
-            $c.committee.title() on
-            <strong>$datestr(c.sent)</strong>
+            <strong>\$$commify(int(c.how_much))</strong> to 
+            <a href="/p/$c.polid">$c.firstname $c.lastname</a>$(c.committee and ', '+c.committee.title() or '')
+            on <strong>$datestr(c.sent)</strong>
         </td>
     </tr>
     $ prev_occupation = c.occupation.title()
@@ -55,19 +55,19 @@ $ prev_employer = None
 $for c in committees:
     $if c.occupation.title() != prev_occupation or c.employer_stem.title() != prev_employer:
         <tr style="border-bottom: 1px solid #999;">
-            <td colspan="2" class="date"><strong>$name.title()</strong>
+            <td colspan="2" class="date"><strong>$name.title()</strong>$((c.occupation or c.employer_stem ) and ',' or '')
             $if c.occupation:
-                , <span class="subtitle">
-                    <a href="/occupation/$urlquote(c.occupation)">$c.occupation.title()</a>
+                <span class="subtitle">
+                    <a href="/occupation/$urlquote(c.occupation)">$c.occupation.title()</a>$(c.employer_stem and ',' or '')
                   </span>
             $if c.employer_stem:
-                , <span class="subtitle"><a href="/empl/$urlquote(c.employer_stem)">$c.employer.title()</a></span>
+                <span class="subtitle"><a href="/empl/$urlquote(c.employer_stem)">$c.employer.title()</a></span>
             </td>
         </tr>
     <tr class="even">
         <td class="paying">
-            <strong>\$$commify(int(c.how_much))</strong> to $c.name.title(), 
-            on <strong>$c.sent</strong>
+            <strong>\$$commify(int(c.how_much))</strong> to $c.name.title()
+            on <strong>$datestr(c.sent)</strong>
         </td>
     </tr>
     $ prev_occupation = c.occupation.title()
