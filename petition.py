@@ -68,9 +68,9 @@ def create_petition(i, email):
         msg = """Petition saved for publishing later."""
         helpers.set_msg(msg)
     else:
-        create_signature(i, u.email)
+        create_first_signature(i, u.email)
 
-def create_signature(i, email):
+def create_first_signature(i, email):
     tocongress = i.get('tocongress', 'off') == 'on'
     i.pid = i.pid.replace(' ', '-')
     u = helpers.get_user_by_email(email)    
@@ -120,7 +120,8 @@ class login:
         lf, sf = forms.loginform(), forms.signupform()
         pf, wf = forms.petitionform(), (wf or forms.wyrform())
         pf.fill(i), wf.fill(i)
-        return render.petitionlogin(lf, sf, pf, wf)
+        is_draft = 'save' in i
+        return render.petitionlogin(lf, sf, pf, wf, is_draft=is_draft)
 
     def POST(self):
         i = web.input()
@@ -128,7 +129,8 @@ class login:
         if not lf.validates(i):
             pf, sf = forms.petitionform(), forms.signupform()
             lf.fill(i), pf.fill(i), wf.fill(i)
-            return render.petitionlogin(lf, sf, pf, wf)
+            is_draft = 'save' in i
+            return render.petitionlogin(lf, sf, pf, wf, is_draft=is_draft)
         create_petition(i, i.useremail)
         raise web.seeother('/%s' % i.pid)
 
@@ -372,7 +374,7 @@ class petition:
         if 'publish' in i: p['published'] = datetime.now()
         db.update('petition', where='id=$pid', vars=locals(), **p)
         if 'publish' in i:
-            create_signature(i, i.email)
+            create_first_signature(i, i.email)
         update_user_details(i)
         raise web.seeother('/%s' % pid)
 

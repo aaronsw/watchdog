@@ -48,17 +48,18 @@ $else:
 	<h2> <strong><a href='/c/$p.id/signatories'>$p.signatory_count $:ppl signed this petition$:signed.</h2>
 
 <div id="uppermenu">
-$ share = 'Share Draft' if is_draft else 'Share'    
-  <a href="/share?url=/c/$p.id/&title=$p.title">$share</a>&nbsp;
+$if not is_draft: <a href="/share?url=/c/$p.id/&title=$p.title">Share</a>&nbsp;
+
 $if isauthor:
+    $if is_draft: <a href="/share?url=/c/$p.id/&title=$p.title">Share Draft</a>&nbsp;
     <a href="?m=edit">Edit</a>
     <a href="?m=delete">Delete</a>
 </div>
 </div>
 
-<a name="sign"></a>
-
-<form name="sign" method="POST" action="/c/$p.id?m=sign">
+$if not is_draft:
+    <a name="sign"></a>
+    <form name="sign" method="POST" action="/c/$p.id?m=sign">
         <fieldset id="signpetition">
             $if issignatory:
                 <legend>Change your signature</legend>
@@ -66,14 +67,14 @@ $if isauthor:
                 <legend>Sign this petition</legend>
             $if wyrform:
                 <p> When you sign this petition, your comments will be sent to your Representative too.</p>
-
+            
             $if not signform.valid:
                 $if signform.note: <p class="error">$signform.note</p>
                 $else: <p class="error">Please try again after fixing the problems highlighted below:</p>
             $elif wyrform and not wyrform.valid:
                 $if wyrform.note: <p class="error">$wyrform.note</p>
                 $else: <p class="error">Please try again after fixing the errors highlighted below:</p>
-
+            
             <table>
             <tr>
             $if wyrform:
@@ -100,7 +101,7 @@ $if isauthor:
             $if wyrform:
                 <td><label for="phone">Phone</label>$:wyrform.phone.render()</td>
             </tr>
-                
+            
             <tr><td colspan=3><label for="comment">Personal comment (explain how this affects you):</label>
             $:signform.comment.render()</td></tr>
             
@@ -118,4 +119,4 @@ $if isauthor:
         $else:
             <p><button type="submit" class="red">Sign this petition</button></p>
         </fieldset>
-</form>
+    </form>

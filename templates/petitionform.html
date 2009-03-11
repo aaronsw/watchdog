@@ -82,13 +82,14 @@ $else:
     </div>
 </fieldset>
 
-$if not is_draft:
+$if target == '/c/new':
     <button type="submit" style="font-size: 1.2em" name="publish">Create my petition</button>
-$else:
+
+$if is_draft:
     <button type="submit" style="font-size: 1.2em" name="publish">Save and Publish</button>
 
 $if target == '/c/new' or is_draft:
     <button type="submit" style="font-size: 1.2em" name="save">Save Draft</button>
 $else:
-    <button type="submit" style="font-size: 1.2em" name="publish">Save my petition</button>
+    <button type="submit" style="font-size: 1.2em">Save my petition</button>
 </form>

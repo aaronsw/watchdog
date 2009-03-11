@@ -16,10 +16,11 @@ $var title: Lobbyist
 <td class="header">Name</td>
 <td class="header">Filings</td>
 </tr>
-	<td>
+
 $def fixcase(n):
 	$n[0].upper()$n[1::].lower()
 $for p in people:
+    <tr><td>
 	$if p.prefix: $p.prefix
 	$if p.firstname: $fixcase(p.firstname)
 	$if p.middlename: $fixcase(p.middlename)
@@ -32,7 +33,6 @@ $for p in people:
 			<a href="/lob/f/$f.id">$f.id</a><br>
 	</td>
 	</tr>
-</tr>
 </table>
 
 $ page = int(query_param("page", 0))

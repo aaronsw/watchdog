@@ -1,4 +1,4 @@
-$def with (loginform, signupform, petitionform, wyrform, msg=None, redirect="")
+$def with (loginform, signupform, petitionform, wyrform, msg=None, redirect="", is_draft=False)
 
 $var width: 782px
 $var color: white
@@ -46,6 +46,8 @@ $if not cookies_on(): <p class="error">Please turn on cookies for login to work.
             $:wyrform.zip5.render()
             $:wyrform.zip4.render()
             $:wyrform.phone.render()
+        $if is_draft:
+            <input type='hidden' name="save" />
         </div>
         $:signupform.redirect.render()
         <fieldset>
@@ -76,6 +78,9 @@ $if not cookies_on(): <p class="error">Please turn on cookies for login to work.
             $:wyrform.zip5.render()
             $:wyrform.zip4.render()
             $:wyrform.phone.render()
+            $if is_draft:
+                <input type='hidden' name="save" />
+            
         </div>
         $:signupform.redirect.render()
         <fieldset>

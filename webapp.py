@@ -111,7 +111,7 @@ class find:
         if i.q:
             if pzip4.match(i.q):
                 zip, plus4 = i.q.split('-')
-                dists = [x.district for x in
+                dists = [x.district_id for x in
                   db.select('zip4', where='zip=$zip and plus4=$plus4', vars=locals())]
             
             elif pzip5.match(i.q):
