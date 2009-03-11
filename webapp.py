@@ -321,6 +321,7 @@ class contributor:
 
 class occupation:
     def GET(self, occupation):
+        if occupation != occupation.lower(): raise web.seeother('/occupation/%s' % occupation.lower())
         candidates = candidates_by_occupation(occupation, 5)
         committees = committees_by_occupation(occupation, 5)
         return render.occupation(candidates, committees, occupation) 
