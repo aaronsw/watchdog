@@ -20,8 +20,9 @@ $ trclass = "odd"
 $for c in contributions:
     <tr class="$trclass">
         <th class="paying">
+            <strong>\$$commify(round(c.how_much))</strong> from
             <strong>$c.how_many</strong> $corp_id.title() employees 
-            (that's <strong>$round(float(c.how_many*100)/total_num, 1)%</strong>) donated <strong>\$$commify(round(c.how_much))</strong> 
+            (<strong>$round(float(c.how_many*100)/total_num, 1)%</strong>)
             to <a href="/p/$c.polid">$c.firstname $c.lastname</a>
         </td> 
         <td style="text-align: right;"><!--
