@@ -582,6 +582,7 @@ class Past_Elections(sql.Table):
     politician = sql.Reference(Politician, primary=True)
     district = sql.Reference(District, primary=True)
     year = sql.Year(primary=True)
+    type = sql.String(10, primary=True) #Gen for general, SpGen for special-general elections
     votes_received = sql.Integer()
     pct_votes_received = sql.Percentage()
     expenditure = sql.Dollars()

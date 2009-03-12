@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import with_statement
 import glob, web, os, cgitb, sys
 import tools
 from settings import db
@@ -6,7 +7,7 @@ from parse import almanac
 sys.excepthook = cgitb.Hook(format='text', file=sys.stderr)
 
 DATA_DIR = '../data'
-ALMANAC_DIR = DATA_DIR + '/crawl/almanac/nationaljournal.com/pubs/almanac/2008/'
+ALMANAC_DIR = DATA_DIR + '/crawl/almanac/nationaljournal.com/pubs/almanac/'
 
 def cleanint(n):
     for c in ', %$':
@@ -33,13 +34,13 @@ def load_into_db(pname, distname, electionresults, recent_election_year):
     polid=pol[0].id
     with db.transaction():
         for r in electionresults:
-            if r.year == recent_election_year:
+            if r.year == recent_election_year and r.type == 'Gen':
                 db.update('politician', where='id=$polid', 
                     n_vote_received=r.votes,
                     pct_vote_received=r.vote_pct,
                     last_elected_year=r.year, vars=locals())
             db.insert('past_elections', seqname=False, politician_id=polid, district_id=distname,
-                    votes_received=r.votes, pct_votes_received=r.vote_pct,
+                    votes_received=r.votes, pct_votes_received=r.vote_pct, type=r.type,
                     year=r.year, expenditure=r.expenditure)
 
 def validate(d, distname):
@@ -60,7 +61,8 @@ def process(d):
             r.year =  int(e['election'][0:4])
             r.votes = e['totalvotes'].replace(',','').replace('Unopposed','0')
             r.vote_pct = 100 if e['totalvotes'] == 'Unopposed' else e['percent'].replace('%', '')
-            r.expenditure = e['expenditures'].lstrip('$').replace(',', '')
+            r.expenditure = e.get('expenditures', '0').lstrip('$').replace(',', '')
+            r.type = 'SpGen' if 'special-general' in e['election'] else 'Gen'
             election_results.append(r)
     return election_results
     
@@ -96,8 +98,8 @@ def demog_to_dist(demog, district):
 def main():
     assert os.path.exists(ALMANAC_DIR), ALMANAC_DIR
     
-    files = glob.glob(ALMANAC_DIR + 'people/*/rep_*.htm') + \
-            glob.glob(ALMANAC_DIR + 'people/*/*s[12].htm')
+    files = glob.glob(ALMANAC_DIR + '*/people/*/rep_*.htm') + \
+            glob.glob(ALMANAC_DIR + '*/people/*/*s[12].htm')
     files.sort()
     for fn in files:
         district = web.storage()
