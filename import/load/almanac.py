@@ -24,22 +24,26 @@ def coalesce_population(data, fields):
     return (None, None)
 
 def load_into_db(pname, distname, electionresults, recent_election_year):
-    pol=db.select('politician', what='id',
-            where="district_id=$distname AND %s" % web.sqlors('lastname ilike ', pname.split(' ')),
-            vars=locals()).list()
-    if len(pol) != 1:
-        print "Couldn't find an id for %s representing %s." % (pname, distname)
-        return
-        
-    polid=pol[0].id
+    #load the details of the winner in recent election results into `politician` table
+    #and all the details of elections in district `distname` into the `past_elections` table
+
     with db.transaction():
         for r in electionresults:
-            if r.year == recent_election_year and r.type == 'Gen':
-                db.update('politician', where='id=$polid', 
+            candidate_id = r.candidate.split('(')[0].strip().lower()
+
+            if r.year == recent_election_year and r.type == 'Gen' and pname in candidate_id:
+                polid = db.update('politician',
+                    where="district_id=$distname AND %s" % (web.sqlors('lastname ilike ', pname.split(' '))),
                     n_vote_received=r.votes,
                     pct_vote_received=r.vote_pct,
                     last_elected_year=r.year, vars=locals())
-            db.insert('past_elections', seqname=False, politician_id=polid, district_id=distname,
+
+            candidate_id = candidate_id.replace(' ', '_')
+            if not db.select('past_elections',
+                            where='politician_id=$candidate_id and district_id=$distname '
+                                    'and year=$r.year and type=$r.type',
+                            vars=locals()):
+                db.insert('past_elections', seqname=False, politician_id=candidate_id, district_id=distname,
                     votes_received=r.votes, pct_votes_received=r.vote_pct, type=r.type,
                     year=r.year, expenditure=r.expenditure)
 
@@ -56,11 +60,11 @@ def process(d):
     pname = d['name'].lower()
     for e in d['electionresults']:
         if 'candidate' in e and 'primary' not in e['election'] and \
-               pname.replace(' ','') in e['candidate'].lower().replace(' ',''):
+                'prior' not in e['election'].lower() and 'prior' not in e['candidate']:
             r = web.storage(candidate=e['candidate'])
             r.year =  int(e['election'][0:4])
-            r.votes = e['totalvotes'].replace(',','').replace('Unopposed','0')
-            r.vote_pct = 100 if e['totalvotes'] == 'Unopposed' else e['percent'].replace('%', '')
+            r.votes = e['totalvotes'].replace(',','').lower().replace('unopposed','0')
+            r.vote_pct = 100 if e['totalvotes'].lower() == 'unopposed' else e.get('percent', '0').replace('%', '')
             r.expenditure = e.get('expenditures', '0').lstrip('$').replace(',', '')
             r.type = 'SpGen' if 'special-general' in e['election'] else 'Gen'
             election_results.append(r)
@@ -113,18 +117,19 @@ def main():
         d = almanac.scrape_person(fn)
         load_election_results(d, distname)
 
-        if 'demographics' in d:
-            demog = d['demographics']
-        elif distname[-2:] == '00' or '-' not in distname:   # if -00 then this district is the same as the state.
-            #print "Using state file for:", distname
-            statefile = ALMANAC_DIR + 'states/%s/index.html' % diststate.lower()
-            demog = almanac.scrape_state(statefile).get('state')
+        if ALMANAC_DIR + '2008' in fn:
+            if 'demographics' in d:
+                demog = d['demographics']
+            elif distname[-2:] == '00' or '-' not in distname:   # if -00 then this district is the same as the state.
+                #print "Using state file for:", distname
+                statefile = ALMANAC_DIR + '2008/states/%s/index.html' % diststate.lower()
+                demog = almanac.scrape_state(statefile).get('state')
 
-        demog_to_dist(demog, district)
+            demog_to_dist(demog, district)
 
-        district.almanac = 'http://' + d['filename'][d['filename'].find('nationaljournal.com'):]
+            district.almanac = 'http://' + d['filename'][d['filename'].find('nationaljournal.com'):]
 
-        #print 'district:', distname, pformat(district)
-        db.update('district', where='name=$distname', vars=locals(), **district)
+            #print 'district:', distname, pformat(district)
+            db.update('district', where='name=$distname', vars=locals(), **district)
 
 if __name__ == '__main__': main()
