@@ -263,6 +263,34 @@ def test_strange_headers():
 
     """
 
+def test_rpt_number():
+    r"""Filing 83615, an amended filing, has a `rpt_number` of 2.
+
+    >>> r, d = fec_crude_csv.read_filing(filing_83615_truncated, '83615.fec')
+    >>> r['rpt_number']
+    '2'
+
+    XXX what about '9' < '10'?  Intify?
+
+    The `rpt_number` should be propagated to all subsequent records
+    read from the file.
+
+    >>> d.next()['rpt_number']
+    '2'
+
+    Filings that have no report number in the header should be treated
+    as having a `rpt_number` of None, which sorts before numbers and
+    strings.
+    >>> None < '2'
+    True
+    >>> None < 2
+    True
+    >>> r, d = fec_crude_csv.read_filing(filing_31454_faked, '31454.fec')
+    >>> r['rpt_number']
+    >>> d.next()['rpt_number']
+
+    """
+
 def test_lowercase_form_type():
     """Filing 22795 uses lowercase for some of its “form type” fields.
 

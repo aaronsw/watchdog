@@ -398,6 +398,10 @@ def readstring(astring):
         raise FilingFormatNotDocumented(astring[:20])
 
     headerdict = decode_headerline(headerline)
+
+    if headerdict.get('rpt_number', '') == '':
+        headerdict['rpt_number'] = None
+
     yield headerdict
 
     headermap = headers_for_version(headerdict['fec_ver'])
@@ -428,6 +432,7 @@ def readstring(astring):
         if not fieldnames:
             raise "could not find field defs", (line[0], headermap.keys())
         rv = mapper.map(dict(zip(fieldnames, line)))
+        rv['rpt_number'] = headerdict['rpt_number']
         yield rv
 
 candidate_name_res = [re.compile(x, re.IGNORECASE) for x in
@@ -448,6 +453,7 @@ class WrongFirstRecordError(Exception): pass
 
 def read_filing(astring, filename, pathname=None):
     records = readstring(astring)
+    # This is where we combine the header_record and the cover_record.
     header_record = records.next()
     cover_record = records.next()
     if not cover_record['original_data']['form_type'].startswith('F'):
