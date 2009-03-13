@@ -256,14 +256,15 @@ class petition:
         if 'tid' in i: 
             set_referrer_cookie(i.tid, pid)
             raise web.seeother('/%s' % pid)
-            
-        useremail = helpers.get_loggedin_email() or helpers.get_unverified_email()
-        isauthor = is_author(useremail, pid)
-        issignatory = is_signatory(useremail, pid)
-        isdraft = is_draft(p)
+        
+        u = web.storage()    
+        u.email = helpers.get_loggedin_email() or helpers.get_unverified_email()
+        u.isauthor = is_author(u.email, pid)
+        u.issignatory = is_signatory(u.email, pid)
+        p.isdraft = is_draft(p)
         p.signatory_count = get_num_signs(pid)
         msg, msg_type = helpers.get_delete_msg()
-        return render.petition(p, sf, useremail, isauthor, issignatory, wf, captcha_html, isdraft, msg)
+        return render.petition(p, u, sf, wf, captcha_html, msg)
 
     @auth.require_login
     def GET_edit(self, pid):
@@ -276,8 +277,7 @@ class petition:
             wf = forms.wyrform()
             fill_user_details(wf)
             isdraft = is_draft(p)
-            title = "Edit your petition"
-            return render.petitionform(pf, wf, title, target='/c/%s?m=edit' % (pid), is_draft=isdraft)
+            return render.petitionform(pf, wf, is_new=False, is_draft=isdraft)
         elif user_email:
             msg = "You don't have permissions to edit this petition."
         else:    
@@ -368,8 +368,7 @@ class petition:
         i.email = helpers.get_loggedin_email()
         wyr_valid = (not(tocongress) or wf.validates(i))
         if not pf.validates(i) or not wyr_valid:
-            title = "Edit petition"
-            return render.petitionform(pf, wf, title, target='/c/%s?m=edit' % (pid), is_draft=is_draft)
+            return render.petitionform(pf, wf, is_new=False, is_draft=is_draft)
         
         p = dict(title=i.ptitle, description=i.msg, to_congress=tocongress)
         if 'publish' in i: p['published'] = datetime.now()
