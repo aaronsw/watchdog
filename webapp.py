@@ -42,8 +42,6 @@ urls = (
   r'/occupation/(.*?)' , 'occupation',
   r'/empl/(.*?)%s?' % options, 'employer',
   r'/r/us/(.*?)%s?' % options, 'roll',
-  r'/c', petition.app,
-  r'/u', users.app,
   r'/lob/c/?(.*?)', 'lob_contrib',
   r'/lob/f/?(.*?)', 'lob_filing',
   r'/lob/o/?(.*?)', 'lob_org',
@@ -56,12 +54,15 @@ urls = (
   r'/about/help', 'abouthelp',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
+  r'/contribute(/?)', 'contribute',
   r'/blog', blog.app,
   r'/share', 'petition.share',
   r'/data/(.*)', 'staticdata',
   r'/bbauth/', 'contacts.auth_yahoo',
   r'/authsub', 'contacts.auth_google',
   r'/auth/msn', 'contacts.auth_msn',
+  r'/c', petition.app,
+  r'/u', users.app,
 )
 
 class index:
@@ -84,6 +85,11 @@ class aboutteam:
 class abouthelp:
     def GET(self):
         return render.about_help()
+
+class contribute:
+    def GET(self, endslash=None):
+        if not endslash: raise web.seeother('/contribute/')
+        return render.contribute()
 
 class feedback:
     def GET(self):
