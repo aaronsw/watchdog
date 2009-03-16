@@ -1,11 +1,11 @@
-$def with (p, signform, useremail, isauthor, issignatory, wyrform=None, captchas='', is_draft=None, msg=None)
+$def with (p, user, signform,  wyrform=None, captchas='', msg=None)
 
 $var width: 90%
 $var color: white
 
 $var title: $p.title
 
-$if is_draft:
+$if p.isdraft:
     $var noindex: True
 
 <script type="text/javascript" src="/static/js/petition.js"></script>
@@ -31,7 +31,7 @@ $if msg:
 $:format(p.description)
 
 <div id="upperbar">
-$if is_draft:
+$if p.isdraft:
     <h2>&nbsp;</h2>
 $else:    
     $if p.signatory_count == 0:
@@ -41,27 +41,27 @@ $else:
     		$ ppl = 'person</a></strong> has'
     	$else:
     		$ ppl = 'people</a></strong> have'
-    	$if issignatory:
+    	$if user.issignatory:
     	    $ signed = ', including <em>you</em>'
     	$else:
     	    $ signed = ''
 	<h2> <strong><a href='/c/$p.id/signatories'>$p.signatory_count $:ppl signed this petition$:signed.</h2>
 
 <div id="uppermenu">
-$if not is_draft: <a href="/share?url=/c/$p.id/&title=$p.title">Share</a>&nbsp;
+$if not p.isdraft: <a href="/share?url=/c/$p.id/&title=$p.title">Share</a>&nbsp;
 
-$if isauthor:
-    $if is_draft: <a href="/share?url=/c/$p.id/&title=$p.title">Share Draft</a>&nbsp;
+$if user.isauthor:
+    $if p.isdraft: <a href="/share?url=/c/$p.id/&title=$p.title">Share Draft</a>&nbsp;
     <a href="?m=edit">Edit</a>
     <a href="?m=delete">Delete</a>
 </div>
 </div>
 
-$if not is_draft:
+$if not p.isdraft:
     <a name="sign"></a>
     <form name="sign" method="POST" action="/c/$p.id?m=sign">
         <fieldset id="signpetition">
-            $if issignatory:
+            $if user.issignatory:
                 <legend>Change your signature</legend>
             $else:
                 <legend>Sign this petition</legend>
@@ -92,8 +92,8 @@ $if not is_draft:
                  <span id="note_zip5"></span></table>
             <table><tr><td>         
             <label for="email">Email</label>
-            $if useremail: 
-                <span><strong>$useremail</strong></span>
+            $if user.email: 
+                <span><strong>$user.email</strong></span>
                 <span style="display: none"> $:signform.email.render() </span>
                 &nbsp;&nbsp;(not you? &nbsp;<b><a href="#" onclick="document.forms['logout'].submit()">logout</a></b>)
             $else:
@@ -114,7 +114,7 @@ $if not is_draft:
             </div>
             <label for="share_with">Do not share my email with the author of this petition</label>
             </div>
-        $if issignatory:
+        $if user.issignatory:
             <p><button type="submit" class="red">Change your signature</button></p>
         $else:
             <p><button type="submit" class="red">Sign this petition</button></p>

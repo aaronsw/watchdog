@@ -1,7 +1,14 @@
-$def with (pform, cform, title="Create a new petition", target="/c/new", captchas='', is_draft=None, msg=None)
+$def with (pform, cform, is_new=True, is_draft=False, captchas='', msg=None)
 
 $var width: 90%
 $var color: white
+
+$if is_new:
+    $ title  = 'Create a new petition'
+    $ target = '/c/new'
+$else:
+    $ title = 'Edit your petition'
+    $ target = '/c/%s?m=edit' % pform.pid.value
 
 $var title: $title
 
@@ -21,7 +28,7 @@ fieldset #tocongresscheck input, fieldset #tocongresscheck label { display: inli
 fieldset #pid { margin-right: 0.3em; font-size: 0.9em; width: 130px; }
 </style>
 
-$if target == '/c/new':
+$if is_new:
     <h1>Create a new petition</h1>
 $else:
     <h1>Edit <a href='/c/$pform.pid.value'>$pform.ptitle.value</a></h1>
@@ -31,13 +38,13 @@ $else:
     $if not pform.valid: <p class="error">Please try again after fixing the problems highlighted below:</p>
 
 <fieldset id="petition">
-    $if title == 'Edit your petition': <legend>Title and description</legend>
+    $if not is_new: <legend>Title and description</legend>
     $else: <legend>Please fill out the following fields</legend>
     <label for="ptitle">Name your petition</label>
     $:pform.ptitle.render()
     
     <label>Your petition site address</label>
-    $if target == '/c/new':
+    $if is_new:
    	  <strong>http://watchdog.net/c/</strong> $:pform.pid.render() <span id="note_pid"></span>
    	  <span>(Letters, numbers and dashes only.)</span>
     $else:
@@ -82,13 +89,13 @@ $else:
     </div>
 </fieldset>
 
-$if target == '/c/new':
+$if is_new:
     <button type="submit" style="font-size: 1.2em" name="publish">Create my petition</button>
 
 $if is_draft:
     <button type="submit" style="font-size: 1.2em" name="publish">Save and Publish</button>
 
-$if target == '/c/new' or is_draft:
+$if is_new or is_draft:
     <button type="submit" style="font-size: 1.2em" name="save">Save Draft</button>
 $else:
     <button type="submit" style="font-size: 1.2em">Save my petition</button>

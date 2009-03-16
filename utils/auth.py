@@ -201,8 +201,8 @@ watchdog.net
 def assert_login(i=None):
     # let unlogged in users also do actions like signing, wyr
     # if the email has verified account with us but not logged-in, redirect to login form
-    # if the email has unverified account, make them login and send set password email
-    # if the email has no account, set an unverified account and send set password email
+    # if the email has unverified account, make them login #and send set password email
+    # if the email has no account, set an unverified account #and send set password email
     # and return user id
     i = i or web.input()
     email = i.email
@@ -212,7 +212,7 @@ def assert_login(i=None):
         login_page = do_login(email, set_state())
         raise web.webapi.HTTPError('200 OK', {}, data=str(login_page))
     else:
-        send_mail_to_set_password(email)
+        #send_mail_to_set_password(email)
         uid = helpers.unverified_login(email, i.get('fname'), i.get('lname'))
     return uid
 

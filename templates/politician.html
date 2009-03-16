@@ -36,9 +36,7 @@ $if pol.photo_path:
       b. $pol.birthday,\
       $if pol.birthplace: $pol.birthplace\
       <br />
-$#$if pol.capitolwords:
-$#    $for w in pol.capitolwords:
-$#        <p>$w.word &nbsp; &nbsp; $w.word_count</p>
+
   $if pol.district:
       represents <a href="/us/$(pol.district and pol.district.name or '')">$(pol.district and pol.district.name or 'None')</a><br />
   $if pol.party:
@@ -49,7 +47,13 @@ $#        <p>$w.word &nbsp; &nbsp; $w.word_count</p>
 $if pol.education:
     Education: $pol.education<br />
 $if pol.last_elected_year:
-	Last elected in $pol.last_elected_year receiving $commify(pol.n_vote_received) ($pol.pct_vote_received%) votes.<br />
+    $if pol.pct_vote_received == 100:
+         Last elected in $pol.last_elected_year, unopposed.<br />
+    $else:
+         Last elected in $pol.last_elected_year receiving $commify(pol.n_vote_received) ($pol.pct_vote_received%) votes.<br />
+
+$#pol.opponents
+$#pol.past_votes
 $if pol.officeurl:
   <a href="$pol.officeurl">Official website</a><br /><br />
 

@@ -148,6 +148,18 @@ rdf:resource="%s" />' % x
                     'order by year desc, pol2corp+corp2pol desc',
                     vars=locals()).list()
 
+    @property
+    def opponents(self):
+        return db.select('past_elections', 
+                        where='district_id=$self.district_id and politician_id != $self.id',
+                        order='year desc', vars=locals()).list()
+    
+    @property
+    def past_votes(self):
+        return db.select('past_elections', 
+                    where='district_id=$self.district_id and politician_id = $self.id',
+                    order='year desc', vars=locals()).list()
+
     officeurl = sql.URL()
     party = sql.String() # Moved to Congress table
     religion = sql.String()
@@ -579,7 +591,7 @@ class Handshakes(sql.Table):
     year = sql.Integer()
 
 class Past_Elections(sql.Table):
-    politician = sql.Reference(Politician, primary=True)
+    politician = sql.String(256, primary=True) # don't refer `politician` table as lost candidates might not be there
     district = sql.Reference(District, primary=True)
     year = sql.Year(primary=True)
     type = sql.String(10, primary=True) #Gen for general, SpGen for special-general elections
