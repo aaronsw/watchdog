@@ -591,7 +591,7 @@ class Handshakes(sql.Table):
     year = sql.Integer()
 
 class Past_Elections(sql.Table):
-    politician = sql.String(256, primary=True) # don't refer `politician` table as lost candidates might not be there
+    politician_id = sql.String(256, primary=True) # don't refer `politician` table as lost candidates might not be there
     district = sql.Reference(District, primary=True)
     year = sql.Year(primary=True)
     type = sql.String(10, primary=True) #Gen for general, SpGen for special-general elections
