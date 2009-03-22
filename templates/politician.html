@@ -84,7 +84,7 @@ $def spark(label, data, polid, by, unit='', url=None):
     $if unit == '$':
         $ display = unit + commify(data)
     $elif unit and unit[0] == '%':
-        $ display = '%d' % int(abs(data) * 100) + unit
+        $ display = '%.0f' % (abs(data) * 100) + unit
     $if url:
         <td class="sparkdata"><a href="$url">$display</a></td>
     $else:
