@@ -207,6 +207,7 @@ table.signs td.count { font-weight: bold }
 .petition { border-top: 1px solid #ccc; padding: 10px;}
 .sources { background-color: #eee; color: #555; padding: 1em; font-size: smaller; margin-top: 2em; clear: both;}
 .disclaimer { color: #666; font-size: 10px; text-align: right; line-height: 14px }
+.disclaimer { color: #666; font-size: 10px; text-align: right; line-height: 14px }
 .answer { margin-left: 1.5em;}
 
 .strapline { border-bottom: 1px solid #6dbde4; margin-top: -12px; margin-bottom: 30px; }
