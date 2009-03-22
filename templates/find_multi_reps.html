@@ -11,5 +11,5 @@ $var title: Representative Search
 
 <ul>
 $for r in reps:
-    <li><a href="/p/$r.id.lower()">Rep. $r.firstname $r.lastname</a></li>
+    <li><a href="/p/$r.id.lower()">$r.title $r.firstname $r.lastname</a></li>
 </ul>
