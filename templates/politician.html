@@ -8,7 +8,7 @@ $var title: $pol.title $pol.firstname $pol.middlename $pol.lastname
 $var sidebar: None
 
 $if pol.is_current:
-    $var pretext: <div id="sidebarmap"  style="clear: right; margin-top: -24px;"><div id="googlemap" class="sidemap"></div><!--<input type="text" name="zip" class="zipcode" value="Enter your zip" />--><div class="postit" style="margin: 10px 0px 10px 0px !important; text-align: center; padding: 3px;"><a href="/share?url=$getpath()&title=$pol.firstname $pol.middlename $pol.lastname"><strong>Share this page</strong></a></div></div>
+    $var pretext: <div id="sidebarmap" style="width: 180px; height: 386px;clear: right; margin-top: -24px;"><div id="googlemap" class="sidemap"></div></div>
     
 $var width: 90%
 $var color: white
@@ -27,47 +27,52 @@ $var color: white
 <table class="structure"><tr>
 
 $if pol.photo_path:
-    <td style="padding-right: 10px; width: 5em;"><a href="http://watchdog.net$pol.photo_path"><img src="http://watchdog.net$pol.photo_path" alt="Headshot" class="headshot" style="padding: 7px; border: 1px solid #999;" /></a></td>
+    <td style="padding-right: 10px; width: 5em;"><a href="http://watchdog.net$pol.photo_path"><img src="http://watchdog.net$pol.photo_path" alt="Headshot" class="headshot" style="padding: 7px; border: 1px solid #999;" /></a><br /><div class="postit" style="clear: both !important; text-align: center; padding: 3px; border: none"><a href="/share?url=$getpath()&title=$pol.firstname $pol.middlename $pol.lastname"><strong>Share this page</strong></a></div></td>
 
 <td rowspan="2">
 
-  $if pol.nickname: known as "$pol.nickname"<br />
+  $if pol.nickname: <b>Nickname:</b> known as "$pol.nickname"<br />
   $if pol.birthday:
-      b. $pol.birthday,\
-      $if pol.birthplace: $pol.birthplace\
+      <b>Birthdate:</b> b. $pol.birthday<br />
+      $if pol.birthplace: <b>Birthplace:</b> $pol.birthplace\
       <br />
-$#$if pol.capitolwords:
-$#    $for w in pol.capitolwords:
-$#        <p>$w.word &nbsp; &nbsp; $w.word_count</p>
   $if pol.district:
-      represents <a href="/us/$(pol.district and pol.district.name or '')">$(pol.district and pol.district.name or 'None')</a><br />
+      <b>District:</b> represents <a href="/us/$(pol.district and pol.district.name or '')">$(pol.district and pol.district.name or 'None')</a><br />
   $if pol.party:
-	  $pol.party<br /> 
+	  <b>Political Party:</b> $pol.party<br /> 
   $if pol.religion:
-	  $pol.religion<br />
+	  <b>Religion:</b> $pol.religion<br />
 
 $if pol.education:
-    Education: $pol.education<br />
+    <b>Education:</b> $pol.education<br />
 $if pol.last_elected_year:
 	Last elected in $pol.last_elected_year receiving $commify(pol.n_vote_received) ($pol.pct_vote_received%) votes.<br />
 $if pol.officeurl:
-  <a href="$pol.officeurl">Official website</a><br /><br />
-
-<!-- <a href="/writerep" class="more">Write $pol.firstname $pol.lastname</a> 
-
-  <span style="color:#EE4400; font-style:italic;">or call at 000-000-0000</a></span>  -->
+  <a href="$pol.officeurl">Official website</a><br />
+<!--  <span style="color: #EE4400">Phone Number: 000-000-0000</span><br />  -->
   
+</td></tr><tr>
 
+$if pol.capitolwords:
+     <td colspan="2" style="color: #638f45;">
+     <a href="http://capitolwords.org/lawmaker/$pol.bioguideid" style="text-decoration: underline;  color: #638f45">Capitol Word Frequency</a>&nbsp;&rarr;&nbsp; 
+         $for w in pol.capitolwords:
+         <nobr><a href="http://capitolwords.org/word/$w.word">$w.word</a> <sup>($w.word_count)</sup></nobr>
 
-</td>
-
-</tr><tr>
-
-<td style="padding-top: 3px; margin: 0px; color: #EE4400"></td>
-
-</tr></table>
+</td><tr><tr><td colspan="3">  <div class="disclaimer" style="padding-top: 6x; margin-bottom: 12px; text-align: left;">
+  $if pol.votesmartid:
+  Politician information from 
+      <a href="http://votesmart.org/bio.php?can_id=$pol.votesmartid" class="external">Project Vote Smart</a>,
+      <a href="$pol.wikipedia" class="external">Wikipedia</a>. 
+  $if pol.photo_credit_text:
+      Photo from 
+      <a href="$pol.photo_credit_url" class="external">$pol.photo_credit_text</a>.
+  </div>
+</td></tr>
+</table>
 </div>
-<table class="structure">
+
+<table class="structure" style="border-top: 1px solid #ccc;">
 <tr><td width="50%">
 <h2 class="rep">Money</h2>
 
@@ -101,8 +106,9 @@ $if pol.money_raised:
     </tr><tr class="odd">
       $:spark('From individuals', pol.pct_indiv, pol.id, 'pct_indiv', '%')</td>
     </tr><tr class="even">
-      $:spark('From <acronym title="Political Action Committees">PAC</acronym>s', pol.pct_pac, pol.id, 'pct_pac', '%')
+      $:spark('From PACs', pol.pct_pac, pol.id, 'pct_pac', '%')
     </tr>
+    <tr><td colspan="4" class="disclaimer" style="text-align: left">PAC = Political Action Committees. Money data from <nobr><a href="http://www.fec.gov/" class="external">the FEC</a>.</td></tr>
 $else:
     <tr><th>No information available.</td></tr>
 </tbody></table>
@@ -120,7 +126,7 @@ $if pol.n_earmark_requested:
   </tr><tr class="odd">
     $:spark('Total cost', pol.amt_earmark_received, pol.id, 'amt_earmark_received', '$')
   </tr>
-  <tr><td colspan="4" class="disclaimer">Data for fiscal year 2008</td></tr>
+  <tr><td colspan="4" class="disclaimer" style="text-align: left">Data for fiscal year 2008 from <a href="http://taxpayer.net/earmarks.php" class="external">Taxpayers for Common Sense</a>.</td></tr>
 $else:
     <tr><th>No information available.</td></tr>
 </tbody></table>
@@ -137,7 +143,7 @@ $if pol.predictability:
     <tr class="odd">
     $:spark('Predictable', pol.predictability, pol.id, 'predictability', '%')
     </tr>
-    <tr><td colspan="4" class="disclaimer">Unpredictable equals maverick</td></tr>
+    <tr><td colspan="4" class="disclaimer" style="text-align: left">Data from <a href="http://voteview.com/" class="external">VoteView</a>. Unpredictable equals maverick</td></tr>
 $else:
     <tr><th>No information available.</td></tr>
 </tbody></table>
@@ -151,7 +157,7 @@ $if pol.n_speeches:
   </tr><tr class="odd">
     $:spark('Avg. length', pol.words_per_speech, pol.id, 'words_per_speech', 'words')
   </tr>
-  <tr><td colspan="4" class="disclaimer">Data for 110th Congress</td></tr>
+  <tr><td colspan="4" class="disclaimer" style="text-align: left">Data for 110th Congress from <a href="http://www.govtrack.us/congress/person.xpd?id=$pol.govtrackid" class="external">GovTrack</a>.</td></tr>
 $else:
     <tr><th>No information available.</td></tr>  
   </tbody></table>  
@@ -178,46 +184,38 @@ $else:
     <tr><th>No information available.</td></tr>
 </tbody></table>
 
-</td></tr>
+</td></tr><tr>
 
-<tr>
-<td class="rule" colspan="2" style="color: #638f45;">
-$if pol.capitolwords:
-     <a href="http://capitolwords.org/lawmaker/$pol.bioguideid" style="text-decoration: underline;  color: #638f45">Capitol Word Frequency</a>&nbsp;&rarr;&nbsp; 
-     $for w in pol.capitolwords:
-     <nobr><a href="http://capitolwords.org/word/$w.word">$w.word</a> <sup>($w.word_count)</sup></nobr>
 
-<tr>
-
-</tr>
-
-<tr><td colspan="2">
 
 $if pol.related_groups:
+    <tr><td colspan="2" class="rule" >
     <h2 class="rep">Interest Group Alignment</h2>
     <table cellpadding="0" cellspacing="0" width="100%" class="interest_group_agreement">
     $ trclass = "odd"
-    <tbody><tr><th>Group</td><th>Agreement</td></tr>
+    <tbody>
+    <tr><td colspan="2" style="text-align: left; padding-bottom: 4px;" class="disclaimer">Interest Group Alignment tracks hat groups politicians favor and where they agree on the issues - <a href="http://watchdog.net/blog/alignment">[ more ]</a></td></tr>
+    <tr><th style="padding-left: 6px;">Group</td><th style="text-align: right; padding-right: 25px;">Agreement</td></tr>
     $for group in pol.related_groups:
         <tr class="$loop.parity">
-          <td style="padding-left: 6px;">$group.longname</td>
+          <td style="padding-left: 6px; text-align: left;">$group.longname</td>
           <td>$int(group.agreement * 100)% (<a href="/p/$pol.id/$group.id">$group.agreed/$group.total votes</a>)</td>
          </tr> 
-<tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/groups" class="more">More interest groups</a>&nbsp;&rarr;</span></td></tr>        
-    </tbody></table>
-
-</td></tr><tr>
+    <tr><td colspan="2" style="text-align: left;"><span style="color: #EE4400"><a href="/p/$pol.id/groups" class="more">More interest groups</a>&nbsp;&rarr;</span></td></tr>
+    </tbody></table></td></tr><tr>
 
 
 $if pol.handshakes:
     <td colspan="2" class="rule">
     <h2 class="rep">Handshakes</h2>
     <table cellpadding="0" cellspacing="0" width="100%" class="handshakes">
-    <tbody><tr>
-            <td width='50%'><b>Corporation</b></td>
+    <tbody>
+        <tr><td colspan="5" style="text-align: left; padding-bottom: 4px;" class="disclaimer">Handshakes are funds that are donated to a politician by a employees of a company, and flow back out to the same company.</td></tr><tr>
+            <tr>
+            <td width='50%'><b>Earmark Recipient</b></td>
             <td colspan="2"><b>Donations</b></td>
             <th>Earmarks</th>
-            <th>Year</th></tr>
+            <th>Cycle</th></tr>
     $for h in pol.handshakes:
         $ corporation = h.corporation.replace(' ', '-')
         <tr class="$loop.parity">
@@ -235,39 +233,40 @@ $if pol.handshakes:
     </tbody></table>
     </td></tr>
 
-<tr>
-<td colspan="2" class="rule">
-<h2 class="rep">Top Contributors</h2>
-<table class="charted structure contributors" style="width: 100%"><tbody>
-$for c in pol.contributors:
-    $ names = c.name.lower().replace(' ', '').split(',')
-    $ name = names[-1]+'_'+'_'.join(names[:-1])
-    <tr class="$loop.parity">
-        <th>$loop.index <a href="/contrib/$c.zip/$name">$format_name(c.name.title())</a></th>
-        <td>\$$commify(int(c.amt))</td>
+$if pol.contributors:
+    <td colspan="2">
+    <h2 class="rep">Top Contributors</h2>
+    <table class="charted structure contributors" style="width: 100%"><tbody>
+        <tr><td colspan="2" style="text-align: left; padding-bottom: 4px;" class="disclaimer">Contributors are individuals or groups who have donated to a lawmaker's political campaign.</td></tr>
+    $for c in pol.contributors:
+        $ names = c.name.lower().replace(' ', '').split(',')
+        $ name = names[-1]+'_'+'_'.join(names[:-1])
+        <tr class="$loop.parity">
+            <th>$loop.index <a href="/contrib/$c.zip/$name">$format_name(c.name.title())</a></th>
+            <td>\$$commify(int(c.amt))</td>
+        </tr>
+      <tr><td colspan="2" style="text-align: left;"><span style="color: #EE4400"><a href="/p/$pol.id/contribs" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr>        
+    </tbody></table>
+    </td>
     </tr>
-  <tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/contribs" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr>        
-</tbody></table>
-</td>
-</tr>
 
 $def niceurl(url):
     $:url.lower().replace(' ', '_')
 
-<tr>
-<td colspan="2" class="rule">
-<h2 class="rep">Top Contributor Employers</h2>
-<table class="charted structure contributors" style="width: 100%"><tbody>
-$for c in pol.contributor_employers:
-    <tr class="$loop.parity">
-        <th>$loop.index <a href="/empl/$:niceurl(c.employer_stem)">$c.employer_stem.title()</a></th>
-        <td>\$$commify(int(c.amt))</td>
-    </tr>
-<tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/contrib-employers" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr></tbody></table>
 
-</td>
-</tr>
-<tr>
+$if pol.contributor_employers:
+    <tr>
+    <td colspan="2" class="rule">
+    <h2 class="rep">Top Contributor Employers</h2>
+    <table class="charted structure contributors" style="width: 100%"><tbody>
+    $for c in pol.contributor_employers:
+        <tr class="$loop.parity">
+            <th>$loop.index <a href="/empl/$:niceurl(c.employer_stem)">$c.employer_stem.title()</a></th>
+            <td>\$$commify(int(c.amt))</td>
+        </tr>
+    <tr><td colspan="2" style="text-align: left;"><span style="color: #EE4400"><a href="/p/$pol.id/contrib-employers" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr></tbody></table>
+
+</td></tr><tr>
     
 $if pol.lob_contribs:
      <td colspan="2" class="rule">
@@ -277,37 +276,18 @@ $if pol.lob_contribs:
          $def whom():
      		${(c.contact_name if c.contact_name else ((c.prefix or '') + ' ' + (c.firstname or '') + ' ' + (c.middlename or '') + ' ' + (c.lastname or '') + ' ' + (c.suffix or ''))).title()}
          <tr class="$loop.parity">
-             <th>$loop.index <a href="/lob/f//$c.filing_id">$:whom() - $c.name.title()</a></th>
+             <th>$loop.index <a href="/lob/f/$c.filing_id">$:whom() - $c.name.title()</a></th>
      		<td>\$$commify(c.amount)</td>
          </tr>
-     <tr><td colspan="2"><span style="color: #EE4400"><a href="/p/$pol.id/lobby" class="more">More lobby contributors</a>&nbsp;&rarr;</span></td></tr>        
+     <tr><td colspan="2" style="text-align: left;"><span style="color: #EE4400"><a href="/p/$pol.id/lobby" class="more">More lobby contributors</a>&nbsp;&rarr;</span></td></tr>        
      </tbody></table>
      </td>
-</tr>
+    </tr>
+      <tr><td colspan="4" class="disclaimer" style="text-align: left">Interest group alignment from <a href="http://maplight.org/map/us/legislator" class="external">MAPLight.org</a>. Some campaign finance information from <a href="http://opensecrets.org/politicians/summary.asp?CID=$pol.opensecretsid" class="external">Open Secrets</a>.</td></tr>
+
 </table>
 
-<div class="sources">
-  Money data from <nobr><a href="http://www.fec.gov/" class="external">the FEC</a>.</nobr>
-  Politician information from 
-  $if pol.votesmartid:
-      <a href="http://votesmart.org/bio.php?can_id=$pol.votesmartid" class="external">Project Vote Smart</a>,
-      <a href="$pol.wikipedia" class="external">Wikipedia</a>, and 
-      <a href="http://www.govtrack.us/congress/person.xpd?id=$pol.govtrackid" class="external">GovTrack</a>.
-      Earmark information from 
-      <a href="http://taxpayer.net/earmarks.php" class="external">Taxpayers for Common Sense</a>.
-      Interest group alignment from 
-      <a href="http://maplight.org/map/us/legislator" class="external">MAPLight.org</a>.
-      Ideology and predictability from
-      <a href="http://voteview.com/" class="external">VoteView</a>.
-  $if pol.photo_credit_text:
-      Photo from 
-      <a href="$pol.photo_credit_url" class="external">$pol.photo_credit_text</a>.
-      Some campaign finance information from 
-      <a href="http://opensecrets.org/politicians/summary.asp?CID=$pol.opensecretsid" class="external">Open Secrets</a>.
-  $else:
-      various sources.  
-</div>
-
+<br /><br />      
 <p><strong>Developers:</strong> Get this page in <a href="${pol.id.lower()}.n3">N3</a>, <a href="${pol.id.lower()}.xml">XML</a>, or <a href="${pol.id.lower()}.json">JSON</a>.</p>
 
 <p><em>Also known as:</em>
