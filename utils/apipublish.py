@@ -59,7 +59,11 @@ def tojson(x):
 
 def publishjson(lst):
     out = ['[']
+    first = True
     for obj in lst:
+        if not first:
+            out.append('  ,')
+        first = False
         out.append('  {')
         out.append('    "_type": "%s",' % obj.__class__.__name__)
         out.append('    "uri": "%s",' % obj._uri_)
@@ -83,7 +87,12 @@ def _n3ify(obj, indent):
     elif isinstance(obj, (int, float)):
         return obj
     else:
-        return '"%s"' % unicode(obj).replace('"', r'\"')
+        #@@ strings.  Improve this code to cover the cases in
+        # http://www.w3.org/TR/rdf-testcases/#ntrip_strings
+        return '"%s"' % (unicode(obj)
+                         .replace('\\', r'\\')
+                         .replace('\n', r'\n')
+                         .replace('"', r'\"'))
 
 def n3ify(obj, indent, c=None):
     if hasattr(obj, 'ton3'):
