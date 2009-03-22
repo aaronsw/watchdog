@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 "Unit tests for code in webapp.py."
 import re, time, urllib, pprint, StringIO
-import simplejson as json
+import simplejson
 import web
 from utils import rdftramp
 import webapp
@@ -36,7 +36,7 @@ def json(path):
     resp = webapp.app.request(path + '.json')
     ok(resp.status[:3], '200')
     ok(resp.headers['Content-Type'], 'application/json')
-    return json.loads(resp.data)
+    return simplejson.loads(resp.data)
 
 #@@ more places should use this
 def html(path):
@@ -97,7 +97,7 @@ def test_state():
     ok(resp.status[:3], '200')
     # Copied and pasted from current output; hope it's right.  See
     # below about perils of writing unit tests afterwards.
-    ok(json.loads(resp.data),
+    ok(simplejson.loads(resp.data),
        [{     'code': 'NM',
           'fipscode': '35',
               'name': 'New Mexico',
