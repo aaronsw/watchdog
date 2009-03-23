@@ -25,7 +25,7 @@ $var title: $name
 $ prev_occupation = None
 $ prev_employer = None
 $for c in candidates:
-    $if c.occupation.title() != prev_occupation or c.employer.title() != prev_employer:
+    $if c.occupation.title() != prev_occupation or c.employer_stem.title() != prev_employer:
         <tr style="border-bottom: 1px solid #999;">
             <td colspan="2" class="date"><strong>$name.title()</strong>$((c.occupation or c.employer_stem ) and ',' or '')
             $if c.occupation:
