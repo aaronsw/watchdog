@@ -541,6 +541,7 @@ def datestr(then, now=None):
             out += 'ago'
         return out                           # '2 days ago'
 
+    if not then: return ""
     oneday = 24 * 60 * 60
 
     if not now: now = datetime.datetime.utcnow()

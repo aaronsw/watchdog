@@ -40,7 +40,7 @@ $for c in candidates:
         <td class="paying">
             <strong>\$$commify(int(c.how_much))</strong> to 
             <a href="/p/$c.polid">$c.firstname $c.lastname</a>$(c.committee and ', '+c.committee.title() or '')
-            on <strong>$datestr(c.sent)</strong>
+            $if c.sent: on <strong>$datestr(c.sent)</strong>
         </td>
     </tr>
     $ prev_occupation = c.occupation.title()
@@ -67,7 +67,7 @@ $for c in committees:
     <tr class="even">
         <td class="paying">
             <strong>\$$commify(int(c.how_much))</strong> to $c.name.title()
-            on <strong>$datestr(c.sent)</strong>
+            $if c.sent: on <strong>$datestr(c.sent)</strong>
         </td>
     </tr>
     $ prev_occupation = c.occupation.title()
