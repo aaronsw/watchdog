@@ -239,19 +239,6 @@ def test_dproperty():
 def test_blog():
     html('/blog/')
 
-def test_interest_group_table():
-    coc = "Chamber of Commerce of the United States"
-    aclu = "American Civil Liberties Union"
-    ok(webapp.interest_group_table([
-        dict(year=2005, groupname='COC', longname=coc, rating=38),
-        dict(year=2006, groupname='COC', longname=coc, rating=48),
-        dict(year=2006, groupname='ACLU', longname=aclu, rating=80),
-        ]), dict(groups=[dict(groupname='ACLU', longname=aclu),
-                     dict(groupname='COC', longname=coc)],
-                 rows=[
-        dict(year=2006, ratings=[80, 48]),
-        dict(year=2005, ratings=[None, 38])]))
-
 def test_webapp():
     "Test the actual watchdog.net webapp.app app."
     test_state()
@@ -262,7 +249,6 @@ def test_webapp():
     test_find()                         # slow
 
 def main():
-    #test_interest_group_table()
     test_webapp()
 
 
