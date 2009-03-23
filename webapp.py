@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import re, sys
 import web
 
@@ -684,6 +685,67 @@ def notfound():
 
 def internalerror():
     return web.internalerror(file('templates/500.html').read())
+
+def and_join(phrases):
+    """Format a list of phrases as an English list.
+
+    This must already exist in web.py but I can't find it."""
+    phrases = list(phrases)
+    assert len(phrases) > 0          # caller should special-case this
+    if len(phrases) == 1:
+        return phrases[0]
+    elif len(phrases) == 2:
+        return ' and '.join(phrases)
+    else:
+        return ', '.join(phrases[:-1] + ['and ' + phrases[-1]])
+
+def pluralize(noun, plural, number):
+    """Inflect a noun for number."""
+    if number == 1:
+        return noun
+    else:
+        return plural
+
+def divide_into_ranges(ints):
+    """Summarize a sorted sequence of ints as a sequence of contiguous ranges.
+
+    Return value is a list of lists of the form `[start, stop]`, where `stop`
+    is one more than the last item in the range.
+    """
+    rv = []
+
+    for item in ints:
+        if len(rv) == 0:
+            rv.append([item, item+1])
+        elif item == rv[-1][1]:
+            rv[-1][1] += 1
+        else:
+            rv.append([item, item+1])
+
+    return rv
+
+def congress_ranges(congresses):
+    """Format a list of Congress ordinal numbers
+    as a coalesced English sequence of ranges."""
+
+    nthstr = web.utils.nthstr
+
+    if not congresses:
+        return "no known Congresses"
+
+    ranges = divide_into_ranges(congresses)
+    phrases = []
+    for start, stop in ranges:
+        if stop == start + 1:
+            phrases.append(nthstr(start))
+        elif stop == start + 2:
+            phrases.append(nthstr(start))
+            phrases.append(nthstr(start+1))
+        else:
+            phrases.append('%s–%s' % (nthstr(start), nthstr(stop-1)))
+
+    return "the %s %s" % (and_join(phrases),
+                          pluralize("Congress", "Congresses", len(congresses)))
 
 app.notfound = notfound
 if production_mode:

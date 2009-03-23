@@ -239,6 +239,26 @@ def test_dproperty():
 def test_blog():
     html('/blog/')
 
+def test_congress_ranges():
+    ok(webapp.pluralize('Congress', 'Congresses', 0),  'Congresses')
+    ok(webapp.pluralize('Congress', 'Congresses', 1),  'Congress')
+    ok(webapp.pluralize('Congress', 'Congresses', 2),  'Congresses')
+    ok(webapp.pluralize('Congress', 'Congresses', 20), 'Congresses')
+
+    ok(webapp.congress_ranges([]), "no known Congresses")
+    ok(webapp.congress_ranges([104]), "the 104th Congress")
+    ok(webapp.congress_ranges([102]), "the 102nd Congress")
+    ok(webapp.congress_ranges([102, 103]), "the 102nd and 103rd Congresses")
+    ok(webapp.congress_ranges([102, 104, 105]),
+       "the 102nd, 104th, and 105th Congresses")
+    ok(webapp.congress_ranges([100, 102, 104, 105]),
+       "the 100th, 102nd, 104th, and 105th Congresses")
+    ok(webapp.congress_ranges([102, 103, 104]), "the 102nd–104th Congresses")
+    ok(webapp.congress_ranges([86, 87, 88, 90, 91, 92]),
+       "the 86th–88th and 90th–92nd Congresses")
+    ok(webapp.congress_ranges([86, 87, 88, 90, 91, 92, 94, 95, 96]),
+       "the 86th–88th, 90th–92nd, and 94th–96th Congresses")
+
 def test_webapp():
     "Test the actual watchdog.net webapp.app app."
     test_state()
@@ -249,6 +269,7 @@ def test_webapp():
     test_find()                         # slow
 
 def main():
+    test_congress_ranges()
     test_webapp()
 
 
