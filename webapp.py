@@ -599,8 +599,12 @@ class politician_group:
                 "politician_id = $politician_id AND group_id = $group_id",
          order='vote = support desc',
           vars=locals())
-
-        return render.politician_group(votes)
+        
+        pol = schema.Politician.where(id=politician_id)
+        group = schema.Interest_Group.where(id=group_id)
+        if not (pol and group):
+            raise web.notfound()
+        return render.politician_group(votes, pol[0].name, group[0].longname)
 
 
 r_safeproperty = re.compile('^[a-z0-9_]+$')
