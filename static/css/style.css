@@ -67,7 +67,7 @@ img { border:none }
 
 
 /* sidebar */
-#sidebar {float:right; padding:20px; width:180px; border: 1px solid #ccc; background-color: #ebebeb; margin-right: 20px; margin-left: 30px; margin-top: -28px; }
+#sidebar {float:right; padding:20px; width:248px; border: 1px solid #ccc; background-color: #ebebeb; margin-right: 20px; margin-left: 30px; margin-top: -28px; }
 #sidebar h2 {font-family:"Georgia"; margin:0 0 10px 0; font-size:18px; font-weight:normal; color: #002233 }
 #sidebar ul {margin:0; padding:0;}
 #sidebar li.top {list-style:none; border-bottom:1px solid #83b3d0; border-top:1px solid #83b3d0;  padding:6px 6px; line-height: 14px; }
@@ -207,7 +207,6 @@ table.signs td.count { font-weight: bold }
 .petition { border-top: 1px solid #ccc; padding: 10px;}
 .sources { background-color: #eee; color: #555; padding: 1em; font-size: smaller; margin-top: 2em; clear: both;}
 .disclaimer { color: #666; font-size: 10px; text-align: right; line-height: 14px }
-.disclaimer { color: #666; font-size: 10px; text-align: right; line-height: 14px }
 .answer { margin-left: 1.5em;}
 
 .strapline { border-bottom: 1px solid #6dbde4; margin-top: -12px; margin-bottom: 30px; }
@@ -252,8 +251,8 @@ table.charted { padding-bottom: 20px; width: 100%; }
 td.sparkline { padding-right: 3px; width: 35px; }
 td.sparkdata { padding-right: 3px; }
 td.sparknum { color: #EE4400; text-align: left; }
-.sidemap  { width: 220px; height: 420px; margin-top: 0; margin-left: -20px; }
-#sidebarmap {float:right; padding:20px 20px 0 20px; padding-top: 0; width:180px; border: 1px solid #ccc; background-color: #99b3cc; margin-right: 20px; overflow: hidden;}
+.sidemap  { margin-top: 0; margin-left: -20px; }
+#sidebarmap {float:right; padding:20px 20px 0 20px; padding-top: 0; border: 1px solid #ccc; background-color: #99b3cc; margin-right: 20px; overflow: hidden;}
 .headshot, .smallheadshot { padding-right: 1em; border: 0;}
 .headshot { width: 10em; float: left; }
 .smallheadshot { width: 5em; margin-top: 0em; float: left; padding: 8px; border: 1px solid #666; }

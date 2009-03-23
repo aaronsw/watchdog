@@ -13,14 +13,14 @@ $var title: Earmarks
 <h1>Earmarks</h1>
 
 <table class="structure" width="100%">
-<tr><td class="header">Amount</td><td class="header" colspan="2">Earmark</td></tr>
+<tr><td class="header">Amount</td><td class="header" colspan="2">Earmark</td><td class="header" style="white-space: nowrap">Intended Recipient</td></tr>
 $ trclass = "odd"
 $for em in earmarks:
     $if trclass == "odd":
         $ trclass = "even"
     $else:
         $ trclass = "odd"
-    <tr class="$trclass"><td style="padding: 3px; text-align: right;"><a href="/e/$em.id"><b>\$$commify(em.final_amt)</b></a></td><td style="color: #999; padding-left: 6px; padding-right: 8px;">for</td><td> $em.description </td></tr>
+    <tr class="$trclass"><td style="padding: 3px; text-align: right;"><a href="/e/$em.id"><b>\$$commify(em.final_amt)</b></a></td><td style="color: #999; padding-left: 6px; padding-right: 8px;">for</td><td> $em.description </td><td></td></tr>
 
 </table>
 
