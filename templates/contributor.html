@@ -21,6 +21,13 @@ $var title: $name
   h1 .header_em { color: black; color:#002233; }
   </style>
   
+ 
+$def date_range(dfrom, dto):
+    $if dfrom and dto and dfrom != dto:
+        during <strong>$datestr(dfrom)</strong> - <strong>$datestr(dto)</strong>
+    $elif ((dfrom == dto) and dfrom) or dfrom or dto:
+        on <strong>$datestr(dfrom or dto)</strong>
+  
 <table style="width: 100%; margin-top: 0em; margin-bottom: 2em;" class="paying structure">
 $ prev_occupation = None
 $ prev_employer = None
@@ -40,7 +47,8 @@ $for c in candidates:
         <td class="paying">
             <strong>\$$commify(int(c.how_much))</strong> to 
             <a href="/p/$c.polid">$c.firstname $c.lastname</a>$(c.committee and ', '+c.committee.title() or '')
-            $if c.sent: on <strong>$datestr(c.sent)</strong>
+            $:date_range(c.from_date, c.to_date)
+            
         </td>
     </tr>
     $ prev_occupation = c.occupation.title()
@@ -67,7 +75,7 @@ $for c in committees:
     <tr class="even">
         <td class="paying">
             <strong>\$$commify(int(c.how_much))</strong> to $c.name.title()
-            $if c.sent: on <strong>$datestr(c.sent)</strong>
+            $:date_range(c.from_date, c.to_date)
         </td>
     </tr>
     $ prev_occupation = c.occupation.title()
