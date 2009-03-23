@@ -145,7 +145,7 @@ class find:
             results = se.query(i.q)
             reps = schema.Politician.select(where=web.sqlors('id=', results))
             if len(reps) > 1:
-                return render.find_multi_reps(reps)
+                return render.find_multi_reps(reps, congress_ranges)
             else:
                 try:
                     rep = reps[0]
@@ -454,7 +454,6 @@ class politician:
         except IndexError:
             raise web.notfound()
 
-        p.is_current = bool(db.select('curr_politician', where='id=$polid', vars=locals()))
         #@@move into schema
         p.fec_ids = [x.fec_id for x in db.select('politician_fec_ids', what='fec_id',
           where='politician_id=$polid', vars=locals())]

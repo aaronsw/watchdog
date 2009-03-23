@@ -160,6 +160,20 @@ rdf:resource="%s" />' % x
                     where='district_id=$self.district_id and politician_id = $self.id',
                     order='year desc', vars=locals()).list()
 
+    @property
+    def is_current(self):
+        latest_congress = 111
+        return latest_congress in self.congresses
+
+    #@@ cache query results?
+    @property
+    def congresses(self):
+        return [r.congress_num for r in
+                db.select('congress',
+                          where='politician_id = $self.id',
+                          order='congress_num',
+                          vars=locals())]
+
     officeurl = sql.URL()
     party = sql.String() # Moved to Congress table
     religion = sql.String()
