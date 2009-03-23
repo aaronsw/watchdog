@@ -204,7 +204,7 @@ $if pol.related_groups:
     <table cellpadding="0" cellspacing="0" width="100%" class="interest_group_agreement">
     $ trclass = "odd"
     <tbody>
-    <tr><td colspan="2" style="text-align: left; padding-bottom: 4px;" class="disclaimer">Interest Group Alignment tracks hat groups politicians favor and where they agree on the issues - <a href="http://watchdog.net/blog/alignment">[ more ]</a></td></tr>
+    <tr><td colspan="2" style="text-align: left; padding-bottom: 4px;" class="disclaimer">Interest Group Alignment tracks what groups politicians favor and where they agree on the issues. <a href="http://watchdog.net/blog/alignment">[ more ]</a></td></tr>
     <tr><th style="padding-left: 6px;">Group</td><th style="text-align: right; padding-right: 25px;">Agreement</td></tr>
     $for group in pol.related_groups:
         <tr class="$loop.parity">
@@ -249,8 +249,8 @@ $if pol.contributors:
     <table class="charted structure contributors" style="width: 100%"><tbody>
         <tr><td colspan="2" style="text-align: left; padding-bottom: 4px;" class="disclaimer">Contributors are individuals or groups who have donated to a lawmaker's political campaign.</td></tr>
     $for c in pol.contributors:
-        $ names = c.name.lower().replace(' ', '').split(',')
-        $ name = names[-1]+'_'+'_'.join(names[:-1])
+        $ names = c.name.lower().replace(',', '').split(' ')
+        $ name = '_'.join(names[1:])+'_'+names[0]
         <tr class="$loop.parity">
             <th>$loop.index <a href="/contrib/$c.zip/$name">$format_name(c.name.title())</a></th>
             <td>\$$commify(int(c.amt))</td>
