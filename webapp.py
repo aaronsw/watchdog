@@ -611,6 +611,24 @@ class politician_group:
 r_safeproperty = re.compile('^[a-z0-9_]+$')
 table_map = {'us': 'district', 'p': 'politician'}
 
+def namesmap():
+    d = {}
+    cols = [cname for cname, c in schema.Politician.columns.items() if c.sql_type in ('real', 'int')]
+    prefix_map = dict(n_='number of <>', pct_='money from <>', amt_='amount of <>')
+    for c in cols:
+        for prefix in prefix_map:
+            if c.startswith(prefix):
+                x = web.lstrips(c, prefix).split('_')
+                if x[0] in ('earmark', 'vote', 'bill', 'smalldonor'): x[0] += 's' #make plural
+                if c == 'pct_spent':
+                    d[c] = 'money spent'
+                else:
+                    d[c] = prefix_map[prefix].replace('<>', ' '.join(x))
+    for c in cols:
+        if c not in d:
+            d[c] = c.replace('_', ' ')
+    return d
+
 class dproperty:
     def GET(self, table, what):
         try:
@@ -641,7 +659,7 @@ class dproperty:
                 item.name = '%s %s (%s%s)' % (item.firstname, item.lastname,
                   (item.party or 'I')[0], state)
                 item.path = '/p/' + item.id
-        return render.dproperty(items, what)
+        return render.dproperty(items, what, namesmap().get(what))
 
 def sparkpos(table, what, id):
     if table == 'district':

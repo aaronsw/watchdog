@@ -1,18 +1,20 @@
-$def with (items, what)
+$def with (items, what, name)
 
 $var width: 90%
 $var color: white
 
-$var title: Distribution of $what
+$var title: Distribution of $(name or what)
 
 
-<h1>Distribution of $what</h1>
+<h1>Distribution of $(name or what)</h1>
 
 <ol class="chartlist">
 $for item in items:
     <li id="$item.id">
       <a href="$item.path">$item.name</a>
-      <span class="count">$item[what]</span>
+      <span class="count">$item[what] 
+          $if what.startswith('pct_'): %
+      </span>
       <span class="index" style="width: $abs(int(item.pct))%"></span>
     </li>
 </ol>
