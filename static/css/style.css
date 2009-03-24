@@ -251,7 +251,7 @@ table.charted { padding-bottom: 20px; width: 100%; }
 td.sparkline { padding-right: 3px; width: 35px; }
 td.sparkdata { padding-right: 3px; }
 td.sparknum { color: #EE4400; text-align: left; }
-.sidemap  { margin-top: 0; margin-left: -20px; }
+.sidemap  { width: 248px; height: 420px; margin-top: 0; margin-left: -20px; }
 #sidebarmap {float:right; padding:20px 20px 0 20px; padding-top: 0; border: 1px solid #ccc; background-color: #99b3cc; margin-right: 20px; overflow: hidden;}
 .headshot, .smallheadshot { padding-right: 1em; border: 0;}
 .headshot { width: 10em; float: left; }
