@@ -213,21 +213,25 @@ def group_politician_similarity(politician_id, qmin=None):
     q.sort(lambda x, y: cmp(x.agreement, y.agreement), reverse=True)
     return q
 
-def politician_contributors(polid):
-    return db.query("""SELECT cn.name, cn.zip, 
+def politician_contributors(polid, limit=None):
+    query = """SELECT cn.name, cn.zip, 
             sum(cn.amount) as amt FROM committee cm, politician_fec_ids pfi, 
             politician p, contribution cn WHERE cn.recipient_id = cm.id 
             AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
             AND p.id = $polid AND cn.employer_stem != '' GROUP BY cn.name, cn.zip 
-            ORDER BY amt DESC""", vars=locals())
+            ORDER BY amt DESC"""
+    if limit: query = query + ' LIMIT %d' % limit
+    return db.query(query, vars=locals())
 
-def politician_contributor_employers(polid):
-    return db.query("""SELECT cn.employer_stem, 
+def politician_contributor_employers(polid, limit=None):
+    query = """SELECT cn.employer_stem, 
             sum(cn.amount) as amt FROM committee cm, politician_fec_ids pfi, 
             politician p, contribution cn WHERE cn.recipient_id = cm.id 
             AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 
             AND p.id = $polid AND cn.employer_stem != '' GROUP BY cn.employer_stem 
-            ORDER BY amt DESC""", vars=locals())
+            ORDER BY amt DESC"""
+    if limit: query = query + ' LIMIT %d' % limit
+    return db.query(query, vars=locals())
 
 def candidates_by_occupation(occupation, limit=None):
     query = """SELECT sum(amount) AS amt, p.firstname, 
@@ -238,7 +242,7 @@ def candidates_by_occupation(occupation, limit=None):
             AND lower(cn.occupation) = lower($occupation)
             GROUP BY polid, p.lastname, p.firstname, p.party 
             ORDER BY amt DESC"""
-    if limit: query += " limit 5"
+    if limit: query = query + ' LIMIT %d' % limit
     return db.query(query, vars=locals())
 
 def committees_by_occupation(occupation, limit=None):
@@ -248,7 +252,7 @@ def committees_by_occupation(occupation, limit=None):
             AND lower(cn.occupation) = lower($occupation)
             GROUP BY cm.id, cm.name
             ORDER BY amt DESC"""
-    if limit: query += " limit 5"
+    if limit: query = query + " LIMIT %d" % limit
     return db.query(query, vars=locals())
 
 def politician_lob_contributions(polid, page, limit):
@@ -460,8 +464,8 @@ class politician:
           where='politician_id=$polid', vars=locals())]
 
         p.related_groups = group_politician_similarity(polid)
-        p.contributors = list(politician_contributors(polid))[0:5]
-        p.contributor_employers = list(politician_contributor_employers(polid))[0:5]
+        p.contributors = politician_contributors(polid, 5)
+        p.contributor_employers = politician_contributor_employers(polid, 5)
         p.lob_contribs = politician_lob_contributions(polid, 0, 5)
         p.capitolwords = p.bioguideid and get_capitolwords(p.bioguideid)
         out = apipublish.publish([p], format)
