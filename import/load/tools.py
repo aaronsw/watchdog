@@ -12,12 +12,13 @@ STATE_TABLE = 'load/manual/states.json'
 DISTRICT_TABLE = 'load/manual/districts.json'
 POLITICIAN_TABLE = 'load/manual/politicians.json'
 
-_stripterms = ['the', 'corporation', 'corp', 'incorporated', 'inc']
+_stripterms = ['the', 'corporation', 'corp', 'incorporated', 'inc', 'international', 'intl']
 _corpmapping = {
   'none': '',
   'not employed': '',
   'self employed': 'self',
-  'selfemployed': 'self'
+  'selfemployed': 'self',
+  'n': ''
 }
 r_plain = re.compile(r'[a-z ]+')
 def stemcorpname(name):
