@@ -9,10 +9,11 @@ $var title: Contributors
 .header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
 </style>
 
-<h1>Contributors to $pol.title $pol.name</h1>
+<h1>Contributors to <a href="/p/$pol.id">$pol.title $pol.name</a></h1>
 
 <table class="structure" width="100%">
-<tr><td class="header" style="text-align: right;">#</td><td class="header" style="width: 100%">Name</td><td class="header">Amount</td></tr>
+<tr><td class="header" style="text-align: right;">#</td>
+    <td class="header">Name</td><td class="header">Amount</td><td class="header">When</td></tr>
 $ trclass = "odd"
 
 $for c in contribs:
@@ -25,6 +26,7 @@ $for c in contribs:
     <tr class="$trclass">
         <td style="text-align: right;">$loop.index</td><td> <a href="/contrib/$c.zip/$name">$format_name(c.name.title())</a></td>
         <td>\$$commify(int(c.amt))</td>
+        <td style="text-align: left;"> $:date_range(c.from_date, c.to_date)</td>
     </tr>
    
 </table>

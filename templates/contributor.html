@@ -20,14 +20,7 @@ $var title: $name
   h2 { margin-bottom: 0.3em;}
   h1 .header_em { color: black; color:#002233; }
   </style>
-  
- 
-$def date_range(dfrom, dto):
-    $if dfrom and dto and dfrom != dto:
-        during <strong>$datestr(dfrom)</strong> - <strong>$datestr(dto)</strong>
-    $elif ((dfrom == dto) and dfrom) or dfrom or dto:
-        on <strong>$datestr(dfrom or dto)</strong>
-  
+
 <table style="width: 100%; margin-top: 0em; margin-bottom: 2em;" class="paying structure">
 $ prev_occupation = None
 $ prev_employer = None

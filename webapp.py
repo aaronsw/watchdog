@@ -215,6 +215,7 @@ def group_politician_similarity(politician_id, qmin=None):
 
 def politician_contributors(polid, limit=None):
     query = """SELECT cn.name, cn.zip, 
+            min(cn.sent) as from_date, max(cn.sent) as to_date, 
             sum(cn.amount) as amt FROM committee cm, politician_fec_ids pfi, 
             politician p, contribution cn WHERE cn.recipient_id = cm.id 
             AND cm.candidate_id = pfi.fec_id AND pfi.politician_id = p.id 

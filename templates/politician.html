@@ -243,6 +243,7 @@ $if pol.handshakes:
     </tbody></table>
     </td></tr>
 
+
 $if pol.contributors:
     <td colspan="2">
     <h2 class="rep">Top Contributors</h2>
@@ -254,8 +255,10 @@ $if pol.contributors:
         <tr class="$loop.parity">
             <th>$loop.index <a href="/contrib/$c.zip/$name">$format_name(c.name.title())</a></th>
             <td>\$$commify(int(c.amt))</td>
+            <td style="text-align: left;"> $:date_range(c.from_date, c.to_date)</td>
         </tr>
-      <tr><td colspan="2" style="text-align: left;"><span style="color: #EE4400"><a href="/p/$pol.id/contribs" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr>        
+      <tr><td colspan="3" style="text-align: left;"><span style="color: #EE4400">
+          <a href="/p/$pol.id/contribs" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr>
     </tbody></table>
     </td>
     </tr>

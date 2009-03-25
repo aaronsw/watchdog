@@ -126,6 +126,14 @@ def format_name(name):
       name = name[i+2:]+' '+name[0:i]
     return name
 
+def date_range(dfrom, dto):
+    if dfrom and dto and dfrom != dto:
+        return 'during %s - %s' % (web.datestr(dfrom), web.datestr(dto))
+    elif ((dfrom == dto) and dfrom) or dfrom or dto:
+        return 'on %s' % web.datestr(dfrom or dto)
+    else:
+        return ''
+
 g = web.template.Template.globals
 g['slice'] = slice
 g['commify'] = web.commify
@@ -138,6 +146,7 @@ g['enumerate'] = enumerate
 g['datestr'] = web.datestr
 g['urlquote'] = web.urlquote
 g['format_name'] = format_name
+g['date_range'] = date_range
 
 g['query_param'] = query_param
 g['is_logged_in'] = lambda: bool(get_loggedin_email() or get_unverified_email())
