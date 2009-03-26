@@ -3,21 +3,25 @@ $def with (corp, pol, contributions)
 $var width: 80%
 $var color: white
 
-$ c = contributions[0]
-$var title: Contributions from $corp.title() to $c.firstname $c.lastname
-
-<h1>Contributions from employees of <a href="/empl/$corp">$corp.title()</a> to <a href="/p/$pol">$c.firstname $c.lastname</a></h1>
-
-<table class="structure" width=100%>
-<tr>
-    <th>Amount</th>
-    <th>Year</th>
-</tr>
-
-$for c in contributions:
-	<tr class="$loop.parity">
-	    <td>\$$commify(c.amount)</td>
-	    <td>$int(c.year)</td>
-	</tr>
-</table>
+$if not contributions:
+    $var title: Contributions from $corp.title() to $pol.replace('_', ' ').title()
+    <h2>No contributions from <a href="/empl/$corp">$corp.title()</a> to <a href="/p/$pol">$pol.replace('_', ' ').title()</a></h2>
+$else:
+    $ c = contributions[0]
+    $var title: Contributions from $corp.title() to $c.firstname $c.lastname
+    
+    <h1>Contributions from employees of <a href="/empl/$corp">$corp.title()</a> to <a href="/p/$pol">$c.firstname $c.lastname</a></h1>
+    
+    <table class="structure" width=100%>
+    <tr>
+        <th>Amount</th>
+        <th>Year</th>
+    </tr>
+    
+    $for c in contributions:
+    	<tr class="$loop.parity">
+    	    <td>\$$commify(c.amount)</td>
+    	    <td>$int(c.year)</td>
+    	</tr>
+    </table>
 
