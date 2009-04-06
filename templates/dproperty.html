@@ -3,10 +3,77 @@ $def with (items, what, name)
 $var width: 90%
 $var color: white
 
-$var title: Distribution of $(name or what)
 
+$code:
+    def get_headings(property):
+        headings = {
+            'n_bills_cosponsored':
+                ("Joiners: Members ranked by bills they co-sponsor",
+                    "Members co-sponsor the bills of others to signal their support. \
+                    The data is from the 11Xth Congress, supplied by GovTrack.us."),
+            'n_bills_introduced':
+                ("Legislators: Members ranked by bills they've introduced",
+                    "The first step of the legislative process occurs when a member \
+                    introduces a bill for consideration by his colleagues. Most bills \
+                    introduced never pass. The data is from the 11Xth Congress, supplied by GovTrack.us."),
+            'n_bills_debated':
+                ("Debatable: Members ranked by bills debated",
+                    "Most bills introduced by members of Congress end up 'dying in \
+                    committee', and are never considered (or debated) by the full \
+                    House or Senate. This chart ranks members based by the number of \
+                    bills they sponsored that received a floor debate. The data is from \
+                    the 11Xth Congress, supplied by GovTrack.us."),
+            'n_bills_enacted':
+                ("Lawmakers: Members ranked by bills enacted",
+                    "This chart ranks members based by the number of bills they \
+                    sponsored that were enacted into law. The data is from the \
+                    11Xth Congress, supplied by GovTrack.us."),
+            'nominate':
+                ("Convictions: Members ranked by ideology",
+                    "Based on analysis of congressional votes. Zero equals least \
+                    ideological, 1 is more conservative, while -1 is more liberal."),
+            'predictability':
+                ("Mavericks: Members ranked by predictability",
+                    "Based on analysis of congressional votes. Members who vote most \
+                    often with their party are closer to 1, members who vote against \
+                    their party are closer to 0."),
+            'pct_spent':
+                ("Spenders: Candidates ranked by percentage of funds spent",
+                    "Calculated by dividing total funds raised by total amount spent. \
+                    Based on individual, PAC and candidate contributions to congressional \
+                    campaign committees, according to FEC data from the 200X election cycle"),
+            'pct_self':
+                ("Self-Financers: Candidates ranked by percent of personal funds given or loaned to campaign",
+                    "Calculated by dividing total amount raised by total amount \
+                    contributed by the candidate (as opposed to individuals or PACs). \
+                    Based on individual, PAC and candidate contributions to congressional \
+                    campaign committees, according to FEC data from the 200X election cycle."),
+            'pct_indiv':
+                ("Personal Touch: Candidates ranked by percentage of funds contributed by individuals",
+                    "Calculated by dividing total amount raised by total amount contributed \
+                    by individuals (as opposed to PACs or candidate contributions). Based on \
+                    individual, PAC and candidate contributions to congressional campaign \
+                    committees, according to FEC data from the 200X election cycle."),
+            'pct_pac':
+                ("PAC men: Candidates ranked by percentage of funds contributed by Political Action Committees",
+                    "Calculated by dividing total amount raised by total amount contributed \
+                    by PACs (as opposed to individuals or candidate contributions). Based on \
+                    individual, PAC and candidate contributions to congressional campaign \
+                    committees, according to FEC data from the 200X election cycle."),
+            'money_raised':
+                ("Fundraisers: Candidates ranked by amount of money raised",
+                    "Based on individual, PAC and candidate contributions to congressional \
+                    campaign committees, according to FEC data from the 200X election cycle."),
+        }
+        default_heading = "Distribution of %s " % (name or what)
+        h, sh = headings.get(property, (default_heading, ''))
+        return h, sh
 
-<h1>Distribution of $(name or what)</h1>
+$ heading, subheading = get_headings(what)
+
+$var title: $heading
+<h1>$heading</h1>
+<p class='subheading'>$subheading</p>
 
 <ol class="chartlist">
 $for item in items:
@@ -18,3 +85,30 @@ $for item in items:
       <span class="index" style="width: $abs(int(item.pct))%"></span>
     </li>
 </ol>
+
+<br/></br>
+
+$code:
+    footer_msg =  {
+        'nominate': "Analysis performed by VoteView, based on votes in 11Xth Congress.",
+        'predictability' : "Analysis performed by VoteView, based on votes in 11Xth Congress.",
+        'pct_spent': "Some members may have spent more than 100 percent because their campaigns \
+                borrowed money or they spent funds they had raised in previous cycles.",
+        'pct_self': "Federal election law allows candidates to spend unlimited amounts of their \
+                own money (but their spouse's money) on their campaigns. They can donate this \
+                money directly, or loan it to their campaign (and later have the campaign pay \
+                them back, with interest).",
+        'pct_indiv': "In the 2008 election cycle, individual contributions were capped at\
+                \$2,300 per cycle per election per candidate for individual donors. That \
+                means that, in the 2008 cycle, a donor could give any candidate for Congress \
+                \$2,300 for her primary election (even if she ran unopposed) and another \
+                \$2,300 for the general election-or $4,300 in all. Individual campaign \
+                contribution limits are now indexed for inflation.",
+        'pct_pac': "PAC contributions are capped at $5,000 per cycle per election per \
+                candidate for individual donors. That means that, in the 2008 election \
+                cycle, a PAC could give any candidate for Congress $5,000 for her primary \
+                election (even if she ran unopposed) and another $5,000 for the general \
+                election-or $10,000 in all. PAC contribution limits are not indexed for \
+                inflation.",
+    }
+<p class='footer-msg'>$footer_msg.get(what, '')</p>
