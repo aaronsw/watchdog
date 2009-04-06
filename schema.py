@@ -139,7 +139,10 @@ rdf:resource="%s" />' % x
     @property
     def title(self):
         dist = self.district_id
-        return 'Sen.' if State.where(code=dist) else 'Rep.'
+        if self.is_current:
+            return 'Sen.' if State.where(code=dist) else 'Rep.'
+        else:
+            return ''
 
     @property
     def handshakes(self):
