@@ -36,6 +36,7 @@ urls = (
   r'/p/(.*?)%s?' % options, 'politician',
   r'/e/(.*?)%s?' % options, 'earmark',
   r'/b/(.*?)%s?' % options, 'bill',
+  #r'/h/', 'handshakes',
   r'/contrib/(distribution\.png|)', 'contributions',
   r'/contrib/(\d+)/(.*?)' , 'contributor',
   r'/occupation/(.*?)/candidates' , 'occupation_candidates',
@@ -67,32 +68,46 @@ urls = (
 )
 
 class index:
+    def index(self): return ['/']
+
     def GET(self):
         return render.index()
 
 class about:
+    def index(self): return ['/about/']
+
     def GET(self, endslash=None):
         if not endslash: raise web.seeother('/about/')
         return render.about()
 
 class aboutapi:
+    def index(self): return ['/about/api']
+
     def GET(self):
         return render.about_api()
 
 class aboutteam:
+    def index(self): return ['/about/team']
+
     def GET(self):
         return render.about_team()
 
 class abouthelp:
+    def index(self): return ['/about/help']
+
     def GET(self):
         return render.about_help()
 
 class contribute:
+    def index(self): return ['/contribute/']
+
     def GET(self, endslash=None):
         if not endslash: raise web.seeother('/contribute/')
         return render.contribute()
 
 class feedback:
+    def index(self): return ['/feedback']
+
     def GET(self):
         return render.feedback()
 
@@ -163,6 +178,9 @@ class find:
             return render.districtlist(index)
 
 class state:
+    def index(self):
+            return ('/us/%s' % (s.code) for s in db.select('state', what='code'))
+
     def GET(self, state, format=None):
         try:
             state = schema.State.where(code=state.upper())[0]
@@ -180,6 +198,9 @@ class redistrict:
         return web.seeother('/us/' + district.lower())
 
 class district:
+    def index(self):
+        return ('/us/%s' % (d.name) for d in db.select('district', what='name'))
+
     def GET(self, district, format=None):
         try:
             d = schema.District.where(name=district.upper())[0]
@@ -273,6 +294,9 @@ def bill_list(format, page=0, limit=50):
     return render.bill_list(bills, limit)
 
 class roll:
+    def index(self):
+        return ('/r/us/%s' % (r.id) for r in db.select('roll', what='id'))
+
     def GET(self, roll_id, format=None):
         try:
             b = schema.Roll.where(id=roll_id)[0]
@@ -290,6 +314,9 @@ class roll:
         return render.roll(b, votes, votepct)
 
 class bill:
+    def index(self):
+        return ('/b/%s' % (b.id) for b in db.select('bill', what='id'))
+
     def GET(self, bill_id, format=None):
         if bill_id == "" or bill_id == "index":
             i = web.input(page=0)
@@ -306,6 +333,10 @@ class bill:
         return render.bill(b)
         
 class contributor:
+    def index(self):
+        return ('/contrib/%s/%s' % (c.zip, (c.name or '').lower()) \
+                    for c in db.select('contribution', what='zip, name'))
+
     def GET(self, zipcode, name):
         names = name.lower().replace('_', ' ').split(' ')
         if len(names) > 1: name = names[-1]+', '+' '.join(names[:-1])
@@ -333,6 +364,13 @@ class contributor:
         return render.contributor(candidates, committees, zipcode, name)
 
 class occupation:
+    def index(self):
+            #/occupation/<occupation>, /occupation/<occupation>/candidates, /occupation/<occupation>/committees
+        occupations = (c.occupation.lower() \
+                        for c in db.query('select distinct occupation from contribution'))
+        return (('/occupation/%s' % o, '/occupation/%s/candidates' % o, '/occupation/%s/committees' % o)  \
+                    for o in occupations if o)
+
     def GET(self, occupation):
         if occupation != occupation.lower(): raise web.seeother('/occupation/%s' % occupation.lower())
         candidates = candidates_by_occupation(occupation, 5)
@@ -340,17 +378,21 @@ class occupation:
         return render.occupation(candidates, committees, occupation) 
 
 class occupation_candidates:
+    #index done in occupation
     def GET(self, occupation):
         candidates = candidates_by_occupation(occupation)
         return render.occupation_candidates(candidates, occupation)     
 
 class occupation_committees:
+    #index done in occupation
     def GET(self, occupation):
         committees = committees_by_occupation(occupation)
         return render.occupation_committees(committees, occupation)     
 
 class contributions:
     """from a corp to a pol"""
+    def index(self): return ['/contrib/']
+
     def GET(self, img=None):
         i = web.input()
         frm, to = i.get('from', ''), i.get('to', '')
@@ -373,6 +415,11 @@ class contributions:
             raise web.notfound()
   
 class employer:
+    def index(self):
+        #'/empl/(.*?)%s?'
+        return ('/empl/%s' % (c.employer_stem) \
+                    for c in db.query('select distinct(employer_stem) from contribution'))
+
     def GET(self, corp_id, format=None):
         corp_id = corp_id.lower().replace('_', ' ')
         contributions = db.query("""SELECT count(*) as how_many, 
@@ -395,10 +442,14 @@ def earmark_list(format, page=0, limit=50):
     out = apipublish.publish(earmarks, format)
     if out: return out
     return render.earmark_list(earmarks, limit)
+
 def earmark_pol_list(pol_id, format, page=0, limit=50):
     earmarks = db.select(['earmark_sponsor', 'earmark'], what='earmark.*', 
             where='politician_id = $pol_id AND earmark_id=earmark.id', 
-            order='final_amt desc', vars=locals())
+            order='final_amt desc', vars=locals()).list()
+    for e in earmarks:
+        p = schema.Politician.where(id=pol_id)[0]
+        e.sponsor_name = '%s %s' % (p.title, p.name)
     if not earmarks:
         # @@TODO: something better here. 
         raise web.notfound()
@@ -407,13 +458,23 @@ def earmark_pol_list(pol_id, format, page=0, limit=50):
     return render.earmark_list(earmarks, limit)
 
 class politician_earmarks:
+    def index(self):
+        #/p/(.*?)/earmarks
+        return ('/p/%s/earmarks' % (e.politician_id) \
+                    for e in db.query('select distinct(politician_id) from earmark_sponsor'))
+
     def GET(self, polid, format=None):
         try:
             em = schema.Politician.where(id=polid)[0]
         except IndexError:
             raise web.notfound()
         return earmark_pol_list(polid, format)
+
 class earmark:
+    def index(self):
+        #/e/(.*?)%s
+        return ('/e/%s' % (e.id) for e in db.select('earmark', what='id'))
+
     def GET(self, earmark_id, format=None):
         # No earmark id, show list
         if earmark_id == "" or earmark_id == "index":
@@ -431,6 +492,9 @@ class earmark:
 
 
 class politician:
+    def index(self):
+        return ('/p/%s' % (p.id) for p in db.select('politician', what='id'))
+
     def GET(self, polid, format=None):
         if polid != polid.lower():
             raise web.seeother('/p/' + polid.lower())
@@ -482,6 +546,11 @@ def get_capitolwords(bioguideid):
         return [web.storage(w) for w in words]
     
 class politician_lobby:
+    def index(self):
+        #/p/(.*?)/lobby
+        return ('/p/%s/lobby' % (p.id) 
+                    for p in db.query('select distinct(politician_id) from lob_contribution'))
+
     def GET(self, polid, format=None):
         limit = 50
         page = int(web.input(page=0).page)
@@ -494,6 +563,11 @@ class politician_lobby:
         return render.politician_lobby(c, a, limit)
 
 class lob_filing:
+    def index(self):
+        #/lob/f/?(.*?)
+        return ('/lob/f/%s' % (f.id) 
+                    for f in db.query('select distinct(id) from lob_filing'))
+
     def GET(self, filing_id):
         limit = 50
         try:
@@ -510,6 +584,11 @@ class lob_filing:
         return render.lob_filings(f, limit)
 
 class lob_contrib:
+    def index(self):
+        #/lob/c/?(.*?)
+        return ('/lob/c/%s' %(l.filing_id) \
+                for l in db.select('lob_contribution', what='filing_id'))
+
     def GET(self, filing_id):
         limit = 50
         page = int(web.input(page=0).page)
@@ -522,6 +601,10 @@ class lob_contrib:
         return render.lob_contributions(c, limit)
 
 class lob_pac:
+    def index(self):
+        #/lob/pa/?(.*?)
+        return ('/lob/pa/%s' % (pac.id) for pac in db.select('lob_pac', what='id'))
+        
     def GET(self, pac_id):
         limit = 50
         i = web.input(page=0)
@@ -537,6 +620,10 @@ class lob_pac:
         return render.lob_pacs(p, limit)
 
 class lob_org:
+    def index(self):
+        #/lob/o/?(.*?)
+        return ('/lob/o/%s' % (l.id) for l in db.select('lob_organization', what='id'))
+
     def GET(self, org_id):
         limit = 50
         i = web.input(page=0)
@@ -550,6 +637,10 @@ class lob_org:
         return render.lob_orgs(o,limit)
 
 class lob_person:
+    def index(self):
+        #/lob/pe/?(.*?)
+        return ('/lob/pe/%s' % (p.id) for p in db.select('lob_person'))
+
     def GET(self, person_id):
         limit = 50
         i = web.input(page=0)
@@ -563,6 +654,11 @@ class lob_person:
         return render.lob_person(p, limit)
 
 class politician_introduced:
+    def index(self):
+        #/p/(.*?)/introduced
+        return ('/p/%s/introduced' % (p.sponsor_id) \
+                for p in db.query('select distinct(sponsor_id) from bill'))
+
     def GET(self, politician_id):
         try:
             pol = schema.Politician.where(id=politician_id)[0]
@@ -571,6 +667,11 @@ class politician_introduced:
         return render.politician_introduced(pol)
 
 class politician_groups:
+    def index(self):
+        #/p/(.*?)/groups
+        return ('/p/%s/groups' % (p.politician_id) \
+                for p in db.query('select distinct(politician_id) from group_politician_similarity'))
+
     def GET(self, politician_id):
         related = group_politician_similarity(politician_id, qmin=1)
         try:
@@ -580,24 +681,41 @@ class politician_groups:
         return render.politician_groups(pol, related)
 
 class politician_contribs:
-  def GET(self, polid):
-    try:
-        pol = schema.Politician.where(id=polid)[0]
-    except IndexError:
-        raise web.notfound()
-    contribs = politician_contributors(polid)
-    return render.politician_contribs(pol, contribs)
+    def index(self):
+        #'/p/(.*?)/contribs'
+        return ('/p/%s/contribs' % (p.politician_id) \
+                for p in db.select('politician_fec_ids', what='politician_id'))
+
+    def GET(self, polid):
+        try:
+            pol = schema.Politician.where(id=polid)[0]
+        except IndexError:
+            raise web.notfound()
+        contribs = politician_contributors(polid)
+        return render.politician_contribs(pol, contribs)
 
 class politician_contrib_employers:
-  def GET(self, polid):
-    try:
-        pol = schema.Politician.where(id=polid)[0]
-    except IndexError:
-        raise web.notfound()
-    contribs = politician_contributor_employers(polid)
-    return render.politician_contrib_employers(pol, contribs)
+    def index(self):
+        #'/p/(.*?)/contrib-employers'
+        return ('/p/%s/contrib-employers' % (p.politician_id) \
+                for p in db.select('politician_fec_ids', what='politician_id'))
+
+    def GET(self, polid):
+        try:
+            pol = schema.Politician.where(id=polid)[0]
+        except IndexError:
+            raise web.notfound()
+        contribs = politician_contributor_employers(polid)
+        return render.politician_contrib_employers(pol, contribs)
 
 class politician_group:
+    def index(self):
+        #/p/(.*?)/(\d+)
+        result = db.select(['interest_group_bill_support', 'position'], 
+                what='politician_id, group_id',
+                where='interest_group_bill_support.bill_id = position.bill_id')
+        return ('/p/%s/%s' % (r.politician_id, r.group_id) for r in result)
+        
     def GET(self, politician_id, group_id):
         votes = db.select(['position', 'interest_group_bill_support', 'bill'],
           where="interest_group_bill_support.bill_id = position.bill_id AND "
@@ -610,7 +728,7 @@ class politician_group:
         group = schema.Interest_Group.where(id=group_id)
         if not (pol and group):
             raise web.notfound()
-        return render.politician_group(votes, pol[0].name, group[0].longname)
+        return render.politician_group(votes, pol[0], group[0].longname)
 
 
 r_safeproperty = re.compile('^[a-z0-9_]+$')
@@ -635,6 +753,16 @@ def namesmap():
     return d
 
 class dproperty:
+    def index(self):
+        def get_number_columns(table):
+            return [cname for cname, c in table.columns.iteritems() if c.sql_type in ('int', 'real')]
+
+        l = []
+        for prefix, table in table_map.iteritems():
+            table = getattr(schema, table.title())
+            l.append(['/by/'.join([prefix, col]) for col in get_number_columns(table)])
+        return l
+
     def GET(self, table, what):
         try:
             table = table_map[table]
@@ -704,6 +832,13 @@ class staticdata:
 
         assert '..' not in path, 'security'
         return file('data/' + path).read()
+
+class handshakes:
+    def index(self):
+        return ('/h/')
+    def GET(self):
+        handshakes = schema.Handshakes.select(order='year desc, pol2corp+corp2pol desc')
+        return render.handshakes(handshakes)
 
 app = web.application(urls, globals())
 def notfound():

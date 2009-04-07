@@ -35,6 +35,10 @@ class checkID:
         return pid != 'new' and not(exists)
 
 class index:
+    def index(self):
+        pids = db.select('petition', what='id', where='petition.deleted is null and petition.published is not null')
+        return (('/c/%s' % p.id,  '/c/%s/signatories' % p.id) for p in pids)
+
     def GET(self):
         petitions = db.select(['petition', 'signatory'],
                     what='petition.id, petition.title, count(signatory.user_id) as signature_count',
