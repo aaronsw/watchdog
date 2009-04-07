@@ -1,0 +1,23 @@
+$def with (handshakes)
+
+$var title: Top Handshakes
+$var width: 80%
+$var color: white
+
+<table class="structure" width=100%>
+<tr>
+    <th>Politician</th>
+    <th>Corporation</th>
+    <th>Politician to Corporation</th>
+    <th>Corporation to Politician</th>
+    <th>Year</th>    
+</tr>
+    $for h in handshakes:
+    	<tr class="$loop.parity">
+    	    <td><a href='/p/$h.politician_id'>$h.politician.name</a></td>
+    	    $#<td><a href='/empl/$h.corporation'>$h.corporation.title()</a></td>
+    	    <td>\$$commify(h.pol2corp)</td>
+    	    <td>\$$commify(h.corp2pol)</td>
+    	    <td>$int(h.year)</td>
+    	</tr>
+</table>
