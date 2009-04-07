@@ -1,15 +1,15 @@
-$def with (votes, polname, groupname)
+$def with (votes, pol, groupname)
 
 $var width: 90%
 $var color: white
 
-$var title: Alignment of $polname and $groupname on bills
+$var title: Votes of $pol.name compared to positions of the $groupname
 
 <style>
 .header { background-color: #fff; font-weight: bold; border-bottom: 1px solid #999;  border-top: 1px solid #999; }
 </style>
 
-<h1>Alignment of $polname and $groupname on bills</h1>
+<h1>Votes of <a href='/p/$pol.id'>$pol.title $pol.name</a> compared to positions of the $groupname</h1>
 
 $ support_decode = {1: 'Support', 0: 'Abstain', -1: 'Oppose', None: 'Unknown'}
 

@@ -11,16 +11,17 @@ $var title: Bills introduced by $pol.name
 
 
 <h1>Bills introduced by $pol.name</h1>
+<p class='subheading'>Data from GovTrack.us. </p>
 
 <table class="structure">
-<tr><td class="header">Bill</td><td class="header" colspan="2">Description</td></tr>
+<tr><td class="header">Bill</td><td class='header'>Session</td><td class="header" colspan="2">Description</td></tr>
 $ trclass = "odd"
 $for bill in pol.bills_sponsored:
     $if trclass == "odd":
         $ trclass = "even"
     $else:
         $ trclass = "odd"
-    <tr class="$trclass"><td style="white-space: nowrap"><a href="/b/$bill.id">$bill.type.upper(). $bill.number</a></td><td>$bill.title</td></tr>
+    <tr class="$trclass"><td style="white-space: nowrap"><a href="/b/$bill.id">$bill.type.upper(). $bill.number</a></td><td>$bill.session</td><td>$bill.title</td></tr>
 </table>
 
 $if not pol.bills_sponsored:

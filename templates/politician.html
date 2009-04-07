@@ -72,7 +72,7 @@ $if pol.capitolwords:
 
 </td><tr><tr><td colspan="3"><div class="disclaimer" style="padding-top: 6x; margin-bottom: 12px; text-align: left;">
   $if pol.votesmartid:
-  Politician information from 
+  Biographical information from 
       <a href="http://votesmart.org/bio.php?can_id=$pol.votesmartid" class="external">Project Vote Smart</a>,
       <a href="$pol.wikipedia" class="external">Wikipedia</a>. 
   $if pol.photo_credit_text:
@@ -119,7 +119,7 @@ $if pol.money_raised:
     </tr><tr class="even">
       $:spark('From PACs', pol.pct_pac, pol.id, 'pct_pac', '%')
     </tr>
-    <tr><td colspan="4" class="disclaimer" style="text-align: left">PAC = Political Action Committees. Money data from <nobr><a href="http://www.fec.gov/" class="external">the FEC</a>.</td></tr>
+    <tr><td colspan="4" class="disclaimer" style="text-align: left">PAC = Political Action Committees. Money data from <nobr><a href="http://www.fec.gov/" class="external">the FEC</a>for the 200X cycle.</td></tr>
 $else:
     <tr><th>No information available.</td></tr>
 </tbody></table>
@@ -154,7 +154,7 @@ $if pol.predictability:
     <tr class="odd">
     $:spark('Predictable', pol.predictability, pol.id, 'predictability', '%')
     </tr>
-    <tr><td colspan="4" class="disclaimer" style="text-align: left">Data from <a href="http://voteview.com/" class="external">VoteView</a>. Unpredictable equals maverick</td></tr>
+    <tr><td colspan="4" class="disclaimer" style="text-align: left">Data and terminology from <a href="http://voteview.com/" class="external">VoteView</a>. Unpredictable measures how often members vote against their party.</td></tr>
 $else:
     <tr><th>No information available.</td></tr>
 </tbody></table>
@@ -191,6 +191,7 @@ $if pol.n_bills_cosponsored:
   <tr class="odd">
     $:spark('Enacted', pol.n_bills_enacted, pol.id, 'n_bills_enacted')
   </tr>
+  <tr><td colspan="4" class="disclaimer" style="text-align: left">Data from <a href="http://www.govtrack.us/congress/person.xpd?id=$pol.govtrackid" class="external">GovTrack</a>.</td></tr>
 $else:
     <tr><th>No information available.</td></tr>
 </tbody></table>
@@ -204,7 +205,7 @@ $if pol.related_groups:
     <table cellpadding="0" cellspacing="0" width="100%" class="interest_group_agreement">
     $ trclass = "odd"
     <tbody>
-    <tr><td colspan="2" style="text-align: left; padding-bottom: 4px;" class="disclaimer">Interest Group Alignment tracks what groups politicians favor and where they agree on the issues. <a href="http://watchdog.net/blog/alignment">[ more ]</a></td></tr>
+    <tr><td colspan="2" style="text-align: left; padding-bottom: 4px;" class="disclaimer">Interest Group Alignment compares a politician’s votes to positions taken by interest groups. <a href="http://watchdog.net/blog/alignment">[ more ]</a></td></tr>
     <tr><th style="padding-left: 6px;">Group</td><th style="text-align: right; padding-right: 25px;">Agreement</td></tr>
     $for group in pol.related_groups:
         <tr class="$loop.parity">
@@ -212,6 +213,7 @@ $if pol.related_groups:
           <td>$int(group.agreement * 100)% (<a href="/p/$pol.id/$group.id">$group.agreed/$group.total votes</a>)</td>
          </tr> 
     <tr><td colspan="2" style="text-align: left;"><span style="color: #EE4400"><a href="/p/$pol.id/groups" class="more">More interest groups</a>&nbsp;&rarr;</span></td></tr>
+    <tr><td colspan="4" class="disclaimer" style="text-align: left">Data from <a href='http://maplight.org/map/us/legislator' class="external">Maplight.org </a>, for the 11Xth Congress.</td></tr>
     </tbody></table></td></tr><tr>
 
 
@@ -259,6 +261,7 @@ $if pol.contributors:
         </tr>
       <tr><td colspan="3" style="text-align: left;"><span style="color: #EE4400">
           <a href="/p/$pol.id/contribs" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr>
+     <tr><td colspan="4" class="disclaimer" style="text-align: left">Source: FEC data from the 1980 to 2000 election cycles.</td></tr>
     </tbody></table>
     </td>
     </tr>
@@ -276,7 +279,9 @@ $if pol.contributor_employers:
             <th>$loop.index <a href="/empl/$:niceurl(c.employer_stem)">$c.employer_stem.title()</a></th>
             <td>\$$commify(int(c.amt))</td>
         </tr>
-    <tr><td colspan="2" style="text-align: left;"><span style="color: #EE4400"><a href="/p/$pol.id/contrib-employers" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr></tbody></table>
+    <tr><td colspan="2" style="text-align: left;"><span style="color: #EE4400"><a href="/p/$pol.id/contrib-employers" class="more">More contributors</a>&nbsp;&rarr;</span></td></tr>
+    <tr><td colspan="4" class="disclaimer" style="text-align: left">Source: FEC data from the 1980 to 2000 election cycles.</td></tr>
+    </tbody></table>
 
 </td></tr><tr>
     
@@ -291,11 +296,12 @@ $if pol.lob_contribs:
              <th>$loop.index <a href="/lob/f/$c.filing_id">$:whom() - $c.name.title()</a></th>
      		<td>\$$commify(c.amount)</td>
          </tr>
-     <tr><td colspan="2" style="text-align: left;"><span style="color: #EE4400"><a href="/p/$pol.id/lobby" class="more">More lobby contributors</a>&nbsp;&rarr;</span></td></tr>        
+     <tr><td colspan="2" style="text-align: left;"><span style="color: #EE4400"><a href="/p/$pol.id/lobby" class="more">More lobby contributors</a>&nbsp;&rarr;</span></td></tr>
+     <tr><td colspan="4" class="disclaimer" style="text-align: left">Source: Senate Office of Public Records LD-203 disclosure database; data from 2008.</td></tr>
      </tbody></table>
      </td>
     </tr>
-      <tr><td colspan="4" class="disclaimer" style="text-align: left">Interest group alignment from <a href="http://maplight.org/map/us/legislator" class="external">MAPLight.org</a>. Some campaign finance information from <a href="http://opensecrets.org/politicians/summary.asp?CID=$pol.opensecretsid" class="external">Open Secrets</a>.</td></tr>
+      <tr><td colspan="4" class="disclaimer" style="text-align: left">Some campaign finance information from <a href="http://opensecrets.org/politicians/summary.asp?CID=$pol.opensecretsid" class="external">Open Secrets</a>.</td></tr>
 
 </table>
 

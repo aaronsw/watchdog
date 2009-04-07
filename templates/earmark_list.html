@@ -10,10 +10,13 @@ $var title: Earmarks
 </style>
 
 
-<h1>Earmarks</h1>
+<h1>Earmarks 
+$if getattr(earmarks[0], 'sponsor_name', None): requested by $earmarks[0].sponsor_name
+</h1>
+<p class='subheading'>Data from Fiscal Year 2008 appropriations bills supplied by Taxpayers for Common Sense. </p>
 
 <table class="structure" width="100%">
-<tr><td class="header">Amount</td><td class="header" colspan="2">Earmark</td><td class="header" style="white-space: nowrap">Intended Recipient</td></tr>
+<tr><td class="header">Amount</td><td class="header" colspan="2">Earmark Description</td><td class="header" style="white-space: nowrap">Intended Recipient</td></tr>
 $ trclass = "odd"
 $for em in earmarks:
     $if trclass == "odd":
