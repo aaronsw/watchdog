@@ -68,46 +68,32 @@ urls = (
 )
 
 class index:
-    def index(self): return ['/']
-
     def GET(self):
         return render.index()
 
 class about:
-    def index(self): return ['/about/']
-
     def GET(self, endslash=None):
         if not endslash: raise web.seeother('/about/')
         return render.about()
 
 class aboutapi:
-    def index(self): return ['/about/api']
-
     def GET(self):
         return render.about_api()
 
 class aboutteam:
-    def index(self): return ['/about/team']
-
     def GET(self):
         return render.about_team()
 
 class abouthelp:
-    def index(self): return ['/about/help']
-
     def GET(self):
         return render.about_help()
 
 class contribute:
-    def index(self): return ['/contribute/']
-
     def GET(self, endslash=None):
         if not endslash: raise web.seeother('/contribute/')
         return render.contribute()
 
 class feedback:
-    def index(self): return ['/feedback']
-
     def GET(self):
         return render.feedback()
 
@@ -391,7 +377,12 @@ class occupation_committees:
 
 class contributions:
     """from a corp to a pol"""
-    def index(self): return ['/contrib/']
+    def index(self):
+        return ('/contrib/?from=%s&to=%s' % (c.frm, c.to) \
+                    for c in db.query("""SELECT cn.employer_stem as frm, p.id as to
+                            FROM contribution cn, committee cm, politician_fec_ids pfi, politician p 
+                            WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
+                            AND pfi.politician_id = p.id"""))
 
     def GET(self, img=None):
         i = web.input()
@@ -757,11 +748,9 @@ class dproperty:
         def get_number_columns(table):
             return [cname for cname, c in table.columns.iteritems() if c.sql_type in ('int', 'real')]
 
-        l = []
         for prefix, table in table_map.iteritems():
             table = getattr(schema, table.title())
-            l.append(['/by/'.join([prefix, col]) for col in get_number_columns(table)])
-        return l
+            yield ('/%s/by/%s' % (prefix, col) for col in get_number_columns(table))
 
     def GET(self, table, what):
         try:

@@ -2,17 +2,29 @@ import web
 import webapp
 import petition
 import inspect, types, itertools, gzip, os
+from web.browser import AppBrowser
 
 single_pages = ('/', '/about', '/about/team', '/about/api', '/about/feedback', '/about/help',
                 '/contribute/', '/blog/',
                 '/lob/c/', '/lob/f/', '/lob/o/', '/lob/pa/', '/lob/pe/',
                 '/b/', '/e/', '/p/', '/c/', '/writerep/')
 
+b = AppBrowser(webapp.app)
+
+def test(klass):
+    index = klass().index()
+    for path in do_flatten(take(2, iter(index))):
+        try:
+            b.open(path)
+            assert(b.status == 200)
+            print b.status, path, klass
+        except:
+            print b.status, path, klass
+
 def get_class_index(klass, _test=False):
     try:
         if _test:
-            print klass
-            return take(5, iter(klass().index()))
+            return test(klass)  
         return klass().index()
     except AttributeError:
         return []
@@ -104,14 +116,13 @@ def write_sitemaps(data):
         write_sitemap(i, x)
 
 def create_index(index_dir, _test=False):
-    if not os.path.exists(index_dir):
-        os.mkdir(index_dir)
-
     data = getindex(webapp.app, _test)
     write_sitemaps(data)
-
-    dirs = [d for d in os.listdir('index') if os.path.isdir(os.path.join('index', d))]
-    write('index/index.html', str(make_index('index', [d+'/index.html' for d in dirs])))
+    
+    if not os.path.exists(index_dir):
+        os.mkdir(index_dir)
+    dirs = [d for d in os.listdir(index_dir) if os.path.isdir(os.path.join(index_dir, d))]
+    write(index_dir + '/index.html', str(make_index(index_dir, [d+'/index.html' for d in dirs])))
 
     for d in dirs:
         d = os.path.join('index', d)
