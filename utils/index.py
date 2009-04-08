@@ -84,6 +84,7 @@ def group(seq, maxsize):
         yield x
 
 t_sitemap = """$def with (title, items)
+<style>a{display:block;}</style>
 <h1>Index</h1>
 <a href="index.html">Back</a> | <a href="../index.html">Back to index</a></br>
 $for item in items:
@@ -92,6 +93,7 @@ $for item in items:
 """
 
 t_index = """$def with (title, items)
+<style>a{display:block;}</style>
 <h1>$title</h1>
 
 $if title != "index": <a href="../index.html">Back to index</a>
@@ -126,7 +128,7 @@ def create_index(index_dir, _test=False):
     if not os.path.exists(index_dir):
         os.mkdir(index_dir)
     
-    data = getindex(webapp.app, _test)
+    data = getindex(petition.app, _test)
     write_sitemaps(data)
     
     dirs = [d for d in os.listdir(index_dir) if os.path.isdir(os.path.join(index_dir, d))]
