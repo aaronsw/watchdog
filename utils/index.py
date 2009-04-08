@@ -17,7 +17,6 @@ def test(klass):
         try:
             b.open(path)
             assert(b.status == 200)
-            print b.status, path, klass
         except:
             print b.status, path, klass
 
@@ -69,13 +68,20 @@ def take(n, seq):
     for i in xrange(n):
         yield seq.next()
 
-def group(seq, n):
-    while True:
-        x = list(take(n, seq))
-        if x: 
+def group(seq, maxsize):
+    def limit(seq, maxsize, itemlen):
+        size = 0
+        while size < maxsize:
+            x = seq.next()
+            size += itemlen(x)
             yield x
-        else:
-            break        
+    
+    overhead = len('<a href=""></a>\n')
+    itemlen = lambda x: overhead+2*len(x)
+    x = 1
+    while x:
+        x = list(limit(seq, maxsize, itemlen))
+        yield x
 
 t_sitemap = """$def with (title, items)
 <h1>Index</h1>
@@ -96,11 +102,13 @@ $if title != "index": <a href="../index.html">Back to index</a>
 
 make_sitemap = web.template.Template(t_sitemap)
 make_index = web.template.Template(t_index)
-entries_per_page = 2200
+pagesize = 99*1024 #1K for overheads like <h1> and back links
+entries_per_page = pagesize/30
 
 def write(filename, text):
     f = open(filename, 'w')
     f.write(text)
+    print filename, len(text)/1024
     f.close()
 
 def write_sitemap(i, seq):
@@ -109,18 +117,18 @@ def write_sitemap(i, seq):
     if not os.path.exists(dir):
         os.mkdir(dir)
     write(filename, str(make_sitemap(filename, seq)))
-    print filename
 
 def write_sitemaps(data):
-    for i, x in enumerate(group(data, entries_per_page)):
+    for i, x in enumerate(group(data, pagesize)):
         write_sitemap(i, x)
 
 def create_index(index_dir, _test=False):
+    if not os.path.exists(index_dir):
+        os.mkdir(index_dir)
+    
     data = getindex(webapp.app, _test)
     write_sitemaps(data)
     
-    if not os.path.exists(index_dir):
-        os.mkdir(index_dir)
     dirs = [d for d in os.listdir(index_dir) if os.path.isdir(os.path.join(index_dir, d))]
     write(index_dir + '/index.html', str(make_index(index_dir, [d+'/index.html' for d in dirs])))
 
