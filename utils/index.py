@@ -73,6 +73,7 @@ def group(seq, maxsize):
         size = 0
         while size < maxsize:
             x = seq.next()
+            if not x: break
             size += itemlen(x)
             yield x
     
@@ -105,7 +106,7 @@ $if title != "index": <a href="../index.html">Back to index</a>
 make_sitemap = web.template.Template(t_sitemap)
 make_index = web.template.Template(t_index)
 pagesize = 99*1024 #1K for overheads like <h1> and back links
-entries_per_page = pagesize/30
+entries_per_page = pagesize/50  #len('<a href="index_xxxxx.html">index_xxxxx.html</a>') = 47
 
 def write(filename, text):
     f = open(filename, 'w')
@@ -113,30 +114,30 @@ def write(filename, text):
     print filename, len(text)/1024
     f.close()
 
-def write_sitemap(i, seq):
-    dir = 'index/%02d' % (i/entries_per_page)
+def write_sitemap(i, seq, index_dir):
+    dir = index_dir + '/%02d' % (i/entries_per_page)
     filename = "%s/index_%05d.html" % (dir, i)
     if not os.path.exists(dir):
         os.mkdir(dir)
     write(filename, str(make_sitemap(filename, seq)))
 
-def write_sitemaps(data):
+def write_sitemaps(data, index_dir):
     for i, x in enumerate(group(data, pagesize)):
-        write_sitemap(i, x)
+        write_sitemap(i, x, index_dir)
 
 def create_index(index_dir, _test=False):
     if not os.path.exists(index_dir):
         os.mkdir(index_dir)
     
-    data = getindex(petition.app, _test)
-    write_sitemaps(data)
+    data = getindex(webapp.app, _test)
+    write_sitemaps(data, index_dir)
     
     dirs = [d for d in os.listdir(index_dir) if os.path.isdir(os.path.join(index_dir, d))]
     write(index_dir + '/index.html', str(make_index(index_dir, [d+'/index.html' for d in dirs])))
 
     for d in dirs:
-        d = os.path.join('index', d)
+        d = os.path.join(index_dir, d)
         write(d + '/index.html', str(make_index('index %s' % (d), os.listdir(d))))
     
 if __name__ == "__main__":
-    create_index('index', _test=False)
+    create_index('static/index', _test=False)

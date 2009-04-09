@@ -320,7 +320,12 @@ class bill:
         
 class contributor:
     def index(self):
-        return ('/contrib/%s/%s' % (c.zip, (c.name or '').lower()) \
+        def format(name):
+            names = name.lower().split(', ')
+            if len(names) > 1:
+                return '_'.join(names[1].split() + [names[0]])
+            return name
+        return ('/contrib/%s/%s' % (c.zip,  format(c.name)) \
                     for c in db.select('contribution', what='zip, name'))
 
     def GET(self, zipcode, name):
@@ -539,7 +544,7 @@ def get_capitolwords(bioguideid):
 class politician_lobby:
     def index(self):
         #/p/(.*?)/lobby
-        return ('/p/%s/lobby' % (p.id) 
+        return ('/p/%s/lobby' % (p.politician_id) 
                     for p in db.query('select distinct(politician_id) from lob_contribution'))
 
     def GET(self, polid, format=None):
