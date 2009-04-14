@@ -250,7 +250,7 @@ $if pol.contributors:
     <td colspan="2">
     <h2 class="rep">Top Contributors</h2>
     <table class="charted structure contributors" style="width: 100%"><tbody>
-        <tr><td colspan="2" style="text-align: left; padding-bottom: 4px;" class="disclaimer">Contributors are individuals or groups who have donated to a lawmaker's political campaign.</td></tr>
+        <tr><td colspan="2" style="text-align: left; padding-bottom: 4px;" class="disclaimer">Individuals reporting the same zip code who have donated to a lawmaker's political campaign. Use with caution: based on raw FEC data.</td></tr>
     $for c in pol.contributors:
         $ names = c.name.lower().replace(',', '').split(' ')
         $ name = '_'.join(names[1:])+'_'+names[0]
@@ -274,6 +274,7 @@ $if pol.contributor_employers:
     <td colspan="2" class="rule">
     <h2 class="rep">Top Contributor Employers</h2>
     <table class="charted structure contributors" style="width: 100%"><tbody>
+    <tr><td colspan="2" style="text-align: left; padding-bottom: 4px;" class="disclaimer">Campaigns disclose the employers of their contributors; this list aggregates them. Use with caution: this list is based on raw FEC data</td></tr>
     $for c in pol.contributor_employers:
         <tr class="$loop.parity">
             <th>$loop.index <a href="/empl/$:niceurl(c.employer_stem)">$c.employer_stem.title()</a></th>
@@ -289,6 +290,7 @@ $if pol.lob_contribs:
      <tr><td colspan="2" class="rule">
      <h2 class="rep">Top Lobby Contributors</h2>
      <table class="charted structure contributors" style="width: 100%"><tbody>
+     <tr><td colspan="2" style="text-align: left; padding-bottom: 4px;" class="disclaimer">New rules require lobbyists to disclose their giving, and giving by the PACs they control. Use with caution: This data compiled from raw filings</td></tr>
      $for c in pol.lob_contribs:
          $def whom():
      		${(c.contact_name if c.contact_name else ((c.prefix or '') + ' ' + (c.firstname or '') + ' ' + (c.middlename or '') + ' ' + (c.lastname or '') + ' ' + (c.suffix or ''))).title()}
