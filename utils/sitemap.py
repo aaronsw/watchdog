@@ -9,13 +9,18 @@ import datetime
 import webapp
 from index import getindex
 
+def uniq(iterator):
+    seen = set()
+    for item in iterator:
+        if item in seen: continue
+        seen.add(item)
+        yield item
+
 t_sitemap = """$def with (items)
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     $for i in items:
-        <url>
-            <loc>http://watchdog.net$i</loc>
-        </url>
+        <url><loc>http://watchdog.net$i</loc></url>
 </urlset>
 """
 
@@ -30,8 +35,8 @@ t_siteindex = """$def with (names, timestamp)
 </sitemapindex>
 """
 
-sitemap = web.template.Template(t_sitemap)
-siteindex = web.template.Template(t_siteindex)
+sitemap = web.template.Template(t_sitemap, filter=web.websafe)
+siteindex = web.template.Template(t_siteindex, filter=web.websafe)
 
 def write(path, text):
     from gzip import open as gzopen
@@ -41,7 +46,7 @@ def write(path, text):
     f.close()
 
 def make_siteindex():
-    groups = web.group(getindex(webapp.app), 50000)
+    groups = web.group(uniq(getindex(webapp.app)), 50000)
     
     if not os.path.exists('sitemaps'):
         os.mkdir('sitemaps')
