@@ -2,14 +2,77 @@ $def with (page)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+  <script>
+  function utmx_section(){}function utmx(){}
+  (function(){var k='2347546721',d=document,l=d.location,c=d.cookie;function f(n){
+  if(c){var i=c.indexOf(n+'=');if(i>-1){var j=c.indexOf(';',i);return c.substring(i+n.
+  length+1,j<0?c.length:j)}}}var x=f('__utmx'),xx=f('__utmxx'),h=l.hash;
+  d.write('<sc'+'ript src="'+
+  'http'+(l.protocol=='https:'?'s://ssl':'://www')+'.google-analytics.com'
+  +'/siteopt.js?v=1&utmxkey='+k+'&utmx='+(x?x:'')+'&utmxx='+(xx?xx:'')+'&utmxtime='
+  +new Date().valueOf()+(h?'&utmxhash='+escape(h.substr(1)):'')+
+  '" type="text/javascript" charset="utf-8"></sc'+'ript>')})();
+  </script>
+    
   $if page.get('front'):
       <title>watchdog.net: $:page.title.strip()</title>
+      <meta name="verify-v1" content="V7KJtoWCZfItupnGhaoUY6gwX1aVkrFszhCOoM0qgbg=" />
+      <meta name="verify-v1" content="H+m5dkTl7hRG+Yp3hrB/2XuoZO4O1TAaq7IxTwRzjpk=" />
   $else:
       <title>$:page.title.strip() (watchdog.net)</title>
 
 $if page.get('noindex'): <meta name="robots" content="noindex, nofollow">
   <link href="/static/css/style.css" type="text/css" rel="stylesheet" />
-  <script type="text/javascript" src="/static/js/jquery.js"></script>
+  <style type="text/css">
+  #dialog { display: none;}
+  .ui-dialog { border: 1px solid gray; background-color: black; padding: 1em; color: white;}
+  .ui-dialog-titlebar { background-color: #222;}
+  </style>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>  
+  <script type="text/javascript">
+  function clickclear(thisfield, defaulttext) {
+    if (thisfield.value == defaulttext) {thisfield.value = "";}
+  }
+  function clickrecall(thisfield, defaulttext) {
+    if (thisfield.value == "") {thisfield.value = defaulttext;}
+  }
+  function createCookie(name,value,days) {
+  	if (days) {
+  		var date = new Date();
+  		date.setTime(date.getTime()+(days*24*60*60*1000));
+  		var expires = "; expires="+date.toGMTString();
+  	}
+  	else var expires = "";
+  	document.cookie = name+"="+value+expires+"; path=/";
+  }
+
+  function readCookie(name) {
+  	var nameEQ = name + "=";
+  	var ca = document.cookie.split(';');
+  	for(var i=0;i < ca.length;i++) {
+  		var c = ca[i];
+  		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+  		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+  	}
+  }
+  
+  \$(document).ready(function() {
+    if (readCookie("wd_dialog") == "fin") { return; }
+    createCookie("wd_dialog", "start", 1);
+    if (readCookie("wd_dialog") == "start") {
+      \$("#dialog").dialog({width: 500});
+      createCookie("wd_dialog", "fin", 1000);
+    }
+  })
+  function validate(form) {
+    if (form.Email.value == "email") {
+      \$("#dialog_error")[0].innerHTML = "please enter a valid email";
+      return false;
+    }
+    return true;
+  }
+  </script>
   $:page.get('head')
 </head><body>
 $if page.get('map'):
@@ -59,7 +122,18 @@ $else:
 
 <!-- /header -->
 <div id="main">
-
+$if not page.get('map') and not page.get('front') and not page.get('maxi'):
+    <div style="float: right">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-4591221763003403";
+    /* 120x600, sidebar */
+    google_ad_slot = "0522736308";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    //-->
+    </script>
+    <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+    </div>
 
 $:page.get('pretext')
 
@@ -70,6 +144,19 @@ $if msg:
     <div class="msg">$:msg</div>
 
 $:page
+
+$if not page.get('map') and not page.get('front') and not page.get('maxi'):
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-4591221763003403";
+    /* 728x90, bottom */
+    google_ad_slot = "2707019958";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    //-->
+    </script>
+    <script type="text/javascript"
+    src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
 
 $if not page.get('maxi'):
     </div>
@@ -101,10 +188,85 @@ $else:
               <div id="footer\
               $if not page.get('front'):-leaf\
               ">
-     	     <div id="left_footer">What do you think? <a href="/about/feedback"><strong>Send us your feedback.</strong></a></div>
+            <div id="left_footer">
+               <form action="http://salsa.wiredforchange.com/dia/processEditValues.jsp" method="post" >
+                 <input type="hidden" name="redirect" value="http://watchdog.net/thanks?url=$urlquote(getfullpath())" />
+                 <input type="hidden" name="table" value="supporter"/>
+                 <input type="hidden" name="tag" value="wd_bottom1" />
+                 <input type="hidden" name="Receive_Email" value="3" />
+                 <input type="hidden" name="organization_KEY" value="5649" />
+                 <input type="hidden" name="link" value="custom" />
+                 <input type="hidden" name="linkKey" value="0" />
+                 <input type="hidden" name="link" value="groups" />
+                 <input type="hidden" name="linkKey" value="40117" />
+                 <input type="hidden" name="link" value="groups" />
+                 <input type="hidden" name="linkKey" value="39103" />
+                 <input type="hidden" name="link" value="groups" />
+                 <input type="hidden" name="linkKey" value="38203" />
+               <strong>Help make a difference:</strong> 
+               Sign up for our occasional email list:<br />
+               <input type="text" name="First_Name" value="first name" 
+                 onclick="clickclear(this, 'first name')" 
+                 onblur="clickrecall(this, 'first name')"/> 
+               <input type="text" name="Last_Name" value="last name" 
+                 onclick="clickclear(this, 'last name')" 
+                 onblur="clickrecall(this, 'last name')" /><br /> 
+               <input type="text" name="Email" value="email" 
+                 onclick="clickclear(this, 'email')" 
+                 onblur="clickrecall(this, 'email')" /> 
+              <input type="text" name="Zip" value="zip code" 
+                onclick="clickclear(this, 'zip code')" 
+                onblur="clickrecall(this,'zip code')" /> 
+              <button type="submit">Go</button>
+            </form>
+            </div>
+               <div id="dialog">
+                 <form name="dialogform" action="http://salsa.wiredforchange.com/dia/processEditValues.jsp" method="post" onsubmit="return validate(this);">
+                   <input type="hidden" name="redirect" value="http://watchdog.net/thanks?url=$urlquote(getfullpath())" />
+                   <input type="hidden" name="table" value="supporter"/>
+                   <input type="hidden" name="tag" value="wd_dialog1" />
+                   <input type="hidden" name="Receive_Email" value="3" />
+                   <input type="hidden" name="organization_KEY" value="5649" />
+                   <input type="hidden" name="link" value="custom" />
+                   <input type="hidden" name="linkKey" value="0" />
+                   <input type="hidden" name="link" value="groups" />
+                   <input type="hidden" name="linkKey" value="40117" />
+                   <input type="hidden" name="link" value="groups" />
+                   <input type="hidden" name="linkKey" value="39103" />
+                   <input type="hidden" name="link" value="groups" />
+                   <input type="hidden" name="linkKey" value="38203" />
+                <p>
+                <script>utmx_section("Headline")</script>
+                  <strong>Help make a difference:</strong>
+                </noscript> 
+                <script>utmx_section("Body")</script>
+                  Sign up for our occasional email list:
+                </noscript></p>
+                <p id="dialog_error" style="color: red"></p>
+                <p>
+                <script>utmx_section("Name ask")</script>
+                  <input type="text" name="First_Name" value="first name" 
+                    onclick="clickclear(this, 'first name')" 
+                    onblur="clickrecall(this, 'first name')"/> 
+                  <input type="text" name="Last_Name" value="last name" 
+                    onclick="clickclear(this, 'last name')" 
+                    onblur="clickrecall(this, 'last name')" /><br /> 
+                </noscript>
+                  <input type="text" name="Email" value="email" 
+                    onclick="clickclear(this, 'email')" 
+                    onblur="clickrecall(this, 'email')" /> 
+                 <input type="text" name="Zip" value="zip code" 
+                   onclick="clickclear(this, 'zip code')" 
+                   onblur="clickrecall(this,'zip code')" /> 
+                 <button type="submit">Go</button>
+                 </p>
+              </form>
+              </div>
              <div style="text-align: right; margin-top: -4px; width: 100%;"><img src="/static/images/${page.get('color')}.talkbubble.png" width="103" height="135" alt="Talk Bubble" /><a href="/" class="logo"><img src="/static/images/watchdog.talk.gif" width="255" height="135" alt="Watchdog sez -" /></a></div>
 </div></div><!-- /footer -->
+<p style="position: fixed; right: 1em; bottom:0;"><a href="http://watchdog.net/static/index/index.html">index</a></p>
 </div>
+
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -114,5 +276,14 @@ try {
 var pageTracker = _gat._getTracker("UA-7198052-1");
 pageTracker._trackPageview();
 } catch(err) {}</script>
+<script type="text/javascript">
+if(typeof(_gat)!='object')document.write('<sc'+'ript src="http'+
+(document.location.protocol=='https:'?'s://ssl':'://www')+
+'.google-analytics.com/ga.js"></sc'+'ript>')</script>
+<script type="text/javascript">
+try {
+var pageTracker=_gat._getTracker("UA-7198052-2");
+pageTracker._trackPageview("/2347546721/test");
+}catch(err){}</script>
 </body>
 </html>
