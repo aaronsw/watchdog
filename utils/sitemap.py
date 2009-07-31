@@ -48,11 +48,11 @@ def make_siteindex():
     
     for i, x in enumerate(groups):
         write("sitemaps/sitemap_%04d.xml.gz" % i, str(sitemap(x)))
+    
     names = ["%04d" % j for j in range(i)]
     timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + 'Z'
     index = siteindex(names, timestamp)
-    write("sitemaps/siteindex.xml.gz", index)
+    write("sitemaps/siteindex.xml.gz", str(index))
         
 if __name__ == "__main__":
     make_siteindex()
-
