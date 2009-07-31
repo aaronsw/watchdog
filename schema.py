@@ -343,6 +343,9 @@ class Roll(sql.Table):
     result = sql.String()
     bill = sql.Reference(Bill)
 
+    @property
+    def _uri_(self):
+        return 'http://watchdog.net/r/us/%s#it' % self.id
     #@@@@@ DON'T REPEAT YOURSELF
     @property
     def votes_by_party(self):
