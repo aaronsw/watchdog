@@ -164,6 +164,8 @@ def striphtml(x):
     return r_html.sub('', x).replace('\n', ' ')
 g['striphtml'] = striphtml
 g['getpath'] = lambda : web.ctx.homepath + web.ctx.path
+g['getfullpath'] = lambda : web.ctx.homepath + web.ctx.fullpath
+
 g['cookies_on'] = lambda : True #bool(web.cookies().get('webpy_session_id')) #@@@ fix this
 g['get_user_id'] = lambda: get_loggedin_userid() or get_unverified_userid()
 g['get_user_name'] = get_user_name
