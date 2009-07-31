@@ -10,7 +10,7 @@ import settings
 from settings import db, render, production_mode
 import schema
 import config
-import os, simplejson
+import os, simplejson, cPickle as pickle
 
 if not production_mode:
 	web.config.debug = True
@@ -56,6 +56,7 @@ urls = (
   r'/about/help', 'abouthelp',
   r'/about/api', 'aboutapi',
   r'/about/feedback', 'feedback',
+  r'/thanks', 'email_thanks',
   r'/contribute(/?)', 'contribute',
   r'/blog', blog.app,
   r'/share', 'petition.share',
@@ -104,6 +105,11 @@ class feedback:
           i.content +'\n\n' + web.ctx.ip)
 
         return render.feedback_thanks()
+
+class email_thanks:
+    def GET(self):
+        i = web.input(url='/')
+        return render.email_thanks(i.url)
 
 class find:
     def GET(self, format=None):
@@ -364,20 +370,30 @@ class occupation:
 
     def GET(self, occupation):
         if occupation != occupation.lower(): raise web.seeother('/occupation/%s' % occupation.lower())
-        candidates = candidates_by_occupation(occupation, 5)
-        committees = committees_by_occupation(occupation, 5)
+        if os.path.exists(config.cache_dir + '/occupation/' + occupation):
+            candidates, committees = pickle.load(file(config.cache_dir + '/occupation/' + occupation))
+            candidates, committees = candidates[:5], committees[:5]
+        else:
+            candidates = candidates_by_occupation(occupation, 5)
+            committees = committees_by_occupation(occupation, 5)
         return render.occupation(candidates, committees, occupation) 
 
 class occupation_candidates:
     #index done in occupation
     def GET(self, occupation):
-        candidates = candidates_by_occupation(occupation)
+        if os.path.exists(config.cache_dir + '/occupation/' + occupation):
+             candidates = pickle.load(file(config.cache_dir + '/occupation/' + occupation))[0]
+        else:
+             candidates = candidates_by_occupation(occupation)
         return render.occupation_candidates(candidates, occupation)     
 
 class occupation_committees:
     #index done in occupation
     def GET(self, occupation):
-        committees = committees_by_occupation(occupation)
+        if os.path.exists(config.cache_dir + '/occupation/' + occupation):
+             committees = pickle.load(file(config.cache_dir + '/occupation/' + occupation))[1]
+        else:
+             committees = committees_by_occupation(occupation)
         return render.occupation_committees(committees, occupation)     
 
 class contributions:
@@ -417,6 +433,7 @@ class employer:
                     for c in db.query('select distinct(employer_stem) from contribution'))
 
     def GET(self, corp_id, format=None):
+        if corp_id == '': raise web.notfound()
         corp_id = corp_id.lower().replace('_', ' ')
         contributions = db.query("""SELECT count(*) as how_many, 
             sum(amount) as how_much, p.firstname, p.lastname, p.id as polid
@@ -905,6 +922,6 @@ def congress_ranges(congresses):
 
 app.notfound = notfound
 if production_mode:
-    app.internalerror = web.emailerrors(config.send_errors_to, internalerror)
+    pass#app.internalerror = web.emailerrors(config.send_errors_to, internalerror)
 
 if __name__ == "__main__": app.run()

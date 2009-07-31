@@ -9,3 +9,4 @@ maildir_path = '/home/wathdog/Maildir'
 send_errors_to = 'bugs@watchdog.net'
 test_email = 'test@watchdog.net' #wyr test emails to go to this
 production_test_email = 'wyr_prod@watchdog.net' #all production wyr msgs and their responses go here
+cache_dir = '/home/watchdog/cache'
