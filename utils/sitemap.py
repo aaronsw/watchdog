@@ -30,7 +30,7 @@ t_siteindex = """$def with (names, timestamp)
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     $for x in names:
         <sitemap>
-            <loc>http://watchdog.net/static/sitemaps/sitemap_${x}.xml</loc>
+            <loc>http://watchdog.net/static/sitemaps/sitemap_${x}.xml.gz</loc>
             <lastmod>$timestamp</lastmod>
         </sitemap>
 </sitemapindex>
@@ -40,8 +40,9 @@ sitemap = web.template.Template(t_sitemap, filter=web.websafe)
 siteindex = web.template.Template(t_siteindex, filter=web.websafe)
 
 def write(path, text):
+    from gzip import open as gzopen
     print 'writing', path, text.count('\n')
-    f = file(path, 'w')
+    f = gzopen(path, 'w')
     f.write(text)
     f.close()
 
@@ -52,12 +53,12 @@ def make_siteindex(urls):
         os.mkdir('sitemaps')
     
     for i, x in enumerate(groups):
-        write("sitemaps/sitemap_%04d.xml" % i, str(sitemap(x)))
+        write("sitemaps/sitemap_%04d.xml.gz" % i, str(sitemap(x)))
     
     names = ["%04d" % j for j in range(i)]
     timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + 'Z'
     index = siteindex(names, timestamp)
-    write("sitemaps/siteindex.xml", str(index))
+    write("sitemaps/siteindex.xml.gz", str(index))
 
 def write_urls():
     fh = file('urls.txt', 'w')
