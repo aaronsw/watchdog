@@ -53,7 +53,13 @@ def make_siteindex(urls):
         os.mkdir('sitemaps')
     
     for i, x in enumerate(groups):
-        write("sitemaps/sitemap_%04d.xml.gz" % i, str(sitemap(x)))
+        sitemap_lines = [
+          '<?xml version="1.0" encoding="UTF-8"?>', 
+          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+        for item in x:
+            sitemap_lines.append('<url><loc>http://watchdog.net%s</loc></url>' % item)
+        sitemap_lines.append('</urlset>')
+        write("sitemaps/sitemap_%04d.xml.gz" % i, '\n'.join(sitemap_lines)))
     
     names = ["%04d" % j for j in range(i)]
     timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + 'Z'
@@ -63,10 +69,9 @@ def make_siteindex(urls):
 def write_urls():
     fh = file('urls.txt', 'w')
     for line in getindex(webapp.app):
-        fh.write(urllib.quote(line.encode('utf8')) + '\n')
-
+        fh.write(line + '\n')
+    
     fh.close()
-
 
 if __name__ == "__main__":
     #write_urls()

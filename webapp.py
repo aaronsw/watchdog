@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import re, sys
+import re, sys, urllib
 import web
 
 from utils import zip2rep, simplegraphs, apipublish, users, writerep, se, wyrapp, api
@@ -330,7 +330,7 @@ class contributor:
             names = name.lower().split(', ')
             if len(names) > 1:
                 return '_'.join(names[1].split() + [names[0]])
-            return name
+            return urllib.quote(name)
         return ('/contrib/%s/%s' % (c.zip,  format(c.name)) \
                     for c in db.select('contribution', what='zip, name'))
 
@@ -365,7 +365,7 @@ class occupation:
             #/occupation/<occupation>, /occupation/<occupation>/candidates, /occupation/<occupation>/committees
         occupations = (c.occupation.lower() \
                         for c in db.query('select distinct occupation from contribution'))
-        return (('/occupation/%s' % o, '/occupation/%s/candidates' % o, '/occupation/%s/committees' % o)  \
+        return (('/occupation/%s' % urllib.quote(o), '/occupation/%s/candidates' % urllib.quote(o), '/occupation/%s/committees' % urllib.quote(o))  \
                     for o in occupations if o)
 
     def GET(self, occupation):
@@ -404,7 +404,7 @@ class occupation_committees:
 class contributions:
     """from a corp to a pol"""
     def index(self):
-        return ('/contrib/?from=%s&to=%s' % (c.frm, c.to) \
+        return ('/contrib/?from=%s&to=%s' % (urllib.quote(c.frm), urllib.quote(c.to)) \
                     for c in db.query("""SELECT cn.employer_stem as frm, p.id as to
                             FROM contribution cn, committee cm, politician_fec_ids pfi, politician p 
                             WHERE cn.recipient_id = cm.id AND cm.candidate_id = pfi.fec_id 
@@ -434,7 +434,7 @@ class contributions:
 class employer:
     def index(self):
         #'/empl/(.*?)%s?'
-        return ('/empl/%s' % (c.employer_stem) \
+        return ('/empl/%s' % (urllib.quote(c.employer_stem)) \
                     for c in db.query('select distinct(employer_stem) from contribution'))
 
     def GET(self, corp_id, format=None):
