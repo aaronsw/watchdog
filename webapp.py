@@ -378,6 +378,11 @@ class occupation:
             committees = committees_by_occupation(occupation, 5)
         return render.occupation(candidates, committees, occupation) 
 
+def cache_occupation(occupation):
+    candidates = list(candidates_by_occupation(occupation))
+    committees = list(committees_by_occupation(occupation))
+    pickle.dump((candidates, committees), file(config.cache_dir + '/occupation/' + occupation, 'w'))
+    
 class occupation_candidates:
     #index done in occupation
     def GET(self, occupation):
@@ -924,4 +929,9 @@ app.notfound = notfound
 if production_mode:
     pass#app.internalerror = web.emailerrors(config.send_errors_to, internalerror)
 
-if __name__ == "__main__": app.run()
+if __name__ == "__main__":
+    import sys
+    if sys.argv[1] == 'cache':
+        cache_occupation(sys.argv[2])
+    else:
+        app.run()
