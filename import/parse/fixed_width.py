@@ -30,6 +30,7 @@ def string(s):
 
 def state(s):
     s = string(s)
+    if s == '.': return None
     assert s == s.upper()
     assert s.isalpha()
     return s
@@ -89,7 +90,7 @@ FIELD_TYP = 2
 
 ## The functions you might want to call
 
-def parse_line(linedef, line):
+def parse_line(linedef, line, debug=False):
     out = storage()
     n = 0
     for (k, l, t) in linedef:
@@ -98,8 +99,9 @@ def parse_line(linedef, line):
         if k is None:
             t(line[n:n+l])
         else:
+            if debug: print k, repr(line[n:n+l]),
             out[k] = t(line[n:n+l])
-            #print k, repr(line[n:n+l])
+            if debug: print repr(out[k])
         if l > 0: n += l
     return out
 
@@ -112,7 +114,7 @@ def get_len(filedef):
     else:
         return sum(line[FIELD_LEN] for line in filedef)
 
-def parse_file(filedef, fh, f_whichdef=None):
+def parse_file(filedef, fh, f_whichdef=None, debug=False):
     linelen = get_len(filedef)
     if isinstance(filedef, dict):
         if not f_whichdef: f_whichdef = lambda x: x[0]
@@ -120,4 +122,4 @@ def parse_file(filedef, fh, f_whichdef=None):
         f_whichdef = lambda x: slice(None, None)
     for line in iter(lambda: fh.read(linelen), ''):
         if line.replace('\x00', '').strip():
-            yield parse_line(filedef[f_whichdef(line)], line)
+            yield parse_line(filedef[f_whichdef(line)], line, debug=debug)

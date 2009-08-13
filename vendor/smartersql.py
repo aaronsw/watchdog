@@ -240,6 +240,7 @@ class Float(Column):
 
 class Serial(Integer): sql_type = 'serial'
 class Int2(Integer): sql_type = 'int2'
+class BigInteger(Integer): sql_type = 'bigint'
 class Date(Column): sql_type = 'date'
 
 class Year(Integer): pass

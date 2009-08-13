@@ -3,7 +3,7 @@
 import re, sys, urllib
 import web
 
-from utils import zip2rep, simplegraphs, apipublish, users, writerep, se, wyrapp, api
+from utils import zip2rep, simplegraphs, apipublish, users, writerep, se, wyrapp, api, helpers
 import blog
 import petition
 import settings
@@ -49,6 +49,7 @@ urls = (
   r'/lob/o/?(.*?)', 'lob_org',
   r'/lob/pa/?(.*?)', 'lob_pac',
   r'/lob/pe/?(.*?)', 'lob_person',
+  r'/ein/(\d+)(/.*)?', 'ein',
   r'/writerep', wyrapp.app,
   r'/api', api.app,
   r'/about(/?)', 'about',
@@ -671,6 +672,19 @@ class lob_person:
         if not p: raise web.notfound()
         return render.lob_person(p, limit)
 
+class ein:
+    def index(self):
+        pass #@@
+    
+    def GET(self, ein, slug=None):
+        try:
+            p = schema.Exempt_Org.select(where='ein=$ein', vars=locals())[0]
+        except IndexError:
+            raise web.notfound()
+        if slug != '/' + helpers.urlify(p.primary_name):
+            raise web.redirect('/ein/%s/%s' % (ein, helpers.urlify(p.primary_name)))
+        return render.exempt_org(p)
+
 class politician_introduced:
     def index(self):
         #/p/(.*?)/introduced
@@ -931,7 +945,7 @@ if production_mode:
 
 if __name__ == "__main__":
     import sys
-    if sys.argv[1] == 'cache':
+    if len(sys.argv) > 1 and sys.argv[1] == 'cache':
         cache_occupation(sys.argv[2])
     else:
         app.run()

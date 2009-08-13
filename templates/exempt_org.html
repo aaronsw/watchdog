@@ -1,0 +1,21 @@
+$def with (org)
+
+$var width: 90%
+$var color: white
+$var title: $org.primary_name.title()
+
+<h1>$org.primary_name.title()</h1>
+
+<table>
+  <tr><th>EIN</th><td>$org.ein</td></tr>
+  <tr><th>IRS approved on</th><td>$org.ruling_date</td></tr>
+  <tr><th>Last filed</th><td>$org.tax_period</td></tr>
+  <tr><th>Contact</th><td>$org.careof_name.title()</td></tr>
+  <tr><th>Address</th><td>$org.street<br />$org.city, $org.state $org.zip</td></tr>
+  <tr><th>Filing month</th><td>$org.accounting_period</td></tr>
+  <tr><th>Assets</th><td>\$$commify(org.asset_amt)</td></tr>
+  <tr><th>Income</th><td>\$$commify(org.income_amt)</td></tr>
+  <tr><th>Revenue</th><td>\$$commify(org.form_990_revenue_amt)</td></tr>
+  <tr><th>AKA</th><td>$org.sort_name</td></tr>
+</table>
+

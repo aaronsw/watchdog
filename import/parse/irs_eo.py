@@ -1,17 +1,18 @@
+import glob, itertools
 from fixed_width import integer, string, date, filler, parse_file, enum, state, digits
 
 def integer2(s): return integer(s[-1] + s[:-1])
 
 def_eo = [
-  ('_type', 0, lambda s: 'Exempt Organization'),
+#  ('_type', 0, lambda s: 'Exempt Organization'),
   ('ein', 9-0, digits),
   ('primary_name', 79-9, string),
   ('careof_name', 114-79, string),
   ('street', 149-114, string),
   ('city', 171-149, string),
   ('state', 173-171, state),
-  ('zip', 183-173, digits),
-  ('group_exemption_num', 187-183, integer),
+  ('zip', 183-173, string),
+  ('group_exemption_num', 187-183, string),
   ('subsection_code', 189-187, string),
   ('affiliation', 1, enum),
   ('classification_code', 194-190, string),
@@ -34,11 +35,16 @@ def_eo = [
   ('ntee_code', 282-278, string),  
   ('sort_name', 318-282, string),
   (None, 2, filler('\r\n'))
-
 ]
 
+def parse():
+    return itertools.chain(*[parse_file(def_eo, file(fn)) for fn in glob.glob('../data/crawl/irs/eo/*.LST')])
+    
 if __name__ == "__main__":
-    import glob
-    import tools
-    for fn in glob.glob('../data/crawl/irs/eo/*.LST'):
-        tools.export(parse_file(def_eo, file(fn)))
+    import sys
+    if 'load' in sys.argv:
+        from settings import db
+        db.multiple_insert("exempt_org", parse(), seqname=False)
+    else:
+        import tools
+        tools.export(parse())
