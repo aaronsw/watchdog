@@ -59,7 +59,7 @@ def make_siteindex(urls):
         for item in x:
             sitemap_lines.append('<url><loc>http://watchdog.net%s</loc></url>' % item)
         sitemap_lines.append('</urlset>')
-        write("sitemaps/sitemap_%04d.xml.gz" % i, '\n'.join(sitemap_lines)))
+        write("sitemaps/sitemap_%04d.xml.gz" % i, '\n'.join(sitemap_lines))
     
     names = ["%04d" % j for j in range(i)]
     timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + 'Z'
