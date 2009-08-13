@@ -746,7 +746,6 @@ class DB:
                 doit(rows)
                 rows = []
         doit(rows)
-        return out
     
     def _multiple_insert(self, tablename, values, seqname=None, _test=False):
         if not values:
