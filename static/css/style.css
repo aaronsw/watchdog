@@ -313,3 +313,4 @@ h2.repred { color: #EE4400; margin-bottom: 6px; }
 td.rule {border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; }
 td.rule-below { border-bottom: 1px solid #ccc; }
 
+th, td { vertical-align: top; }

@@ -6,6 +6,18 @@ import web
 from config import secret_key
 from settings import db
 
+def urlify(s):
+    """
+    >>> urlify("What the !@#$%^ is going on here!?")
+    'what-the--is-going-on-here'
+    """
+    s = s.lower()
+    out = []
+    for k in s:
+        if k == " ": out.append('-')
+        elif k.isalpha() or k.isdigit(): out.append(k)
+    return ''.join(out)
+
 def encrypt(msg, key=None):
     return hmac.new(key or secret_key, msg).hexdigest()
 
