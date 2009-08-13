@@ -725,7 +725,7 @@ class DB:
             self.ctx.commit()
         return out
         
-    def multiple_insert(self, tablename, values, seqname=None, _test=False):
+    def multiple_insert(self, tablename, values, seqname=None, percall=5000, _test=False):
         """
         Inserts multiple rows into `tablename`. The `values` must be a list of dictioanries, 
         one for each row to be inserted, each with the same set of keys.
@@ -738,7 +738,19 @@ class DB:
             >>> values = [{"name": "foo", "email": "foo@example.com"}, {"name": "bar", "email": "bar@example.com"}]
             >>> db.multiple_insert('person', values=values, _test=True)
             <sql: "INSERT INTO person (name, email) VALUES ('foo', 'foo@example.com'), ('bar', 'bar@example.com')">
-        """        
+        """
+        if _test:
+            return self._multiple_insert(tablename, values, seqname, _test)
+        out = []
+        rows = []
+        for row in values:
+            rows.append(row)
+            if len(rows) > percall:
+                out.extend(self._multiple_insert(tablename, rows, seqname, _test))
+                rows = []
+        out.extend(self._multiple_insert(tablename, rows, seqname, _test))
+    
+    def _multiple_insert(self, tablename, values, seqname=None, _test=False):
         if not values:
             return []
             
@@ -748,21 +760,20 @@ class DB:
                 return None
             else:
                 return out
-                
-        keys = values[0].keys()
-        #@@ make sure all keys are valid
-
-        # make sure all rows have same keys.
-        for v in values:
-            if v.keys() != keys:
-                raise ValueError, 'Bad data'
-
-        sql_query = SQLQuery('INSERT INTO %s (%s) VALUES ' % (tablename, ', '.join(keys))) 
-
+        
         data = []
+        keys = None
+        count = 0
         for row in values:
+            if keys is None:
+                keys = row.keys()
+                sql_query = SQLQuery('INSERT INTO %s (%s) VALUES ' % (tablename, ', '.join(keys))) 
+            elif row.keys() != keys:
+                raise ValueError, 'Inconsistent keys'
+            
             d = SQLQuery.join([SQLParam(row[k]) for k in keys], ', ')
             data.append('(' + d + ')')
+            count += 1
         sql_query += SQLQuery.join(data, ', ')
 
         if _test: return sql_query
@@ -782,7 +793,7 @@ class DB:
 
         try: 
             out = db_cursor.fetchone()[0]
-            out = range(out-len(values)+1, out+1)        
+            out = range(out-count+1, out+1)
         except Exception: 
             out = None
 
