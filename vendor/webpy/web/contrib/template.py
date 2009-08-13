@@ -12,6 +12,7 @@ class render_cheetah:
     """Rendering interface to Cheetah Templates.
 
     Example:
+
         render = render_cheetah('templates')
         render.hello(name="cheetah")
     """
@@ -32,13 +33,15 @@ class render_cheetah:
     
 class render_genshi:
     """Rendering interface genshi templates.
-
     Example:
+
     for xml/html templates.
+
         render = render_genshi(['templates/'])
         render.hello(name='genshi')
 
     For text templates:
+
         render = render_genshi(['templates/'], type='text')
         render.hello(name='genshi')
     """
@@ -74,12 +77,17 @@ class render_jinja:
     """Rendering interface to Jinja2 Templates
     
     Example:
+
         render= render_jinja('templates')
         render.hello(name='jinja2')
     """
     def __init__(self, *a, **kwargs):
+        extensions = kwargs.pop('extensions', [])
+        globals = kwargs.pop('globals', {})
+
         from jinja2 import Environment,FileSystemLoader
-        self._lookup = Environment(loader=FileSystemLoader(*a, **kwargs))
+        self._lookup = Environment(loader=FileSystemLoader(*a, **kwargs), extensions=extensions)
+        self._lookup.globals.update(globals)
         
     def __getattr__(self, name):
         # Assuming all templates end with .html
@@ -91,6 +99,7 @@ class render_mako:
     """Rendering interface to Mako Templates.
 
     Example:
+
         render = render_mako(directories=['templates'])
         render.hello(name="mako")
     """
@@ -108,6 +117,7 @@ class cache:
     """Cache for any rendering interface.
     
     Example:
+
         render = cache(render_cheetah("templates/"))
         render.hello(name='cache')
     """

@@ -8,8 +8,7 @@ __all__ = [
   "prefixurl", "modified", 
   "write",
   "changequery", "url",
-  "background", "backgrounder",
-  "Reloader", "reloader", "profiler",
+  "profiler",
 ]
 
 import sys, os, threading, urllib, urlparse
@@ -61,7 +60,13 @@ def modified(date=None, etag=None):
     `True` and sets the response status to `304 Not Modified`. It also
     sets `Last-Modified and `ETag` output headers.
     """
-    n = set(x.strip('" ') for x in web.ctx.env.get('HTTP_IF_NONE_MATCH', '').split(','))
+    try:
+        from __builtin__ import set
+    except ImportError:
+        # for python 2.3
+        from sets import Set as set
+
+    n = set([x.strip('" ') for x in web.ctx.env.get('HTTP_IF_NONE_MATCH', '').split(',')])
     m = net.parsehttpdate(web.ctx.env.get('HTTP_IF_MODIFIED_SINCE', '').split(';')[0])
     validate = False
     if etag:
@@ -74,8 +79,8 @@ def modified(date=None, etag=None):
             validate = True
     
     if validate: web.ctx.status = '304 Not Modified'
-    lastmodified(date)
-    web.header('ETag', '"' + etag + '"')
+    if date: lastmodified(date)
+    if etag: web.header('ETag', '"' + etag + '"')
     return not validate
 
 def write(cgi_response):
@@ -145,104 +150,12 @@ def url(path=None, **kw):
     
     return out
 
-def background(func):
-    """A function decorator to run a long-running function as a background thread."""
-    def internal(*a, **kw):
-        web.data() # cache it
-
-        tmpctx = web._context[threading.currentThread()]
-        web._context[threading.currentThread()] = utils.storage(web.ctx.copy())
-
-        def newfunc():
-            web._context[threading.currentThread()] = tmpctx
-            func(*a, **kw)
-            myctx = web._context[threading.currentThread()]
-            for k in myctx.keys():
-                if k not in ['status', 'headers', 'output']:
-                    try: del myctx[k]
-                    except KeyError: pass
-        
-        t = threading.Thread(target=newfunc)
-        background.threaddb[id(t)] = t
-        t.start()
-        web.ctx.headers = []
-        return seeother(changequery(_t=id(t)))
-    return internal
-background.threaddb = {}
-
-def backgrounder(func):
-    def internal(*a, **kw):
-        i = web.input(_method='get')
-        if '_t' in i:
-            try:
-                t = background.threaddb[int(i._t)]
-            except KeyError:
-                return web.notfound()
-            web._context[threading.currentThread()] = web._context[t]
-            return
-        else:
-            return func(*a, **kw)
-    return internal
-
-class Reloader:
-    """
-    Before every request, checks to see if any loaded modules have changed on 
-    disk and, if so, reloads them.
-    """
-    def __init__(self, func):
-        self.func = func
-        self.mtimes = {}
-        # cheetah:
-        # b = _compiletemplate.bases
-        # _compiletemplate = globals()['__compiletemplate']
-        # _compiletemplate.bases = b
-        
-        #web.loadhooks['reloader'] = self.check
-        # todo:
-        #  - replace relrcheck with a loadhook
-        #if reloader in middleware:
-        #    relr = reloader(None)
-        #    relrcheck = relr.check
-        #    middleware.remove(reloader)
-        #else:
-        #    relr = None
-        #    relrcheck = lambda: None
-        # if relr:
-        #     relr.func = wsgifunc
-        #     return wsgifunc
-        # 
-        
-    def check(self):
-        for mod in sys.modules.values():
-            try: 
-                mtime = os.stat(mod.__file__).st_mtime
-            except (AttributeError, OSError, IOError): 
-                continue
-            if mod.__file__.endswith('.pyc') and \
-               os.path.exists(mod.__file__[:-1]):
-                mtime = max(os.stat(mod.__file__[:-1]).st_mtime, mtime)
-            if mod not in self.mtimes:
-                self.mtimes[mod] = mtime
-            elif self.mtimes[mod] < mtime:
-                try: 
-                    reload(mod)
-                    self.mtimes[mod] = mtime
-                except ImportError: 
-                    pass
-        return True
-    
-    def __call__(self, e, o): 
-        self.check()
-        return self.func(e, o)
-
-reloader = Reloader
-
 def profiler(app):
     """Outputs basic profiling information at the bottom of each response."""
     from utils import profile
     def profile_internal(e, o):
         out, result = profile(app)(e, o)
-        return out + ['<pre>' + net.websafe(result) + '</pre>']
+        return list(out) + ['<pre>' + net.websafe(result) + '</pre>']
     return profile_internal
 
 if __name__ == "__main__":

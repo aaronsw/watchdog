@@ -21,10 +21,11 @@ from utils import threadeddict, storage, iters, iterbetter
 
 try:
     # db module can work independent of web.py
-    from webapi import debug
+    from webapi import debug, config
 except:
     import sys
     debug = sys.stderr
+    config = storage()
 
 class UnknownDB(Exception):
     """raised for unsupported dbms"""
@@ -50,7 +51,8 @@ class UnknownParamstyle(Exception):
     pass
     
 class SQLParam:
-    """Parameter in SQLQuery.
+    """
+    Parameter in SQLQuery.
     
         >>> q = SQLQuery(["SELECT * FROM test WHERE name=", SQLParam("joe")])
         >>> q
@@ -143,6 +145,16 @@ class SQLQuery:
             
         return SQLQuery(items + self.items)
 
+    def __iadd__(self, other):
+        if isinstance(other, basestring):
+            items = [other]
+        elif isinstance(other, SQLQuery):
+            items = other.items
+        else:
+            return NotImplemented
+        self.items.extend(items)
+        return self
+
     def __len__(self):
         return len(self.query())
         
@@ -180,11 +192,11 @@ class SQLQuery:
         """
         if len(items) == 0:
             return SQLQuery("")
-            
+
         q = SQLQuery(items[0])
-        for i in items[1:]:
-            q = q + sep + i
-        
+        for item in items[1:]:
+            q += sep
+            q += item
         return q
     
     join = staticmethod(join)
@@ -215,6 +227,20 @@ class SQLLiteral:
 
 sqlliteral = SQLLiteral
 
+def _sqllist(values):
+    """
+        >>> _sqllist([1, 2, 3])
+        <sql: '(1, 2, 3)'>
+    """
+    items = []
+    items.append('(')
+    for i, v in enumerate(values):
+        if i != 0:
+            items.append(', ')
+        items.append(sqlparam(v))
+    items.append(')')
+    return SQLQuery(items)
+
 def reparam(string_, dictionary): 
     """
     Takes a string and a dictionary and interpolates the string
@@ -222,6 +248,8 @@ def reparam(string_, dictionary):
 
         >>> reparam("s = $s", dict(s=True))
         <sql: "s = 't'">
+        >>> reparam("s IN $s", dict(s=[1, 2]))
+        <sql: 's IN (1, 2)'>
     """
     dictionary = dictionary.copy() # eval mucks with it
     vals = []
@@ -229,7 +257,7 @@ def reparam(string_, dictionary):
     for live, chunk in _interpolate(string_):
         if live:
             v = eval(chunk, dictionary)
-            result.append(sqlparam(v))
+            result.append(sqlquote(v))
         else: 
             result.append(chunk)
     return SQLQuery.join(result, '')
@@ -283,13 +311,13 @@ def sqlors(left, lst):
     for each item in the lst.
 
         >>> sqlors('foo = ', [])
-        <sql: '2+2=5'>
+        <sql: '1=2'>
         >>> sqlors('foo = ', [1])
         <sql: 'foo = 1'>
         >>> sqlors('foo = ', 1)
         <sql: 'foo = 1'>
         >>> sqlors('foo = ', [1,2,3])
-        <sql: '(foo = 1 OR foo = 2 OR foo = 3)'>
+        <sql: '(foo = 1 OR foo = 2 OR foo = 3 OR 1=2)'>
     """
     if isinstance(lst, iters):
         lst = list(lst)
@@ -326,8 +354,13 @@ def sqlquote(a):
 
         >>> 'WHERE x = ' + sqlquote(True) + ' AND y = ' + sqlquote(3)
         <sql: "WHERE x = 't' AND y = 3">
+        >>> 'WHERE x = ' + sqlquote(True) + ' AND y IN ' + sqlquote([2, 3])
+        <sql: "WHERE x = 't' AND y IN (2, 3)">
     """
-    return sqlparam(a).sqlquery()
+    if isinstance(a, list):
+        return _sqllist(a)
+    else:
+        return sqlparam(a).sqlquery()
 
 class Transaction:
     """Database transaction."""
@@ -402,12 +435,17 @@ class DB:
     def __init__(self, db_module, keywords):
         """Creates a database.
         """
+        # some DB implementaions take optional paramater `driver` to use a specific driver modue
+        # but it should not be passed to connect
+        keywords.pop('driver', None)
+
         self.db_module = db_module
         self.keywords = keywords
+
         
         self._ctx = threadeddict()
         # flag to enable/disable printing queries
-        self.printing = False
+        self.printing = config.get('debug', False)
         self.supports_multiple_insert = False
         
         try:
@@ -418,7 +456,7 @@ class DB:
             self.has_pooling = False
             
         # Pooling can be disabled by passing pooling=False in the keywords.
-        self.has_pooling = self.has_pooling and self.keywords.pop('pooling', True)        
+        self.has_pooling = self.keywords.pop('pooling', True) and self.has_pooling
             
     def _getctx(self): 
         if not self._ctx.get('db'):
@@ -495,17 +533,6 @@ class DB:
             return '%s'
         raise UnknownParamstyle, style
 
-    def _py2sql(self, val):
-        """
-        Transforms a Python value into a value to pass to cursor.execute.
-
-        This exists specifically for a workaround in SqliteDB.
-
-        """
-        if isinstance(val, unicode):
-            val = val.encode('UTF-8')
-        return val
-
     def _db_execute(self, cur, sql_query): 
         """executes an sql query"""
         self.ctx.dbq_count += 1
@@ -513,9 +540,7 @@ class DB:
         try:
             a = time.time()
             paramstyle = getattr(self, 'paramstyle', 'pyformat')
-            out = cur.execute(sql_query.query(paramstyle),
-                              [self._py2sql(x)
-                               for x in sql_query.values()])
+            out = cur.execute(sql_query.query(paramstyle), sql_query.values())
             b = time.time()
         except:
             if self.printing:
@@ -836,26 +861,17 @@ class PostgresDB(DB):
             keywords['password'] = keywords['pw']
             del keywords['pw']
             
-        db_module = self.get_db_module()
+        db_module = import_driver(["psycopg2", "psycopg", "pgdb"], preferred=keywords.pop('driver', None))
+        if db_module.__name__ == "psycopg2":
+            import psycopg2.extensions
+            psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
+
         keywords['database'] = keywords.pop('db')
         self.dbname = "postgres"
         self.paramstyle = db_module.paramstyle
-        self.supports_multiple_insert = True
-
         DB.__init__(self, db_module, keywords)
+        self.supports_multiple_insert = True
         
-    def get_db_module(self):
-        try: 
-            import psycopg2 as db
-            import psycopg2.extensions
-            psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
-        except ImportError: 
-            try: 
-                import psycopg as db
-            except ImportError: 
-                import pgdb as db
-        return db
-
     def _process_insert_query(self, query, tablename, seqname):
         if seqname is None: 
             seqname = tablename + "_id_seq"
@@ -877,25 +893,40 @@ class MySQLDB(DB):
         if 'pw' in keywords:
             keywords['passwd'] = keywords['pw']
             del keywords['pw']
+
+        if 'charset' not in keywords:
+            keywords['charset'] = 'utf8'
+        elif keywords['charset'] is None:
+            del keywords['charset']
+
         self.paramstyle = db.paramstyle = 'pyformat' # it's both, like psycopg
         self.dbname = "mysql"
-        self.supports_multiple_insert = True
         DB.__init__(self, db, keywords)
+        self.supports_multiple_insert = True
         
     def _process_insert_query(self, query, tablename, seqname):
         return query, SQLQuery('SELECT last_insert_id();')
 
+def import_driver(drivers, preferred=None):
+    """Import the first available driver or preferred driver.
+    """
+    if preferred:
+        drivers = [preferred]
+
+    for d in drivers:
+        try:
+            return __import__(d, None, None, ['x'])
+        except ImportError:
+            pass
+    raise ImportError("Unable to import " + " or ".join(drivers))
+
 class SqliteDB(DB): 
     def __init__(self, **keywords):
-        try:
-            import sqlite3 as db
+        db = import_driver(["sqlite3", "pysqlite2.dbapi2", "sqlite"], preferred=keywords.pop('driver', None))
+
+        if db.__name__ in ["sqlite3", "pysqlite2.dbapi2"]:
             db.paramstyle = 'qmark'
-        except ImportError:
-            try:
-                from pysqlite2 import dbapi2 as db
-                db.paramstyle = 'qmark'
-            except ImportError:
-                import sqlite as db
+
         self.paramstyle = db.paramstyle
         keywords['database'] = keywords.pop('db')
         self.dbname = "sqlite"        
@@ -910,29 +941,6 @@ class SqliteDB(DB):
             # rowcount is not provided by sqlite
             del out.__len__
         return out
-
-    # as with PostgresDB, the database is assumed to be in UTF-8.
-    # This doesn't mean we turn byte-strings coming out of it into
-    # Unicode objects, but we avoid trying to put Unicode objects into
-    # it.
-    encoding = 'UTF-8'
-
-    def _py2sql(self, val):
-        r"""
-        Work around a couple of problems in SQLite that maybe pysqlite
-        should take care of: give it True and False and it thinks
-        they're column names; give it Unicode and it tries to insert
-        it in, possibly, ASCII.
-
-            >>> meth = SqliteDB(db='nonexistent')._py2sql
-            >>> [meth(x) for x in [True, False, 1, 2, 'foo', u'souffl\xe9']]
-            [1, 0, 1, 2, 'foo', 'souffl\xc3\xa9']
-
-        """
-        if val is True: return 1
-        elif val is False: return 0
-        elif isinstance(val, unicode): return val.encode(self.encoding)
-        else: return val
 
 class FirebirdDB(DB):
     """Firebird Database.
@@ -971,10 +979,34 @@ class MSSQLDB(DB):
     def __init__(self, **keywords):
         import pymssql as db    
         if 'pw' in keywords:
-            keywords['password'] = keywords.pop('kw')
+            keywords['password'] = keywords.pop('pw')
         keywords['database'] = keywords.pop('db')
         self.dbname = "mssql"
         DB.__init__(self, db, keywords)
+
+    def sql_clauses(self, what, tables, where, group, order, limit, offset): 
+        return (
+            ('SELECT', what),
+            ('TOP', limit),
+            ('FROM', sqllist(tables)),
+            ('WHERE', where),
+            ('GROUP BY', group),
+            ('ORDER BY', order),
+            ('OFFSET', offset))
+            
+    def _test(self):
+        """Test LIMIT.
+
+            Fake presence of pymssql module for running tests.
+            >>> import sys
+            >>> sys.modules['pymssql'] = sys.modules['sys']
+            
+            MSSQL has TOP clause instead of LIMIT clause.
+            >>> db = MSSQLDB(db='test', user='joe', pw='secret')
+            >>> db.select('foo', limit=4, _test=True)
+            <sql: 'SELECT * TOP 4 FROM foo'>
+        """
+        pass
 
 class OracleDB(DB): 
     def __init__(self, **keywords): 
@@ -986,6 +1018,7 @@ class OracleDB(DB):
         keywords['dsn'] = keywords.pop('db') 
         self.dbname = 'oracle' 
         db.paramstyle = 'numeric' 
+        self.paramstyle = db.paramstyle
 
         # oracle doesn't support pooling 
         keywords.pop('pooling', None) 
@@ -1012,7 +1045,8 @@ def database(dburl=None, **params):
         raise UnknownDB, dbn
 
 def register_database(name, clazz):
-    """Register a database.
+    """
+    Register a database.
 
         >>> class LegacyDB(DB): 
         ...     def __init__(self, **params): 

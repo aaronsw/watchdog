@@ -8,12 +8,11 @@ def suite():
         "web.db", 
         "web.http", 
         "web.net", 
-        "web.request", 
         "web.session",
         "web.template",
         "web.utils", 
-        "web.webapi", 
-        "web.wsgi", 
+#        "web.webapi", 
+#        "web.wsgi", 
     ]
     return webtest.doctest_suite(modules)
     

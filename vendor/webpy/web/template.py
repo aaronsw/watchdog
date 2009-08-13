@@ -36,16 +36,18 @@ __all__ = [
     "test"
 ]
 
-import tokenize, compiler
+import tokenize
 import os
 import glob
+import re
 
 from utils import storage, safeunicode, safestr, re_compile
 from webapi import config
 from net import websafe
 
 def splitline(text):
-    r"""Splits the given text at newline.
+    r"""
+    Splits the given text at newline.
     
         >>> splitline('foo\nbar')
         ('foo\n', 'bar')
@@ -418,7 +420,7 @@ class Parser:
         r"""
             >>> read_block_section = Parser('').read_block_section
             >>> read_block_section('for i in range(10): hello $i\nfoo')
-            (<block: 'for i in range(10):', [<line: [t' hello ', $i, t'\n']>]>, 'foo')
+            (<block: 'for i in range(10):', [<line: [t'hello ', $i, t'\n']>]>, 'foo')
             >>> read_block_section('for i in range(10):\n        hello $i\n    foo', begin_indent='    ')
             (<block: 'for i in range(10):', [<line: [t'hello ', $i, t'\n']>]>, '    foo')
             >>> read_block_section('for i in range(10):\n  hello $i\nfoo')
@@ -430,7 +432,7 @@ class Parser:
         
         # if there is some thing left in the line
         if line.strip():
-            block = line
+            block = line.lstrip()
         else:
             def find_indent(text):
                 rx = re_compile('  +')
@@ -475,6 +477,12 @@ class PythonTokenizer:
                 t = self.next()
                 if t.value == delim:
                     break
+                elif t.value == '(':
+                    self.consume_till(')')
+                elif t.value == '[':
+                    self.consume_till(']')
+                elif t.value == '{':
+                    self.consume_till('}')
 
                 # if end of line is found, it is an exception.
                 # Since there is no easy way to report the line number,
@@ -662,14 +670,17 @@ TEMPLATE_BUILTIN_NAMES = [
     "set", "slice", "tuple", "xrange",
     "abs", "all", "any", "callable", "chr", "cmp", "divmod", "filter", "hex", 
     "id", "isinstance", "iter", "len", "max", "min", "oct", "ord", "pow", "range",
-    "True", "False"
+    "True", "False",
+    "None",
+    "__import__", # some c-libraries like datetime requires __import__ to present in the namespace
 ]
 
 import __builtin__
 TEMPLATE_BUILTINS = dict([(name, getattr(__builtin__, name)) for name in TEMPLATE_BUILTIN_NAMES if name in __builtin__.__dict__])
 
 class ForLoop:
-    """Wrapper for expression in for stament to support loop.xxx helpers.
+    """
+    Wrapper for expression in for stament to support loop.xxx helpers.
     
         >>> loop = ForLoop()
         >>> for x in loop.setup(['a', 'b', 'c']):
@@ -746,16 +757,18 @@ class ForLoopContext:
         
 class BaseTemplate:
     def __init__(self, code, filename, filter, globals, builtins):
-        self.code = code
         self.filename = filename
         self.filter = filter
         self._globals = globals
         self._builtins = builtins
-        self.t = self._compile()
+        if code:
+            self.t = self._compile(code)
+        else:
+            self.t = lambda: ''
         
-    def _compile(self):
+    def _compile(self, code):
         env = self.make_env(self._globals or {}, self._builtins)
-        exec(self.code, env)
+        exec(code, env)
         return env['__template__']
 
     def __call__(self, *a, **kw):
@@ -801,22 +814,18 @@ class BaseTemplate:
 class Template(BaseTemplate):
     CONTENT_TYPES = {
         '.html' : 'text/html; charset=utf-8',
+        '.xhtml' : 'application/xhtml+xml; charset=utf-8',
         '.txt' : 'text/plain',
     }
     FILTERS = {
         '.html': websafe,
+        '.xhtml': websafe,
         '.xml': websafe
     }
     globals = {}
     
     def __init__(self, text, filename='<template>', filter=None, globals=None, builtins=None):
-        text = text.replace('\r\n', '\n').replace('\r', '\n').expandtabs()
-        if not text.endswith('\n'):
-            text += '\n'
-        
-        # support fort \$ for backward-compatibility 
-        text = text.replace(r'\$', '$$')
-        
+        text = Template.normalize_text(text)
         code = self.compile_template(text, filename)
                 
         _, ext = os.path.splitext(filename)
@@ -830,10 +839,26 @@ class Template(BaseTemplate):
                 
         BaseTemplate.__init__(self, code=code, filename=filename, filter=filter, globals=globals, builtins=builtins)
         
+    def normalize_text(text):
+        """Normalizes template text by correcting \r\n, tabs and BOM chars."""
+        text = text.replace('\r\n', '\n').replace('\r', '\n').expandtabs()
+        if not text.endswith('\n'):
+            text += '\n'
+
+        # ignore BOM chars at the begining of template
+        BOM = '\xef\xbb\xbf'
+        if isinstance(text, str) and text.startswith(BOM):
+            text = text[len(BOM):]
+        
+        # support fort \$ for backward-compatibility 
+        text = text.replace(r'\$', '$$')
+        return text
+    normalize_text = staticmethod(normalize_text)
+                
     def __call__(self, *a, **kw):
         import webapi as web
         if 'headers' in web.ctx and self.content_type:
-            web.header('Content-Type', self.content_type)
+            web.header('Content-Type', self.content_type, unique=True)
             
         return BaseTemplate.__call__(self, *a, **kw)
         
@@ -870,10 +895,22 @@ class Template(BaseTemplate):
             raise
         
         # make sure code is safe
+        import compiler
         ast = compiler.parse(code)
         SafeVisitor().walk(ast, filename)
 
         return compiled_code
+        
+class CompiledTemplate(Template):
+    def __init__(self, f, filename):
+        Template.__init__(self, '', filename)
+        self.t = f
+        
+    def compile_template(self, *a):
+        return None
+    
+    def _compile(self, *a):
+        return None
                 
 class Render:
     """The most preferred way of using templates.
@@ -889,28 +926,41 @@ class Render:
     def __init__(self, loc='templates', cache=None, base=None, **keywords):
         self._loc = loc
         self._keywords = keywords
+
+        if cache is None:
+            cache = not config.get('debug', False)
         
-        if not cache or config.get('debug', False):
-            self._cache = None
-        else:
+        if cache:
             self._cache = {}
+        else:
+            self._cache = None
         
         if base and not hasattr(base, '__call__'):
             # make base a function, so that it can be passed to sub-renders
             self._base = lambda page: self._template(base)(page)
         else:
             self._base = base
-        
-    def _load_template(self, name):
+            
+    def _lookup(self, name):
         path = os.path.join(self._loc, name)
         if os.path.isdir(path):
-            return Render(path, cache=self._cache is not None, base=self._base, **self._keywords)
+            return 'dir', path
         else:
             path = self._findfile(path)
             if path:
-                return Template(open(path).read(), filename=path, **self._keywords)
+                return 'file', path
             else:
-                raise AttributeError, "No template named " + name            
+                return 'none', None
+        
+    def _load_template(self, name):
+        kind, path = self._lookup(name)
+        
+        if kind == 'dir':
+            return Render(path, cache=self._cache is not None, base=self._base, **self._keywords)
+        elif kind == 'file':
+            return Template(open(path).read(), filename=path, **self._keywords)
+        else:
+            raise AttributeError, "No template named " + name            
 
     def _findfile(self, path_prefix): 
         p = [f for f in glob.glob(path_prefix + '.*') if not f.endswith('~')] # skip backup files
@@ -932,14 +982,93 @@ class Render:
             return template
         else:
             return self._template(name)
-        
-render = Render
 
+class GAE_Render(Render):
+    # Render gets over-written. make a copy here.
+    super = Render
+    def __init__(self, loc, *a, **kw):
+        GAE_Render.super.__init__(self, loc, *a, **kw)
+        
+        import types
+        if isinstance(loc, types.ModuleType):
+            self.mod = loc
+        else:
+            name = loc.rstrip('/').replace('/', '.')
+            self.mod = __import__(name, None, None, ['x'])
+
+        self.mod.__dict__.update(kw.get('builtins', TEMPLATE_BUILTINS))
+        self.mod.__dict__.update(Template.globals)
+        self.mod.__dict__.update(kw.get('globals', {}))
+
+    def _load_template(self, name):
+        t = getattr(self.mod, name)
+        import types
+        if isinstance(t, types.ModuleType):
+            return GAE_Render(t, cache=self._cache is not None, base=self._base, **self._keywords)
+        else:
+            return t
+
+render = Render
+# setup render for Google App Engine.
+try:
+    from google import appengine
+    render = Render = GAE_Render
+except ImportError:
+    pass
+        
 def frender(path, **keywords):
     """Creates a template from the given file path.
     """
     return Template(open(path).read(), filename=path, **keywords)
+    
+def compile_templates(root):
+    """Compiles templates to python code."""
+    re_start = re_compile('^', re.M)
+    
+    for dirpath, dirnames, filenames in os.walk(root):
+        filenames = [f for f in filenames if not f.startswith('.') and not f.endswith('~') and not f.startswith('__init__.py')]
 
+        for d in dirnames[:]:
+            if d.startswith('.'):
+                dirnames.remove(d) # don't visit this dir
+
+        out = open(os.path.join(dirpath, '__init__.py'), 'w')
+        out.write('from web.template import CompiledTemplate, ForLoop\n\n')
+        if dirnames:
+            out.write("import " + ", ".join(dirnames))
+
+        for f in filenames:
+            path = os.path.join(dirpath, f)
+
+            if '.' in f:
+                name, _ = f.split('.', 1)
+            else:
+                name = f
+                
+            text = open(path).read()
+            text = Template.normalize_text(text)
+            code = Template.generate_code(text, path)
+            code = re_start.sub('    ', code)
+                        
+            _gen = '' + \
+            '\ndef %s():' + \
+            '\n    loop = ForLoop()' + \
+            '\n    _dummy  = CompiledTemplate(lambda: None, "dummy")' + \
+            '\n    join_ = _dummy._join' + \
+            '\n    escape_ = _dummy._escape' + \
+            '\n' + \
+            '\n%s' + \
+            '\n    return __template__'
+            
+            gen_code = _gen % (name, code)
+            out.write(gen_code)
+            out.write('\n\n')
+            out.write('%s = CompiledTemplate(%s(), %s)\n\n' % (name, name, repr(path)))
+
+            # create template to make sure it compiles
+            t = Template(open(path).read(), path)
+        out.close()
+                
 class ParseError(Exception):
     pass
     
@@ -1120,25 +1249,30 @@ def test():
     Test if, for and while.
     
         >>> t('$if 1: 1')()
-        u' 1\n'
+        u'1\n'
         >>> t('$if 1:\n    1')()
         u'1\n'
         >>> t('$if 1:\n    1\\')()
         u'1'
         >>> t('$if 0: 0\n$elif 1: 1')()
-        u' 1\n'
+        u'1\n'
         >>> t('$if 0: 0\n$elif None: 0\n$else: 1')()
-        u' 1\n'
+        u'1\n'
         >>> t('$if 0 < 1 and 1 < 2: 1')()
-        u' 1\n'
+        u'1\n'
         >>> t('$for x in [1, 2, 3]: $x')()
-        u' 1\n 2\n 3\n'
+        u'1\n2\n3\n'
         >>> t('$def with (d)\n$for k, v in d.iteritems(): $k')({1: 1})
-        u' 1\n'
+        u'1\n'
         >>> t('$for x in [1, 2, 3]:\n\t$x')()
         u'    1\n    2\n    3\n'
         >>> t('$def with (a)\n$while a and a.pop():1')([1, 2, 3])
         u'1\n1\n1\n'
+
+    The space after : must be ignored.
+    
+        >>> t('$if True: foo')()
+        u'foo\n'
     
     Test loop.xxx.
 
@@ -1156,9 +1290,9 @@ def test():
         >>> t('$ a = {1: 1}\n$a.keys()[0]')()
         u'1\n'
         >>> t('$ a = []\n$if not a: 1')()
-        u' 1\n'
+        u'1\n'
         >>> t('$ a = {}\n$if not a: 1')()
-        u' 1\n'
+        u'1\n'
         >>> t('$ a = -1\n$a')()
         u'-1\n'
         >>> t('$ a = "1"\n$a')()
@@ -1234,6 +1368,7 @@ def test():
         NameError: global name 'min' is not defined
         
     Test vars.
+    
         >>> x = t('$var x: 1')()
         >>> x.x
         u'1'
@@ -1243,9 +1378,35 @@ def test():
         >>> x = t('$var x:  \n    foo\n    bar')()
         >>> x.x
         u'foo\nbar\n'
+
+    Test BOM chars.
+
+        >>> t('\xef\xbb\xbf$def with(x)\n$x')('foo')
+        u'foo\n'
+
+    Test for with weird cases.
+
+        >>> t('$for i in range(10)[1:5]:\n    $i')()
+        u'1\n2\n3\n4\n'
+        >>> t("$for k, v in {'a': 1, 'b': 2}.items():\n    $k $v")()
+        u'a 1\nb 2\n'
+        >>> t("$for k, v in ({'a': 1, 'b': 2}.items():\n    $k $v")()
+        Traceback (most recent call last):
+            ...
+        SyntaxError: invalid syntax
+
+    Test datetime.
+
+        >>> import datetime
+        >>> t("$def with (date)\n$date.strftime('%m %Y')")(datetime.datetime(2009, 1, 1))
+        u'01 2009\n'
     """
     pass
             
 if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+    import sys
+    if '--compile' in sys.argv:
+        compile_templates(sys.argv[2])
+    else:
+        import doctest
+        doctest.testmod()

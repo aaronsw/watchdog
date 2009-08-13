@@ -13,7 +13,8 @@ def attrget(obj, attr, value=None):
     return value
 
 class Form:
-    r"""HTML form.
+    r"""
+    HTML form.
     
         >>> f = Form(Textbox("x"))
         >>> f.render()
@@ -39,7 +40,18 @@ class Form:
             out += "<td>"+i.pre+i.render()+i.post+"</td></tr>\n"
         out += "</table>"
         return out
-
+        
+    def render_css(self): 
+        out = [] 
+        out.append(self.rendernote(self.note)) 
+        for i in self.inputs: 
+            out.append('<label for="%s">%s</label>' % (i.id, net.websafe(i.description))) 
+            out.append(i.pre) 
+            out.append(i.render()) 
+            out.append(i.post) 
+            out.append('\n') 
+        return ''.join(out) 
+        
     def rendernote(self, note):
         if note: return '<strong class="wrong">%s</strong>' % net.websafe(note)
         else: return ""
@@ -162,7 +174,7 @@ class Dropdown(Input):
     def render(self):
         x = '<select name="%s"%s>\n' % (net.websafe(self.name), self.addatts())
         for arg in self.args:
-            if type(arg) == tuple:
+            if isinstance(arg, (tuple, list)):
                 value, desc= arg
             else:
                 value, desc = arg, arg 
@@ -218,6 +230,7 @@ class Hidden(Input):
     def render(self):
         x = '<input type="hidden" name="%s"' % net.websafe(self.name)
         if self.value: x += ' value="%s"' % net.websafe(self.value)
+        x += self.addatts()
         x += ' />'
         return x
 
