@@ -704,7 +704,7 @@ class DB:
         if _test: return sql_query
         
         db_cursor = self._db_cursor()
-        if seqname is not False: 
+        if seqname is not False:
             sql_query = self._process_insert_query(sql_query, tablename, seqname)
 
         if isinstance(sql_query, tuple):
@@ -729,7 +729,6 @@ class DB:
         """
         Inserts multiple rows into `tablename`. The `values` must be a list of dictioanries, 
         one for each row to be inserted, each with the same set of keys.
-        Returns the list of ids of the inserted rows.        
         Set `seqname` to the ID if it's not the default, or to `False`
         if there isn't one.
         
@@ -739,16 +738,15 @@ class DB:
             >>> db.multiple_insert('person', values=values, _test=True)
             <sql: "INSERT INTO person (name, email) VALUES ('foo', 'foo@example.com'), ('bar', 'bar@example.com')">
         """
-        if _test:
-            return self._multiple_insert(tablename, values, seqname, _test)
-        out = []
+        doit = lambda x: self._multiple_insert(tablename, x, seqname, _test)
         rows = []
         for row in values:
             rows.append(row)
-            if len(rows) > percall:
-                out.extend(self._multiple_insert(tablename, rows, seqname, _test))
+            if len(rows) >= percall:
+                doit(rows)
                 rows = []
-        out.extend(self._multiple_insert(tablename, rows, seqname, _test))
+        doit(rows)
+        return out
     
     def _multiple_insert(self, tablename, values, seqname=None, _test=False):
         if not values:
@@ -791,16 +789,8 @@ class DB:
         else:
             self._db_execute(db_cursor, sql_query)
 
-        try: 
-            out = db_cursor.fetchone()[0]
-            out = range(out-count+1, out+1)
-        except Exception: 
-            out = None
-
         if not self.ctx.transactions: 
             self.ctx.commit()
-        return out
-
     
     def update(self, tables, where, vars=None, _test=False, **values): 
         """
