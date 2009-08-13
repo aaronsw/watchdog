@@ -674,7 +674,9 @@ class lob_person:
 
 class ein:
     def index(self):
-        pass #@@
+        #/ein/\d+/.*
+        return ('/ein/%s/%s' % (p.ein, helpers.urlify(p.primary_name))
+                for p in db.query('select ein, primary_name from exempt_org'))
     
     def GET(self, ein, slug=None):
         try:
@@ -683,7 +685,7 @@ class ein:
             raise web.notfound()
         if slug != '/' + helpers.urlify(p.primary_name):
             raise web.redirect('/ein/%s/%s' % (ein, helpers.urlify(p.primary_name)))
-        return render.exempt_org(p)
+        return render.exempt_org(p, helpers.eo_codes)
 
 class politician_introduced:
     def index(self):

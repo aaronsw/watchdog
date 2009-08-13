@@ -1,4 +1,4 @@
-$def with (org)
+$def with (org, eo_codes)
 
 $var width: 90%
 $var color: white
@@ -11,11 +11,30 @@ $var title: $org.primary_name.title()
   <tr><th>IRS approved on</th><td>$org.ruling_date</td></tr>
   <tr><th>Last filed</th><td>$org.tax_period</td></tr>
   <tr><th>Contact</th><td>$org.careof_name.title()</td></tr>
-  <tr><th>Address</th><td>$org.street<br />$org.city, $org.state $org.zip</td></tr>
+  <tr><th>Address</th><td>$org.street.title()<br />$org.city.title(), $org.state $org.zip</td></tr>
   <tr><th>Filing month</th><td>$org.accounting_period</td></tr>
   <tr><th>Assets</th><td>\$$commify(org.asset_amt)</td></tr>
   <tr><th>Income</th><td>\$$commify(org.income_amt)</td></tr>
   <tr><th>Revenue</th><td>\$$commify(org.form_990_revenue_amt)</td></tr>
-  <tr><th>AKA</th><td>$org.sort_name</td></tr>
+$if org.sort_name:
+    <tr><th>AKA</th><td>$org.sort_name.title()</td></tr>
+$if eo_codes.category.get((org.subsection_code, org.classification_code)):
+    <tr><th>Category</th><td>$eo_codes.category[(org.subsection_code, org.classification_code)]</td></tr>
+$if org.activity_code[0:3] != "000":
+    <tr><th>Activity</th><td>$eo_codes.activity[org.activity_code[:3]]</td></tr>
+$if org.activity_code[3:6] != "000":
+    <tr><th>Activity</th><td>$eo_codes.activity[org.activity_code[3:6]]</td></tr>
+$if org.activity_code[6:9] != "000":
+    <tr><th>Activity</th><td>$eo_codes.activity[org.activity_code[6:9]]</td></tr>
+  <tr><th>Filing</th><td>$eo_codes.fr1[org.filing_requirement_code[:2]]</td></tr>
+  <tr><th>Filing</th><td>$eo_codes.fr2[org.filing_requirement_code[2]]</td></tr>
+  <tr><th>Foundation</th><td>$eo_codes.foundation[org.foundation_code]</td></tr>
+  <tr><th>Affiliation</th><td>$eo_codes.affiliation[org.affiliation]</td></tr>
+  <tr><th>Exemption</th><td>$eo_codes.exempt[org.exempt_org_status_code]</td></tr>
+  <tr><th>Organization</th><td>$eo_codes.org[org.organization_code]</td></tr>
 </table>
 
+<p>
+$if eo_codes.ded.get(org.deductibility_code):
+    Contributions are $eo_codes.ded[org.deductibility_code].lower().
+</p>
