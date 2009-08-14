@@ -121,9 +121,17 @@ def write_sitemap(i, seq, index_dir):
         os.mkdir(dir)
     write(filename, str(make_sitemap(filename, seq)))
 
-def write_sitemaps(data, index_dir):
+def write_sitemaps(data, index_dir, offset=0):
     for i, x in enumerate(group(data, pagesize)):
-        write_sitemap(i, x, index_dir)
+        write_sitemap(i+offset, x, index_dir)
+
+def update_indexes(index_dir):
+    dirs = [d for d in os.listdir(index_dir) if os.path.isdir(os.path.join(index_dir, d))]
+    write(index_dir + '/index.html', str(make_index(index_dir, sorted(d+'/index.html' for d in dirs))))
+
+    for d in dirs:
+        d = os.path.join(index_dir, d)
+        write(d + '/index.html', str(make_index('index %s' % (d), sorted(os.listdir(d)))))
 
 def create_index(index_dir, _test=False):
     if not os.path.exists(index_dir):
@@ -131,13 +139,7 @@ def create_index(index_dir, _test=False):
     
     data = getindex(webapp.app, _test)
     write_sitemaps(data, index_dir)
-    
-    dirs = [d for d in os.listdir(index_dir) if os.path.isdir(os.path.join(index_dir, d))]
-    write(index_dir + '/index.html', str(make_index(index_dir, [d+'/index.html' for d in dirs])))
+    update_indexes(index_dir)
 
-    for d in dirs:
-        d = os.path.join(index_dir, d)
-        write(d + '/index.html', str(make_index('index %s' % (d), os.listdir(d))))
-    
 if __name__ == "__main__":
     create_index('static/index', _test=False)
