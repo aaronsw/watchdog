@@ -56,7 +56,7 @@ $if page.get('noindex'): <meta name="robots" content="noindex, nofollow">
   	}
   }
   
-  document.wd_first_time = (readCookie("wd_dialog") == "fin");
+  document.wd_first_time = (readCookie("wd_dialog") != "fin");
   
   \$(document).ready(function() {
     if (readCookie("wd_dialog") == "fin") { return; }
