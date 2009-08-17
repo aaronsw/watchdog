@@ -121,9 +121,9 @@ def write_sitemap(i, seq, index_dir):
         os.mkdir(dir)
     write(filename, str(make_sitemap(filename, seq)))
 
-def write_sitemaps(data, index_dir):
+def write_sitemaps(data, index_dir, offset=0):
     for i, x in enumerate(group(data, pagesize)):
-        write_sitemap(i, x, index_dir)
+        write_sitemap(i+offset, x, index_dir)
 
 def create_index(index_dir, _test=False):
     if not os.path.exists(index_dir):
