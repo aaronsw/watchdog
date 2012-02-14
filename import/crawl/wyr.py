@@ -1,5 +1,8 @@
 import sys
-import simplejson as json
+try:
+    import json
+except ImportError:
+    import simplejson as json
 from ClientForm import ParseResponse, ControlNotFoundError, AmbiguityError
 from settings import db
 from BeautifulSoup import BeautifulSoup
@@ -83,11 +86,14 @@ def getzip(dist):
 
 def has_wyr(pol):
     dist = pol2dist(pol)
+    return has_wyr_dist(dist)
+
+def has_wyr_dist(dist):
     if len(dist) == 2: return False # senators don't have forms in WYR system
 
     try:
         response = urlopen(WYR_URL)
-        form = ParseResponse(response, backwards_compat=False)[1] #first form is of search
+        form = ParseResponse(response, backwards_compat=False)[2] #1st form is of search, 2nd is findrep
     except:
         return False
 
@@ -100,6 +106,7 @@ def has_wyr(pol):
     form['zip'] = zip5
     form['zip4'] = zip4
     request = form.click()
+    return request.get_full_url()
     try:
         response = urlopen(request.get_full_url(), request.get_data())
         forms = ParseResponse(response, backwards_compat=False)
@@ -224,7 +231,7 @@ def get_votesmart_contacts(pols):
                 if not _url and addr['webAddressType'] == 'Webmail':
                     url = addr['webAddress']
                     _url, contacttype = getformtype(url)
-						
+                        
             if contacttype and contacttype != 'wyr':
                 captcha = (contacttype == 'ima') and has_captcha(url)
                 d[r.id] = dict(contact=_url, contacttype=contacttype, captcha=captcha)    
@@ -285,6 +292,10 @@ def main(fname='../data/crawl/votesmart/wyr.json'):
     
     f = file(fname, 'w')
     json.dump(d, f, indent=2, sort_keys=True)                     
-    
+
+def main2():
+    for dist in dist_zip_dict:
+        print dist, has_wyr_dist(dist)
+
 if __name__ == '__main__':
-    main()
+    main2()

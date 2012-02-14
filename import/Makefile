@@ -116,6 +116,10 @@ $(LOAD)/politicians/index.json: load/manual/politicians.json
 	$(PYTHON) load/votesmart.py
 	touch $@
 
+.crawlwyr: crawl/wyr.py
+	$(PYTHON) crawl/wyr.py
+	touch $@
+
 .wyr: .schema load/wyr.py $(CRAWL)/votesmart/wyr.json
 	$(PYTHON) load/wyr.py
 	touch $@
