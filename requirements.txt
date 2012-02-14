@@ -1,5 +1,6 @@
 gunicorn
 web.py==0.22
+numpy
 scipy
 PIL==1.1.6
 psycopg2==2.0.5.1
