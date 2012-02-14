@@ -8,7 +8,7 @@ render_plain = web.template.render('templates/', cache=production_mode) #without
 if os.environ.get('DATABASE_URL'):
     url = os.environ['DATABASE_URL']
     db = web.database(dbn=url.split(':')[0], user=url.split('//')[1].split(':')[0],
-      pw=url.split('@')[0].split(':')[1],
+      pw=url.split('@')[0].split(':')[2],
       host=url.split('@')[1].split('/')[0],
       db=url.split('/')[3]
     )
