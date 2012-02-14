@@ -1,5 +1,4 @@
 gunicorn
-web.py==0.22
 #numpy
 #scipy
 PIL
