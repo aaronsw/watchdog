@@ -2,9 +2,10 @@ $def with (page)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<!-- Google Website Optimizer Control Script -->
 <script>
 function utmx_section(){}function utmx(){}
-(function(){var k='1615833661',d=document,l=d.location,c=d.cookie;function f(n){
+(function(){var k='3839909263',d=document,l=d.location,c=d.cookie;function f(n){
 if(c){var i=c.indexOf(n+'=');if(i>-1){var j=c.indexOf(';',i);return c.substring(i+n.
 length+1,j<0?c.length:j)}}}var x=f('__utmx'),xx=f('__utmxx'),h=l.hash;
 d.write('<sc'+'ript src="'+
@@ -13,10 +14,10 @@ d.write('<sc'+'ript src="'+
 +new Date().valueOf()+(h?'&utmxhash='+escape(h.substr(1)):'')+
 '" type="text/javascript" charset="utf-8"></sc'+'ript>')})();
 </script>
+<!-- End of Google Website Optimizer Control Script -->
   $if page.get('front'):
       <title>watchdog.net: $:page.title.strip()</title>
-      <meta name="verify-v1" content="V7KJtoWCZfItupnGhaoUY6gwX1aVkrFszhCOoM0qgbg=" />
-      <meta name="verify-v1" content="H+m5dkTl7hRG+Yp3hrB/2XuoZO4O1TAaq7IxTwRzjpk=" />
+      <meta name="google-site-verification" content="A_o8iekZ1hC0lpGVuhUl1V18YAk4XjA69V28vSZvMH4" />
   $else:
       <title>$:page.title.strip() (watchdog.net)</title>
 
@@ -139,6 +140,18 @@ $if not page.get('map') and not page.get('front') and not page.get('maxi'):
     //-->
     </script>
     </div>
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-4591221763003403";
+    /* 728x90, top */
+    google_ad_slot = "3411769551";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    
+    if (document.wd_first_time) {
+      document.write('<scr' + 'ipt type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></scr' + 'ipt>');
+    }
+    //-->
+    </script>
 
 $:page.get('pretext')
 
@@ -195,73 +208,55 @@ $else:
               $if not page.get('front'):-leaf\
               ">
             <div id="left_footer">
-               <form action="http://salsa.wiredforchange.com/dia/processEditValues.jsp" method="post" >
+               <form method="POST" action="http://act.demandprogress.org/act/" accept-charset="utf-8">
+                 <input type="hidden" name="utf8" value="&#x2714;">
                  <input type="hidden" name="redirect" value="http://watchdog.net/thanks?url=$urlquote(getfullpath())" />
-                 <input type="hidden" name="table" value="supporter"/>
-                 <input type="hidden" name="tag" value="wd_bottom1" />
-                 <input type="hidden" name="Receive_Email" value="3" />
-                 <input type="hidden" name="organization_KEY" value="5649" />
-                 <input type="hidden" name="link" value="custom" />
-                 <input type="hidden" name="linkKey" value="0" />
-                 <input type="hidden" name="link" value="groups" />
-                 <input type="hidden" name="linkKey" value="40117" />
-                 <input type="hidden" name="link" value="groups" />
-                 <input type="hidden" name="linkKey" value="39103" />
-                 <input type="hidden" name="link" value="groups" />
-                 <input type="hidden" name="linkKey" value="38203" />
+                 <input type="hidden" name="lists" value="1" />
+                 <input type="hidden" name="page" value="watchdog" />
+                 <input type="hidden" name="source" value="bottom" />
+                 <input type="hidden" name="action_path" value="$getfullpath()" />
                <strong>Help make a difference:</strong> 
                Sign up for our occasional email list:<br />
-               <input type="text" name="First_Name" value="first name" 
+               <input type="text" name="first_name" value="first name" 
                  onclick="clickclear(this, 'first name')" 
                  onblur="clickrecall(this, 'first name')"/> 
-               <input type="text" name="Last_Name" value="last name" 
+               <input type="text" name="last_name" value="last name" 
                  onclick="clickclear(this, 'last name')" 
                  onblur="clickrecall(this, 'last name')" /><br /> 
-               <input type="text" name="Email" value="email" 
+               <input type="text" name="email" value="email" 
                  onclick="clickclear(this, 'email')" 
                  onblur="clickrecall(this, 'email')" /> 
-              <input type="text" name="Zip" value="zip code" 
+              <input type="text" name="zip" value="zip code" 
                 onclick="clickclear(this, 'zip code')" 
                 onblur="clickrecall(this,'zip code')" /> 
               <button type="submit">Go</button>
             </form>
             </div>
                <div id="dialog">
-                 <form name="dialogform" action="http://salsa.wiredforchange.com/dia/processEditValues.jsp" method="post" onsubmit="return validate(this);">
+                 <form method="POST" action="http://act.demandprogress.org/act/" accept-charset="utf-8">
+                   <input type="hidden" name="utf8" value="&#x2714;">
                    <input type="hidden" name="redirect" value="http://watchdog.net/thanks?url=$urlquote(getfullpath())" />
-                   <input type="hidden" name="table" value="supporter"/>
-                   <input type="hidden" name="tag" value="wd_dialog1" />
-                   <input type="hidden" name="Receive_Email" value="3" />
-                   <input type="hidden" name="organization_KEY" value="5649" />
-                   <input type="hidden" name="link" value="custom" />
-                   <input type="hidden" name="linkKey" value="0" />
-                   <input type="hidden" name="link" value="groups" />
-                   <input type="hidden" name="linkKey" value="40117" />
-                   <input type="hidden" name="link" value="groups" />
-                   <input type="hidden" name="linkKey" value="39103" />
-                   <input type="hidden" name="link" value="groups" />
-                   <input type="hidden" name="linkKey" value="38203" />
+                   <input type="hidden" name="lists" value="1" />
+                   <input type="hidden" name="page" value="watchdog" />
+                   <input type="hidden" name="source" value="dialog" />
+                   <input type="hidden" name="action_path" value="$getfullpath()" />
                 <p>
-                <script>utmx_section("Headline")</script>
+                <script>utmx_section("Intro")</script>
                   <strong>Help make a difference:</strong>
-                </noscript> 
-                <script>utmx_section("Body")</script>
                   Sign up for our occasional email list:
                 </noscript></p>
                 <p id="dialog_error" style="color: red"></p>
                 <p>
-                <script>utmx_section("Name ask")</script>
-                  <input type="text" name="First_Name" value="first name" 
+                  <input type="text" name="first_name" value="first name" 
                     onclick="clickclear(this, 'first name')" 
                     onblur="clickrecall(this, 'first name')"/> 
-                  <input type="text" name="Last_Name" value="last name" 
+                  <input type="text" name="last_name" value="last name" 
                     onclick="clickclear(this, 'last name')" 
                     onblur="clickrecall(this, 'last name')" /><br /> 
-                </noscript>
-                  <input type="text" name="Email" value="email" 
+                  <input type="text" name="email" value="email" 
                     onclick="clickclear(this, 'email')" 
                     onblur="clickrecall(this, 'email')" /> 
-                 <input type="text" name="Zip" value="zip code" 
+                 <input type="text" name="zip" value="zip code" 
                    onclick="clickclear(this, 'zip code')" 
                    onblur="clickrecall(this,'zip code')" /> 
                  <button type="submit">Go</button>
@@ -282,13 +277,14 @@ try {
 var pageTracker = _gat._getTracker("UA-7198052-1");
 pageTracker._trackPageview();
 } catch(err) {}</script>
+<!-- Google Website Optimizer Tracking Script -->
 <script type="text/javascript">
 if(typeof(_gat)!='object')document.write('<sc'+'ript src="http'+
 (document.location.protocol=='https:'?'s://ssl':'://www')+
 '.google-analytics.com/ga.js"></sc'+'ript>')</script>
 <script type="text/javascript">
 try {
-var pageTracker=_gat._getTracker("UA-7198052-2");
-pageTracker._trackPageview("/1615833661/test");
+var gwoTracker=_gat._getTracker("UA-7198052-2");
+gwoTracker._trackPageview("/3839909263/test");
 }catch(err){}</script>
-</html>
+<!-- End of Google Website Optimizer Tracking Script -->
