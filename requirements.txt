@@ -4,3 +4,4 @@ web.py==0.22
 #scipy
 PIL
 psycopg2==2.0.5.1
+simplejson
