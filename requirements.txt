@@ -1,0 +1,5 @@
+gunicorn
+webpy
+scipy==0.5.2
+PIL==1.1.6
+psycopg2==2.0.5.1
