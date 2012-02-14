@@ -67,7 +67,13 @@ urls = (
   r'/auth/msn', 'contacts.auth_msn',
   r'/c', petition.app,
   r'/u', users.app,
+  r'/static/(.*)', 'static'
 )
+
+class static:
+    def GET(self, p):
+        if '..' in p: raise web.notfound()
+        return file(p).read()
 
 class index:
     def GET(self):
