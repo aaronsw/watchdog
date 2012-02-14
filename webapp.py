@@ -67,8 +67,12 @@ urls = (
   r'/auth/msn', 'contacts.auth_msn',
   r'/c', petition.app,
   r'/u', users.app,
-  r'/static/(.*)', 'static'
+  r'/static/(.*)', 'static',
+  r'/code/', 'code'
 )
+
+class code:
+    def GET(self): raise web.seeother('https://github.com/aaronsw/watchdog')
 
 class static:
     def GET(self, p):
