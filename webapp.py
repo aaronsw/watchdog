@@ -73,7 +73,7 @@ urls = (
 class static:
     def GET(self, p):
         if '..' in p: raise web.notfound()
-        return file(p).read()
+        return file('static/' + p).read()
 
 class index:
     def GET(self):
