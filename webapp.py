@@ -69,6 +69,7 @@ urls = (
   r'/c', petition.app,
   r'/u', users.app,
   r'/static/(.*)', 'static',
+  r'/data/(.*)', 'static',
   r'/robots.txt', 'robotstxt'
 )
 
