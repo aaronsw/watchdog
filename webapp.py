@@ -61,7 +61,6 @@ urls = (
   r'/contribute(/?)', 'contribute',
   r'/blog', blog.app,
   r'/share', 'petition.share',
-  r'/data/(.*)', 'staticdata',
   r'/bbauth/', 'contacts.auth_yahoo',
   r'/authsub', 'contacts.auth_google',
   r'/auth/msn', 'contacts.auth_msn',
@@ -870,14 +869,6 @@ class sparkdist:
 
         web.header('Content-Type', 'image/png')
         return simplegraphs.sparkline(points, inp.point)
-        
-class staticdata:
-    def GET(self, path):
-        if not web.config.debug:
-            raise web.notfound()
-
-        assert '..' not in path, 'security'
-        return file('data/' + path).read()
 
 class handshakes:
     def index(self):
