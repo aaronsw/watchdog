@@ -16,13 +16,13 @@ def sparkline(points, point=None, height=15*2, width=40*2, bubble=2*2, linewidth
     if maxpoint == minpoint: maxpoint += 0.001 # avoid Divide by zero error
     
     mypoints = [(
-      margin/2. + (width*(n/float(len(points)))),
-      (height+margin/2.) - ((height*((float(i) - minpoint)/(maxpoint-minpoint))))
+      int(margin/2. + (width*(n/float(len(points))))),
+      int((height+margin/2.) - ((height*((float(i) - minpoint)/(maxpoint-minpoint)))))
     ) for (n, i) in enumerate(points)]
-    draw.line(mypoints, fill='#888888', width=linewidth*scalefactor)
+    draw.line(mypoints, fill='#888888', width=int(linewidth*scalefactor))
     
-    if point and float(point) in points:
-        x, y = mypoints[points.index(float(point))]
+    if int(point) in points:
+        x, y = mypoints[points.index(int(point))]
         draw.ellipse((x-bubble, y-bubble, x+bubble, y+bubble), fill='#f55')        
     
     height += margin
