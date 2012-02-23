@@ -76,11 +76,7 @@ class code:
 
 class static:
     def GET(self, p):
-        if '..' in p: raise web.notfound()
-        try:
-            return file('static/' + p).read()
-        except IOError:
-            raise web.notfound()
+        raise web.seeother('http://static.watchdog.net/' + p)
 
 class index:
     def GET(self):

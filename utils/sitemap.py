@@ -30,7 +30,7 @@ t_siteindex = """$def with (names, timestamp)
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     $for x in names:
         <sitemap>
-            <loc>http://watchdog.net/static/sitemaps/sitemap_${x}.xml.gz</loc>
+            <loc>http://static.watchdog.net/sitemaps/sitemap_${x}.xml.gz</loc>
             <lastmod>$timestamp</lastmod>
         </sitemap>
 </sitemapindex>
