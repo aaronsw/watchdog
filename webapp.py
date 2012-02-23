@@ -72,7 +72,7 @@ urls = (
 )
 
 class code:
-    def GET(self): raise web.seeother('https://github.com/aaronsw/watchdog')
+    def GET(self, x): raise web.seeother('https://github.com/aaronsw/watchdog')
 
 class static:
     def GET(self, p):
