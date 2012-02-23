@@ -112,13 +112,13 @@ class feedback:
     def GET(self):
         return render.feedback()
 
-    def POST(self):
-        i = web.input(email='info@watchdog.net')
-        web.sendmail('Feedback <%s>' % i.email, 'Watchdog <info@watchdog.net>',
-          'watchdog.net feedback',
-          i.content +'\n\n' + web.ctx.ip)
-
-        return render.feedback_thanks()
+    #def POST(self):
+    #    i = web.input(email='info@watchdog.net')
+    #    web.sendmail('Feedback <%s>' % i.email, 'Watchdog <info@watchdog.net>',
+    #      'watchdog.net feedback',
+    #      i.content +'\n\n' + web.ctx.ip)
+    #
+    #    return render.feedback_thanks()
 
 class email_thanks:
     def GET(self):
