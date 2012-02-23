@@ -77,7 +77,10 @@ class code:
 class static:
     def GET(self, p):
         if '..' in p: raise web.notfound()
-        return file('static/' + p).read()
+        try:
+            return file('static/' + p).read()
+        except IOError:
+            raise web.notfound()
 
 class index:
     def GET(self):
