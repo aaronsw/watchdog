@@ -29,7 +29,7 @@ $if org.activity_code[3:6] != "000":
 $if org.activity_code[6:9] != "000":
     <tr><th>Activity</th><td>$eo_codes.activity[org.activity_code[6:9]]</td></tr>
 $if org.ntee_code != "":
-    <tr><th>Classification</th><td>$eo_codes.ntee[org.ntee_code[:3]]</td></tr>
+    <tr><th>Classification</th><td>$eo_codes.ntee.get(org.ntee_code[:3], org.ntee_code[:3])</td></tr>
   <tr><th>Filing</th><td>$eo_codes.fr1[org.filing_requirement_code[:2]]</td></tr>
   <tr><th>Filing</th><td>$eo_codes.fr2[org.filing_requirement_code[2]]</td></tr>
   <tr><th>Foundation</th><td>$eo_codes.foundation[org.foundation_code]</td></tr>
