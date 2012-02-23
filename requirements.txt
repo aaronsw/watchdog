@@ -4,3 +4,4 @@ gunicorn
 PIL
 psycopg2==2.0.5.1
 xappy
+xapian
