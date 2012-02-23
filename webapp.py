@@ -68,7 +68,7 @@ urls = (
   r'/c', petition.app,
   r'/u', users.app,
   r'/static/(.*)', 'static',
-  r'/code/', 'code'
+  r'/code/(.*)', 'code'
 )
 
 class code:
