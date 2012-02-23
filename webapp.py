@@ -68,8 +68,12 @@ urls = (
   r'/code/(.*)', 'code',
   r'/c', petition.app,
   r'/u', users.app,
-  r'/static/(.*)', 'static'
+  r'/static/(.*)', 'static',
+  r'/robots.txt', 'robotstxt'
 )
+
+class robotstxt:
+    def GET(self): return file('static/robots.txt').read()
 
 class code:
     def GET(self, x): raise web.seeother('https://github.com/aaronsw/watchdog')

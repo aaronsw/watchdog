@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+User-agent: Googlebot
+Disallow: /ein/363953796/national-council-of-jewish-women-incorporated
+Disallow: /contrib/60610/alissa_krinsky
+Disallow: /ein/412225313/uniting-our-youth-inc
+Disallow: /ein/651170307/church-on-wheels-inc
+Allow: /
+
+Sitemap: http://static.watchdog.net/sitemaps/siteindex.xml.gz
