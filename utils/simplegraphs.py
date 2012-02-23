@@ -21,8 +21,8 @@ def sparkline(points, point=None, height=15*2, width=40*2, bubble=2*2, linewidth
     ) for (n, i) in enumerate(points)]
     draw.line(mypoints, fill='#888888', width=int(linewidth*scalefactor))
     
-    if int(point) in points:
-        x, y = mypoints[points.index(int(point))]
+    if float(points) in points:
+        x, y = mypoints[points.index(float(point))]
         draw.ellipse((x-bubble, y-bubble, x+bubble, y+bubble), fill='#f55')        
     
     height += margin
