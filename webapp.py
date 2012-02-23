@@ -65,10 +65,10 @@ urls = (
   r'/bbauth/', 'contacts.auth_yahoo',
   r'/authsub', 'contacts.auth_google',
   r'/auth/msn', 'contacts.auth_msn',
+  r'/code/(.*)', 'code',
   r'/c', petition.app,
   r'/u', users.app,
-  r'/static/(.*)', 'static',
-  r'/code/(.*)', 'code'
+  r'/static/(.*)', 'static'
 )
 
 class code:
